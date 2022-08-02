@@ -1,20 +1,22 @@
 # TaskApp
 
-### Version 0.0.1
+### Version 1.0.0
+## Ligth Mode
+![Light Mode](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png)
 
-![Aquí la descripción de la imagen por si no carga](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png)
+<br>
+<br>
 
-<kbd>
-  <img src="https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png" />
-</kbd>
+## Dark Mode
+![Dark Mode](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Dark_Mode.png)
 
-<img src="https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png" border="5px solid red"/>
+```text
+    Version 1.0.0 02/08/2022
 
+    This app tries to list a series of tasks that the user can create and, edit and delete, also you can mark them as completed, or unmark it, see a list of the last completed tasks and a history of them.
+For now and for this version only the list will be saved in local mode. 
+The user will be able to apply the typical light/dark modes. 
 
-<image
-  src="https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png"
-  border="5px solid red"
-  alt="Descripción de la imagen"
-  caption="Leyenda de la imagen">
+    This app is developed with Andorid Jetpack Compose, with Google's Material You (Material 3). 
+```
 
-<img src="https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png" alt="Splash Screen" width="98" height="200" />
