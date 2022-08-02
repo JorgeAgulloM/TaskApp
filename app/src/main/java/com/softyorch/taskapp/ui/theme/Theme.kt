@@ -20,6 +20,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = ReplyBlue700,
     tertiary = ReplyOrange500,
     onSurface = LightMode90t,
+    onBackground = ReplyBlue400,
     background = DarkMode90t
 )
 
@@ -28,6 +29,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = ReplyBlue700,
     tertiary = ReplyOrange500,
     onSurface = DarkMode90t,
+    onBackground = ReplyBlue400,
     background = LightMode90t
 
     /* Other default colors to override
