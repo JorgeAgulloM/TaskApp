@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.splash
 
-class SplashScreen {
+import androidx.navigation.NavHostController
+
+class SplashScreen(navController: NavHostController) {
 }

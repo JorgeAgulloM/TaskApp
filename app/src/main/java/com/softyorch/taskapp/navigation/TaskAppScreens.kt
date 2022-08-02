@@ -1,13 +1,11 @@
 package com.softyorch.taskapp.navigation
 
-import android.util.Log
-
 enum class TaskAppScreens {
     SplashScreen,
     LoginScreen,
     MainScreen,
-    TaskDetailsScreen,
-    TaskHistoryScreen,
+    DetailsScreen,
+    HistoryScreen,
     SettingsScreen,
     UserDataScreen;
 
@@ -17,8 +15,8 @@ enum class TaskAppScreens {
             SplashScreen.name -> SplashScreen
             LoginScreen.name -> LoginScreen
             MainScreen.name -> MainScreen
-            TaskDetailsScreen.name -> TaskDetailsScreen
-            TaskHistoryScreen.name -> TaskHistoryScreen
+            DetailsScreen.name -> DetailsScreen
+            HistoryScreen.name -> HistoryScreen
             SettingsScreen.name -> SettingsScreen
             UserDataScreen.name -> UserDataScreen
             null -> LoginScreen

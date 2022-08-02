@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.detail
 
-class DetailScreen {
+import androidx.navigation.NavHostController
+
+class DetailScreen(navController: NavHostController) {
 }

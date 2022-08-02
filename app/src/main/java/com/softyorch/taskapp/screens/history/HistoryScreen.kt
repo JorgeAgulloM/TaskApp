@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.history
 
-class HistoryScreen {
+import androidx.navigation.NavHostController
+
+class HistoryScreen(navController: NavHostController) {
 }

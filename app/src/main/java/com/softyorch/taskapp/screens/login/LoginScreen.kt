@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.login
 
-class LoginScreen {
+import androidx.navigation.NavHostController
+
+class LoginScreen(navController: NavHostController) {
 }

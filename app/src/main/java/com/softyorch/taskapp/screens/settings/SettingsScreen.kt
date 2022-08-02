@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.settings
 
-class SettingsScreen {
+import androidx.navigation.NavHostController
+
+class SettingsScreen(navController: NavHostController) {
 }

@@ -1,4 +1,6 @@
 package com.softyorch.taskapp.screens.userdata
 
-class UserdataScreen {
+import androidx.navigation.NavHostController
+
+class UserdataScreen(navController: NavHostController) {
 }
