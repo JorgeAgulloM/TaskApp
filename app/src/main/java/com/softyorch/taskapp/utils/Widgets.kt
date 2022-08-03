@@ -1,9 +1,7 @@
 package com.softyorch.taskapp.utils
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -118,6 +116,26 @@ fun TopAppBar(
                     )
                 }
             }
+        }
+    )
+}
+
+@Composable
+fun FAB() {
+    FloatingActionButton(
+        onClick = {
+            //TODO, Crear contenido modal o flotante.
+        },
+        modifier = Modifier.size(50.dp),
+        contentColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.tertiary,
+        shape = CircleShape,
+        content = {
+            Icon(
+                modifier = Modifier.size(32.dp),
+                imageVector = Icons.Rounded.Add,
+                contentDescription = "Add task"
+            )
         }
     )
 }

@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.utils.FAB
 import com.softyorch.taskapp.utils.Hello
 import com.softyorch.taskapp.utils.TopAppBar
 
@@ -23,5 +24,8 @@ fun MainScreen(navController: NavHostController) {
             nameScreen = TaskAppScreens.MainScreen.name,
             navController = navController,
         )
-    }) {}
+    },
+        floatingActionButton = { FAB() },
+        //floatingActionButtonPosition = FabPosition.Center
+    ) {}
 }
