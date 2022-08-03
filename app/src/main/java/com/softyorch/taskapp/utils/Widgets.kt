@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddTask
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.ui.theme.LightMode90t
 
 @Composable
@@ -42,11 +41,11 @@ fun TopAppBar(
     title: String,
     icon: ImageVector? = null,
     isMainScreen: Boolean = false,
+    nameScreen: String,
     navController: NavController,
     onAddActionClicked: () -> Unit = {},
     onButtonClicked: () -> Unit = {}
 ) {
-
     SmallTopAppBar(
         modifier = Modifier.shadow(elevation = 4.dp),
         title = {
@@ -62,8 +61,10 @@ fun TopAppBar(
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.secondary),
         navigationIcon = {
-            if (isMainScreen) {
-                IconButton(onClick = {}) {
+            if (!isMainScreen) {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
                     Icon(
                         imageVector = Icons.Rounded.ArrowBack,
                         contentDescription = "Go Back",
@@ -73,21 +74,50 @@ fun TopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Rounded.AddTask,
-                    contentDescription = "Add Task",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            if (nameScreen != TaskAppScreens.MainScreen.name) {
+                IconButton(onClick = {
+                    navController.navigate(TaskAppScreens.MainScreen.name)
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Home,
+                        contentDescription = "Go Home",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = "Settings",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            if (nameScreen != TaskAppScreens.HistoryScreen.name) {
+                IconButton(onClick = {
+                    navController.navigate(TaskAppScreens.HistoryScreen.name)
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.History,
+                        contentDescription = "History",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            if (nameScreen != TaskAppScreens.SettingsScreen.name) {
+                IconButton(onClick = {
+                    navController.navigate(TaskAppScreens.SettingsScreen.name)
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            if (nameScreen != TaskAppScreens.UserDataScreen.name) {
+                IconButton(onClick = {
+                    navController.navigate(TaskAppScreens.UserDataScreen.name)
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.SupervisedUserCircle,
+                        contentDescription = "User data",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     )
-
 }

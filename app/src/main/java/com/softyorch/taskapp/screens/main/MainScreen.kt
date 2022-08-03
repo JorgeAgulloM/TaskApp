@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.utils.Hello
 import com.softyorch.taskapp.utils.TopAppBar
 
@@ -19,6 +20,7 @@ fun MainScreen(navController: NavHostController) {
             title = "Main",
             icon = Icons.Rounded.Home,
             isMainScreen = true,
+            nameScreen = TaskAppScreens.MainScreen.name,
             navController = navController,
         )
     }) {}
