@@ -1,6 +1,10 @@
 package com.softyorch.taskapp.screens.login
 
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.utils.Hello
 
-class LoginScreen(navController: NavHostController) {
+@Composable
+fun LoginScreen(navController: NavHostController) {
+    Hello("Login")
 }

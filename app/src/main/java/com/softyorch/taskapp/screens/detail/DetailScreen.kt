@@ -1,6 +1,10 @@
 package com.softyorch.taskapp.screens.detail
 
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.utils.Hello
 
-class DetailScreen(navController: NavHostController) {
+@Composable
+fun DetailScreen(navController: NavHostController) {
+   Hello("Detail")
 }

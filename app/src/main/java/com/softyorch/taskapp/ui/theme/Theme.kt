@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = ReplyBlue600,
+    primary = ReplyBlue400,
     secondary = ReplyBlue700,
     tertiary = ReplyOrange500,
     onSurface = LightMode90t,
@@ -25,7 +25,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = ReplyBlue600,
+    primary = ReplyBlue400,
     secondary = ReplyBlue700,
     tertiary = ReplyOrange500,
     onSurface = DarkMode90t,
@@ -47,7 +47,7 @@ private val LightColorScheme = lightColorScheme(
 fun TaskAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

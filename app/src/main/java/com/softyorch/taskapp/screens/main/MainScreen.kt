@@ -1,15 +1,25 @@
 package com.softyorch.taskapp.screens.main
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import android.annotation.SuppressLint
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.utils.Hello
+import com.softyorch.taskapp.utils.TopAppBar
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text(text = "Main Screen")
-    }
+    Hello("Main")
+    Scaffold(topBar = {
+        TopAppBar(
+            title = "Main",
+            icon = Icons.Rounded.Home,
+            isMainScreen = true,
+            navController = navController,
+        )
+    }) {}
 }
