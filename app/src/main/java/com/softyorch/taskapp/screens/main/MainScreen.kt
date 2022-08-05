@@ -16,16 +16,20 @@ import com.softyorch.taskapp.utils.TopAppBar
 @Composable
 fun MainScreen(navController: NavHostController) {
     Hello("Main")
-    Scaffold(topBar = {
-        TopAppBar(
-            title = "Main",
-            icon = Icons.Rounded.Home,
-            isMainScreen = true,
-            nameScreen = TaskAppScreens.MainScreen.name,
-            navController = navController,
-        )
-    },
-        floatingActionButton = { FAB() },
-        //floatingActionButtonPosition = FabPosition.Center
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = "Main",
+                icon = Icons.Rounded.Home,
+                isMainScreen = true,
+                nameScreen = TaskAppScreens.MainScreen.name,
+                navController = navController,
+            )
+        },
+        floatingActionButton = {
+            FAB(
+                navController = navController
+            )
+        },
     ) {}
 }
