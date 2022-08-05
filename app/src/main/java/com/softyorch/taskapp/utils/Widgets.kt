@@ -1,19 +1,31 @@
 package com.softyorch.taskapp.utils
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +44,7 @@ fun Hello(name: String = "null") {
             Text(text = "$name Screen", textAlign = TextAlign.Center)
         }
     }
+
 }
 
 @Composable
@@ -121,10 +134,15 @@ fun TopAppBar(
 }
 
 @Composable
-fun FAB() {
+fun FAB(navController: NavController) {
+
+    val scaffoldState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
     FloatingActionButton(
         onClick = {
             //TODO, Crear contenido modal o flotante.
+            navController.navigate(TaskAppScreens.NewTaskScreen.name)
         },
         modifier = Modifier.size(50.dp),
         contentColor = MaterialTheme.colorScheme.primary,
@@ -138,4 +156,72 @@ fun FAB() {
             )
         }
     )
+}
+
+@Composable
+fun TextFieldTask(
+    text: String = "",
+    label: String = "",
+    placeholder: String = "",
+    icon: ImageVector,
+    contentDescription: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        capitalization = KeyboardCapitalization.Sentences,
+        autoCorrect = true,
+        keyboardType = KeyboardType.Text,
+        imeAction = ImeAction.Default
+    ),
+    multiLine: Boolean = false,
+    newTask: Boolean = false,
+    readOnly: Boolean = false,
+    isError: Boolean = false
+) {
+    val mutableInteractionSource = remember { MutableInteractionSource() }
+    var description by remember { mutableStateOf(text) }
+    val focused: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+    val unfocused: Color = LightMode90t.copy(alpha = 0.8f)
+    TextField(
+        value = description,
+        onValueChange = {
+            description = it
+        },
+        modifier = Modifier.padding(4.dp).width(width = 350.dp),
+        readOnly = readOnly,
+        textStyle = TextStyle(color = LightMode90t),
+        label = { Text(text = label) },
+        placeholder = { Text(text = placeholder) },
+        leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
+        isError = isError,
+        keyboardOptions = keyboardOptions,
+        singleLine = multiLine,
+        interactionSource = mutableInteractionSource,
+        shape = MaterialTheme.shapes.extraLarge.copy(
+            topStart = CornerSize(25.dp),
+            bottomStart = CornerSize(25.dp),
+            topEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize,
+            bottomEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = LightMode90t,
+            placeholderColor = LightMode90t.copy(alpha = 0.4f),
+            focusedLabelColor = focused,
+            unfocusedLabelColor = unfocused,
+            unfocusedLeadingIconColor = unfocused,
+            focusedLeadingIconColor = focused,
+            containerColor = MaterialTheme.colorScheme.primary,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = focused
+        )
+    )
+}
+
+@Composable
+fun PrimaryButton() {
+
+    //TODO
+
+    Button(onClick = {}, modifier = Modifier.padding(4.dp)) {
+
+    }
 }
