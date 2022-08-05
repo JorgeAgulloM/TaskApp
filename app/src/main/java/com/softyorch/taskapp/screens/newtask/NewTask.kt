@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.screens.newtask
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.TextFields
@@ -12,15 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.TaskAppScreens
-import com.softyorch.taskapp.utils.PrimaryButton
+import com.softyorch.taskapp.utils.TaskButton
 import com.softyorch.taskapp.utils.TextFieldTask
 import com.softyorch.taskapp.utils.TopAppBar
 
@@ -68,13 +63,13 @@ fun Content(it: PaddingValues) {
             multiLine = true,
             newTask = true,
         )
-        Row(
-            modifier = Modifier.size(width = 300.dp, height = 30.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column (
+            modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PrimaryButton()
-            PrimaryButton()
+            TaskButton(text = "Login" , true)
+            TaskButton(text = "New account")
         }
     }
 }

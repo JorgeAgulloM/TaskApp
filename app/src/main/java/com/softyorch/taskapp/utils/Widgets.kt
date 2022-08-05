@@ -19,7 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,11 +30,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
+
+val elevation: Dp = 4.dp
 
 @Composable
 fun Hello(name: String = "null") {
@@ -44,7 +51,6 @@ fun Hello(name: String = "null") {
             Text(text = "$name Screen", textAlign = TextAlign.Center)
         }
     }
-
 }
 
 @Composable
@@ -158,6 +164,7 @@ fun FAB(navController: NavController) {
     )
 }
 
+//TextField V1
 @Composable
 fun TextFieldTask(
     text: String = "",
@@ -180,12 +187,21 @@ fun TextFieldTask(
     var description by remember { mutableStateOf(text) }
     val focused: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocused: Color = LightMode90t.copy(alpha = 0.8f)
+
+    val personalizedShape: Shape = MaterialTheme.shapes.extraLarge.copy(
+        topStart = CornerSize(25.dp),
+        bottomStart = CornerSize(25.dp),
+        topEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize,
+        bottomEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize
+    )
     TextField(
         value = description,
         onValueChange = {
             description = it
         },
-        modifier = Modifier.padding(4.dp).width(width = 350.dp),
+        modifier = Modifier.padding(4.dp).width(width = 350.dp).shadow(
+            elevation = elevation, shape = personalizedShape
+        ),
         readOnly = readOnly,
         textStyle = TextStyle(color = LightMode90t),
         label = { Text(text = label) },
@@ -195,12 +211,7 @@ fun TextFieldTask(
         keyboardOptions = keyboardOptions,
         singleLine = multiLine,
         interactionSource = mutableInteractionSource,
-        shape = MaterialTheme.shapes.extraLarge.copy(
-            topStart = CornerSize(25.dp),
-            bottomStart = CornerSize(25.dp),
-            topEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize,
-            bottomEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize
-        ),
+        shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
             placeholderColor = LightMode90t.copy(alpha = 0.4f),
@@ -217,11 +228,36 @@ fun TextFieldTask(
 }
 
 @Composable
-fun PrimaryButton() {
+fun TaskButton(
+    text: String,
+    primary: Boolean = false
+
+) {
 
     //TODO
 
-    Button(onClick = {}, modifier = Modifier.padding(4.dp)) {
+    Button(
+        onClick = {
 
-    }
+        },
+        modifier = Modifier.width(114.dp).height(26.dp).padding(2.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
+            contentColor = if (primary) DarkMode90t else MaterialTheme.colorScheme.onSurface
+        ),
+        content = {
+            Text(
+                text = text,
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = MaterialTheme.colorScheme.primary,
+                        offset = if (primary) Offset(x = 0f, y = 0f) else Offset(x = 2f, y = 2f),
+                        blurRadius = if (primary) 0f else 2f
+                    )
+                )
+            )
+        },
+        contentPadding = PaddingValues(2.dp),
+        elevation = ButtonDefaults.buttonElevation(if (primary) elevation else 0.dp)
+    )
 }
