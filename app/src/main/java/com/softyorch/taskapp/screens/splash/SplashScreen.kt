@@ -42,7 +42,9 @@ fun SplashScreen(navController: NavHostController) {
         )
 
         delay(2000L)
+        navController.popBackStack()
         navController.navigate(TaskAppScreens.MainScreen.name)
+
     })
 
     Surface(
