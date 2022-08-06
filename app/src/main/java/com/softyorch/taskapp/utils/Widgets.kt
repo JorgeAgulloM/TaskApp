@@ -1,9 +1,8 @@
 package com.softyorch.taskapp.utils
 
+import android.webkit.WebSettings
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,11 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -38,7 +38,8 @@ import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
 
-val elevation: Dp = 4.dp
+val elevationDp: Dp = 4.dp
+val elevationF: Float = 4f
 
 @Composable
 fun Hello(name: String = "null") {
@@ -142,8 +143,8 @@ fun TopAppBar(
 @Composable
 fun FAB(navController: NavController) {
 
-    val scaffoldState = rememberScrollState()
-    val scope = rememberCoroutineScope()
+    //val scaffoldState = rememberScrollState()
+    //val scope = rememberCoroutineScope()
 
     FloatingActionButton(
         onClick = {
@@ -151,9 +152,8 @@ fun FAB(navController: NavController) {
             navController.navigate(TaskAppScreens.NewTaskScreen.name)
         },
         modifier = Modifier.size(50.dp),
-        contentColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.secondary,
         containerColor = MaterialTheme.colorScheme.tertiary,
-        shape = CircleShape,
         content = {
             Icon(
                 modifier = Modifier.size(32.dp),
@@ -162,6 +162,26 @@ fun FAB(navController: NavController) {
             )
         }
     )
+
+    //Material you version
+    /*ExtendedFloatingActionButton(
+        onClick = {
+            //TODO, Crear contenido modal o flotante.
+            navController.navigate(TaskAppScreens.NewTaskScreen.name)
+        },
+        //modifier = Modifier.size(50.dp),
+        contentColor = MaterialTheme.colorScheme.secondary,
+        containerColor = MaterialTheme.colorScheme.tertiary,
+        shape = MaterialTheme.shapes.medium,
+        icon = {
+            Icon(
+                //modifier = Modifier.size(32.dp),
+                imageVector = Icons.Rounded.Add,
+                contentDescription = "Add task"
+            )
+        },
+        text = { Text(text = "Add")}
+    )*/
 }
 
 //TextField V1
@@ -178,21 +198,22 @@ fun TextFieldTask(
         keyboardType = KeyboardType.Text,
         imeAction = ImeAction.Default
     ),
-    multiLine: Boolean = false,
+    singleLine: Boolean = false,
     newTask: Boolean = false,
     readOnly: Boolean = false,
     isError: Boolean = false
 ) {
     val mutableInteractionSource = remember { MutableInteractionSource() }
     var description by remember { mutableStateOf(text) }
-    val focused: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
-    val unfocused: Color = LightMode90t.copy(alpha = 0.8f)
+    val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+    val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
+    val corner: Dp = 20.dp
 
     val personalizedShape: Shape = MaterialTheme.shapes.extraLarge.copy(
-        topStart = CornerSize(25.dp),
-        bottomStart = CornerSize(25.dp),
-        topEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize,
-        bottomEnd = if (newTask) CornerSize(25.dp) else ZeroCornerSize
+        topStart = CornerSize(corner),
+        bottomStart = CornerSize(corner),
+        topEnd = if (newTask) CornerSize(corner) else ZeroCornerSize,
+        bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
     )
     TextField(
         value = description,
@@ -200,7 +221,7 @@ fun TextFieldTask(
             description = it
         },
         modifier = Modifier.padding(4.dp).width(width = 350.dp).shadow(
-            elevation = elevation, shape = personalizedShape
+            elevation = elevationDp, shape = personalizedShape
         ),
         readOnly = readOnly,
         textStyle = TextStyle(color = LightMode90t),
@@ -209,20 +230,20 @@ fun TextFieldTask(
         leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
         isError = isError,
         keyboardOptions = keyboardOptions,
-        singleLine = multiLine,
+        singleLine = singleLine,
         interactionSource = mutableInteractionSource,
         shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
             placeholderColor = LightMode90t.copy(alpha = 0.4f),
-            focusedLabelColor = focused,
-            unfocusedLabelColor = unfocused,
-            unfocusedLeadingIconColor = unfocused,
-            focusedLeadingIconColor = focused,
+            focusedLabelColor = unfocusedColor,
+            unfocusedLabelColor = unfocusedColor,
+            unfocusedLeadingIconColor = unfocusedColor,
+            focusedLeadingIconColor = focusedColor,
             containerColor = MaterialTheme.colorScheme.primary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = focused
+            cursorColor = focusedColor
         )
     )
 }
@@ -251,13 +272,43 @@ fun TaskButton(
                 style = TextStyle(
                     shadow = Shadow(
                         color = MaterialTheme.colorScheme.primary,
-                        offset = if (primary) Offset(x = 0f, y = 0f) else Offset(x = 2f, y = 2f),
-                        blurRadius = if (primary) 0f else 2f
+                        offset = if (primary) Offset(x = 0f, y = 0f) else Offset(
+                            x = elevationF,
+                            y = elevationF
+                        ),
+                        blurRadius = if (primary) 0f else elevationF
                     )
                 )
             )
         },
         contentPadding = PaddingValues(2.dp),
-        elevation = ButtonDefaults.buttonElevation(if (primary) elevation else 0.dp)
+        elevation = ButtonDefaults.buttonElevation(if (primary) elevationDp else 0.dp)
     )
+}
+
+@Composable
+fun RowIndication(
+    text: String,
+    textEdit: String = "",
+    fontSize: TextUnit = 20.sp
+) {
+
+    val arrangement = if (textEdit == "") Arrangement.Start else Arrangement.SpaceBetween
+
+    Row(
+        modifier = Modifier.size(width = 300.dp, height = 30.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = arrangement
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold,
+            fontSize = fontSize
+        )
+        Text(
+            text = textEdit,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
 }
