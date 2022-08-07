@@ -11,10 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.navigation.TaskAppScreens
-import com.softyorch.taskapp.utils.FAB
-import com.softyorch.taskapp.utils.Hello
-import com.softyorch.taskapp.utils.RowIndication
-import com.softyorch.taskapp.utils.TopAppBar
+import com.softyorch.taskapp.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,26 +42,26 @@ fun Content(it: PaddingValues) {
         modifier = Modifier.fillMaxSize()
             .padding(top = it.calculateTopPadding() * 1.5f, start = 32.dp, end = 8.dp)
     ) {
-        RowIndication(text = "My Tasks")
-        RowIndication(text = "To be made...", fontSize = 16.sp)
+        RowIndication(text = "My Tasks", paddingStart = 16.dp)
+        RowIndication(text = "To be made...", fontSize = 16.sp, paddingStart = 16.dp)
         //Aquí debe ir un LazyColumn
         Column(modifier = Modifier.fillMaxWidth().height(300.dp)) {
 
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
+            TaskSummary(text = "Tarea número 1 de prueba")
+            TaskSummary(text = "Tarea número 2 de prueba")
+            TaskSummary(text = "Tarea número 3 de prueba")
+            TaskSummary(text = "Tarea número 4 de prueba")
+
         }
-        RowIndication(text = "To be made...", fontSize = 16.sp)
+        RowIndication(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 16.dp)
         //Aquí debe ir un LazyColumn
         Column(modifier = Modifier.fillMaxWidth().height(300.dp)) {
 
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
-            Text(text = "Tareas listadas")
+            TaskSummary(checked = true, text = "Tarea número 10 de prueba")
+            TaskSummary(checked = true, text = "Tarea número 11 de prueba")
+            TaskSummary(checked = true, text = "Tarea número 12 de prueba")
+
+
         }
     }
 }

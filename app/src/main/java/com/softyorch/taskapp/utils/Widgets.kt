@@ -290,13 +290,14 @@ fun TaskButton(
 fun RowIndication(
     text: String,
     textEdit: String = "",
-    fontSize: TextUnit = 20.sp
+    fontSize: TextUnit = 20.sp,
+    paddingStart: Dp = 0.dp
 ) {
 
     val arrangement = if (textEdit == "") Arrangement.Start else Arrangement.SpaceBetween
 
     Row(
-        modifier = Modifier.size(width = 300.dp, height = 30.dp),
+        modifier = Modifier.size(width = 300.dp, height = 30.dp).padding(start = paddingStart),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = arrangement
     ) {
@@ -309,6 +310,37 @@ fun RowIndication(
         Text(
             text = textEdit,
             color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskSummary(
+    checked: Boolean = false,
+    text: String
+) {
+
+    val modifier: Modifier = Modifier.padding(horizontal = 0.dp, vertical = 2.dp)
+
+    Row(
+        modifier = Modifier.fillMaxWidth(0.8f).padding(2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Checkbox(
+            modifier = modifier,
+            checked = checked,
+            onCheckedChange = {},
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.tertiary,
+                uncheckedColor = MaterialTheme.colorScheme.secondary,
+                checkmarkColor = MaterialTheme.colorScheme.secondary
+            )
+        )
+        Text(
+            modifier = modifier,
+            text = text
         )
     }
 }
