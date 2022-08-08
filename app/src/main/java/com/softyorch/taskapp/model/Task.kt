@@ -12,10 +12,10 @@ data class Task(
     val id: UUID = UUID.randomUUID(),
 
     @ColumnInfo(name = "task_title")
-    val title: String,
+    var title: String,
 
     @ColumnInfo(name = "task_description")
-    val description: String,
+    var description: String,
 
     @ColumnInfo(name = "task_author")
     val author: String,
@@ -24,5 +24,5 @@ data class Task(
     val entryDate: Date = Date.from(Instant.now()),
 
     @ColumnInfo(name = "task_check_state")
-    val checkState: Boolean
+    var checkState: Boolean
 )

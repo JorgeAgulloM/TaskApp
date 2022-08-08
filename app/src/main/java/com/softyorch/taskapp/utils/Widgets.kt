@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.webkit.WebSettings
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -149,7 +150,6 @@ fun FAB(navController: NavController) {
 
     FloatingActionButton(
         onClick = {
-            //TODO, Crear contenido modal o flotante.
             navController.navigate(TaskAppScreens.NewTaskScreen.name)
         },
         modifier = Modifier.size(50.dp),
@@ -189,6 +189,7 @@ fun FAB(navController: NavController) {
 @Composable
 fun TextFieldTask(
     text: String = "",
+    onTextChange: (String) -> Unit,
     label: String = "",
     placeholder: String = "",
     icon: ImageVector,
@@ -205,7 +206,7 @@ fun TextFieldTask(
     isError: Boolean = false
 ) {
     val mutableInteractionSource = remember { MutableInteractionSource() }
-    var description by remember { mutableStateOf(text) }
+    var description by rememberSaveable() { mutableStateOf(text) }
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
     val corner: Dp = 20.dp
@@ -217,10 +218,8 @@ fun TextFieldTask(
         bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
     )
     TextField(
-        value = description,
-        onValueChange = {
-            description = it
-        },
+        value = text,
+        onValueChange = onTextChange,
         modifier = Modifier.padding(4.dp).width(width = 350.dp).shadow(
             elevation = elevationDp, shape = personalizedShape
         ),
@@ -251,6 +250,7 @@ fun TextFieldTask(
 
 @Composable
 fun TaskButton(
+    onclick: () -> Unit,
     text: String,
     primary: Boolean = false
 
@@ -259,9 +259,7 @@ fun TaskButton(
     //TODO
 
     Button(
-        onClick = {
-
-        },
+        onClick = onclick,
         modifier = Modifier.width(114.dp).height(26.dp).padding(2.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
@@ -292,13 +290,17 @@ fun RowIndication(
     text: String,
     textEdit: String = "",
     fontSize: TextUnit = 20.sp,
-    paddingStart: Dp = 0.dp
+    paddingStart: Dp = 0.dp,
+    heightSize: Dp = 30.dp
 ) {
 
     val arrangement = if (textEdit == "") Arrangement.Start else Arrangement.SpaceBetween
 
     Row(
-        modifier = Modifier.size(width = 300.dp, height = 30.dp).padding(start = paddingStart),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(heightSize)
+            .padding(start = paddingStart, top = 0.dp, bottom = 0.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = arrangement
     ) {
@@ -319,32 +321,35 @@ fun RowIndication(
 @Composable
 fun TaskSummary(
     checked: Boolean = false,
-    text: String
+    onCheckedChange: (Boolean) -> Unit,
+    text: String,
+    onclick: () -> Unit
 ) {
 
-    val modifier: Modifier = Modifier.padding(horizontal = 0.dp, vertical = 2.dp)
-    var onChange by rememberSaveable() { mutableStateOf(checked) }
+    val modifier = Modifier.padding(2.dp)
+    val onChange by rememberSaveable() { mutableStateOf(checked) }
 
     Row(
-        modifier = Modifier.fillMaxWidth(0.8f).padding(2.dp),
+        modifier = Modifier.fillMaxWidth(1f).height(30.dp).clickable {
+            onclick.invoke()
+        },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Checkbox(
-            modifier = modifier,
-            checked = onChange,
-            onCheckedChange = {
-                onChange = it
-            },
-            colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.tertiary,
-                uncheckedColor = MaterialTheme.colorScheme.secondary,
-                checkmarkColor = MaterialTheme.colorScheme.secondary
+        horizontalArrangement = Arrangement.Start,
+        content = {
+            Checkbox(
+                modifier = modifier,
+                checked = onChange,
+                onCheckedChange = onCheckedChange,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.tertiary,
+                    uncheckedColor = MaterialTheme.colorScheme.secondary,
+                    checkmarkColor = MaterialTheme.colorScheme.secondary
+                )
             )
-        )
-        Text(
-            modifier = modifier,
-            text = text
-        )
-    }
+            Text(
+                modifier = modifier,
+                text = text
+            )
+        }
+    )
 }

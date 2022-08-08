@@ -6,21 +6,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -37,40 +35,63 @@ fun MainScreen(navController: NavHostController) {
             )
         },
     ) {
-        Content(it = it)
+        Content(it = it, taskViewModel = taskViewModel, navController = navController)
     }
 }
 
 @Composable
-fun Content(it: PaddingValues) {
+private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navController: NavController) {
 
-    val taskViewModel = hiltViewModel<TaskViewModel>()
     val tasks = taskViewModel.taskList.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .padding(top = it.calculateTopPadding() * 1.5f, start = 32.dp, end = 8.dp)
+            .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
     ) {
-        RowIndication(text = "My Tasks", paddingStart = 16.dp)
+
+        RowIndication(text = "My Tasks", paddingStart = 32.dp)
+
         Spacer(modifier = Modifier.padding(8.dp))
-        RowIndication(text = "To be made...", fontSize = 16.sp, paddingStart = 16.dp)
+
+        RowIndication(text = "To be made...", fontSize = 16.sp, paddingStart = 32.dp)
         if (tasks.isEmpty())
             RowIndication("Añade una nueva tarea...", fontSize = 14.sp)
         else
-            LazyColumn {
-                items(tasks) { task ->
-                    if (!task.checkState) TaskSummary(task.checkState, text = task.title)
-                }
-            }
+            FillLazyColumn(tasks = tasks, taskViewModel = taskViewModel, navController = navController)
+
         Spacer(modifier = Modifier.padding(8.dp))
-        RowIndication(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 16.dp)
+
+        RowIndication(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 32.dp)
         if (tasks.isEmpty())
             RowIndication("Aún no has terminado ninguna tarea", fontSize = 14.sp)
         else
-            LazyColumn {
-                items(tasks) { task ->
-                    if (task.checkState) TaskSummary(task.checkState, text = task.title)
+            FillLazyColumn(tasks = tasks, taskViewModel = taskViewModel, checkOrNot = true, navController = navController)
+    }
+}
+
+@Composable
+private fun FillLazyColumn(
+    tasks: List<Task>,
+    taskViewModel: TaskViewModel,
+    checkOrNot: Boolean = false,
+    navController: NavController
+) {
+    LazyColumn {
+        items(tasks) { task ->
+            if (checkOrNot == task.checkState)
+                TaskSummary(
+                task.checkState,
+                onCheckedChange = {
+                    task.checkState = it
+                    taskViewModel.updateTask(task)
+                    //Esto debe cambiar, no es correcto, aunque funciona
+                    navController.navigate(TaskAppScreens.MainScreen.name)
+                },
+                text = task.title,
+                onclick = {
+                    navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
                 }
-            }
+            )
+        }
     }
 }
