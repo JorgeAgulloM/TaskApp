@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -322,6 +323,7 @@ fun TaskSummary(
 ) {
 
     val modifier: Modifier = Modifier.padding(horizontal = 0.dp, vertical = 2.dp)
+    var onChange by rememberSaveable() { mutableStateOf(checked) }
 
     Row(
         modifier = Modifier.fillMaxWidth(0.8f).padding(2.dp),
@@ -330,8 +332,10 @@ fun TaskSummary(
     ) {
         Checkbox(
             modifier = modifier,
-            checked = checked,
-            onCheckedChange = {},
+            checked = onChange,
+            onCheckedChange = {
+                onChange = it
+            },
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.tertiary,
                 uncheckedColor = MaterialTheme.colorScheme.secondary,
