@@ -17,6 +17,7 @@ import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.RowIndication
+import com.softyorch.taskapp.utils.TaskSummary
 import com.softyorch.taskapp.utils.TopAppBar
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
@@ -50,7 +51,7 @@ private fun Content(
     navController: NavController,
     id: String
 ) {
-    val dataTask = produceState<Resource<Task>>(initialValue = Resource.Loading()) {
+    produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = taskViewModel.getTaskId(id = id)
     }.value.let { data ->
         data.data?.let { task ->
@@ -62,7 +63,8 @@ private fun Content(
                         end = 16.dp
                     )
             ) {
-                RowIndication(task.title, fontSize = 16.sp)
+                //RowIndication(task.title, fontSize = 16.sp)
+                TaskSummary(task.checkState, onCheckedChange = {}, task.title, onclick = {})
                 RowIndication(task.description, fontSize = 16.sp, heightSize = 300.dp)
                 Spacer(modifier = Modifier.padding(top = 16.dp))
                 RowIndication("Details", paddingStart = 16.dp)
