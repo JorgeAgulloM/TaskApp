@@ -17,6 +17,12 @@ data class Task(
     @ColumnInfo(name = "task_description")
     val description: String,
 
+    @ColumnInfo(name = "task_author")
+    val author: String,
+
     @ColumnInfo(name = "task_entry_date")
     val entryDate: Date = Date.from(Instant.now()),
+
+    @ColumnInfo(name = "task_check_state")
+    val checkState: Boolean
 )
