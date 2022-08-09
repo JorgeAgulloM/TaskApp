@@ -23,6 +23,9 @@ data class Task(
     @ColumnInfo(name = "task_entry_date")
     val entryDate: Date = Date.from(Instant.now()),
 
+    @ColumnInfo(name = "task_entry_date")
+    val finishDate: Date = Date.from(Instant.now()),
+
     @ColumnInfo(name = "task_check_state")
     var checkState: Boolean
 )
