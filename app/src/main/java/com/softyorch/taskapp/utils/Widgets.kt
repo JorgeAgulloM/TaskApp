@@ -305,7 +305,17 @@ fun RowIndication(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            fontSize = fontSize
+            fontSize = fontSize,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = MaterialTheme.colorScheme.primary,
+                    offset = Offset(
+                        x = elevationF,
+                        y = elevationF
+                    ),
+                    blurRadius = elevationF
+                )
+            )
         )
 
     }
@@ -315,10 +325,11 @@ fun RowIndication(
 fun InfoTask(
     author: String,
     date: String,
-    completedDate: String = ""
+    completedDate: String = "",
+    paddingStart: Dp = 24.dp
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 24.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = paddingStart),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -328,7 +339,8 @@ fun InfoTask(
         ) {
             InfoText("Created By:", true)
             InfoText("Created date:", true)
-            if (completedDate.isNotEmpty()) InfoText("Completed date:", true)
+            if (completedDate.isNotEmpty() && completedDate != "null")
+                InfoText("Completed date:", true)
         }
         Column(
             horizontalAlignment = Alignment.Start,
@@ -336,7 +348,8 @@ fun InfoTask(
         ) {
             InfoText(author)
             InfoText(date)
-            if (completedDate.isNotEmpty()) InfoText(completedDate)
+            if (completedDate.isNotEmpty() && completedDate != "null")
+                InfoText(completedDate)
         }
     }
 }
@@ -350,21 +363,20 @@ private fun InfoText(
         modifier = Modifier.padding(4.dp),
         text = text,
         color = MaterialTheme.colorScheme.onSurface,
-        fontSize = 14.sp ,
+        fontSize = 14.sp,
         fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskSummary(
+fun TaskSummaryCheck(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     text: String,
     onclick: () -> Unit
 ) {
 
-    val modifier = Modifier.padding(2.dp)
     val onChange by rememberSaveable() { mutableStateOf(checked) }
 
     Row(
@@ -375,7 +387,6 @@ fun TaskSummary(
         horizontalArrangement = Arrangement.Start,
         content = {
             Checkbox(
-                modifier = modifier,
                 checked = onChange,
                 onCheckedChange = onCheckedChange,
                 colors = CheckboxDefaults.colors(
@@ -385,8 +396,12 @@ fun TaskSummary(
                 )
             )
             Text(
-                modifier = modifier,
-                text = text
+                text = text,
+                color =
+                    if (checked)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurface
             )
         }
     )

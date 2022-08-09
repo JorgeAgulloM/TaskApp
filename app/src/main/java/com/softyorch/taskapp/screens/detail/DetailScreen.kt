@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Details
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -16,9 +19,7 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
-import com.softyorch.taskapp.utils.RowIndication
-import com.softyorch.taskapp.utils.TaskSummary
-import com.softyorch.taskapp.utils.TopAppBar
+import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
 import java.util.*
@@ -64,18 +65,42 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    //RowIndication(task.title, fontSize = 16.sp)
-                    TaskSummary(task.checkState, onCheckedChange = {}, task.title, onclick = {})
-                    RowIndication(task.description, fontSize = 16.sp, heightSize = 300.dp)
+                    RowIndication(task.title, fontSize = 20.sp, paddingStart = 24.dp)
+                    Text(
+                        text = task.description,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowIndication("Details", paddingStart = 16.dp)
-                    /*RowIndication(text = "Created By:", task.author, fontSize = 16.sp)
-                    RowIndication(
-                        text = "Created Date:",
-                        task.entryDate.toString(),
-                        fontSize = 16.sp
-                    )*/
+                    RowIndication("Details", fontSize = 20.sp, paddingStart = 24.dp)
+                    InfoTask(
+                        author = task.author,
+                        date = task.entryDate.toString(),
+                        completedDate = task.finishDate.toString(),
+                        paddingStart = 0.dp
+                    )
 
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+
+                        TaskButton(
+                            onclick = {
+
+                            },
+                            text = "Complete",
+                            primary = true
+                        )
+                        TaskButton(
+                            onclick = {
+
+                            },
+                            text = "Delete"
+                        )
+                    }
 
                 }
             }

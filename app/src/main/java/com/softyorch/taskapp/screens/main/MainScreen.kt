@@ -15,6 +15,8 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.utils.*
+import java.time.Instant
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,10 +81,11 @@ private fun FillLazyColumn(
     LazyColumn {
         items(tasks) { task ->
             if (checkOrNot == task.checkState)
-                TaskSummary(
+                TaskSummaryCheck(
                 task.checkState,
                 onCheckedChange = {
                     task.checkState = it
+                    task.finishDate = if(it) Date.from(Instant.now()) else null
                     taskViewModel.updateTask(task)
                     //Esto debe cambiar, no es correcto, aunque funciona
                     navController.navigate(TaskAppScreens.MainScreen.name)

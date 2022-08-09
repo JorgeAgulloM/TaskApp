@@ -99,8 +99,7 @@ fun Content(it: PaddingValues, navController: NavController, taskViewModel: Task
                     val task = Task(
                         title = title,
                         description = description,
-                        author = "Jorge Agulló",
-                        checkState = false
+                        author = "Jorge Agulló"
                     )
                     taskViewModel.addTask(task)
                     navController.popBackStack()
