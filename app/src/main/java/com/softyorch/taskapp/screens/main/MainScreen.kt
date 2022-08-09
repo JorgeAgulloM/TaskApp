@@ -3,6 +3,7 @@ package com.softyorch.taskapp.screens.main
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
@@ -95,6 +96,8 @@ private fun FillLazyColumn(
                     navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
                 }
             )
+        }.apply {
+            //TODO Averiguar la lógica para obtener las tareas con check true y mostrar un mensaje
         }
     }
 }

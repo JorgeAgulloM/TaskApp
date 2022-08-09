@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -397,11 +398,14 @@ fun TaskSummaryCheck(
             )
             Text(
                 text = text,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 color =
                     if (checked)
                         MaterialTheme.colorScheme.primary
                     else
-                        MaterialTheme.colorScheme.onSurface
+                        MaterialTheme.colorScheme.onSurface,
+                style = TextStyle()
             )
         }
     )
