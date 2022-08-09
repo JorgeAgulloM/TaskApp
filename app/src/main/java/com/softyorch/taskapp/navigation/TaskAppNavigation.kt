@@ -57,7 +57,7 @@ fun TaskAppNavigation() {
             )
         }*/
         composable(TaskAppScreens.HistoryScreen.name) {
-            HistoryScreen(navController = navController)
+            HistoryScreen(navController = navController, taskViewModel = taskViewModel)
         }
         composable(TaskAppScreens.SettingsScreen.name) {
             SettingsScreen(navController = navController)
