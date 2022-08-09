@@ -36,10 +36,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
+import java.util.*
 
 val elevationDp: Dp = 4.dp
 val elevationF: Float = 4f
@@ -250,6 +253,26 @@ fun TextFieldTask(
 }
 
 @Composable
+fun NewTaskDialog() {
+    var openDialog by remember { mutableStateOf(false) }
+    if (openDialog) {
+        Dialog(
+            onDismissRequest = {
+                openDialog = false
+            },
+            content = {
+                Column(
+                    content = {
+
+                    }
+                )
+            }
+        )
+    }
+}
+
+
+@Composable
 fun TaskButton(
     onclick: () -> Unit,
     text: String,
@@ -401,10 +424,10 @@ fun TaskSummaryCheck(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 color =
-                    if (checked)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurface,
+                if (checked)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface,
                 style = TextStyle()
             )
         }
