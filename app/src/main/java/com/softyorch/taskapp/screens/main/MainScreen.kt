@@ -34,7 +34,8 @@ fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
         },
         floatingActionButton = {
             FAB(
-                navController = navController
+                navController = navController,
+                taskViewModel = taskViewModel
             )
         },
     ) {

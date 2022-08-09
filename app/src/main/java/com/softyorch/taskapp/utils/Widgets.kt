@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.webkit.WebSettings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -39,9 +40,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
+import java.time.Instant
 import java.util.*
 
 val elevationDp: Dp = 4.dp
@@ -147,14 +151,13 @@ fun TopAppBar(
 }
 
 @Composable
-fun FAB(navController: NavController) {
+fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
 
-    //val scaffoldState = rememberScrollState()
-    //val scope = rememberCoroutineScope()
-
+    var openDialog by remember { mutableStateOf(false) }
     FloatingActionButton(
         onClick = {
-            navController.navigate(TaskAppScreens.NewTaskScreen.name)
+            openDialog = true
+            //navController.navigate(TaskAppScreens.NewTaskScreen.name)
         },
         modifier = Modifier.size(50.dp),
         contentColor = MaterialTheme.colorScheme.secondary,
@@ -167,6 +170,28 @@ fun FAB(navController: NavController) {
             )
         }
     )
+
+    if (openDialog) {
+        Dialog(
+            onDismissRequest = {
+                openDialog = false
+            },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(1.1f)
+                        .fillMaxHeight(0.7f)
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.large
+                        ),
+                    content = {
+                        NewTask(navController = navController, taskViewModel = taskViewModel)
+                    }
+                )
+            }
+        )
+    }
 
     //Material you version
     /*ExtendedFloatingActionButton(
@@ -187,6 +212,80 @@ fun FAB(navController: NavController) {
         },
         text = { Text(text = "Add")}
     )*/
+}
+
+@Composable
+private fun NewTask(navController: NavController, taskViewModel: TaskViewModel){
+
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.padding(8.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        InfoTask(
+            author = "Jorge Agulló",
+            date = Date.from(Instant.now()).toString(),
+            //completedDate = Date.from(Instant.now()).toString()
+        )
+
+        RowIndication(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
+        TextFieldTask(
+            text = title,
+            label = "Nombre",
+            onTextChange = {
+                title = it
+            },
+            placeholder = "Escribe tu nombre",
+            icon = Icons.Rounded.TextFields,
+            contentDescription = "name",
+            singleLine = true,
+            newTask = true,
+        )
+        RowIndication(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
+        TextFieldTask(
+            text = description,
+            label = "descripción",
+            onTextChange = {
+                description = it
+            },
+            placeholder = "Escribe algo...",
+            icon = Icons.Rounded.TextFields,
+            contentDescription = "description",
+            newTask = true,
+        )
+        Column(
+            modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TaskButton(
+                onclick = {
+                    val task = Task(
+                        title = title,
+                        description = description,
+                        author = "Jorge Agulló"
+                    )
+                    taskViewModel.addTask(task)
+                    navController.popBackStack()
+                },
+                text = "Create",
+                true
+            )
+            TaskButton(
+                onclick = {
+                    title.isBlank()
+                    description.isBlank()
+                    navController.popBackStack()
+                },
+                text = "Cancel"
+            )
+        }
+    }
 }
 
 //TextField V1
@@ -251,26 +350,6 @@ fun TextFieldTask(
         )
     )
 }
-
-@Composable
-fun NewTaskDialog() {
-    var openDialog by remember { mutableStateOf(false) }
-    if (openDialog) {
-        Dialog(
-            onDismissRequest = {
-                openDialog = false
-            },
-            content = {
-                Column(
-                    content = {
-
-                    }
-                )
-            }
-        )
-    }
-}
-
 
 @Composable
 fun TaskButton(
