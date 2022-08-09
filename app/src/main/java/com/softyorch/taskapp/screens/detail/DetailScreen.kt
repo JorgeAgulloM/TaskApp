@@ -3,12 +3,9 @@ package com.softyorch.taskapp.screens.detail
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Details
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,8 +17,6 @@ import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.job
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +47,7 @@ private fun Content(
     navController: NavController,
     id: String
 ) {
+
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = taskViewModel.getTaskId(id = id)
     }.value
@@ -89,19 +85,45 @@ private fun Content(
 
                         TaskButton(
                             onclick = {
-
+                                task.checkState = !task.checkState
+                                taskViewModel.updateTask(task = task)
+                                navController.popBackStack()
+                                navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
                             },
-                            text = "Complete",
+                            text = if (!task.checkState)
+                                "Complete?"
+                            else
+                                "Completed",
                             primary = true
                         )
+                        var openDialog by rememberSaveable { mutableStateOf(false) }
                         TaskButton(
                             onclick = {
-
+                                openDialog = true
                             },
                             text = "Delete"
                         )
+                        if (openDialog) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    openDialog = false
+                                },
+                                confirmButton = {
+                                    TaskButton(onclick = {
+                                        openDialog = false
+                                        taskViewModel.removeTask(task = task)
+                                        navController.navigate(TaskAppScreens.MainScreen.name)
+                                    }, "Delete", true)
+                                },
+                                dismissButton = {
+                                    TaskButton(onclick = {
+                                        openDialog = false
+                                    }, "Cancel")
+                                },
+                                title = { Text(text = "Eliminar tarea") },
+                                text = { Text(text = "¿Estas seguro de eliminar esta tarea?") })
+                        }
                     }
-
                 }
             }
         }

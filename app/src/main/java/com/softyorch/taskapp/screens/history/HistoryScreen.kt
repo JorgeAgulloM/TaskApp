@@ -55,7 +55,9 @@ private fun Content(
     ) {
         items(tasks) { task ->
             Row(
-                modifier = Modifier.clickable {
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .clickable {
                     navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
                 },
                 verticalAlignment = Alignment.CenterVertically,
@@ -65,7 +67,7 @@ private fun Content(
                     modifier = Modifier.padding(end = 8.dp),
                     text = task.entryDate.toInstant().toString().split("T")[0],
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
