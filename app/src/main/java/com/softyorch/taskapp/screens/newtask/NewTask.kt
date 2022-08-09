@@ -14,15 +14,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
-import com.softyorch.taskapp.utils.RowIndication
-import com.softyorch.taskapp.utils.TaskButton
-import com.softyorch.taskapp.utils.TextFieldTask
-import com.softyorch.taskapp.utils.TopAppBar
+import com.softyorch.taskapp.utils.*
+import java.time.Instant
+import java.util.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +44,7 @@ fun NewTask(navController: NavController, taskViewModel: TaskViewModel) {
         })
 }
 
+
 @Composable
 fun Content(it: PaddingValues, navController: NavController, taskViewModel: TaskViewModel) {
 
@@ -57,9 +57,14 @@ fun Content(it: PaddingValues, navController: NavController, taskViewModel: Task
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RowIndication(text = "Created by: ", textEdit = "Jorge Agulló")
-        RowIndication(text = "Created data: ", textEdit = "05/08/2022")
-        RowIndication(text = "Name of task: ")
+
+        InfoTask(
+            author = "Jorge Agulló",
+            date = Date.from(Instant.now()).toString(),
+            //completedDate = Date.from(Instant.now()).toString()
+        )
+
+        RowIndication(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
         TextFieldTask(
             text = title,
             label = "Nombre",
@@ -72,7 +77,7 @@ fun Content(it: PaddingValues, navController: NavController, taskViewModel: Task
             singleLine = true,
             newTask = true,
         )
-        RowIndication(text = "Task description: ")
+        RowIndication(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
         TextFieldTask(
             text = description,
             label = "descripción",
@@ -114,4 +119,6 @@ fun Content(it: PaddingValues, navController: NavController, taskViewModel: Task
         }
     }
 }
+
+
 

@@ -220,7 +220,7 @@ fun TextFieldTask(
     TextField(
         value = text,
         onValueChange = onTextChange,
-        modifier = Modifier.padding(4.dp).width(width = 350.dp).shadow(
+        modifier = Modifier.padding(4.dp).width(width = 370.dp).shadow(
             elevation = elevationDp, shape = personalizedShape
         ),
         readOnly = readOnly,
@@ -288,13 +288,10 @@ fun TaskButton(
 @Composable
 fun RowIndication(
     text: String,
-    textEdit: String = "",
     fontSize: TextUnit = 20.sp,
     paddingStart: Dp = 0.dp,
     heightSize: Dp = 30.dp
 ) {
-
-    val arrangement = if (textEdit == "") Arrangement.Start else Arrangement.SpaceBetween
 
     Row(
         modifier = Modifier
@@ -302,7 +299,7 @@ fun RowIndication(
             .height(heightSize)
             .padding(start = paddingStart, top = 0.dp, bottom = 0.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = arrangement
+        horizontalArrangement = Arrangement.Start
     ) {
         Text(
             text = text,
@@ -310,11 +307,52 @@ fun RowIndication(
             fontWeight = FontWeight.Bold,
             fontSize = fontSize
         )
-        Text(
-            text = textEdit,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+
     }
+}
+
+@Composable
+fun InfoTask(
+    author: String,
+    date: String,
+    completedDate: String = ""
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(start = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            InfoText("Created By:", true)
+            InfoText("Created date:", true)
+            if (completedDate.isNotEmpty()) InfoText("Completed date:", true)
+        }
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            InfoText(author)
+            InfoText(date)
+            if (completedDate.isNotEmpty()) InfoText(completedDate)
+        }
+    }
+}
+
+@Composable
+private fun InfoText(
+    text: String,
+    description: Boolean = false
+) {
+    Text(
+        modifier = Modifier.padding(4.dp),
+        text = text,
+        color = MaterialTheme.colorScheme.onSurface,
+        fontSize = 14.sp ,
+        fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

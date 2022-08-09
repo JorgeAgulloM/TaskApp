@@ -53,32 +53,31 @@ private fun Content(
 ) {
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = taskViewModel.getTaskId(id = id)
-    }.value.let { data ->
-        data.data?.let { task ->
-            Column(
-                modifier = Modifier.fillMaxSize()
-                    .padding(
-                        top = it.calculateTopPadding() + 16.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    )
-            ) {
-                //RowIndication(task.title, fontSize = 16.sp)
-                TaskSummary(task.checkState, onCheckedChange = {}, task.title, onclick = {})
-                RowIndication(task.description, fontSize = 16.sp, heightSize = 300.dp)
-                Spacer(modifier = Modifier.padding(top = 16.dp))
-                RowIndication("Details", paddingStart = 16.dp)
-                RowIndication(text = "Created By:", task.author, fontSize = 16.sp)
-                RowIndication(text = "Created Date:", task.entryDate.toString(), fontSize = 16.sp)
+    }.value
+        .let { data ->
+            data.data?.let { task ->
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(
+                            top = it.calculateTopPadding() + 16.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        )
+                ) {
+                    //RowIndication(task.title, fontSize = 16.sp)
+                    TaskSummary(task.checkState, onCheckedChange = {}, task.title, onclick = {})
+                    RowIndication(task.description, fontSize = 16.sp, heightSize = 300.dp)
+                    Spacer(modifier = Modifier.padding(top = 16.dp))
+                    RowIndication("Details", paddingStart = 16.dp)
+                    /*RowIndication(text = "Created By:", task.author, fontSize = 16.sp)
+                    RowIndication(
+                        text = "Created Date:",
+                        task.entryDate.toString(),
+                        fontSize = 16.sp
+                    )*/
+
+
+                }
             }
-
         }
-    }
-
-
-    /* dataTask.data?.let { it1 -> RowIndication(it1.title, fontSize = 16.sp) }
-     dataTask.data?.description?.let { it1 -> RowIndication(it1, fontSize = 16.sp) }
-     RowIndication("Details", paddingStart = 16.dp)
-     dataTask.data?.author?.let { it1 -> RowIndication(text = "Created By:", it1, fontSize = 16.sp) }
-     dataTask.data?.entryDate?.let { it1 -> RowIndication(text = "Created Date:", it1.toString(), fontSize = 16.sp) }*/
 }
