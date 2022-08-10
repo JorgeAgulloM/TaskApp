@@ -1,8 +1,11 @@
 package com.softyorch.taskapp.utils
 
 import android.webkit.WebSettings
+import android.widget.ToggleButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.TransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -26,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -517,4 +521,40 @@ fun TaskSummaryCheck(
             )
         }
     )
+}
+
+@Composable
+fun TaskSwitch(
+    text: String,
+    checked: Boolean = false
+) {
+
+    var stateSwitch by rememberSaveable { mutableStateOf(checked) }
+
+    Row(
+        modifier = Modifier.padding(start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Switch(
+            checked = stateSwitch,
+            onCheckedChange = {
+                stateSwitch = !stateSwitch
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.tertiary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                uncheckedTrackColor = MaterialTheme.colorScheme.primary,
+                checkedBorderColor = Color.Transparent,
+                uncheckedBorderColor = Color.Transparent,
+                checkedIconColor = MaterialTheme.colorScheme.secondary
+            )
+        )
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
 }
