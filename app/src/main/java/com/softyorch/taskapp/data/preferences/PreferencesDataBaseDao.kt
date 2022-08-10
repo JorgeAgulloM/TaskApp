@@ -1,9 +1,6 @@
 package com.softyorch.taskapp.data.preferences
 
-import androidx.room.Dao
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.softyorch.taskapp.model.Preferences
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +9,9 @@ interface PreferencesDataBaseDao {
 
     @Query("SELECT * FROM preferences_tbl")
     fun getPreferences(): Flow<List<Preferences>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(preferences: Preferences)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(preferences: Preferences)

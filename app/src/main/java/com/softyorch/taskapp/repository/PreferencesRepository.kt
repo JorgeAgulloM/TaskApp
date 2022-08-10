@@ -14,6 +14,9 @@ class PreferencesRepository @Inject constructor(
     fun getAllPreferences(): Flow<List<Preferences>> =
         preferencesDataBaseDao.getPreferences().flowOn(Dispatchers.IO).conflate()
 
+    suspend fun insertPreferences(preferences: Preferences) =
+        preferencesDataBaseDao.insert(preferences = preferences)
+
     suspend fun updatePreferences(preferences: Preferences) =
         preferencesDataBaseDao.update(preferences = preferences)
 }

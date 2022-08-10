@@ -8,7 +8,7 @@ import java.util.*
 @Entity(tableName = "preferences_tbl")
 data class Preferences(
     @PrimaryKey
-    val id: Int = 0,
+    val id: Int,
 
     @ColumnInfo(name = "bool_pref_one")
     var preferenceBooleanOne: Boolean = false,
