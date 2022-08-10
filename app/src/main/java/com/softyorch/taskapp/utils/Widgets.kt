@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -384,7 +385,8 @@ fun TaskButton(
                         ),
                         blurRadius = if (primary) 0f else elevationF
                     )
-                )
+                ),
+                textDecoration = if (!primary) TextDecoration.Underline else null
             )
         },
         contentPadding = PaddingValues(2.dp),
