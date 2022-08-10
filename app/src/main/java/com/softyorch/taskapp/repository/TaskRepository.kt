@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.repository
 
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.TaskDatabaseDao
+import com.softyorch.taskapp.data.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.model.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

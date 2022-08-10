@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data
+package com.softyorch.taskapp.data.tasks
 
 import androidx.room.*
 import com.softyorch.taskapp.model.Task
