@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.NavController
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
@@ -179,6 +181,7 @@ fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
             content = {
                 Column(
                     modifier = Modifier
+                        .padding(top = 8.dp)
                         .fillMaxWidth(1.1f)
                         .fillMaxHeight(0.7f)
                         .background(
@@ -215,13 +218,14 @@ fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
 }
 
 @Composable
-private fun NewTask(navController: NavController, taskViewModel: TaskViewModel){
+private fun NewTask(navController: NavController, taskViewModel: TaskViewModel) {
 
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -229,8 +233,7 @@ private fun NewTask(navController: NavController, taskViewModel: TaskViewModel){
 
         InfoTask(
             author = "Jorge Agulló",
-            date = Date.from(Instant.now()).toString(),
-            //completedDate = Date.from(Instant.now()).toString()
+            date = Date.from(Instant.now()).toString().split(" GMT")[0],
         )
 
         RowIndication(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
@@ -309,7 +312,6 @@ fun TextFieldTask(
     isError: Boolean = false
 ) {
     val mutableInteractionSource = remember { MutableInteractionSource() }
-    var description by rememberSaveable() { mutableStateOf(text) }
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
     val corner: Dp = 20.dp
@@ -320,6 +322,7 @@ fun TextFieldTask(
         topEnd = if (newTask) CornerSize(corner) else ZeroCornerSize,
         bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
     )
+
     TextField(
         value = text,
         onValueChange = onTextChange,
@@ -334,6 +337,7 @@ fun TextFieldTask(
         isError = isError,
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
+        maxLines = 5,
         interactionSource = mutableInteractionSource,
         shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(

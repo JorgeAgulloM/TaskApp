@@ -4,7 +4,6 @@ enum class TaskAppScreens {
     SplashScreen,
     LoginScreen,
     MainScreen,
-    NewTaskScreen,
     DetailsScreen,
     HistoryScreen,
     SettingsScreen,
@@ -16,7 +15,6 @@ enum class TaskAppScreens {
             SplashScreen.name -> SplashScreen
             LoginScreen.name -> LoginScreen
             MainScreen.name -> MainScreen
-            NewTaskScreen.name -> NewTaskScreen
             DetailsScreen.name -> DetailsScreen
             HistoryScreen.name -> HistoryScreen
             SettingsScreen.name -> SettingsScreen

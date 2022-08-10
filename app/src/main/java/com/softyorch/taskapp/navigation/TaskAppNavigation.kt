@@ -12,7 +12,6 @@ import com.softyorch.taskapp.screens.history.HistoryScreen
 import com.softyorch.taskapp.screens.login.LoginScreen
 import com.softyorch.taskapp.screens.main.MainScreen
 import com.softyorch.taskapp.screens.main.TaskViewModel
-import com.softyorch.taskapp.screens.newtask.NewTask
 import com.softyorch.taskapp.screens.settings.SettingsScreen
 import com.softyorch.taskapp.screens.splash.SplashScreen
 import com.softyorch.taskapp.screens.userdata.UserdataScreen
@@ -31,10 +30,6 @@ fun TaskAppNavigation() {
         composable(TaskAppScreens.MainScreen.name) {
             MainScreen(navController = navController, taskViewModel = taskViewModel)
         }
-        composable(TaskAppScreens.NewTaskScreen.name) {
-            NewTask(navController = navController, taskViewModel = taskViewModel)
-        }
-
         val route = TaskAppScreens.DetailsScreen.name
         composable("$route/{id}",
             arguments = listOf(
