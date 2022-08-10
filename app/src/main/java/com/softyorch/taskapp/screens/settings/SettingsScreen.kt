@@ -49,5 +49,8 @@ private fun Content(it: PaddingValues, navController: NavController) {
             "Automatic language",
             checked = true
         )
+        TaskSwitch(
+            "Automatic colors"
+        )
     }
 }

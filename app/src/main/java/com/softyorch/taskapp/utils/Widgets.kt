@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -541,14 +542,21 @@ fun TaskSwitch(
             onCheckedChange = {
                 stateSwitch = !stateSwitch
             },
+            thumbContent = {
+                if (stateSwitch)
+                    Icon(
+                        modifier = Modifier.padding(4.dp),
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = text,
+                    )
+            },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.tertiary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,
+                checkedIconColor = MaterialTheme.colorScheme.primary,
                 uncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
                 uncheckedTrackColor = MaterialTheme.colorScheme.primary,
-                checkedBorderColor = Color.Transparent,
-                uncheckedBorderColor = Color.Transparent,
-                checkedIconColor = MaterialTheme.colorScheme.secondary
+                uncheckedBorderColor = MaterialTheme.colorScheme.onSurface
             )
         )
         Text(
