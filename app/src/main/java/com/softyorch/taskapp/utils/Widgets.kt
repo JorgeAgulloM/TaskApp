@@ -527,7 +527,9 @@ fun TaskSummaryCheck(
 @Composable
 fun TaskSwitch(
     text: String,
-    checked: Boolean = false
+    checked: Boolean = false,
+    enable: Boolean = true,
+    onCheckedChange: () -> Unit
 ) {
 
     var stateSwitch by rememberSaveable { mutableStateOf(checked) }
@@ -541,6 +543,7 @@ fun TaskSwitch(
             checked = stateSwitch,
             onCheckedChange = {
                 stateSwitch = !stateSwitch
+                onCheckedChange.invoke()
             },
             thumbContent = {
                 if (stateSwitch)
@@ -550,6 +553,7 @@ fun TaskSwitch(
                         contentDescription = text,
                     )
             },
+            enabled = enable,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.tertiary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,

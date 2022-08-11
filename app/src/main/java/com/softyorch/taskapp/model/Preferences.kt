@@ -11,19 +11,19 @@ data class Preferences(
     val id: Int,
 
     @ColumnInfo(name = "bool_pref_one")
-    var preferenceBooleanOne: Boolean = false,
+    var lightDarkAutomaticTheme: Boolean = false,
 
     @ColumnInfo(name = "bool_pref_two")
-    var preferenceBooleanTwo: Boolean = false,
+    var lightOrDarkTheme: Boolean = false,
 
     @ColumnInfo(name = "bool_pref_three")
-    var preferenceBooleanThree: Boolean = false,
+    var automaticLanguage: Boolean = false,
 
     @ColumnInfo(name = "bool_pref_four")
-    var preferenceBooleanFour: Boolean = false,
+    var automaticColors: Boolean = false,
 
     @ColumnInfo(name = "bool_pref_five")
     var preferenceBooleanFive: Boolean = false,
 
 
-)
+    )

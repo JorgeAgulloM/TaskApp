@@ -36,7 +36,7 @@ class PreferencesViewModel @Inject constructor(
         repository.insertPreferences(preferences = preferences)
     }
 
-    suspend fun updatePreferences(preferences: Preferences) = viewModelScope.launch {
+    fun updatePreferences(preferences: Preferences) = viewModelScope.launch {
         repository.updatePreferences(preferences = preferences)
     }
 }
