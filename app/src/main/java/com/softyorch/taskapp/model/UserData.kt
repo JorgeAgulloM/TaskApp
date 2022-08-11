@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.model
 
-import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -12,5 +11,7 @@ data class UserData(
     @ColumnInfo(name = "user_name") var username: String,
     @ColumnInfo(name = "user_email") var userEmail: String,
     @ColumnInfo(name = "user_pass") var userPass: String,
-    @ColumnInfo(name = "user_picture") var userPicture: Bitmap?
+    @ColumnInfo(name = "user_picture") var userPicture: String?
 )
+
+
