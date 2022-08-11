@@ -2,8 +2,8 @@ package com.softyorch.taskapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.softyorch.taskapp.data.preferences.PreferencesDataBase
-import com.softyorch.taskapp.data.preferences.PreferencesDataBaseDao
+import com.softyorch.taskapp.data.settings.SettingsDataBase
+import com.softyorch.taskapp.data.settings.SettingsDataBaseDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,20 +13,20 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object UserPreferencesModule {
+object UserSettingsModule {
 
     @Singleton
     @Provides
-    fun providePreferencesDao(preferencesDataBase: PreferencesDataBase):
-            PreferencesDataBaseDao = preferencesDataBase.preferencesDao()
+    fun provideSettingsDao(settingsDataBase: SettingsDataBase):
+            SettingsDataBaseDao = settingsDataBase.settingsDao()
 
     @Singleton
     @Provides
-    fun providePreferencesDataBase(@ApplicationContext context: Context): PreferencesDataBase =
+    fun provideSettingsDataBase(@ApplicationContext context: Context): SettingsDataBase =
         Room.databaseBuilder(
             context,
-            PreferencesDataBase::class.java,
-            "preferences_tbl")
+            SettingsDataBase::class.java,
+            "settings_tbl")
             .fallbackToDestructiveMigration()
             .build()
 }

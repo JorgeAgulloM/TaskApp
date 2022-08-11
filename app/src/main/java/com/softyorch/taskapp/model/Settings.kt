@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "preferences_tbl")
-data class Preferences(
+@Entity(tableName = "settings_tbl")
+data class Settings(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "bool_pref_one") var lightDarkAutomaticTheme: Boolean = false,
     @ColumnInfo(name = "bool_pref_two") var lightOrDarkTheme: Boolean = false,
