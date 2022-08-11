@@ -15,7 +15,7 @@ import com.softyorch.taskapp.utils.TopAppBar
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserdataScreen(navController: NavHostController) {
+fun UserdataScreen(navController: NavHostController, userDataViewModel: UserDataViewModel) {
     Hello("Userdata")
     Scaffold(topBar = {
         TopAppBar(
