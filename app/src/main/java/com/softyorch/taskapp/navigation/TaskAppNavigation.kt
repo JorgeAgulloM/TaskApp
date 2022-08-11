@@ -15,6 +15,7 @@ import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.screens.settings.PreferencesViewModel
 import com.softyorch.taskapp.screens.settings.SettingsScreen
 import com.softyorch.taskapp.screens.splash.SplashScreen
+import com.softyorch.taskapp.screens.userdata.UserDataViewModel
 import com.softyorch.taskapp.screens.userdata.UserdataScreen
 
 @Composable
@@ -22,6 +23,8 @@ fun TaskAppNavigation() {
     val navController = rememberNavController()
     val taskViewModel = hiltViewModel<TaskViewModel>()
     val preferencesViewModel = hiltViewModel<PreferencesViewModel>()
+    val userDataViewModel = hiltViewModel<UserDataViewModel>()
+
     NavHost(navController = navController, startDestination = TaskAppScreens.SplashScreen.name) {
         composable(TaskAppScreens.SplashScreen.name) {
             SplashScreen(navController = navController)
@@ -45,14 +48,6 @@ fun TaskAppNavigation() {
                 DetailScreen(navController = navController, taskViewModel = viewModel, id = id.toString())
             }
         }
-/*        composable(TaskAppScreens.DetailsScreen.name) {
-            DetailScreen(
-                navController = navController,
-                task = Task(),
-                viewModel = viewModel,
-                id = id
-            )
-        }*/
         composable(TaskAppScreens.HistoryScreen.name) {
             HistoryScreen(navController = navController, taskViewModel = taskViewModel)
         }
@@ -60,7 +55,7 @@ fun TaskAppNavigation() {
             SettingsScreen(navController = navController, preferencesViewModel = preferencesViewModel)
         }
         composable(TaskAppScreens.UserDataScreen.name) {
-            UserdataScreen(navController = navController)
+            UserdataScreen(navController = navController, userDataViewModel = userDataViewModel)
         }
     }
 }
