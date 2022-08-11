@@ -83,7 +83,10 @@ fun TopAppBar(
     onButtonClicked: () -> Unit = {}
 ) {
     SmallTopAppBar(
-        modifier = Modifier.shadow(elevation = 4.dp),
+        modifier = Modifier.shadow(elevation = 4.dp, shape = MaterialTheme.shapes.large.copy(
+            topStart = CornerSize(0.dp),
+            topEnd = CornerSize(0.dp)
+        )),
         title = {
             Text(
                 text = title,
@@ -332,9 +335,16 @@ fun TextFieldTask(
     TextField(
         value = text,
         onValueChange = onTextChange,
-        modifier = Modifier.padding(4.dp).width(width = 370.dp).shadow(
-            elevation = elevationDp, shape = personalizedShape
-        ),
+        modifier = Modifier
+            .padding(
+                start = if (newTask) 8.dp else 32.dp,
+                top = 4.dp,
+                bottom = 4.dp,
+                end = if (newTask) 8.dp else 0.dp)
+            .width(width = if (newTask) 370.dp else 270.dp)
+            .shadow(
+                elevation = elevationDp, shape = personalizedShape
+            ),
         readOnly = readOnly,
         textStyle = TextStyle(color = LightMode90t),
         label = { Text(text = label) },
