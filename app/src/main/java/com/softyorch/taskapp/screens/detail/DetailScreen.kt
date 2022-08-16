@@ -15,7 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.*
 
@@ -31,7 +31,7 @@ fun DetailScreen(
             TopAppBar(
                 title = "Details",
                 icon = Icons.Rounded.Details,
-                nameScreen = TaskAppScreens.DetailsScreen.name,
+                nameScreen = AppScreens.DetailsScreen.name,
                 navController = navController,
             )
         }
@@ -106,7 +106,7 @@ private fun Content(
                                     TaskButton(
                                         onclick = {
                                             navController.popBackStack()
-                                            navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
+                                            navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                                             openCompleteDialog = false
                                         },
                                         text = "OK",
@@ -140,7 +140,7 @@ private fun Content(
                                         onclick = {
                                             openDeleteDialog = false
                                             taskViewModel.removeTask(task = task)
-                                            navController.navigate(TaskAppScreens.MainScreen.name)
+                                            navController.navigate(AppScreens.MainScreen.name)
                                         }, "Delete it", true
                                     )
                                 },

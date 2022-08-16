@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.model.Settings
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.Hello
 import com.softyorch.taskapp.utils.TaskSwitch
 import com.softyorch.taskapp.utils.TopAppBar
@@ -31,7 +31,7 @@ fun SettingsScreen(navController: NavHostController, settingsViewModel: Settings
             TopAppBar(
                 title = "Settings",
                 icon = Icons.Rounded.Settings,
-                nameScreen = TaskAppScreens.SettingsScreen.name,
+                nameScreen = AppScreens.SettingsScreen.name,
                 navController = navController,
             )
         },

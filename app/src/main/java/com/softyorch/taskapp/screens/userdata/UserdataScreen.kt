@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.screens.userdata
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -16,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.TaskButton
-import com.softyorch.taskapp.utils.TextFieldTask
+import com.softyorch.taskapp.utils.textFieldTask
 import com.softyorch.taskapp.utils.TopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +28,7 @@ fun UserdataScreen(navController: NavHostController, userDataViewModel: UserData
             TopAppBar(
                 title = "User Data",
                 icon = Icons.Rounded.SupervisedUserCircle,
-                nameScreen = TaskAppScreens.UserDataScreen.name,
+                nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
             )
         },
@@ -64,27 +63,27 @@ fun UserdataScreen(navController: NavHostController, userDataViewModel: UserData
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.End
                 ) {
-                    TextFieldTask(
+                    textFieldTask(
                         "Jorge Agulló",
-                        onTextChange = {},
+                        //onTextChange = {},
                         label = "Name",
                         placeholder = "Write your name",
                         icon = Icons.Rounded.Person,
                         contentDescription = "Name of user",
                         singleLine = true
                     )
-                    TextFieldTask(
-                        "Jorge Agulló",
-                        onTextChange = {},
+                    textFieldTask(
+                        "agullójorge@gmail.com",
+                        //onTextChange = {},
                         label = "Name",
                         placeholder = "Write your name",
                         icon = Icons.Rounded.Person,
                         contentDescription = "Name of user",
                         singleLine = true
                     )
-                    TextFieldTask(
-                        "Jorge Agulló",
-                        onTextChange = {},
+                    textFieldTask(
+                        "123456789A",
+                        //onTextChange = {},
                         label = "Name",
                         placeholder = "Write your name",
                         icon = Icons.Rounded.Person,

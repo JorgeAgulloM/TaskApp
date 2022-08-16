@@ -3,13 +3,8 @@ package com.softyorch.taskapp.screens.splash
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddTask
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import kotlinx.coroutines.delay
 
 @Composable
@@ -43,7 +38,7 @@ fun SplashScreen(navController: NavHostController) {
 
         delay(2000L)
         navController.popBackStack()
-        navController.navigate(TaskAppScreens.MainScreen.name)
+        navController.navigate(AppScreens.MainScreen.name)
 
     })
 

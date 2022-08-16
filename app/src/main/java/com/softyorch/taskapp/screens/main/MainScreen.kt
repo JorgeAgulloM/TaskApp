@@ -3,7 +3,6 @@ package com.softyorch.taskapp.screens.main
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
@@ -14,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
 import java.time.Instant
 import java.util.*
@@ -28,7 +27,7 @@ fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
                 title = "Main",
                 icon = Icons.Rounded.Home,
                 isMainScreen = true,
-                nameScreen = TaskAppScreens.MainScreen.name,
+                nameScreen = AppScreens.MainScreen.name,
                 navController = navController,
             )
         },
@@ -90,11 +89,11 @@ private fun FillLazyColumn(
                     task.finishDate = if(it) Date.from(Instant.now()) else null
                     taskViewModel.updateTask(task)
                     //Esto debe cambiar, no es correcto, aunque funciona
-                    navController.navigate(TaskAppScreens.MainScreen.name)
+                    navController.navigate(AppScreens.MainScreen.name)
                 },
                 text = task.title,
                 onclick = {
-                    navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
+                    navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                 }
             )
         }.apply {

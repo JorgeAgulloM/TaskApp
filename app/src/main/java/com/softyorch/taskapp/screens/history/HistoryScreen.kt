@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.TopAppBar
 
@@ -32,7 +32,7 @@ fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel
             TopAppBar(
                 title = "History",
                 icon = Icons.Rounded.History,
-                nameScreen = TaskAppScreens.HistoryScreen.name,
+                nameScreen = AppScreens.HistoryScreen.name,
                 navController = navController,
             )
         },
@@ -58,7 +58,7 @@ private fun Content(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .clickable {
-                    navController.navigate(TaskAppScreens.DetailsScreen.name + "/${task.id}")
+                    navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                 },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
