@@ -42,72 +42,53 @@ fun SettingsScreen(navController: NavHostController, settingsViewModel: Settings
 
 @Composable
 private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
-    val preferences = settingsViewModel.settingsList.collectAsState().value
-    var hideLightDark by rememberSaveable{ mutableStateOf(preferences[0].lightDarkAutomaticTheme)}
-
-    /*if (preferences.isEmpty()) {
-        val newPreferences = Settings(
-            id = 0,
-            lightDarkAutomaticTheme = true,
-            lightOrDarkTheme = false,
-            automaticLanguage = true,
-            automaticColors = false,
-            preferenceBooleanFive = false
-        )
-        settingsViewModel.insertPreferences(
-            preferences = newPreferences
-        )
-        preferences = settingsViewModel.preferencesList.collectAsState().value
-    }*/
+    val settings = settingsViewModel.settingsList.collectAsState().value
+    var hideLightDark by rememberSaveable{ mutableStateOf(settings[0].lightDarkAutomaticTheme)}
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
         TaskSwitch(
             "Light/Dark Automatic Theme",
-            checked = preferences[0].lightDarkAutomaticTheme,
+            checked = settings[0].lightDarkAutomaticTheme,
             onCheckedChange = {
-                preferences[0].lightDarkAutomaticTheme = !preferences[0].lightDarkAutomaticTheme
-                settingsViewModel.updatePreferences(preferences[0])
+                settings[0].lightDarkAutomaticTheme = !settings[0].lightDarkAutomaticTheme
+                settingsViewModel.updatePreferences(settings[0])
                 hideLightDark = !hideLightDark
             }
         )
         if (!hideLightDark) {
             TaskSwitch(
                 "Manual light/dark theme",
-                checked = preferences[0].lightOrDarkTheme,
-                enable = !preferences[0].lightDarkAutomaticTheme,
+                checked = settings[0].lightOrDarkTheme,
+                enable = !settings[0].lightDarkAutomaticTheme,
                 onCheckedChange = {
-                    preferences[0].lightOrDarkTheme = !preferences[0].lightOrDarkTheme
-                    settingsViewModel.updatePreferences(preferences[0])
+                    settings[0].lightOrDarkTheme = !settings[0].lightOrDarkTheme
+                    settingsViewModel.updatePreferences(settings[0])
                 }
             )
         }
         TaskSwitch(
             "Automatic language",
-            checked = preferences[0].automaticLanguage,
+            checked = settings[0].automaticLanguage,
             onCheckedChange = {
-                preferences[0].automaticLanguage = !preferences[0].automaticLanguage
-                settingsViewModel.updatePreferences(preferences[0])
+                settings[0].automaticLanguage = !settings[0].automaticLanguage
+                settingsViewModel.updatePreferences(settings[0])
             }
         )
         TaskSwitch(
             "Automatic colors",
-            checked = preferences[0].automaticColors,
+            checked = settings[0].automaticColors,
             onCheckedChange = {
-                preferences[0].automaticColors = !preferences[0].automaticColors
-                settingsViewModel.updatePreferences(preferences[0])
+                settings[0].automaticColors = !settings[0].automaticColors
+                settingsViewModel.updatePreferences(settings[0])
             }
         )
         TaskSwitch(
             "No se que añadir aquí",
-            checked = preferences[0].preferenceBooleanFive,
+            checked = settings[0].preferenceBooleanFive,
             onCheckedChange = {
-                preferences[0].preferenceBooleanFive = !preferences[0].preferenceBooleanFive
-                settingsViewModel.updatePreferences(preferences[0])
+                settings[0].preferenceBooleanFive = !settings[0].preferenceBooleanFive
+                settingsViewModel.updatePreferences(settings[0])
             }
         )
     }
-}
-
-private fun InitPreferences(preferences: Settings) {
-
 }
