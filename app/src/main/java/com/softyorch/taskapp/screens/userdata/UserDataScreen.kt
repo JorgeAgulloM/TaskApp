@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.data.Resource
@@ -18,6 +19,7 @@ import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.TaskButton
+import com.softyorch.taskapp.utils.TaskKeyboardOptions
 import com.softyorch.taskapp.utils.textFieldTask
 import com.softyorch.taskapp.utils.TopAppBar
 
@@ -114,7 +116,9 @@ fun UserDataScreen(
                                     placeholder = "Write your name",
                                     icon = Icons.Rounded.Person,
                                     contentDescription = "Name of user",
-                                    singleLine = true
+                                    keyboardOptions = TaskKeyboardOptions.copy(keyboardType = KeyboardType.Password),
+                                    singleLine = true,
+                                    password = true
                                 )
                             }
 

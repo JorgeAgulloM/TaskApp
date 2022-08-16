@@ -25,9 +25,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +46,12 @@ import java.util.*
 
 val elevationDp: Dp = 4.dp
 val elevationF: Float = 4f
+val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+    capitalization = KeyboardCapitalization.Sentences,
+    autoCorrect = true,
+    keyboardType = KeyboardType.Text,
+    imeAction = ImeAction.Default
+)
 
 @Composable
 fun Hello(name: String = "null") {
@@ -305,16 +309,12 @@ fun textFieldTask(
     placeholder: String = "",
     icon: ImageVector,
     contentDescription: String,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
-        capitalization = KeyboardCapitalization.Sentences,
-        autoCorrect = true,
-        keyboardType = KeyboardType.Text,
-        imeAction = ImeAction.Default
-    ),
+    keyboardOptions: KeyboardOptions = TaskKeyboardOptions,
     singleLine: Boolean = false,
     newTask: Boolean = false,
     readOnly: Boolean = false,
-    isError: Boolean = false
+    isError: Boolean = false,
+    password: Boolean = false
 ): String {
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
@@ -326,6 +326,7 @@ fun textFieldTask(
         bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
     )
     val textChange = rememberSaveable { mutableStateOf(text) }
+    var passVisible by rememberSaveable { mutableStateOf(password) }
 
     TextField(
         value = textChange.value,
@@ -346,7 +347,35 @@ fun textFieldTask(
         label = { Text(text = label) },
         placeholder = { Text(text = placeholder) },
         leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
+        trailingIcon = {
+            if (password) {
+                val image = if (passVisible)
+                    Icons.Rounded.Visibility
+                else
+                    Icons.Rounded.VisibilityOff
+
+                val description = if (passVisible)
+                    "Hide Password"
+                else
+                    "Show Password"
+
+                IconButton(
+                    onClick = {
+                        passVisible = !passVisible
+                    },
+                    content = {
+                        Icon(
+                            imageVector = image,
+                            contentDescription = description,
+                            tint = LightMode90t
+                        )
+                    }
+                )
+            }
+        },
         isError = isError,
+        visualTransformation = if (!passVisible) VisualTransformation.None
+        else PasswordVisualTransformation(),
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
         maxLines = 5,
