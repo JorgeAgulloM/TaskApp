@@ -1,18 +1,12 @@
 package com.softyorch.taskapp.utils
 
-import android.webkit.WebSettings
-import android.widget.ToggleButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.TransformableState
-import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,12 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,9 +36,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.NavController
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.TaskAppScreens
@@ -83,10 +72,12 @@ fun TopAppBar(
     onButtonClicked: () -> Unit = {}
 ) {
     SmallTopAppBar(
-        modifier = Modifier.shadow(elevation = 4.dp, shape = MaterialTheme.shapes.large.copy(
-            topStart = CornerSize(0.dp),
-            topEnd = CornerSize(0.dp)
-        )),
+        modifier = Modifier.shadow(
+            elevation = 4.dp, shape = MaterialTheme.shapes.large.copy(
+                topStart = CornerSize(0.dp),
+                topEnd = CornerSize(0.dp)
+            )
+        ),
         title = {
             Text(
                 text = title,
@@ -198,7 +189,7 @@ fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
                             shape = MaterialTheme.shapes.large
                         ),
                     content = {
-                        NewTask(navController = navController, taskViewModel = taskViewModel)
+                        openDialog = newTask(taskViewModel = taskViewModel)
                     }
                 )
             }
@@ -227,10 +218,12 @@ fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
 }
 
 @Composable
-private fun NewTask(navController: NavController, taskViewModel: TaskViewModel) {
+private fun newTask(taskViewModel: TaskViewModel): Boolean {
 
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var openDialog by remember { mutableStateOf(true) }
+    val date by remember { mutableStateOf(Date.from(Instant.now()).toString().split(" GMT")[0]) }
 
     Column(
         modifier = Modifier
@@ -242,39 +235,38 @@ private fun NewTask(navController: NavController, taskViewModel: TaskViewModel) 
 
         InfoTask(
             author = "Jorge Agulló",
-            date = Date.from(Instant.now()).toString().split(" GMT")[0],
+            date = date,
         )
 
         RowIndication(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
-        TextFieldTask(
+
+        title = textFieldTask(
             text = title,
             label = "Nombre",
-            onTextChange = {
-                title = it
-            },
             placeholder = "Escribe tu nombre",
             icon = Icons.Rounded.TextFields,
             contentDescription = "name",
             singleLine = true,
             newTask = true,
         )
+
         RowIndication(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
-        TextFieldTask(
+
+        description = textFieldTask(
             text = description,
             label = "descripción",
-            onTextChange = {
-                description = it
-            },
             placeholder = "Escribe algo...",
             icon = Icons.Rounded.TextFields,
             contentDescription = "description",
             newTask = true,
         )
+
         Column(
             modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             TaskButton(
                 onclick = {
                     val task = Task(
@@ -283,28 +275,31 @@ private fun NewTask(navController: NavController, taskViewModel: TaskViewModel) 
                         author = "Jorge Agulló"
                     )
                     taskViewModel.addTask(task)
-                    navController.popBackStack()
+                    openDialog = false
+                    //navController.popBackStack()
                 },
                 text = "Create",
                 true
             )
+
             TaskButton(
                 onclick = {
                     title.isBlank()
                     description.isBlank()
-                    navController.popBackStack()
+                    openDialog = false
+                    //navController.popBackStack()
                 },
                 text = "Cancel"
             )
         }
     }
+    return openDialog
 }
 
 //TextField V1
 @Composable
-fun TextFieldTask(
+fun textFieldTask(
     text: String = "",
-    onTextChange: (String) -> Unit,
     label: String = "",
     placeholder: String = "",
     icon: ImageVector,
@@ -319,28 +314,28 @@ fun TextFieldTask(
     newTask: Boolean = false,
     readOnly: Boolean = false,
     isError: Boolean = false
-) {
-    val mutableInteractionSource = remember { MutableInteractionSource() }
+): String {
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
     val corner: Dp = 20.dp
-
     val personalizedShape: Shape = MaterialTheme.shapes.extraLarge.copy(
         topStart = CornerSize(corner),
         bottomStart = CornerSize(corner),
         topEnd = if (newTask) CornerSize(corner) else ZeroCornerSize,
         bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
     )
+    val textChange = rememberSaveable { mutableStateOf(text) }
 
     TextField(
-        value = text,
-        onValueChange = onTextChange,
+        value = textChange.value,
+        onValueChange = { textChange.value = it },
         modifier = Modifier
             .padding(
                 start = if (newTask) 8.dp else 32.dp,
                 top = 4.dp,
                 bottom = 4.dp,
-                end = if (newTask) 8.dp else 0.dp)
+                end = if (newTask) 8.dp else 0.dp
+            )
             .width(width = if (newTask) 370.dp else 270.dp)
             .shadow(
                 elevation = elevationDp, shape = personalizedShape
@@ -354,7 +349,6 @@ fun TextFieldTask(
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
         maxLines = 5,
-        interactionSource = mutableInteractionSource,
         shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
@@ -369,6 +363,8 @@ fun TextFieldTask(
             cursorColor = focusedColor
         )
     )
+
+    return textChange.value
 }
 
 @Composable
