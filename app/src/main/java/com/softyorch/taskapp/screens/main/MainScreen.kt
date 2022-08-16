@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 import java.time.Instant
 import java.util.*
@@ -89,11 +90,12 @@ private fun FillLazyColumn(
                     task.finishDate = if(it) Date.from(Instant.now()) else null
                     taskViewModel.updateTask(task)
                     //Esto debe cambiar, no es correcto, aunque funciona
-                    navController.navigate(AppScreens.MainScreen.name)
+                    navController.popBackStack()
+                    navController.navigate(AppScreensRoutes.MainScreen.route)
                 },
                 text = task.title,
-                onclick = {
-                    navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
+                onClick = {
+                    navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
                 }
             )
         }.apply {

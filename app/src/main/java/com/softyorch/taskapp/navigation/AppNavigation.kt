@@ -18,12 +18,16 @@ import com.softyorch.taskapp.screens.settings.SettingsViewModel
 import com.softyorch.taskapp.screens.settings.SettingsScreen
 import com.softyorch.taskapp.screens.splash.SplashScreen
 import com.softyorch.taskapp.screens.userdata.UserDataViewModel
-import com.softyorch.taskapp.screens.userdata.UserdataScreen
+import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
 @Composable
 fun TaskAppNavigation() {
     val navController = rememberNavController()
     val taskViewModel = hiltViewModel<TaskViewModel>()
+    val settingsViewModel = hiltViewModel<SettingsViewModel>()
+    PrepareSettingsFirstTime(settingsViewModel)
+    val userDataViewModel = hiltViewModel<UserDataViewModel>()
+    PrepareUserDataFirstTime(userDataViewModel)
 
     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
@@ -35,8 +39,7 @@ fun TaskAppNavigation() {
         composable(route = AppScreensRoutes.MainScreen.route) {
             MainScreen(navController = navController, taskViewModel = taskViewModel)
         }
-        val route = AppScreensRoutes.DetailScreen.route
-        composable(route = "$route/{id}", arguments = listOf(
+        composable(route = "${AppScreensRoutes.DetailScreen.route}/{id}", arguments = listOf(
             navArgument(name = "id") {
                 type = NavType.StringType
             }
@@ -54,14 +57,21 @@ fun TaskAppNavigation() {
             HistoryScreen(navController = navController, taskViewModel = taskViewModel)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
-            val settingsViewModel = hiltViewModel<SettingsViewModel>()
-            PrepareSettingsFirstTime(settingsViewModel)
             SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)
         }
-        composable(route = AppScreensRoutes.UserDataScreen.route) {
-            val userDataViewModel = hiltViewModel<UserDataViewModel>()
-            PrepareUserDataFirstTime(userDataViewModel)
-            UserdataScreen(navController = navController, userDataViewModel = userDataViewModel)
+        composable(route = "${AppScreensRoutes.UserDataScreen.route}/{id}", arguments = listOf(
+            navArgument(name = "id") {
+                type = NavType.StringType
+            }
+        )
+        ) { navBack ->
+            navBack.arguments?.getString("id").let { id ->
+                UserDataScreen(
+                    navController = navController,
+                    userDataViewModel = userDataViewModel,
+                    id = id.toString()
+                )
+            }
         }
     }
 }

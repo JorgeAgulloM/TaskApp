@@ -86,7 +86,7 @@ private fun Content(
                         var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
 
                         TaskButton(
-                            onclick = {
+                            onClick = {
                                 task.checkState = !task.checkState
                                 taskViewModel.updateTask(task = task)
                                 openCompleteDialog = true
@@ -104,7 +104,7 @@ private fun Content(
                             },
                                 confirmButton = {
                                     TaskButton(
-                                        onclick = {
+                                        onClick = {
                                             navController.popBackStack()
                                             navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                                             openCompleteDialog = false
@@ -124,7 +124,7 @@ private fun Content(
                         var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
                         TaskButton(
-                            onclick = {
+                            onClick = {
                                 openDeleteDialog = true
                             },
                             text = "Delete"
@@ -137,7 +137,7 @@ private fun Content(
                                 },
                                 confirmButton = {
                                     TaskButton(
-                                        onclick = {
+                                        onClick = {
                                             openDeleteDialog = false
                                             taskViewModel.removeTask(task = task)
                                             navController.navigate(AppScreens.MainScreen.name)
@@ -146,7 +146,7 @@ private fun Content(
                                 },
                                 dismissButton = {
                                     TaskButton(
-                                        onclick = {
+                                        onClick = {
                                             openDeleteDialog = false
                                         }, "Cancel"
                                     )

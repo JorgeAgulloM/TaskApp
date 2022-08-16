@@ -38,7 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.TaskAppScreens
+import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
@@ -104,9 +105,9 @@ fun TopAppBar(
             }
         },
         actions = {
-            if (nameScreen != TaskAppScreens.MainScreen.name) {
+            if (nameScreen != AppScreens.MainScreen.name) {
                 IconButton(onClick = {
-                    navController.navigate(TaskAppScreens.MainScreen.name)
+                    navController.navigate(AppScreensRoutes.MainScreen.route)
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.Home,
@@ -115,9 +116,9 @@ fun TopAppBar(
                     )
                 }
             }
-            if (nameScreen != TaskAppScreens.HistoryScreen.name) {
+            if (nameScreen != AppScreens.HistoryScreen.name) {
                 IconButton(onClick = {
-                    navController.navigate(TaskAppScreens.HistoryScreen.name)
+                    navController.navigate(AppScreensRoutes.HistoryScreen.route)
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.History,
@@ -126,9 +127,9 @@ fun TopAppBar(
                     )
                 }
             }
-            if (nameScreen != TaskAppScreens.SettingsScreen.name) {
+            if (nameScreen != AppScreens.SettingsScreen.name) {
                 IconButton(onClick = {
-                    navController.navigate(TaskAppScreens.SettingsScreen.name)
+                    navController.navigate(AppScreensRoutes.SettingsScreen.route)
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
@@ -137,9 +138,9 @@ fun TopAppBar(
                     )
                 }
             }
-            if (nameScreen != TaskAppScreens.UserDataScreen.name) {
+            if (nameScreen != AppScreens.UserDataScreen.name) {
                 IconButton(onClick = {
-                    navController.navigate(TaskAppScreens.UserDataScreen.name)
+                    navController.navigate(AppScreensRoutes.UserDataScreen.route + "/${"0"}")
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.SupervisedUserCircle,
@@ -268,7 +269,7 @@ private fun newTask(taskViewModel: TaskViewModel): Boolean {
         ) {
 
             TaskButton(
-                onclick = {
+                onClick = {
                     val task = Task(
                         title = title,
                         description = description,
@@ -283,7 +284,7 @@ private fun newTask(taskViewModel: TaskViewModel): Boolean {
             )
 
             TaskButton(
-                onclick = {
+                onClick = {
                     title.isBlank()
                     description.isBlank()
                     openDialog = false
@@ -369,17 +370,21 @@ fun textFieldTask(
 
 @Composable
 fun TaskButton(
-    onclick: () -> Unit,
+    onClick: () -> Unit,
     text: String,
-    primary: Boolean = false
+    primary: Boolean = false,
+    enable: Boolean = true
 
 ) {
 
     //TODO
 
     Button(
-        onClick = onclick,
+        onClick = {
+            onClick.invoke()
+        },
         modifier = Modifier.width(114.dp).height(26.dp).padding(2.dp),
+        enabled = enable,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
             contentColor = if (primary) DarkMode90t else MaterialTheme.colorScheme.onSurface
@@ -494,14 +499,14 @@ fun TaskSummaryCheck(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     text: String,
-    onclick: () -> Unit
+    onClick: () -> Unit
 ) {
 
     val onChange by rememberSaveable() { mutableStateOf(checked) }
 
     Row(
         modifier = Modifier.fillMaxWidth(1f).height(30.dp).clickable {
-            onclick.invoke()
+            onClick.invoke()
         },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,

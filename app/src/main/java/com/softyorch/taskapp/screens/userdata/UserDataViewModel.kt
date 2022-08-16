@@ -2,6 +2,7 @@ package com.softyorch.taskapp.screens.userdata
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserDataViewModel @Inject constructor(private val repository: UserDataRepository): ViewModel() {
+class UserDataViewModel @Inject constructor(private val repository: UserDataRepository) :
+    ViewModel() {
     private val _userDataList = MutableStateFlow<List<UserData>>(emptyList())
     val userDataList = _userDataList.asStateFlow()
 
@@ -30,34 +32,22 @@ class UserDataViewModel @Inject constructor(private val repository: UserDataRepo
         }
     }
 
+    suspend fun getUserDataId(id: String): Resource<UserData> = repository.getUserDataId(id = id)
+
     fun addUserData(userData: UserData) = viewModelScope.launch {
         repository.addUserData(userData = userData)
     }
+
     fun updateUserData(userData: UserData) = viewModelScope.launch {
         repository.updateUserData(userData = userData)
     }
+
     /*fun deleteAllUsers() = viewModelScope.launch {
         repository.deleteAllUsers()
     }*/
     fun deleteUserData(userData: UserData) = viewModelScope.launch {
         repository.deleteUserData(userData = userData)
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
