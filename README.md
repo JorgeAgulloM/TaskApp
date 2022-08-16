@@ -11,7 +11,7 @@
 ![Dark Mode](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Dark_Mode.png)
 
 ```text
-    Version 1.0.0 - 02/08/2022
+    Version 1.0.0-Alpha01 - 02/08/2022
 
         This app tries to list a series of tasks that the user can create and, edit and delete, also 
     you can mark them as completed, or unmark it, see a list of the last completed tasks and a history 
