@@ -1,6 +1,6 @@
 # TaskApp
 
-### Version 1.0.0
+### Version 1.0.0-Alpha01
 ## Ligth Mode. Designed with Figma software.
 ![Light Mode](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_0.0.1/Light_Mode.png)
 
