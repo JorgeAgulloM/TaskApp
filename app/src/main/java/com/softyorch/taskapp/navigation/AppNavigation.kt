@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.softyorch.taskapp.model.Settings
+import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.screens.detail.DetailScreen
 import com.softyorch.taskapp.screens.history.HistoryScreen
 import com.softyorch.taskapp.screens.login.LoginScreen
@@ -23,41 +24,43 @@ import com.softyorch.taskapp.screens.userdata.UserdataScreen
 fun TaskAppNavigation() {
     val navController = rememberNavController()
     val taskViewModel = hiltViewModel<TaskViewModel>()
-    val settingsViewModel = hiltViewModel<SettingsViewModel>()
-    val userDataViewModel = hiltViewModel<UserDataViewModel>()
 
-    PrepareSettingsFirstTime(settingsViewModel)
-
-    NavHost(navController = navController, startDestination = TaskAppScreens.SplashScreen.name) {
-        composable(TaskAppScreens.SplashScreen.name) {
+    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
+        composable(route = AppScreensRoutes.SplashScreen.route) {
             SplashScreen(navController = navController)
         }
-        composable(TaskAppScreens.LoginScreen.name) {
+        composable(route = AppScreensRoutes.LoginScreen.route) {
             LoginScreen(navController = navController)
         }
-        composable(TaskAppScreens.MainScreen.name) {
+        composable(route = AppScreensRoutes.MainScreen.route) {
             MainScreen(navController = navController, taskViewModel = taskViewModel)
         }
-        val route = TaskAppScreens.DetailsScreen.name
-        composable("$route/{id}",
-            arguments = listOf(
-                navArgument(name = "id") {
-                    type = NavType.StringType
-                }
-            )
+        val route = AppScreensRoutes.DetailScreen.route
+        composable(route = "$route/{id}", arguments = listOf(
+            navArgument(name = "id") {
+                type = NavType.StringType
+            }
+        )
         ) { navBack ->
             navBack.arguments?.getString("id").let { id ->
-                val viewModel = hiltViewModel<TaskViewModel>()
-                DetailScreen(navController = navController, taskViewModel = viewModel, id = id.toString())
+                DetailScreen(
+                    navController = navController,
+                    taskViewModel = taskViewModel,
+                    id = id.toString()
+                )
             }
         }
-        composable(TaskAppScreens.HistoryScreen.name) {
+        composable(route = AppScreensRoutes.HistoryScreen.route) {
             HistoryScreen(navController = navController, taskViewModel = taskViewModel)
         }
-        composable(TaskAppScreens.SettingsScreen.name) {
+        composable(route = AppScreensRoutes.SettingsScreen.route) {
+            val settingsViewModel = hiltViewModel<SettingsViewModel>()
+            PrepareSettingsFirstTime(settingsViewModel)
             SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)
         }
-        composable(TaskAppScreens.UserDataScreen.name) {
+        composable(route = AppScreensRoutes.UserDataScreen.route) {
+            val userDataViewModel = hiltViewModel<UserDataViewModel>()
+            PrepareUserDataFirstTime(userDataViewModel)
             UserdataScreen(navController = navController, userDataViewModel = userDataViewModel)
         }
     }
@@ -74,6 +77,20 @@ private fun PrepareSettingsFirstTime(settingsViewModel: SettingsViewModel) {
                 automaticLanguage = true,
                 automaticColors = false,
                 preferenceBooleanFive = false
+            )
+        )
+    }
+}
+
+@Composable
+private fun PrepareUserDataFirstTime(userDataViewModel: UserDataViewModel) {
+    if (userDataViewModel.userDataList.collectAsState().value.isEmpty()) {
+        userDataViewModel.addUserData(
+            userData = UserData(
+                username = "Unknown",
+                userEmail = "Unknown",
+                userPass = "Unknown",
+                userPicture = null
             )
         )
     }
