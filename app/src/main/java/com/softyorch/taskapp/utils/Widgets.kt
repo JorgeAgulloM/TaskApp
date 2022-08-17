@@ -387,7 +387,7 @@ fun textFieldTask(
             unfocusedLeadingIconColor = unfocusedColor,
             focusedLeadingIconColor = focusedColor,
             containerColor = MaterialTheme.colorScheme.primary,
-            focusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = focusedColor,
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = focusedColor
         )

@@ -163,7 +163,8 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             placeholder = "type your name",
             icon = Icons.Rounded.Person,
             contentDescription = "type your name",
-            singleLine = true
+            singleLine = true,
+            isError = name.isEmpty() && pushCreate
         )
         email = textFieldTask(
             text = email,
@@ -171,7 +172,8 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             placeholder = "type your email",
             icon = Icons.Rounded.Email,
             contentDescription = "type your email",
-            singleLine = true
+            singleLine = true,
+            isError = email.isEmpty() && pushCreate
         )
         emailOk = email == textFieldTask(
             text = email,
@@ -180,7 +182,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             icon = Icons.Rounded.Email,
             contentDescription = "type your email",
             singleLine = true,
-            isError = !emailOk && pushCreate
+            isError = (!emailOk || email.isEmpty()) && pushCreate
         )
         pass = textFieldTask(
             text = pass,
@@ -189,6 +191,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             icon = Icons.Rounded.Key,
             contentDescription = "type your password",
             singleLine = true,
+            isError = pass.isEmpty() && pushCreate,
             password = true,
         )
         passOk = pass == textFieldTask(
@@ -198,7 +201,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             icon = Icons.Rounded.Key,
             contentDescription = "Confirm your password",
             singleLine = true,
-            isError = (!passOk && pushCreate),
+            isError = ((!passOk || pass.isEmpty()) && pushCreate),
             password = true,
         )
     }
@@ -226,7 +229,6 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             },
             text = "Go to Login"
         )
-        Text(text = pushCreate.toString())
     }
     return login
 }
