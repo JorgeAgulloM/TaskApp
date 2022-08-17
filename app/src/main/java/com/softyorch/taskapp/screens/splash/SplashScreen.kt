@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.navigation.AppScreensRoutes
 import kotlinx.coroutines.delay
 
 @Composable
@@ -38,7 +38,7 @@ fun SplashScreen(navController: NavHostController) {
 
         delay(2000L)
         navController.popBackStack()
-        navController.navigate(AppScreens.MainScreen.name)
+        navController.navigate(AppScreensRoutes.LoginScreen.route)
 
     })
 

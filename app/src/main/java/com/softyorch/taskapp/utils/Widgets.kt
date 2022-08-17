@@ -528,17 +528,18 @@ fun TaskSummaryCheck(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
 
     val onChange by rememberSaveable() { mutableStateOf(checked) }
 
     Row(
-        modifier = Modifier.fillMaxWidth(1f).height(30.dp).clickable {
+        modifier = Modifier.fillMaxWidth(1f).padding(end = 8.dp).height(30.dp).clickable {
             onClick.invoke()
         },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = horizontalArrangement,
         content = {
             Checkbox(
                 checked = onChange,
