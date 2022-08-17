@@ -24,6 +24,7 @@ import com.softyorch.taskapp.utils.TaskButton
 import com.softyorch.taskapp.utils.TaskKeyboardOptions
 import com.softyorch.taskapp.utils.textFieldTask
 import com.softyorch.taskapp.utils.TopAppBar
+import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,47 +150,15 @@ fun UserDataScreen(
                                     enable = changeData
                                 )
                                 if (confirmDialog) {
-                                    AlertDialog(
-                                        onDismissRequest = {
-                                            confirmDialog = false
-                                        },
-                                        confirmButton = {
-                                            TaskButton(
-                                                onClick = {
-                                                    confirmDialog = false
-                                                    userDataViewModel.updateUserData(
-                                                        userData = UserData(
-                                                            id = userData.id,
-                                                            username = name,
-                                                            userEmail = email,
-                                                            userPass = pass,
-                                                            userPicture = null
-                                                        )
-                                                    ).let {
-                                                        navController.popBackStack()
-                                                        navController.navigate(AppScreensRoutes.UserDataScreen.route + "/$id")
-                                                    }
-
-                                                },
-                                                text = "Yes, i sure",
-                                                primary = true
-                                            )
-                                        },
-                                        dismissButton = {
-                                            TaskButton(
-                                                onClick = {
-                                                    confirmDialog = false
-                                                },
-                                                text = "Cancel"
-                                            )
-                                        },
-                                        text = {
-                                            Text(
-                                                text = "Are you sure you want to change the user information?",
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                style = TextStyle(textAlign = TextAlign.Center)
-                                            )
-                                        }
+                                    confirmDialog = CustomDialog(
+                                        cancelOrChangeData = 0,
+                                        userDataViewModel = userDataViewModel,
+                                        userData = userData,
+                                        name = name,
+                                        email = email,
+                                        pass = pass,
+                                        navController = navController,
+                                        id = id
                                     )
                                 }
 
@@ -200,49 +169,19 @@ fun UserDataScreen(
                                     text = "Cancel",
                                     enable = changeData
                                 )
+
                                 if (cancelDialog) {
-                                    AlertDialog(
-                                        onDismissRequest = {
-                                            cancelDialog = false
-                                        },
-                                        confirmButton = {
-                                            TaskButton(
-                                                onClick = {
-                                                    cancelDialog = false
-                                                    navController.popBackStack()
-                                                },
-                                                text = "Yes, i sure",
-                                                primary = true
-                                            )
-                                        },
-                                        dismissButton = {
-                                            TaskButton(
-                                                onClick = {
-                                                    cancelDialog = false
-                                                },
-                                                text = "Cancel"
-                                            )
-                                        },
-                                        text = {
-                                            Text(
-                                                text = "Are you sure you are not making any modifications?",
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                style = TextStyle(textAlign = TextAlign.Center)
-                                            )
-                                        }
+                                    cancelDialog = CustomDialog(
+                                        cancelOrChangeData = 1,
+                                        userDataViewModel = userDataViewModel,
+                                        userData = userData,
+                                        name = name,
+                                        email = email,
+                                        pass = pass,
+                                        navController = navController,
+                                        id = id
                                     )
                                 }
-                                /*ConfirmDialog(
-                                    openDialog = cancelDialog,
-                                    cancelOrChangeData = confirmDialog,
-                                    userDataViewModel = userDataViewModel,
-                                    userData = userData,
-                                    name = name,
-                                    email = email,
-                                    pass = pass,
-                                    navController = navController,
-                                    id = id
-                                )*/
                             }
                         }
                     }
@@ -251,9 +190,8 @@ fun UserDataScreen(
 }
 
 @Composable
-private fun ConfirmDialog(
-    openDialog: Boolean,
-    cancelOrChangeData: Boolean = false,
+private fun CustomDialog(
+    cancelOrChangeData: Int = 0,
     userDataViewModel: UserDataViewModel,
     userData: UserData,
     name: String,
@@ -261,33 +199,51 @@ private fun ConfirmDialog(
     pass: String,
     navController: NavHostController,
     id: String?
-) {
-    var confirmDialog = openDialog
+): Boolean {
+    var openDialog by rememberSaveable { mutableStateOf(value = true) }
+    val text = when (cancelOrChangeData) {
+        0 -> {
+            "Are you sure you want to change the user information?"
+        }
+        1 -> {
+            "Are you sure you are not making any modifications?"
+        }
+        else -> {
+            "Error"
+        }
+    }
 
-    if (confirmDialog) {
+    if (openDialog) {
         AlertDialog(
             onDismissRequest = {
-                confirmDialog = false
+                openDialog = false
             },
             confirmButton = {
                 TaskButton(
                     onClick = {
-                        confirmDialog = false
-                        if (cancelOrChangeData)
-                            userDataViewModel.updateUserData(
-                                userData = UserData(
-                                    id = userData.id,
-                                    username = name,
-                                    userEmail = email,
-                                    userPass = pass,
-                                    userPicture = null
-                                )
-                            ).let {
-                                navController.popBackStack()
-                                navController.navigate(AppScreensRoutes.UserDataScreen.route + "/$id")
+                        openDialog = false
+                        when (cancelOrChangeData) {
+                            0 -> {
+                                userDataViewModel.updateUserData(
+                                    userData = UserData(
+                                        id = userData.id,
+                                        username = name,
+                                        userEmail = email,
+                                        userPass = pass,
+                                        userPicture = null
+                                    )
+                                ).let {
+                                    navController.popBackStack()
+                                    navController.navigate(AppScreensRoutes.UserDataScreen.route + "/$id")
+                                }
                             }
-                        else
-                            navController.popBackStack()
+                            1 -> {
+                                navController.popBackStack()
+                            }
+                            else -> {
+                                //TODO
+                            }
+                        }
                     },
                     text = "Yes, i sure",
                     primary = true
@@ -296,20 +252,19 @@ private fun ConfirmDialog(
             dismissButton = {
                 TaskButton(
                     onClick = {
-                        confirmDialog = false
+                        openDialog = false
                     },
                     text = "Cancel"
                 )
             },
             text = {
                 Text(
-                    text = if (cancelOrChangeData)
-                        "Are you sure you want to change the user information?"
-                    else "Are you sure you are not making any modifications?",
+                    text = text,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = TextStyle(textAlign = TextAlign.Center)
                 )
             }
         )
     }
+    return openDialog
 }
