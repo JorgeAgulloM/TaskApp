@@ -318,12 +318,11 @@ fun textFieldTask(
 ): String {
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
-    val corner: Dp = 20.dp
-    val personalizedShape: Shape = MaterialTheme.shapes.extraLarge.copy(
-        topStart = CornerSize(corner),
-        bottomStart = CornerSize(corner),
-        topEnd = if (newTask) CornerSize(corner) else ZeroCornerSize,
-        bottomEnd = if (newTask) CornerSize(corner) else ZeroCornerSize
+    val personalizedShape: Shape = MaterialTheme.shapes.large.copy(
+        //topStart = CornerSize(corner),
+        //bottomStart = CornerSize(corner),
+        topEnd = if (newTask) MaterialTheme.shapes.large.topEnd else ZeroCornerSize,
+        bottomEnd = if (newTask) MaterialTheme.shapes.large.bottomEnd else ZeroCornerSize
     )
     val textChange = rememberSaveable { mutableStateOf(text) }
     var passVisible by rememberSaveable { mutableStateOf(password) }
@@ -444,7 +443,8 @@ fun RowIndication(
     text: String,
     fontSize: TextUnit = 20.sp,
     paddingStart: Dp = 0.dp,
-    heightSize: Dp = 30.dp
+    heightSize: Dp = 30.dp,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
 
     Row(
@@ -453,7 +453,7 @@ fun RowIndication(
             .height(heightSize)
             .padding(start = paddingStart, top = 0.dp, bottom = 0.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = horizontalArrangement
     ) {
         Text(
             text = text,
