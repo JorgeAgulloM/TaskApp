@@ -1,5 +1,8 @@
 package com.softyorch.taskapp.screens.login
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -7,16 +10,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.data.Resource
+import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 
@@ -24,7 +29,9 @@ import com.softyorch.taskapp.utils.*
 fun LoginScreen(navController: NavHostController) {
 
     val loginViewModel = hiltViewModel<LoginViewModel>()
+    val context = LocalContext.current
     var loginOrNewAccount by rememberSaveable { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -60,7 +67,8 @@ fun LoginScreen(navController: NavHostController) {
         loginOrNewAccount = if (!loginOrNewAccount)
             loginContent(
                 viewModel = loginViewModel,
-                navController = navController
+                navController = navController,
+                context = context
             )
         else
             newAccountContent(
@@ -70,14 +78,21 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun loginContent(viewModel: LoginViewModel, navController: NavController): Boolean {
+private fun loginContent(
+    viewModel: LoginViewModel,
+    navController: NavController,
+    context: Context
+): Boolean {
 
     var name by rememberSaveable { mutableStateOf(value = "") }
     var pass by rememberSaveable { mutableStateOf(value = "") }
     var rememberMe by rememberSaveable { mutableStateOf(value = false) }
 
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
+    var pushCreate by rememberSaveable { mutableStateOf(value = false) }
+    var goToMain by rememberSaveable { mutableStateOf(value = false) }
 
     Column(
         modifier = Modifier
@@ -91,7 +106,8 @@ private fun loginContent(viewModel: LoginViewModel, navController: NavController
             placeholder = "type your name",
             icon = Icons.Rounded.Person,
             contentDescription = "type your name",
-            singleLine = true
+            singleLine = true,
+            isError = name.isEmpty() && pushCreate
         )
         pass = textFieldTask(
             text = pass,
@@ -100,6 +116,7 @@ private fun loginContent(viewModel: LoginViewModel, navController: NavController
             icon = Icons.Rounded.Key,
             contentDescription = "type your password",
             singleLine = true,
+            isError = pass.isEmpty() && pushCreate,
             password = true,
         )
         TaskSummaryCheck(
@@ -122,8 +139,10 @@ private fun loginContent(viewModel: LoginViewModel, navController: NavController
     ) {
         TaskButton(
             onClick = {
-                navController.popBackStack()
-                navController.navigate(AppScreensRoutes.MainScreen.route)
+                pushCreate = true
+                if (name.isNotEmpty() && pass.isNotEmpty()) {
+                    goToMain = true
+                }
             },
             text = "Login",
             primary = true
@@ -134,6 +153,34 @@ private fun loginContent(viewModel: LoginViewModel, navController: NavController
             },
             text = "New Account"
         )
+    }
+
+    if (goToMain) {
+
+        /*viewModel.viewModelScope.launch() {
+            val userData = viewModel.getUser(name = name)
+        }*/
+        produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
+            value = viewModel.signInUserWithNameAndPassword(name = name, password = pass)
+            if (value.data?.username.isNullOrEmpty()) {
+                Toast.makeText(
+                    context,
+                    "Incorrect User or Password",
+                    Toast.LENGTH_SHORT
+                ).show().let {
+                    goToMain = false
+                    pushCreate = false
+                }
+            }
+        }.value
+            .let { data ->
+                data.data?.let {
+                    goToMain = false
+                    pushCreate = false
+                    navController.popBackStack()
+                    navController.navigate(AppScreensRoutes.MainScreen.route)
+                }
+            }
     }
     return newAccount
 }

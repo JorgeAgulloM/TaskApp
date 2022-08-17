@@ -29,5 +29,9 @@ class LoginViewModel @Inject constructor(private val repository: UserDataReposit
         }
     }
 
-    suspend fun getUser(name: String): Resource<UserData> = repository.getUserName(name = name)
+    suspend fun signInUserWithNameAndPassword(name: String, password: String): Resource<UserData> =
+        repository.signInUserWithNameAndPassword(name = name, password = password)
+
+    fun addUser(userData: UserData) =
+        viewModelScope.launch { repository.addUserData(userData = userData) }
 }

@@ -25,10 +25,10 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun getUserName(name: String): Resource<UserData> {
+    suspend fun signInUserWithNameAndPassword(name: String, password: String): Resource<UserData> {
         val response = try {
             Resource.Loading(data = true)
-            userDataBaseDao.getUserName(name = name)
+            userDataBaseDao.signIn(name = name, password = password)
         } catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
