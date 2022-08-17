@@ -1,10 +1,11 @@
 package com.softyorch.taskapp
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,19 +18,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TaskApp()
+            val sharedPreferences = getSharedPreferences("remember_me", Context.MODE_PRIVATE)
+            TaskApp(sharedPreferences = sharedPreferences)
         }
     }
 }
 
 @Composable
-fun TaskApp() {
+fun TaskApp(sharedPreferences: SharedPreferences) {
     TaskAppTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            //color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation()
+            TaskAppNavigation(sharedPreferences = sharedPreferences)
         }
     }
 }

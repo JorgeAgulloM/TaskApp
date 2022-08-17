@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.navigation
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -21,20 +22,20 @@ import com.softyorch.taskapp.screens.userdata.UserDataViewModel
 import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
 @Composable
-fun TaskAppNavigation() {
+fun TaskAppNavigation(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()
     val taskViewModel = hiltViewModel<TaskViewModel>()
     val settingsViewModel = hiltViewModel<SettingsViewModel>()
     PrepareSettingsFirstTime(settingsViewModel)
     val userDataViewModel = hiltViewModel<UserDataViewModel>()
-    PrepareUserDataFirstTime(userDataViewModel)
+    //PrepareUserDataFirstTime(userDataViewModel)
 
     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
             SplashScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(navController = navController, sharedPreferences = sharedPreferences)
         }
         composable(route = AppScreensRoutes.MainScreen.route) {
             MainScreen(navController = navController, taskViewModel = taskViewModel)
@@ -92,7 +93,7 @@ private fun PrepareSettingsFirstTime(settingsViewModel: SettingsViewModel) {
     }
 }
 
-@Composable
+/*@Composable
 private fun PrepareUserDataFirstTime(userDataViewModel: UserDataViewModel) {
     if (userDataViewModel.userDataList.collectAsState().value.isEmpty()) {
         userDataViewModel.addUserData(
@@ -100,8 +101,9 @@ private fun PrepareUserDataFirstTime(userDataViewModel: UserDataViewModel) {
                 username = "Unknown",
                 userEmail = "Unknown",
                 userPass = "Unknown",
-                userPicture = null
+                userPicture = null,
+                rememberMe = false
             )
         )
     }
-}
+}*/
