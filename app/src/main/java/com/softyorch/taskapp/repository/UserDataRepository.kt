@@ -17,13 +17,26 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.getUserId(id = id)
-        } catch (exception: Exception) {
-            return Resource.Error(message = exception.message.toString())
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
         }
 
         Resource.Loading(data = false)
         return Resource.Success(data = response)
     }
+
+    suspend fun getUserName(name: String): Resource<UserData> {
+        val response = try {
+            Resource.Loading(data = true)
+            userDataBaseDao.getUserName(name = name)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
+
+        Resource.Loading(data = false)
+        return Resource.Success(data = response)
+    }
+
     suspend fun addUserData(userData: UserData) = userDataBaseDao.insert(userData = userData)
     suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()

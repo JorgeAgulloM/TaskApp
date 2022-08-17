@@ -13,6 +13,9 @@ interface UserDataBaseDao {
     @Query("SELECT * FROM userdata_tbl WHERE id =:id")
     suspend fun getUserId(id: String): UserData
 
+    @Query("SELECT * FROM userdata_tbl WHERE user_name =:name")
+    suspend fun getUserName(name: String): UserData
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userData: UserData)
 
