@@ -182,6 +182,7 @@ private fun loginContent(
                     userActive = true
 
                     it.lastLoginDate = Date.from(Instant.now())
+                    it.rememberMe = rememberMe
                     viewModel.updateLastLoginUser(userData = it)
 
                     AutoLogin(sharedPreferences = sharedPreferences).logIn(
