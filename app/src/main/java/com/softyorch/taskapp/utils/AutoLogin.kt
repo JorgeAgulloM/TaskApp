@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.screens.login
+package com.softyorch.taskapp.utils
 
 import android.content.SharedPreferences
 import com.softyorch.taskapp.model.UserData
@@ -6,13 +6,6 @@ import com.softyorch.taskapp.model.UserData
 class AutoLogin(
     private var sharedPreferences: SharedPreferences
 ) {
-
-    var remember = false
-
-    init {
-        val userData = userActive()
-        if (userData.rememberMe == true) remember = true
-    }
 
     fun logIn(
         name: String = "",
@@ -51,6 +44,12 @@ class AutoLogin(
                 userPass = sp.getString("pass", "").toString(),
                 rememberMe = sp.getString("remember", "").toBoolean()
             )
+        }
+    }
+
+    fun isTheUserActive(): Boolean? {
+        userActive().let { user ->
+            return user.rememberMe
         }
     }
 }
