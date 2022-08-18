@@ -37,6 +37,18 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
+    suspend fun signInSharePreferences(name: String, password: String): Resource<UserData> {
+        val response = try {
+            Resource.Loading(data = true)
+            userDataBaseDao.signIn(name = name, password = password)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
+
+        Resource.Loading(data = false)
+        return Resource.Success(data = response)
+    }
+
     suspend fun addUserData(userData: UserData) = userDataBaseDao.insert(userData = userData)
     suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()
