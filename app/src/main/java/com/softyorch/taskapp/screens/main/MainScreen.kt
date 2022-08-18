@@ -61,7 +61,11 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
         if (tasks.isEmpty())
             RowIndication("Añade una nueva tarea...", fontSize = 14.sp)
         else
-            FillLazyColumn(tasks = tasks, taskViewModel = taskViewModel, navController = navController)
+            FillLazyColumn(
+                tasks = tasks,
+                taskViewModel = taskViewModel,
+                navController = navController
+            )
 
         Spacer(modifier = Modifier.padding(8.dp))
 
@@ -69,7 +73,12 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
         if (tasks.isEmpty())
             RowIndication("Aún no has terminado ninguna tarea", fontSize = 14.sp)
         else
-            FillLazyColumn(tasks = tasks, taskViewModel = taskViewModel, checkOrNot = true, navController = navController)
+            FillLazyColumn(
+                tasks = tasks,
+                taskViewModel = taskViewModel,
+                checkOrNot = true,
+                navController = navController
+            )
     }
 }
 
@@ -84,20 +93,20 @@ private fun FillLazyColumn(
         items(tasks) { task ->
             if (checkOrNot == task.checkState)
                 TaskSummaryCheck(
-                task.checkState,
-                onCheckedChange = {
-                    task.checkState = it
-                    task.finishDate = if(it) Date.from(Instant.now()) else null
-                    taskViewModel.updateTask(task)
-                    //Esto debe cambiar, no es correcto, aunque funciona
-                    navController.popBackStack()
-                    navController.navigate(AppScreensRoutes.MainScreen.route)
-                },
-                text = task.title,
-                onClick = {
-                    navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                }
-            )
+                    checked = task.checkState,
+                    onCheckedChange = {
+                        task.checkState = it
+                        task.finishDate = if (it) Date.from(Instant.now()) else null
+                        taskViewModel.updateTask(task)
+                        //Esto debe cambiar, no es correcto, aunque funciona
+                        navController.popBackStack()
+                        navController.navigate(AppScreensRoutes.MainScreen.route)
+                    },
+                    text = task.title,
+                    onClick = {
+                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                    }
+                )
         }.apply {
             //TODO Averiguar la lógica para obtener las tareas con check true y mostrar un mensaje
         }
