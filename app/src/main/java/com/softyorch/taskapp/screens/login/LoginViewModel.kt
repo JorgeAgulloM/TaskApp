@@ -34,4 +34,7 @@ class LoginViewModel @Inject constructor(private val repository: UserDataReposit
 
     fun addUser(userData: UserData) =
         viewModelScope.launch { repository.addUserData(userData = userData) }
+
+    fun updateLastLoginUser(userData: UserData) =
+        viewModelScope.launch { repository.updateUserData(userData = userData) }
 }
