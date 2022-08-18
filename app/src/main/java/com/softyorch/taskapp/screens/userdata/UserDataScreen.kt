@@ -197,6 +197,7 @@ private fun CustomDialog(
     name: String,
     email: String,
     pass: String,
+    rememberMe: Boolean = false,
     navController: NavHostController,
     id: String?
 ): Boolean {
@@ -230,7 +231,8 @@ private fun CustomDialog(
                                         username = name,
                                         userEmail = email,
                                         userPass = pass,
-                                        userPicture = null
+                                        userPicture = null,
+                                        rememberMe = rememberMe
                                     )
                                 ).let {
                                     navController.popBackStack()
