@@ -25,6 +25,8 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
+import java.time.Instant
+import java.util.*
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -178,6 +180,9 @@ private fun loginContent(
                     goToMain = false
                     pushCreate = false
                     userActive = true
+
+                    it.lastLoginDate = Date.from(Instant.now())
+                    viewModel.updateLastLoginUser(userData = it)
 
                     AutoLogin(sharedPreferences = sharedPreferences).logIn(
                         name = name,
