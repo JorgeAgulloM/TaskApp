@@ -1,9 +1,6 @@
 package com.softyorch.taskapp.utils
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,16 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
+import com.softyorch.taskapp.components.TextCustom
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
@@ -336,34 +329,23 @@ fun InfoTask(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            InfoText("Created By:", true)
-            InfoText("Created date:", true)
+            TextCustom("Created By:", true)
+            TextCustom("Created date:", true)
             if (completedDate.isNotEmpty() && completedDate != "null")
-                InfoText("Completed date:", true)
+                TextCustom("Completed date:", true)
         }
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            InfoText(author)
-            InfoText(date)
+            TextCustom(author)
+            TextCustom(date)
             if (completedDate.isNotEmpty() && completedDate != "null")
-                InfoText(completedDate)
+                TextCustom(completedDate)
+
         }
     }
 }
 
-@Composable
-private fun InfoText(
-    text: String,
-    description: Boolean = false
-) {
-    Text(
-        modifier = Modifier.padding(4.dp),
-        text = text,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontSize = 14.sp,
-        fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
-    )
-}
+
 
