@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.components.TaskCheckCustom
+import com.softyorch.taskapp.components.CheckCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
@@ -128,7 +128,7 @@ private fun loginContent(
             isError = pass.isEmpty() && pushCreate,
             password = true,
         )
-        TaskCheckCustom(
+        CheckCustom(
             checked = rememberMe,
             onCheckedChange = {
                 rememberMe = !rememberMe

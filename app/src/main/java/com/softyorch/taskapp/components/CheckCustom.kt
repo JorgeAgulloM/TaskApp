@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskCheckCustom(
+fun CheckCustom(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     text: String,
