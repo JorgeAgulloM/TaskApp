@@ -11,7 +11,9 @@ data class UserData(
     @ColumnInfo(name = "user_name") var username: String,
     @ColumnInfo(name = "user_email") var userEmail: String,
     @ColumnInfo(name = "user_pass") var userPass: String,
-    @ColumnInfo(name = "user_picture") var userPicture: String?
+    @ColumnInfo(name = "user_picture") var userPicture: String? = null,
+    @ColumnInfo(name = "last_login_date") var lastLoginDate: Date? = null,
+    @ColumnInfo(name = "remember_me") var rememberMe: Boolean? = false
 )
 
 
