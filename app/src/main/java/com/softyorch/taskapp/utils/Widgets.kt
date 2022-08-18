@@ -24,15 +24,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.TextCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.screens.main.TaskViewModel
-import com.softyorch.taskapp.ui.theme.DarkMode90t
 import com.softyorch.taskapp.ui.theme.LightMode90t
 import java.time.Instant
 import java.util.*
@@ -76,12 +75,12 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        InfoTask(
+        ShowTask(
             author = "Jorge Agulló",
             date = date,
         )
 
-        RowIndication(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
+        RowInfo(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
 
         title = textFieldTask(
             text = title,
@@ -93,7 +92,7 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
             newTask = true,
         )
 
-        RowIndication(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
+        RowInfo(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
 
         description = textFieldTask(
             text = description,
@@ -110,7 +109,7 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            TaskButton(
+            ButtonCustom(
                 onClick = {
                     val task = Task(
                         title = title,
@@ -125,7 +124,7 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
                 true
             )
 
-            TaskButton(
+            ButtonCustom(
                 onClick = {
                     title.isBlank()
                     description.isBlank()
@@ -235,49 +234,7 @@ fun textFieldTask(
 }
 
 @Composable
-fun TaskButton(
-    onClick: () -> Unit,
-    text: String,
-    primary: Boolean = false,
-    enable: Boolean = true
-
-) {
-
-    //TODO
-
-    Button(
-        onClick = {
-            onClick.invoke()
-        },
-        modifier = Modifier.width(114.dp).height(26.dp).padding(2.dp),
-        enabled = enable,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
-            contentColor = if (primary) DarkMode90t else MaterialTheme.colorScheme.onSurface
-        ),
-        content = {
-            Text(
-                text = text,
-                style = TextStyle(
-                    shadow = Shadow(
-                        color = MaterialTheme.colorScheme.primary,
-                        offset = if (primary) Offset(x = 0f, y = 0f) else Offset(
-                            x = elevationF,
-                            y = elevationF
-                        ),
-                        blurRadius = if (primary) 0f else elevationF
-                    )
-                ),
-                textDecoration = if (!primary) TextDecoration.Underline else null
-            )
-        },
-        contentPadding = PaddingValues(2.dp),
-        elevation = ButtonDefaults.buttonElevation(if (primary) elevationDp else 0.dp)
-    )
-}
-
-@Composable
-fun RowIndication(
+fun RowInfo(
     text: String,
     fontSize: TextUnit = 20.sp,
     paddingStart: Dp = 0.dp,
@@ -314,7 +271,7 @@ fun RowIndication(
 }
 
 @Composable
-fun InfoTask(
+fun ShowTask(
     author: String,
     date: String,
     completedDate: String = "",

@@ -53,13 +53,13 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
             .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
     ) {
 
-        RowIndication(text = "My Tasks", paddingStart = 32.dp)
+        RowInfo(text = "My Tasks", paddingStart = 32.dp)
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        RowIndication(text = "To be made...", fontSize = 16.sp, paddingStart = 32.dp)
+        RowInfo(text = "To be made...", fontSize = 16.sp, paddingStart = 32.dp)
         if (tasks.isEmpty())
-            RowIndication("Añade una nueva tarea...", fontSize = 14.sp)
+            RowInfo("Añade una nueva tarea...", fontSize = 14.sp)
         else
             FillLazyColumn(
                 tasks = tasks,
@@ -69,9 +69,9 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        RowIndication(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 32.dp)
+        RowInfo(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 32.dp)
         if (tasks.isEmpty())
-            RowIndication("Aún no has terminado ninguna tarea", fontSize = 14.sp)
+            RowInfo("Aún no has terminado ninguna tarea", fontSize = 14.sp)
         else
             FillLazyColumn(
                 tasks = tasks,

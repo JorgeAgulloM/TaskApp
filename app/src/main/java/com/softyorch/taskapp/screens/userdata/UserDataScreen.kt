@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.SupervisedUserCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,12 +15,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.TaskButton
 import com.softyorch.taskapp.utils.TaskKeyboardOptions
 import com.softyorch.taskapp.utils.textFieldTask
 
@@ -138,7 +137,7 @@ fun UserDataScreen(
                                                 pass != userData.userPass
                                         )
 
-                                TaskButton(
+                                ButtonCustom(
                                     onClick = {
                                         confirmDialog = true
                                     },
@@ -147,7 +146,7 @@ fun UserDataScreen(
                                     enable = changeData
                                 )
 
-                                TaskButton(
+                                ButtonCustom(
                                     onClick = {
                                         cancelDialog = true
                                     },
@@ -156,7 +155,7 @@ fun UserDataScreen(
                                 )
 
                                 if (confirmDialog) {
-                                    confirmDialog = CustomDialog(
+                                    confirmDialog = UserDataDialog(
                                         cancelOrChangeData = 0,
                                         userDataViewModel = userDataViewModel,
                                         userData = userData,
@@ -169,7 +168,7 @@ fun UserDataScreen(
                                 }
 
                                 if (cancelDialog) {
-                                    cancelDialog = CustomDialog(
+                                    cancelDialog = UserDataDialog(
                                         cancelOrChangeData = 1,
                                         userDataViewModel = userDataViewModel,
                                         userData = userData,
@@ -188,7 +187,7 @@ fun UserDataScreen(
 }
 
 @Composable
-private fun CustomDialog(
+private fun UserDataDialog(
     cancelOrChangeData: Int = 0,
     userDataViewModel: UserDataViewModel,
     userData: UserData,
@@ -218,7 +217,7 @@ private fun CustomDialog(
                 openDialog = false
             },
             confirmButton = {
-                TaskButton(
+                ButtonCustom(
                     onClick = {
                         openDialog = false
                         when (cancelOrChangeData) {
@@ -250,7 +249,7 @@ private fun CustomDialog(
                 )
             },
             dismissButton = {
-                TaskButton(
+                ButtonCustom(
                     onClick = {
                         openDialog = false
                     },

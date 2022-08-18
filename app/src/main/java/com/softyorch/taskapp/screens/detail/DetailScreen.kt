@@ -1,8 +1,6 @@
 package com.softyorch.taskapp.screens.detail
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Details
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
@@ -62,14 +61,14 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    RowIndication(task.title, fontSize = 20.sp, paddingStart = 24.dp)
+                    RowInfo(task.title, fontSize = 20.sp, paddingStart = 24.dp)
                     Text(
                         text = task.description,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowIndication("Details", fontSize = 20.sp, paddingStart = 24.dp)
-                    InfoTask(
+                    RowInfo("Details", fontSize = 20.sp, paddingStart = 24.dp)
+                    ShowTask(
                         author = task.author,
                         date = task.entryDate.toString(),
                         completedDate = task.finishDate.toString(),
@@ -86,7 +85,7 @@ private fun Content(
 
                         var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
 
-                        TaskButton(
+                        ButtonCustom(
                             onClick = {
                                 task.checkState = !task.checkState
                                 taskViewModel.updateTask(task = task)
@@ -104,7 +103,7 @@ private fun Content(
                                 openCompleteDialog = false
                             },
                                 confirmButton = {
-                                    TaskButton(
+                                    ButtonCustom(
                                         onClick = {
                                             navController.popBackStack()
                                             navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
@@ -124,7 +123,7 @@ private fun Content(
 
                         var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-                        TaskButton(
+                        ButtonCustom(
                             onClick = {
                                 openDeleteDialog = true
                             },
@@ -137,7 +136,7 @@ private fun Content(
                                     openDeleteDialog = false
                                 },
                                 confirmButton = {
-                                    TaskButton(
+                                    ButtonCustom(
                                         onClick = {
                                             openDeleteDialog = false
                                             taskViewModel.removeTask(task = task)
@@ -146,7 +145,7 @@ private fun Content(
                                     )
                                 },
                                 dismissButton = {
-                                    TaskButton(
+                                    ButtonCustom(
                                         onClick = {
                                             openDeleteDialog = false
                                         }, "Cancel"

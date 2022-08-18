@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.CheckCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
@@ -44,7 +45,7 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround
     ) {
-        RowIndication(
+        RowInfo(
             text = "TASK APP",
             fontSize = 24.sp,
             horizontalArrangement = Arrangement.Center
@@ -63,7 +64,7 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
                     )
             )
         else
-            RowIndication(
+            RowInfo(
                 text = "New Account",
                 fontSize = 16.sp,
                 horizontalArrangement = Arrangement.Center
@@ -146,7 +147,7 @@ private fun loginContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TaskButton(
+        ButtonCustom(
             onClick = {
                 pushCreate = true
                 if (name.isNotEmpty() && pass.isNotEmpty()) {
@@ -156,7 +157,7 @@ private fun loginContent(
             text = "Login",
             primary = true
         )
-        TaskButton(
+        ButtonCustom(
             onClick = {
                 newAccount = true
             },
@@ -279,7 +280,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TaskButton(
+        ButtonCustom(
             onClick = {
                 pushCreate = true
 
@@ -292,7 +293,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             text = "Create Account",
             primary = true
         )
-        TaskButton(
+        ButtonCustom(
             onClick = {
                 login = false
             },
