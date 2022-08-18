@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -16,11 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.SwitchCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.Hello
-import com.softyorch.taskapp.utils.TaskSwitch
-
 
 @ExperimentalMaterial3Api
 @Composable
@@ -45,7 +42,7 @@ private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
     var hideLightDark by rememberSaveable{ mutableStateOf(settings[0].lightDarkAutomaticTheme)}
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
-        TaskSwitch(
+        SwitchCustom(
             "Light/Dark Automatic Theme",
             checked = settings[0].lightDarkAutomaticTheme,
             onCheckedChange = {
@@ -55,7 +52,7 @@ private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
             }
         )
         if (!hideLightDark) {
-            TaskSwitch(
+            SwitchCustom(
                 "Manual light/dark theme",
                 checked = settings[0].lightOrDarkTheme,
                 enable = !settings[0].lightDarkAutomaticTheme,
@@ -65,7 +62,7 @@ private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
                 }
             )
         }
-        TaskSwitch(
+        SwitchCustom(
             "Automatic language",
             checked = settings[0].automaticLanguage,
             onCheckedChange = {
@@ -73,7 +70,7 @@ private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
                 settingsViewModel.updatePreferences(settings[0])
             }
         )
-        TaskSwitch(
+        SwitchCustom(
             "Automatic colors",
             checked = settings[0].automaticColors,
             onCheckedChange = {
@@ -81,7 +78,7 @@ private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
                 settingsViewModel.updatePreferences(settings[0])
             }
         )
-        TaskSwitch(
+        SwitchCustom(
             "No se que añadir aquí",
             checked = settings[0].preferenceBooleanFive,
             onCheckedChange = {
