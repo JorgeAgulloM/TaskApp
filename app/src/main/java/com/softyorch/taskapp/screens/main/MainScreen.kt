@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.FABCustom
+import com.softyorch.taskapp.components.TaskCheckCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
@@ -92,7 +93,7 @@ private fun FillLazyColumn(
     LazyColumn {
         items(tasks) { task ->
             if (checkOrNot == task.checkState)
-                TaskSummaryCheck(
+                TaskCheckCustom(
                     checked = task.checkState,
                     onCheckedChange = {
                         task.checkState = it
