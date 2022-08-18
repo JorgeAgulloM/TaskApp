@@ -16,11 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.model.Settings
+import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.Hello
 import com.softyorch.taskapp.utils.TaskSwitch
-import com.softyorch.taskapp.utils.TopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,9 +27,8 @@ fun SettingsScreen(navController: NavHostController, settingsViewModel: Settings
     Hello("Settings")
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarCustom(
                 title = "Settings",
-                icon = Icons.Rounded.Settings,
                 nameScreen = AppScreens.SettingsScreen.name,
                 navController = navController,
             )

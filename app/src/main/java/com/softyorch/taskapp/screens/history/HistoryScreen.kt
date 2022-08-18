@@ -19,9 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
-import com.softyorch.taskapp.utils.TopAppBar
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,9 +30,8 @@ import com.softyorch.taskapp.utils.TopAppBar
 fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarCustom(
                 title = "History",
-                icon = Icons.Rounded.History,
                 nameScreen = AppScreens.HistoryScreen.name,
                 navController = navController,
             )

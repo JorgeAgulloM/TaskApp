@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
@@ -24,9 +25,8 @@ import java.util.*
 fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarCustom(
                 title = "Main",
-                icon = Icons.Rounded.Home,
                 isMainScreen = true,
                 nameScreen = AppScreens.MainScreen.name,
                 navController = navController,

@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
@@ -28,9 +29,8 @@ fun DetailScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarCustom(
                 title = "Details",
-                icon = Icons.Rounded.Details,
                 nameScreen = AppScreens.DetailsScreen.name,
                 navController = navController,
             )

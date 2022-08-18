@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
@@ -23,8 +24,6 @@ import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.TaskButton
 import com.softyorch.taskapp.utils.TaskKeyboardOptions
 import com.softyorch.taskapp.utils.textFieldTask
-import com.softyorch.taskapp.utils.TopAppBar
-import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,9 +34,8 @@ fun UserDataScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarCustom(
                 title = "User Data",
-                icon = Icons.Rounded.SupervisedUserCircle,
                 nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
             )
