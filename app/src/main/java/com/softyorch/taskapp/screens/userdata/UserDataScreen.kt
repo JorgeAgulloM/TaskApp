@@ -68,8 +68,7 @@ fun UserDataScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(
-                                    top = it.calculateTopPadding() * 1.5f,
-                                    bottom = it.calculateTopPadding() * 2f
+                                    top = it.calculateTopPadding() * 1.5f
                                 ),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceAround
@@ -131,7 +130,7 @@ fun UserDataScreen(
                                 modifier = Modifier
                                     .padding(top = 32.dp)
                                     .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
+                                verticalArrangement = Arrangement.SpaceBetween,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
 
@@ -149,6 +148,15 @@ fun UserDataScreen(
                                     primary = true,
                                     enable = changeData
                                 )
+
+                                TaskButton(
+                                    onClick = {
+                                        cancelDialog = true
+                                    },
+                                    text = "Cancel",
+                                    enable = changeData
+                                )
+
                                 if (confirmDialog) {
                                     confirmDialog = CustomDialog(
                                         cancelOrChangeData = 0,
@@ -161,14 +169,6 @@ fun UserDataScreen(
                                         id = id
                                     )
                                 }
-
-                                TaskButton(
-                                    onClick = {
-                                        cancelDialog = true
-                                    },
-                                    text = "Cancel",
-                                    enable = changeData
-                                )
 
                                 if (cancelDialog) {
                                     cancelDialog = CustomDialog(
