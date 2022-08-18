@@ -532,7 +532,7 @@ fun TaskSummaryCheck(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
 
-    val onChange by rememberSaveable() { mutableStateOf(checked) }
+    val onChange by rememberSaveable { mutableStateOf(checked) }
 
     Row(
         modifier = Modifier.fillMaxWidth(1f).padding(end = 8.dp).height(30.dp).clickable {
@@ -542,7 +542,7 @@ fun TaskSummaryCheck(
         horizontalArrangement = horizontalArrangement,
         content = {
             Checkbox(
-                checked = onChange,
+                checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.tertiary,
