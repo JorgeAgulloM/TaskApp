@@ -17,12 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
+import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.TaskKeyboardOptions
-import com.softyorch.taskapp.utils.textFieldTask
 
 @ExperimentalMaterial3Api
 @Composable
@@ -90,7 +90,7 @@ fun UserDataScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.End
                             ) {
-                                name = textFieldTask(
+                                name = textFieldCustom(
                                     text = name,
                                     //onTextChange = {},
                                     label = "Name",
@@ -100,7 +100,7 @@ fun UserDataScreen(
                                     singleLine = true
                                 )
 
-                                email = textFieldTask(
+                                email = textFieldCustom(
                                     text = email,
                                     //onTextChange = {},
                                     label = "Email",
@@ -110,7 +110,7 @@ fun UserDataScreen(
                                     singleLine = true
                                 )
 
-                                pass = textFieldTask(
+                                pass = textFieldCustom(
                                     text = pass,
                                     //onTextChange = {},
                                     label = "Password",

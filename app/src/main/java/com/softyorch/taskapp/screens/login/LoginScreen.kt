@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.CheckCustom
+import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
@@ -110,7 +111,7 @@ private fun loginContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.End
     ) {
-        name = textFieldTask(
+        name = textFieldCustom(
             text = name,
             label = "Name",
             placeholder = "type your name",
@@ -119,7 +120,7 @@ private fun loginContent(
             singleLine = true,
             isError = name.isEmpty() && pushCreate
         )
-        pass = textFieldTask(
+        pass = textFieldCustom(
             text = pass,
             label = "Password",
             placeholder = "type your password",
@@ -224,7 +225,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.End
     ) {
-        name = textFieldTask(
+        name = textFieldCustom(
             text = name,
             label = "Name",
             placeholder = "type your name",
@@ -233,7 +234,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             singleLine = true,
             isError = name.isEmpty() && pushCreate
         )
-        email = textFieldTask(
+        email = textFieldCustom(
             text = email,
             label = "Email",
             placeholder = "type your email",
@@ -242,7 +243,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             singleLine = true,
             isError = email.isEmpty() && pushCreate
         )
-        emailOk = email == textFieldTask(
+        emailOk = email == textFieldCustom(
             text = email,
             label = "Confirm Email",
             placeholder = "Confirm email",
@@ -251,7 +252,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             singleLine = true,
             isError = (!emailOk || email.isEmpty()) && pushCreate
         )
-        pass = textFieldTask(
+        pass = textFieldCustom(
             text = pass,
             label = "Password",
             placeholder = "Type your password",
@@ -261,7 +262,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             isError = pass.isEmpty() && pushCreate,
             password = true,
         )
-        passOk = pass == textFieldTask(
+        passOk = pass == textFieldCustom(
             text = pass,
             label = "Confirm password",
             placeholder = "Confirm password",
