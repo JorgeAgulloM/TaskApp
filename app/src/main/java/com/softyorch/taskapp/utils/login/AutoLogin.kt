@@ -1,11 +1,16 @@
-package com.softyorch.taskapp.utils
+package com.softyorch.taskapp.utils.login
 
 import android.content.SharedPreferences
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import com.softyorch.taskapp.MainActivity
 import com.softyorch.taskapp.model.UserData
 
 class AutoLogin(
     private var sharedPreferences: SharedPreferences
 ) {
+
+    val state: MutableState<LoginState> = mutableStateOf(LoginState())
 
     fun logIn(
         name: String = "",

@@ -24,7 +24,7 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.AutoLogin
+import com.softyorch.taskapp.utils.login.AutoLogin
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.util.*
