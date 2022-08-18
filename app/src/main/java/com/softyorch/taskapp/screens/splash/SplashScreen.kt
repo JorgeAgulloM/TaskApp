@@ -1,8 +1,8 @@
 package com.softyorch.taskapp.screens.splash
 
 import android.content.SharedPreferences
-import android.util.Log
 import android.view.animation.OvershootInterpolator
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -25,6 +26,8 @@ import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.AutoLogin
 import kotlinx.coroutines.delay
+import java.time.Instant
+import java.util.*
 
 @Composable
 fun SplashScreen(
@@ -37,37 +40,38 @@ fun SplashScreen(
     }
 
     var goToAutoLogin by rememberSaveable { mutableStateOf(value = false) }
+    val context = LocalContext.current
 
     if (!goToAutoLogin) AutoLogin(sharedPreferences = sharedPreferences).let { autoLogin ->
-
-        Log.d("AUTOLOGIN", "Entrando en AutoLogin")
-
         if (autoLogin.isTheUserActive() == true) {
             val userActive = autoLogin.userActive()
-
-            /** Añadir lógica para comprobar el tiempo transcurrido desde el último login*/
-
-            Log.d("AUTOLOGIN", "AutoLogin = True")
-
             produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
-                Log.d("AUTOLOGIN", "Accediendo a produceState")
                 value = splashViewModel.logInWithRememberMe(
                     name = userActive.username,
                     pass = userActive.userPass
                 )
                 if (value.data?.username.isNullOrEmpty()) {
-                    Log.d("AUTOLOGIN", "Sin Autologin por vacío o nulo")
+                    Toast.makeText(
+                        context,
+                        "Error de Login. Por favor, inicia sesión de nuevo",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }.value
                 .let { data ->
-                    data.data?.let {
-                        Log.d("AUTOLOGIN", "si hay usuario")
-
-                        goToAutoLogin = true
+                    data.data?.let { user ->
+                        if (user.rememberMe == true) {
+                            val timeWeekInMillis = 604800000
+                            user.lastLoginDate?.time?.let { timeDiff ->
+                                Date.from(Instant.now()).time.minus(timeDiff)
+                                timeDiff.compareTo(timeWeekInMillis).let {
+                                    goToAutoLogin = true
+                                }
+                            }
+                        }
                     }
                 }
-
-        } else Log.d("AUTOLOGIN", "AutoLogin = False")
+        }
     }
 
     LaunchedEffect(key1 = true, block = {
