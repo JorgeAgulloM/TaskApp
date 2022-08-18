@@ -2,6 +2,7 @@ package com.softyorch.taskapp.screens.login
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,13 +26,13 @@ import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPreferences) {
 
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val context = LocalContext.current
     var loginOrNewAccount by rememberSaveable { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier
@@ -68,22 +69,24 @@ fun LoginScreen(navController: NavHostController) {
             loginContent(
                 viewModel = loginViewModel,
                 navController = navController,
-                context = context
+                context = context,
+                sharedPreferences = sharedPreferences
             )
         else
             newAccountContent(
                 viewModel = loginViewModel,
-                navController = navController
+                navController = navController,
+                context = context
             )
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun loginContent(
     viewModel: LoginViewModel,
     navController: NavController,
-    context: Context
+    context: Context,
+    sharedPreferences: SharedPreferences
 ): Boolean {
 
     var name by rememberSaveable { mutableStateOf(value = "") }
@@ -93,6 +96,7 @@ private fun loginContent(
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     var pushCreate by rememberSaveable { mutableStateOf(value = false) }
     var goToMain by rememberSaveable { mutableStateOf(value = false) }
+    val userActive: Boolean
 
     Column(
         modifier = Modifier
@@ -120,9 +124,9 @@ private fun loginContent(
             password = true,
         )
         TaskSummaryCheck(
-            checked = false,
+            checked = rememberMe,
             onCheckedChange = {
-                rememberMe = it
+                rememberMe = !rememberMe
             },
             text = "Remember Me",
             onClick = {},
@@ -156,10 +160,6 @@ private fun loginContent(
     }
 
     if (goToMain) {
-
-        /*viewModel.viewModelScope.launch() {
-            val userData = viewModel.getUser(name = name)
-        }*/
         produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
             value = viewModel.signInUserWithNameAndPassword(name = name, password = pass)
             if (value.data?.username.isNullOrEmpty()) {
@@ -177,6 +177,15 @@ private fun loginContent(
                 data.data?.let {
                     goToMain = false
                     pushCreate = false
+                    userActive = true
+
+                    AutoLogin(sharedPreferences = sharedPreferences).logIn(
+                        name = name,
+                        pass = pass,
+                        activate = userActive,
+                        remember = rememberMe
+                    )
+
                     navController.popBackStack()
                     navController.navigate(AppScreensRoutes.MainScreen.route)
                 }
@@ -186,7 +195,7 @@ private fun loginContent(
 }
 
 @Composable
-private fun newAccountContent(viewModel: LoginViewModel, navController: NavController): Boolean {
+private fun newAccountContent(viewModel: LoginViewModel, navController: NavController, context: Context): Boolean {
 
     var name by rememberSaveable { mutableStateOf(value = "") }
     var email by rememberSaveable { mutableStateOf(value = "") }
@@ -197,6 +206,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
 
     var login by rememberSaveable { mutableStateOf(value = true) }
     var pushCreate by rememberSaveable { mutableStateOf(value = false) }
+    var createNewUser by rememberSaveable { mutableStateOf(value = false)}
 
     Column(
         modifier = Modifier
@@ -264,6 +274,9 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             onClick = {
                 pushCreate = true
 
+                if (name.isNotEmpty() && emailOk && passOk) {
+                    createNewUser = true
+                }
                 /*navController.popBackStack()
                 navController.navigate(AppScreensRoutes.MainScreen.route)*/
             },
@@ -277,5 +290,49 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
             text = "Go to Login"
         )
     }
+
+    if (createNewUser) {
+
+        val newUser = UserData(
+            username = name,
+            userEmail = email,
+            userPass = pass
+        )
+
+        viewModel.userDataList.collectAsState().value.contains(newUser).let {
+            if (!it) {
+                viewModel.addUser(
+                    userData = newUser
+                ).let {
+                    Toast.makeText(
+                        context,
+                        "User created",
+                        Toast.LENGTH_SHORT
+                    ).show().let {
+                        createNewUser = false
+                        pushCreate = false
+
+                        //Switch the screen to login mode
+                        login = false
+                    }
+                }
+            } else {
+                Toast.makeText(
+                    context,
+                    "Error, user already exist",
+                    Toast.LENGTH_SHORT
+                ).show().let {
+                    createNewUser = false
+                    pushCreate = false
+                }
+            }
+        }
+    }
+
+
+
+
+
+
     return login
 }
