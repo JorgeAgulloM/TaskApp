@@ -40,20 +40,6 @@ val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
 )
 
 @Composable
-fun Hello(name: String = "null") {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "$name Screen", textAlign = TextAlign.Center)
-        }
-    }
-}
-
-
-@Composable
 fun newTask(taskViewModel: TaskViewModel): Boolean {
 
     var title by remember { mutableStateOf("") }

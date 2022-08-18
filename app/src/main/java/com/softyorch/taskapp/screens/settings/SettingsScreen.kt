@@ -17,12 +17,10 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.SwitchCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.utils.Hello
 
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, settingsViewModel: SettingsViewModel) {
-    Hello("Settings")
     Scaffold(
         topBar = {
             TopAppBarCustom(
