@@ -18,6 +18,7 @@ import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.screens.settings.SettingsViewModel
 import com.softyorch.taskapp.screens.settings.SettingsScreen
 import com.softyorch.taskapp.screens.splash.SplashScreen
+import com.softyorch.taskapp.screens.splash.SplashViewModel
 import com.softyorch.taskapp.screens.userdata.UserDataViewModel
 import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
@@ -32,7 +33,12 @@ fun TaskAppNavigation(sharedPreferences: SharedPreferences) {
 
     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
-            SplashScreen(navController = navController)
+            val splashViewModel = hiltViewModel<SplashViewModel>()
+            SplashScreen(
+                navController = navController,
+                splashViewModel = splashViewModel,
+                sharedPreferences = sharedPreferences
+            )
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {
             LoginScreen(navController = navController, sharedPreferences = sharedPreferences)
