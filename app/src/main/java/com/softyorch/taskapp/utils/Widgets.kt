@@ -66,73 +66,9 @@ fun Hello(name: String = "null") {
     }
 }
 
-@Composable
-fun FAB(navController: NavController, taskViewModel: TaskViewModel) {
-
-    var openDialog by remember { mutableStateOf(false) }
-    FloatingActionButton(
-        onClick = {
-            openDialog = true
-            //navController.navigate(TaskAppScreens.NewTaskScreen.name)
-        },
-        modifier = Modifier.size(50.dp),
-        contentColor = MaterialTheme.colorScheme.secondary,
-        containerColor = MaterialTheme.colorScheme.tertiary,
-        content = {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = Icons.Rounded.Add,
-                contentDescription = "Add task"
-            )
-        }
-    )
-
-    if (openDialog) {
-        Dialog(
-            onDismissRequest = {
-                openDialog = false
-            },
-            content = {
-                Column(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth(1.1f)
-                        .fillMaxHeight(0.7f)
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = MaterialTheme.shapes.large
-                        ),
-                    content = {
-                        openDialog = newTask(taskViewModel = taskViewModel)
-                    }
-                )
-            }
-        )
-    }
-
-    //Material you version
-    /*ExtendedFloatingActionButton(
-        onClick = {
-            //TODO, Crear contenido modal o flotante.
-            navController.navigate(TaskAppScreens.NewTaskScreen.name)
-        },
-        //modifier = Modifier.size(50.dp),
-        contentColor = MaterialTheme.colorScheme.secondary,
-        containerColor = MaterialTheme.colorScheme.tertiary,
-        shape = MaterialTheme.shapes.medium,
-        icon = {
-            Icon(
-                //modifier = Modifier.size(32.dp),
-                imageVector = Icons.Rounded.Add,
-                contentDescription = "Add task"
-            )
-        },
-        text = { Text(text = "Add")}
-    )*/
-}
 
 @Composable
-private fun newTask(taskViewModel: TaskViewModel): Boolean {
+fun newTask(taskViewModel: TaskViewModel): Boolean {
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -431,7 +367,7 @@ private fun InfoText(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun TaskSummaryCheck(
     checked: Boolean = false,

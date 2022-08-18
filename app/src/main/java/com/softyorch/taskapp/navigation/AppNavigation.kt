@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.navigation
 
 import android.content.SharedPreferences
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -22,6 +23,7 @@ import com.softyorch.taskapp.screens.splash.SplashViewModel
 import com.softyorch.taskapp.screens.userdata.UserDataViewModel
 import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
+@ExperimentalMaterial3Api
 @Composable
 fun TaskAppNavigation(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()

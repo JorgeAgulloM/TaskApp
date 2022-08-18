@@ -21,7 +21,8 @@ import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.Hello
 import com.softyorch.taskapp.utils.TaskSwitch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, settingsViewModel: SettingsViewModel) {
     Hello("Settings")

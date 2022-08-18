@@ -25,7 +25,7 @@ import com.softyorch.taskapp.utils.TaskButton
 import com.softyorch.taskapp.utils.TaskKeyboardOptions
 import com.softyorch.taskapp.utils.textFieldTask
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
     navController: NavHostController,

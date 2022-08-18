@@ -3,8 +3,6 @@ package com.softyorch.taskapp.screens.main
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.FABCustom
 import com.softyorch.taskapp.components.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
@@ -20,7 +19,7 @@ import com.softyorch.taskapp.utils.*
 import java.time.Instant
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     Scaffold(
@@ -33,8 +32,7 @@ fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
             )
         },
         floatingActionButton = {
-            FAB(
-                navController = navController,
+            FABCustom(
                 taskViewModel = taskViewModel
             )
         },
@@ -43,6 +41,7 @@ fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navController: NavController) {
 
@@ -82,6 +81,7 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumn(
     tasks: List<Task>,

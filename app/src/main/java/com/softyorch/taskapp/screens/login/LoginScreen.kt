@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.screens.login
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -29,7 +29,7 @@ import com.softyorch.taskapp.utils.login.AutoLogin
 import java.time.Instant
 import java.util.*
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPreferences) {
 
@@ -84,6 +84,7 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun loginContent(
     viewModel: LoginViewModel,

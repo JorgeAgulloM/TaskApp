@@ -20,7 +20,8 @@ import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@ExperimentalMaterial3Api
 @Composable
 fun DetailScreen(
     navController: NavController,

@@ -1,12 +1,9 @@
 package com.softyorch.taskapp.screens.history
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,8 +21,7 @@ import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.TaskViewModel
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
     Scaffold(
