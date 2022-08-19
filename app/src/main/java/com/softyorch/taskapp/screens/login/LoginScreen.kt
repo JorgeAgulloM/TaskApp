@@ -181,21 +181,15 @@ private fun loginContent(
             }
         }.value
             .let { data ->
-                data.data?.let {
+                data.data?.let { user ->
                     goToMain = false
                     pushCreate = false
                     userActive = true
 
-                    it.lastLoginDate = Date.from(Instant.now())
-                    it.rememberMe = rememberMe
-                    viewModel.updateLastLoginUser(userData = it)
-
-                    AutoLogin(sharedPreferences = sharedPreferences).logIn(
-                        name = name,
-                        pass = pass,
-                        activate = userActive,
-                        remember = rememberMe
-                    )
+                    user.lastLoginDate = Date.from(Instant.now())
+                    user.rememberMe = rememberMe
+                    viewModel.updateLastLoginUser(userData = user)
+                    AutoLogin().logIn(userData = user)
 
                     navController.popBackStack()
                     navController.navigate(AppScreensRoutes.MainScreen.route)
@@ -206,7 +200,11 @@ private fun loginContent(
 }
 
 @Composable
-private fun newAccountContent(viewModel: LoginViewModel, navController: NavController, context: Context): Boolean {
+private fun newAccountContent(
+    viewModel: LoginViewModel,
+    navController: NavController,
+    context: Context
+): Boolean {
 
     var name by rememberSaveable { mutableStateOf(value = "") }
     var email by rememberSaveable { mutableStateOf(value = "") }
@@ -217,7 +215,7 @@ private fun newAccountContent(viewModel: LoginViewModel, navController: NavContr
 
     var login by rememberSaveable { mutableStateOf(value = true) }
     var pushCreate by rememberSaveable { mutableStateOf(value = false) }
-    var createNewUser by rememberSaveable { mutableStateOf(value = false)}
+    var createNewUser by rememberSaveable { mutableStateOf(value = false) }
 
     Column(
         modifier = Modifier
