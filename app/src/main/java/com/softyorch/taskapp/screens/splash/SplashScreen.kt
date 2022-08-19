@@ -25,7 +25,6 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.login.AutoLogin
-import com.softyorch.taskapp.utils.login.LoginState
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.util.*
@@ -94,7 +93,6 @@ fun SplashScreen(
                 inclusive = true
             }
         }
-        navController.popBackStack()
     })
 
     Surface(
