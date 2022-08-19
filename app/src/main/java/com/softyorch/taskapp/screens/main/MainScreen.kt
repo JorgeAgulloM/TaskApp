@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.FABCustom
 import com.softyorch.taskapp.components.CheckCustom
-import com.softyorch.taskapp.components.TopAppBarCustom
+import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes

@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.SwitchCustom
-import com.softyorch.taskapp.components.TopAppBarCustom
+import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
 
 @ExperimentalMaterial3Api

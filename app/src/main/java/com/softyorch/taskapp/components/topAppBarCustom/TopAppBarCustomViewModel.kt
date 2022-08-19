@@ -1,7 +1,6 @@
-package com.softyorch.taskapp.components
+package com.softyorch.taskapp.components.topAppBarCustom
 
 import androidx.lifecycle.ViewModel
-import com.softyorch.taskapp.repository.UserDataRepository
 import com.softyorch.taskapp.utils.login.AutoLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

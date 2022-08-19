@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.components
+package com.softyorch.taskapp.components.topAppBarCustom
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
@@ -17,7 +17,6 @@ import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.theme.LightMode90t
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun TopAppBarCustom(
