@@ -12,10 +12,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.theme.LightMode90t
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun TopAppBarCustom(
@@ -24,6 +26,10 @@ fun TopAppBarCustom(
     nameScreen: String,
     navController: NavController
 ) {
+
+    val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
+    val userPicture = viewModel.imageUser()
+
     SmallTopAppBar(
         modifier = Modifier.shadow(
             elevation = 4.dp, shape = MaterialTheme.shapes.large.copy(
