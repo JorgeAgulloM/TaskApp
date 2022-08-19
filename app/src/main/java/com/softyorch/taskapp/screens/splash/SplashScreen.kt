@@ -25,6 +25,7 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.login.AutoLogin
+import com.softyorch.taskapp.utils.login.LoginState
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.util.*
@@ -82,13 +83,18 @@ fun SplashScreen(
             })
         )
 
-        delay(2000L)
-        navController.popBackStack()
-        if (goToAutoLogin)
-            navController.navigate(AppScreensRoutes.MainScreen.route)
-        else
-            navController.navigate(AppScreensRoutes.LoginScreen.route)
+        delay(1500L) //2000
 
+        val route = if (goToAutoLogin)
+            AppScreensRoutes.MainScreen.route
+        else AppScreensRoutes.LoginScreen.route
+
+        navController.navigate(route) {
+            popUpTo(AppScreensRoutes.SplashScreen.route) {
+                inclusive = true
+            }
+        }
+        navController.popBackStack()
     })
 
     Surface(
