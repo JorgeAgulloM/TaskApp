@@ -60,6 +60,7 @@ fun UserDataScreen(
                         var pass by remember { mutableStateOf(userData.userPass) }
                         var confirmDialog by rememberSaveable { mutableStateOf(false) }
                         var cancelDialog by rememberSaveable { mutableStateOf(false) }
+                        var logOutDialog by rememberSaveable { mutableStateOf(false) }
 
                         Column(
                             modifier = Modifier
@@ -139,6 +140,14 @@ fun UserDataScreen(
 
                                 ButtonCustom(
                                     onClick = {
+                                        logOutDialog = true
+                                    },
+                                    text = "LogOut",
+                                    primary = true
+                                )
+
+                                ButtonCustom(
+                                    onClick = {
                                         confirmDialog = true
                                     },
                                     text = "Save",
@@ -154,9 +163,22 @@ fun UserDataScreen(
                                     enable = changeData
                                 )
 
+                                if (logOutDialog) {
+                                    logOutDialog = UserDataDialog(
+                                        cancelOrChangeData = 0,
+                                        userDataViewModel = userDataViewModel,
+                                        userData = userData,
+                                        name = name,
+                                        email = email,
+                                        pass = pass,
+                                        navController = navController,
+                                        id = id
+                                    )
+                                }
+
                                 if (confirmDialog) {
                                     confirmDialog = UserDataDialog(
-                                        cancelOrChangeData = 0,
+                                        cancelOrChangeData = 1,
                                         userDataViewModel = userDataViewModel,
                                         userData = userData,
                                         name = name,
@@ -169,7 +191,7 @@ fun UserDataScreen(
 
                                 if (cancelDialog) {
                                     cancelDialog = UserDataDialog(
-                                        cancelOrChangeData = 1,
+                                        cancelOrChangeData = 2,
                                         userDataViewModel = userDataViewModel,
                                         userData = userData,
                                         name = name,
@@ -201,9 +223,12 @@ private fun UserDataDialog(
     var openDialog by rememberSaveable { mutableStateOf(value = true) }
     val text = when (cancelOrChangeData) {
         0 -> {
-            "Are you sure you want to change the user information?"
+            "Are you sure you want to log out?"
         }
         1 -> {
+            "Are you sure you are not making any modifications?"
+        }
+        2 -> {
             "Are you sure you are not making any modifications?"
         }
         else -> {
@@ -222,6 +247,12 @@ private fun UserDataDialog(
                         openDialog = false
                         when (cancelOrChangeData) {
                             0 -> {
+                                userDataViewModel.logOut().let {
+                                    navController.popBackStack()
+                                    navController.navigate(AppScreensRoutes.LoginScreen.route)
+                                }
+                            }
+                            1 -> {
                                 userDataViewModel.updateUserData(
                                     userData = UserData(
                                         id = userData.id,
@@ -236,7 +267,7 @@ private fun UserDataDialog(
                                     navController.navigate(AppScreensRoutes.UserDataScreen.route + "/$id")
                                 }
                             }
-                            1 -> {
+                            2 -> {
                                 navController.popBackStack()
                             }
                             else -> {
