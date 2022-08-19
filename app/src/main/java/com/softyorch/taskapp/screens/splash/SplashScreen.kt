@@ -1,8 +1,8 @@
 package com.softyorch.taskapp.screens.splash
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.view.animation.OvershootInterpolator
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -19,59 +19,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.login.AutoLogin
 import kotlinx.coroutines.delay
-import java.time.Instant
-import java.util.*
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SplashScreen(
     navController: NavHostController,
     splashViewModel: SplashViewModel,
     sharedPreferences: SharedPreferences
 ) {
+    splashViewModel.loadSharedPreferencesInAutoLogin(sharedPreferences = sharedPreferences)
+
     val scale = remember {
         Animatable(0f)
     }
 
     var goToAutoLogin by rememberSaveable { mutableStateOf(value = false) }
-    val context = LocalContext.current
+    //val context = LocalContext.current
 
-    if (!goToAutoLogin) AutoLogin(sharedPreferences = sharedPreferences).let { autoLogin ->
-        if (autoLogin.isTheUserActive() == true) {
-            val userActive = autoLogin.userActive()
-            produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
-                value = splashViewModel.logInWithRememberMe(
-                    name = userActive.username,
-                    pass = userActive.userPass
-                )
-                if (value.data?.username.isNullOrEmpty()) {
-                    Toast.makeText(
-                        context,
-                        "Error de Login. Por favor, inicia sesión de nuevo",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }.value
-                .let { data ->
-                    data.data?.let { user ->
-                        if (user.rememberMe == true) {
-                            val timeWeekInMillis = 604800000
-                            user.lastLoginDate?.time?.let { timeDiff ->
-                                Date.from(Instant.now()).time.minus(timeDiff)
-                                timeDiff.compareTo(timeWeekInMillis).let {
-                                    goToAutoLogin = true
-                                }
-                            }
-                        }
-                    }
-                }
-        }
+    splashViewModel.viewModelScope.launch {
+        if (!goToAutoLogin) goToAutoLogin = splashViewModel.userActivated()
     }
 
     LaunchedEffect(key1 = true, block = {
