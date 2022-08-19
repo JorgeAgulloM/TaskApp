@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.screens.login
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
@@ -19,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.ButtonCustom
@@ -29,6 +31,7 @@ import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.login.AutoLogin
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 
@@ -87,6 +90,7 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 private fun loginContent(
@@ -103,7 +107,7 @@ private fun loginContent(
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     var pushCreate by rememberSaveable { mutableStateOf(value = false) }
     var goToMain by rememberSaveable { mutableStateOf(value = false) }
-    val userActive: Boolean
+    var userActive: Boolean
 
     Column(
         modifier = Modifier
@@ -167,6 +171,24 @@ private fun loginContent(
     }
 
     if (goToMain) {
+        viewModel.viewModelScope.launch {
+            goToMain = false
+            pushCreate = false
+
+            if (viewModel.loginUserIntent(name = name, password = pass, rememberMe = rememberMe)) {
+                navController.popBackStack()
+                navController.navigate(AppScreensRoutes.MainScreen.route)
+            } else {
+                Toast.makeText(
+                    context,
+                    "Incorrect User or Password",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    /*if (goToMain) {
         produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
             value = viewModel.signInUserWithNameAndPassword(name = name, password = pass)
             if (value.data?.username.isNullOrEmpty()) {
@@ -184,7 +206,7 @@ private fun loginContent(
                 data.data?.let { user ->
                     goToMain = false
                     pushCreate = false
-                    userActive = true
+                    //userActive = true
 
                     user.lastLoginDate = Date.from(Instant.now())
                     user.rememberMe = rememberMe
@@ -195,7 +217,7 @@ private fun loginContent(
                     navController.navigate(AppScreensRoutes.MainScreen.route)
                 }
             }
-    }
+    }*/
     return newAccount
 }
 
