@@ -1,53 +1,54 @@
 package com.softyorch.taskapp.utils.login
 
 import android.content.SharedPreferences
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.softyorch.taskapp.MainActivity
 import com.softyorch.taskapp.model.UserData
+import com.softyorch.taskapp.repository.UserDataRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AutoLogin(
-    private var sharedPreferences: SharedPreferences
+class AutoLogin @Inject constructor(
 ) {
 
-    val state: MutableState<LoginState> = mutableStateOf(LoginState())
+    private var _sharedPreferences: SharedPreferences? = null
+    var userDataActive: UserData? = null
 
     fun logIn(
-        name: String = "",
-        pass: String = "",
-        activate: Boolean = false,
-        remember: Boolean = false
+        userData: UserData
     ) {
-        editSP(name = name, pass = pass, activate = activate, remember = remember)
+        userDataActive = userData
+        sharedPreferencesSetUser(
+            name = userData.username,
+            pass = userData.userPass,
+            activate = true,
+            remember = userData.rememberMe == true
+        )
     }
 
     fun logOut() {
-        editSP()
+        sharedPreferencesSetUser()
     }
 
-    private fun editSP(
+    private fun sharedPreferencesSetUser(
         name: String = "",
         pass: String = "",
         activate: Boolean = false,
         remember: Boolean = false
     ) {
-        sharedPreferences.edit().let { sp ->
-            sp.putString("name", name)
-            sp.putString("pass", pass)
-            sp.putString("activate", activate.toString())
-            sp.putString("remember", remember.toString())
-
-            sp.apply()
+        _sharedPreferences?.edit().let { sp ->
+            sp?.putString("name", name)
+            sp?.putString("pass", pass)
+            sp?.putString("activate", activate.toString())
+            sp?.putString("remember", remember.toString())
         }
     }
 
     fun userActive(): UserData {
-        sharedPreferences.let { sp ->
+        _sharedPreferences.let { sp ->
             return UserData(
-                username = sp.getString("name", "").toString(),
+                username = sp?.getString("name", "").toString(),
                 userEmail = "",
-                userPass = sp.getString("pass", "").toString(),
-                rememberMe = sp.getString("remember", "").toBoolean()
+                userPass = sp?.getString("pass", "").toString(),
+                rememberMe = sp?.getString("remember", "").toBoolean()
             )
         }
     }
@@ -56,5 +57,9 @@ class AutoLogin(
         userActive().let { user ->
             return user.rememberMe
         }
+    }
+
+    fun loadSharedPreferences(sharedPreferences: SharedPreferences) {
+        _sharedPreferences = sharedPreferences
     }
 }
