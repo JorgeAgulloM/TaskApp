@@ -27,7 +27,7 @@ fun TopAppBarCustom(
 ) {
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
-    val userPicture = viewModel.imageUser()
+    val userPicture = viewModel.getUserPicture()
 
     SmallTopAppBar(
         modifier = Modifier.shadow(

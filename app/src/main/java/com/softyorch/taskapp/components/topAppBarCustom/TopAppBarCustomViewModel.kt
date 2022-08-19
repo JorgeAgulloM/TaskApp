@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopAppBarCustomViewModel @Inject constructor(
-    private val autoLogin: AutoLogin,
-    //private val repository: UserDataRepository
+    private val autoLogin: AutoLogin
 ) : ViewModel() {
-    fun imageUser(): String? = autoLogin.userDataActive?.userPicture
+    fun getUserPicture(): String? = autoLogin.userDataActive?.userPicture
 }
