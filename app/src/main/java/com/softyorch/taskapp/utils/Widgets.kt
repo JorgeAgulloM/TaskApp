@@ -40,7 +40,7 @@ val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
 )
 
 @Composable
-fun newTask(taskViewModel: TaskViewModel): Boolean {
+fun newTask(taskViewModel: TaskViewModel, userName: String): Boolean {
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -56,7 +56,7 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
     ) {
 
         ShowTask(
-            author = "Jorge Agulló",
+            author = userName,
             date = date,
         )
 
@@ -94,7 +94,7 @@ fun newTask(taskViewModel: TaskViewModel): Boolean {
                     val task = Task(
                         title = title,
                         description = description,
-                        author = "Jorge Agulló"
+                        author = userName
                     )
                     taskViewModel.addTask(task)
                     openDialog = false
