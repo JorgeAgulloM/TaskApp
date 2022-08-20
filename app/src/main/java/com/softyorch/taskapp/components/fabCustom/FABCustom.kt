@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.components
+package com.softyorch.taskapp.components.fabCustom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,11 +11,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.newTask
 
 @Composable
 fun FABCustom(taskViewModel: TaskViewModel) {
+
+    val viewModel = hiltViewModel<FABCustomViewModel>()
+    val userName = viewModel.getUserName()
 
     var openDialog by remember { mutableStateOf(false) }
     FloatingActionButton(
@@ -50,7 +54,7 @@ fun FABCustom(taskViewModel: TaskViewModel) {
                             shape = MaterialTheme.shapes.large
                         ),
                     content = {
-                        openDialog = newTask(taskViewModel = taskViewModel)
+                        openDialog = newTask(taskViewModel = taskViewModel, userName = userName)
                     }
                 )
             }
