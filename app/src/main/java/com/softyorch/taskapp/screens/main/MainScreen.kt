@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.components.FABCustom
+import com.softyorch.taskapp.components.fabCustom.FABCustom
 import com.softyorch.taskapp.components.CheckCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
