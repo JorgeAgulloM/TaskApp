@@ -86,7 +86,7 @@ fun UserDataScreen(
 
                             Column(
                                 modifier = Modifier
-                                    .padding(top = 32.dp)
+                                    .padding(top = 16.dp)
                                     .fillMaxWidth(),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.End
@@ -126,7 +126,7 @@ fun UserDataScreen(
 
                             Column(
                                 modifier = Modifier
-                                    .padding(top = 32.dp)
+                                    .padding(top = 16.dp)
                                     .fillMaxWidth(),
                                 verticalArrangement = Arrangement.SpaceBetween,
                                 horizontalAlignment = Alignment.CenterHorizontally

@@ -35,7 +35,7 @@ fun ButtonCustom(
         onClick = {
             onClick.invoke()
         },
-        modifier = Modifier.width(114.dp).height(26.dp).padding(2.dp),
+        modifier = Modifier.width(144.dp).height(40.dp).padding(2.dp),
         enabled = enable,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
