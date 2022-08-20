@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
     fun getAllTasks(): Flow<List<Task>> =
         taskDatabaseDao.getTasks().flowOn(Dispatchers.IO).conflate()

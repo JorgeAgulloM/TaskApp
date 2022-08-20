@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDataBaseDao) {
     fun getAllUser(): Flow<List<UserData>> =
         userDataBaseDao.getAllUser().flowOn(Dispatchers.IO).conflate()
