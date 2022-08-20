@@ -1,18 +1,13 @@
-package com.softyorch.taskapp.utils.login
+package com.softyorch.taskapp.utils
 
 import android.content.SharedPreferences
 import android.util.Log
 import com.softyorch.taskapp.model.UserData
-import com.softyorch.taskapp.repository.UserDataRepository
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AutoLogin @Inject constructor(
+class StateLogin @Inject constructor(
 ) {
 
     private var _sharedPreferences: SharedPreferences? = null

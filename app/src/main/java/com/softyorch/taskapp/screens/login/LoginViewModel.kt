@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.repository.UserDataRepository
-import com.softyorch.taskapp.utils.login.AutoLogin
+import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val autoLogin: AutoLogin
+    private val stateLogin: StateLogin
 ) : ViewModel() {
     private val _userDataList = MutableStateFlow<List<UserData>>(emptyList())
     val userDataList = _userDataList.asStateFlow()
@@ -50,7 +50,7 @@ class LoginViewModel @Inject constructor(
                 user.lastLoginDate = Date.from(Instant.now())
                 user.rememberMe = rememberMe
                 updateLastLoginUser(userData = user)
-                autoLogin.logIn(userData = user)
+                stateLogin.logIn(userData = user)
                 return true
             }
         }

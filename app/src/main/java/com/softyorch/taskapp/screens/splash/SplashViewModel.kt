@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.repository.UserDataRepository
-import com.softyorch.taskapp.utils.login.AutoLogin
+import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
 import java.util.*
@@ -14,18 +14,18 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val autoLogin: AutoLogin
+    private val stateLogin: StateLogin
 ) : ViewModel() {
     suspend fun logInWithRememberMe(name: String, pass: String): Resource<UserData> =
         repository.signInSharePreferences(name = name, password = pass)
 
     fun loadSharedPreferencesInAutoLogin(sharedPreferences: SharedPreferences) {
-        autoLogin.loadSharedPreferences(sharedPreferences = sharedPreferences)
+        stateLogin.loadSharedPreferences(sharedPreferences = sharedPreferences)
     }
 
     suspend fun userActivated(): Boolean {
-        if (autoLogin.isTheUserActive() == true) {
-            autoLogin.userActive().let { userData ->
+        if (stateLogin.isTheUserActive() == true) {
+            stateLogin.userActive().let { userData ->
                 logInWithRememberMe(
                     name = userData.username,
                     pass = userData.userPass
@@ -36,7 +36,7 @@ class SplashViewModel @Inject constructor(
                             user.lastLoginDate?.time?.let { timeDiff ->
                                 Date.from(Instant.now()).time.minus(timeDiff)
                                 timeDiff.compareTo(timeWeekInMillis).let {
-                                    autoLogin.logIn(userData = user)
+                                    stateLogin.logIn(userData = user)
                                     return true
                                 }
                             }
