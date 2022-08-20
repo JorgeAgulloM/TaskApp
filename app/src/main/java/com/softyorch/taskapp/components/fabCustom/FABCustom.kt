@@ -12,11 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.softyorch.taskapp.screens.main.TaskViewModel
 import com.softyorch.taskapp.utils.newTask
 
 @Composable
-fun FABCustom(taskViewModel: TaskViewModel) {
+fun FABCustom() {
 
     val viewModel = hiltViewModel<FABCustomViewModel>()
     val userName = viewModel.getUserName()
@@ -54,7 +53,7 @@ fun FABCustom(taskViewModel: TaskViewModel) {
                             shape = MaterialTheme.shapes.large
                         ),
                     content = {
-                        openDialog = newTask(taskViewModel = taskViewModel, userName = userName)
+                        openDialog = newTask(addTask = viewModel::addTask, userName = userName)
                     }
                 )
             }

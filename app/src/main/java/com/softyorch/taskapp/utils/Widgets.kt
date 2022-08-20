@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -26,9 +25,10 @@ import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.TextCustom
 import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.screens.main.TaskViewModel
+import kotlinx.coroutines.Job
 import java.time.Instant
 import java.util.*
+import kotlin.reflect.KFunction1
 
 val elevationDp: Dp = 4.dp
 const val elevationF: Float = 4f
@@ -40,7 +40,7 @@ val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
 )
 
 @Composable
-fun newTask(taskViewModel: TaskViewModel, userName: String): Boolean {
+fun newTask(addTask: KFunction1<Task, Job>,userName: String): Boolean {
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -96,7 +96,7 @@ fun newTask(taskViewModel: TaskViewModel, userName: String): Boolean {
                         description = description,
                         author = userName
                     )
-                    taskViewModel.addTask(task)
+                    addTask(task)
                     openDialog = false
                     //navController.popBackStack()
                 },
