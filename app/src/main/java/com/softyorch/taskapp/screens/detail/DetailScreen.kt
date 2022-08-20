@@ -16,7 +16,7 @@ import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.screens.main.TaskViewModel
+import com.softyorch.taskapp.screens.main.MainViewModel
 import com.softyorch.taskapp.utils.*
 
 
@@ -24,9 +24,12 @@ import com.softyorch.taskapp.utils.*
 @Composable
 fun DetailScreen(
     navController: NavController,
-    taskViewModel: TaskViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     id: String
 ) {
+
+    val viewModel = hiltViewModel<DetailScreenViewModel>()
+
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -36,20 +39,22 @@ fun DetailScreen(
             )
         }
     ) {
-        Content(it = it, taskViewModel = taskViewModel, navController = navController, id = id)
+        Content(it = it, viewModel = viewModel, navController = navController, id = id)
     }
 }
 
 @Composable
 private fun Content(
     it: PaddingValues,
-    taskViewModel: TaskViewModel = hiltViewModel(),
+    viewModel: DetailScreenViewModel,
     navController: NavController,
     id: String
 ) {
 
+
+
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
-        value = taskViewModel.getTaskId(id = id)
+        value = viewModel.getTaskId(id = id)
     }.value
         .let { data ->
             data.data?.let { task ->
@@ -88,7 +93,7 @@ private fun Content(
                         ButtonCustom(
                             onClick = {
                                 task.checkState = !task.checkState
-                                taskViewModel.updateTask(task = task)
+                                viewModel.updateTask(task = task)
                                 openCompleteDialog = true
                             },
                             text = if (!task.checkState)
@@ -139,7 +144,7 @@ private fun Content(
                                     ButtonCustom(
                                         onClick = {
                                             openDeleteDialog = false
-                                            taskViewModel.removeTask(task = task)
+                                            viewModel.removeTask(task = task)
                                             navController.navigate(AppScreens.MainScreen.name)
                                         }, "Delete it", true
                                     )
