@@ -15,15 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.screens.main.TaskViewModel
+import com.softyorch.taskapp.screens.main.MainViewModel
 
 
 @ExperimentalMaterial3Api
 @Composable
-fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
+fun HistoryScreen(navController: NavHostController, mainViewModel: MainViewModel) {
+
+    val viewMode = hiltViewModel<HistoryViewModel>()
+
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -33,7 +37,7 @@ fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel
             )
         },
         content = {
-            Content(it = it, navController = navController, taskViewModel = taskViewModel)
+            Content(it = it, navController = navController, viewModel = viewMode)
         })
 }
 
@@ -41,9 +45,9 @@ fun HistoryScreen(navController: NavHostController, taskViewModel: TaskViewModel
 private fun Content(
     it: PaddingValues,
     navController: NavHostController,
-    taskViewModel: TaskViewModel
+    viewModel: HistoryViewModel
 ) {
-    val tasks = taskViewModel.taskList.collectAsState().value
+    val tasks = viewModel.taskList.collectAsState().value
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
