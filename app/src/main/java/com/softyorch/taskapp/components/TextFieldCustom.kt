@@ -23,8 +23,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.theme.LightMode90t
-import com.softyorch.taskapp.utils.TaskKeyboardOptions
-import com.softyorch.taskapp.utils.elevationDp
+import com.softyorch.taskapp.widgets.TaskKeyboardOptions
+import com.softyorch.taskapp.widgets.elevationDp
 
 //TextField V1
 @Composable

@@ -28,12 +28,12 @@ import com.softyorch.taskapp.components.CheckCustom
 import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.widgets.RowInfo
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
-fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPreferences) {
+fun LoginScreen(navController: NavHostController) {
 
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val context = LocalContext.current
@@ -74,13 +74,11 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
             loginContent(
                 viewModel = loginViewModel,
                 navController = navController,
-                context = context,
-                sharedPreferences = sharedPreferences
+                context = context
             )
         else
             newAccountContent(
                 viewModel = loginViewModel,
-                navController = navController,
                 context = context
             )
     }
@@ -92,8 +90,7 @@ fun LoginScreen(navController: NavHostController, sharedPreferences: SharedPrefe
 private fun loginContent(
     viewModel: LoginViewModel,
     navController: NavController,
-    context: Context,
-    sharedPreferences: SharedPreferences
+    context: Context
 ): Boolean {
 
     var name by rememberSaveable { mutableStateOf(value = "") }
@@ -103,7 +100,6 @@ private fun loginContent(
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     var pushCreate by rememberSaveable { mutableStateOf(value = false) }
     var goToMain by rememberSaveable { mutableStateOf(value = false) }
-    var userActive: Boolean
 
     Column(
         modifier = Modifier
@@ -220,7 +216,6 @@ private fun loginContent(
 @Composable
 private fun newAccountContent(
     viewModel: LoginViewModel,
-    navController: NavController,
     context: Context
 ): Boolean {
 

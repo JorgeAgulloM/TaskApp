@@ -17,8 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.theme.DarkMode90t
-import com.softyorch.taskapp.utils.elevationDp
-import com.softyorch.taskapp.utils.elevationF
+import com.softyorch.taskapp.widgets.elevationDp
+import com.softyorch.taskapp.widgets.elevationF
 
 @Composable
 fun ButtonCustom(

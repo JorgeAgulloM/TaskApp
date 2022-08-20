@@ -16,7 +16,7 @@ import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.widgets.RowInfo
 import java.time.Instant
 import java.util.*
 

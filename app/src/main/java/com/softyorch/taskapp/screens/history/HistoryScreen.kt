@@ -24,7 +24,7 @@ import com.softyorch.taskapp.screens.main.MainViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun HistoryScreen(navController: NavHostController, mainViewModel: MainViewModel) {
+fun HistoryScreen(navController: NavHostController) {
 
     val viewMode = hiltViewModel<HistoryViewModel>()
 

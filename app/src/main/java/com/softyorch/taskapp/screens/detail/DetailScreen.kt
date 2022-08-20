@@ -17,14 +17,14 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.MainViewModel
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.widgets.RowInfo
+import com.softyorch.taskapp.widgets.ShowTask
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun DetailScreen(
     navController: NavController,
-    mainViewModel: MainViewModel = hiltViewModel(),
     id: String
 ) {
 

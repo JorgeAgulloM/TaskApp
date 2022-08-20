@@ -22,7 +22,7 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.TaskKeyboardOptions
+import com.softyorch.taskapp.widgets.TaskKeyboardOptions
 
 @ExperimentalMaterial3Api
 @Composable

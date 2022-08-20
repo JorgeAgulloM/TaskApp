@@ -42,7 +42,7 @@ fun TaskAppNavigation(sharedPreferences: SharedPreferences) {
             )
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {
-            LoginScreen(navController = navController, sharedPreferences = sharedPreferences)
+            LoginScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.MainScreen.route) {
             MainScreen(navController = navController, mainViewModel = mainViewModel)
@@ -56,13 +56,12 @@ fun TaskAppNavigation(sharedPreferences: SharedPreferences) {
             navBack.arguments?.getString("id").let { id ->
                 DetailScreen(
                     navController = navController,
-                    mainViewModel = mainViewModel,
                     id = id.toString()
                 )
             }
         }
         composable(route = AppScreensRoutes.HistoryScreen.route) {
-            HistoryScreen(navController = navController, mainViewModel = mainViewModel)
+            HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
             SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)

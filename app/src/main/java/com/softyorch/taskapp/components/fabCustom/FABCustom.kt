@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.softyorch.taskapp.utils.newTask
+import com.softyorch.taskapp.widgets.newTask
 
 @Composable
 fun FABCustom() {
