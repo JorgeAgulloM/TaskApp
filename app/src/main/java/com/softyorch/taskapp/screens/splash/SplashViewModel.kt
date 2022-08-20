@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.screens.splash
 
 import android.content.SharedPreferences
-import androidx.compose.runtime.produceState
 import androidx.lifecycle.ViewModel
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
@@ -37,6 +36,7 @@ class SplashViewModel @Inject constructor(
                             user.lastLoginDate?.time?.let { timeDiff ->
                                 Date.from(Instant.now()).time.minus(timeDiff)
                                 timeDiff.compareTo(timeWeekInMillis).let {
+                                    autoLogin.logIn(userData = user)
                                     return true
                                 }
                             }
