@@ -22,7 +22,7 @@ import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
+fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -33,20 +33,18 @@ fun MainScreen(navController: NavHostController, taskViewModel: TaskViewModel) {
             )
         },
         floatingActionButton = {
-            FABCustom(
-                taskViewModel = taskViewModel
-            )
+            FABCustom()
         },
     ) {
-        Content(it = it, taskViewModel = taskViewModel, navController = navController)
+        Content(it = it, mainViewModel = mainViewModel, navController = navController)
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navController: NavController) {
+private fun Content(it: PaddingValues, mainViewModel: MainViewModel, navController: NavController) {
 
-    val tasks = taskViewModel.taskList.collectAsState().value
+    val tasks = mainViewModel.taskList.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -63,7 +61,7 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
         else
             FillLazyColumn(
                 tasks = tasks,
-                taskViewModel = taskViewModel,
+                mainViewModel = mainViewModel,
                 navController = navController
             )
 
@@ -75,7 +73,7 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
         else
             FillLazyColumn(
                 tasks = tasks,
-                taskViewModel = taskViewModel,
+                mainViewModel = mainViewModel,
                 checkOrNot = true,
                 navController = navController
             )
@@ -86,7 +84,7 @@ private fun Content(it: PaddingValues, taskViewModel: TaskViewModel, navControll
 @Composable
 private fun FillLazyColumn(
     tasks: List<Task>,
-    taskViewModel: TaskViewModel,
+    mainViewModel: MainViewModel,
     checkOrNot: Boolean = false,
     navController: NavController
 ) {
@@ -98,7 +96,7 @@ private fun FillLazyColumn(
                     onCheckedChange = {
                         task.checkState = it
                         task.finishDate = if (it) Date.from(Instant.now()) else null
-                        taskViewModel.updateTask(task)
+                        mainViewModel.updateTask(task)
                         //Esto debe cambiar, no es correcto, aunque funciona
                         navController.popBackStack()
                         navController.navigate(AppScreensRoutes.MainScreen.route)
