@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.screens.splash
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
@@ -16,23 +15,19 @@ class SplashViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
-    suspend fun logInWithRememberMe(name: String, pass: String): Resource<UserData> =
+    private suspend fun logInWithRememberMe(name: String, pass: String): Resource<UserData> =
         repository.signInSharePreferences(name = name, password = pass)
 
-    fun loadSharedPreferencesInAutoLogin(sharedPreferences: SharedPreferences) {
-        stateLogin.loadSharedPreferences(sharedPreferences = sharedPreferences)
-    }
-
     suspend fun userActivated(): Boolean {
-        if (stateLogin.isTheUserActive() == true) {
+        if (stateLogin.isTheUserActive()) {
             stateLogin.userActive().let { userData ->
                 logInWithRememberMe(
                     name = userData.username,
                     pass = userData.userPass
                 ).let { data ->
                     data.data?.let { user ->
-                        if (user.rememberMe == true) {
-                            val timeWeekInMillis = 604800000
+                        if (user.rememberMe) {
+                            val timeWeekInMillis = 604800000L
                             user.lastLoginDate?.time?.let { timeDiff ->
                                 Date.from(Instant.now()).time.minus(timeDiff)
                                 timeDiff.compareTo(timeWeekInMillis).let {

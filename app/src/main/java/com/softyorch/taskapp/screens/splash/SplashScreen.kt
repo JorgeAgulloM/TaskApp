@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.screens.splash
 
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -30,10 +28,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SplashScreen(
     navController: NavHostController,
-    splashViewModel: SplashViewModel,
-    sharedPreferences: SharedPreferences
+    splashViewModel: SplashViewModel
 ) {
-    splashViewModel.loadSharedPreferencesInAutoLogin(sharedPreferences = sharedPreferences)
 
     val scale = remember {
         Animatable(0f)

@@ -35,13 +35,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    suspend fun signInUserWithNameAndPassword(name: String, password: String): Resource<UserData> =
+    private suspend fun signInUserWithNameAndPassword(name: String, password: String): Resource<UserData> =
         repository.signInUserWithNameAndPassword(name = name, password = password)
 
     fun addUser(userData: UserData) =
         viewModelScope.launch { repository.addUserData(userData = userData) }
 
-    fun updateLastLoginUser(userData: UserData) =
+    private fun updateLastLoginUser(userData: UserData) =
         viewModelScope.launch { repository.updateUserData(userData = userData) }
 
     suspend fun loginUserIntent(name: String, password: String, rememberMe: Boolean): Boolean {

@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.SwitchCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
@@ -20,7 +20,7 @@ import com.softyorch.taskapp.navigation.AppScreens
 
 @ExperimentalMaterial3Api
 @Composable
-fun SettingsScreen(navController: NavHostController, settingsViewModel: SettingsViewModel) {
+fun SettingsScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -30,59 +30,75 @@ fun SettingsScreen(navController: NavHostController, settingsViewModel: Settings
             )
         },
         content = {
-            Content(it = it, settingsViewModel = settingsViewModel)
+            Content(it = it)
         })
 }
 
 @Composable
-private fun Content(it: PaddingValues, settingsViewModel: SettingsViewModel) {
-    val settings = settingsViewModel.settingsList.collectAsState().value
-    var hideLightDark by rememberSaveable{ mutableStateOf(settings[0].lightDarkAutomaticTheme)}
+private fun Content(it: PaddingValues) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
+    var settingsUserData = viewModel.getUserActiveSharedPreferences()
+
+    var hideLightDark by rememberSaveable {
+        mutableStateOf(
+            settingsUserData?.lightDarkAutomaticTheme ?: false
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
-        SwitchCustom(
-            "Light/Dark Automatic Theme",
-            checked = settings[0].lightDarkAutomaticTheme,
-            onCheckedChange = {
-                settings[0].lightDarkAutomaticTheme = !settings[0].lightDarkAutomaticTheme
-                settingsViewModel.updatePreferences(settings[0])
-                hideLightDark = !hideLightDark
-            }
-        )
-        if (!hideLightDark) {
+        if (settingsUserData != null) {
             SwitchCustom(
-                "Manual light/dark theme",
-                checked = settings[0].lightOrDarkTheme,
-                enable = !settings[0].lightDarkAutomaticTheme,
+                "Light/Dark Automatic Theme",
+                checked = settingsUserData.lightDarkAutomaticTheme,
                 onCheckedChange = {
-                    settings[0].lightOrDarkTheme = !settings[0].lightOrDarkTheme
-                    settingsViewModel.updatePreferences(settings[0])
+                    settingsUserData.lightDarkAutomaticTheme =
+                        !settingsUserData.lightDarkAutomaticTheme
+                    hideLightDark = !hideLightDark
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                }
+            )
+
+            if (!hideLightDark) {
+
+                SwitchCustom(
+                    "Manual light/dark theme",
+                    checked = settingsUserData.lightOrDarkTheme,
+                    onCheckedChange = {
+                        settingsUserData.lightOrDarkTheme = !settingsUserData.lightOrDarkTheme
+                        viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    }
+                )
+
+            }
+
+            SwitchCustom(
+                "Automatic language",
+                checked = settingsUserData.automaticLanguage,
+                onCheckedChange = {
+                    settingsUserData.automaticLanguage = !settingsUserData.automaticLanguage
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                }
+            )
+
+
+            SwitchCustom(
+                "Automatic colors",
+                checked = settingsUserData.automaticColors,
+                onCheckedChange = {
+                    settingsUserData.automaticColors = !settingsUserData.automaticColors
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                }
+            )
+
+
+            SwitchCustom(
+                "Remember Me",
+                checked = settingsUserData.rememberMe,
+                onCheckedChange = {
+                    settingsUserData.rememberMe = !settingsUserData.rememberMe
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
                 }
             )
         }
-        SwitchCustom(
-            "Automatic language",
-            checked = settings[0].automaticLanguage,
-            onCheckedChange = {
-                settings[0].automaticLanguage = !settings[0].automaticLanguage
-                settingsViewModel.updatePreferences(settings[0])
-            }
-        )
-        SwitchCustom(
-            "Automatic colors",
-            checked = settings[0].automaticColors,
-            onCheckedChange = {
-                settings[0].automaticColors = !settings[0].automaticColors
-                settingsViewModel.updatePreferences(settings[0])
-            }
-        )
-        SwitchCustom(
-            "No se que añadir aquí",
-            checked = settings[0].preferenceBooleanFive,
-            onCheckedChange = {
-                settings[0].preferenceBooleanFive = !settings[0].preferenceBooleanFive
-                settingsViewModel.updatePreferences(settings[0])
-            }
-        )
     }
 }

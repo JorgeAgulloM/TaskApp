@@ -12,8 +12,15 @@ data class UserData(
     @ColumnInfo(name = "user_email") var userEmail: String,
     @ColumnInfo(name = "user_pass") var userPass: String,
     @ColumnInfo(name = "user_picture") var userPicture: String? = null,
+    /**
+     * User Settings
+     */
     @ColumnInfo(name = "last_login_date") var lastLoginDate: Date? = null,
-    @ColumnInfo(name = "remember_me") var rememberMe: Boolean? = false
+    @ColumnInfo(name = "remember_me") var rememberMe: Boolean = false,
+    @ColumnInfo(name = "light_dark_automatic_theme") var lightDarkAutomaticTheme: Boolean = true,
+    @ColumnInfo(name = "light_or_dark_theme") var lightOrDarkTheme: Boolean = false,
+    @ColumnInfo(name = "automatic_language") var automaticLanguage: Boolean = true,
+    @ColumnInfo(name = "automatic_colors") var automaticColors: Boolean = false,
+    @ColumnInfo(name = "time_limit_auto_loading") var timeLimitAutoLoading: Long = 604800000L, //One week
+    @ColumnInfo(name = "text_size") var textSize: Int = 0
 )
-
-
