@@ -35,13 +35,27 @@ class StateLogin @Inject constructor(
         name: String = "",
         pass: String = "",
         activate: Boolean = false,
-        remember: Boolean = false
+        remember: Boolean = false,
+        //settingList: List<Boolean> = mutableListOf(false, false, false, false, false)
     ) {
         _sharedPreferences?.edit().let { sp ->
             sp?.putString("name", name)
             sp?.putString("pass", pass)
             sp?.putString("activate", activate.toString())
             sp?.putString("remember", remember.toString())
+
+            sp?.apply()
+        }
+        setUserSettings()//(settingList = settingList)
+    }
+
+    fun setUserSettings(settingList: List<Boolean> = mutableListOf(false, false, false, false, false)) {
+        _sharedPreferences?.edit().let { sp ->
+            sp?.putBoolean("bool_pref_one", settingList[0])
+            sp?.putBoolean("bool_pref_two", settingList[1])
+            sp?.putBoolean("bool_pref_three", settingList[2])
+            sp?.putBoolean("bool_pref_four", settingList[3])
+            sp?.putBoolean("bool_pref_five", settingList[4])
 
             sp?.apply()
         }
