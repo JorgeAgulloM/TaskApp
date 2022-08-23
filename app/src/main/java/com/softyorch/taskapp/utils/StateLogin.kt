@@ -54,17 +54,17 @@ class StateLogin @Inject constructor(
         textSize: Int = 0
     ) {
         _sharedPreferences?.edit().let { sp ->
-            sp?.putString("name", name)
-            sp?.putString("pass", pass)
-            sp?.putBoolean("activate", activate)
-            sp?.putString("last_login_date", lastLoginDate.toString())
-            sp?.putBoolean("remember_me", rememberMe)
-            sp?.putBoolean("light_dark_automatic_theme", lightDarkAutomaticTheme)
-            sp?.putBoolean("light_or_dark_theme", lightOrDarkTheme)
-            sp?.putBoolean("automatic_language", automaticLanguage)
-            sp?.putBoolean("automatic_colors", automaticColors)
-            sp?.putLong("time_limit_auto_loading", timeLimitAutoLoading)
-            sp?.putInt("text_size", textSize)
+            sp?.putString(Settings.Name.name, name)
+            sp?.putString(Settings.Pass.name, pass)
+            sp?.putBoolean(Settings.Activate.name, activate)
+            sp?.putString(Settings.LastLoginDate.name, lastLoginDate.toString())
+            sp?.putBoolean(Settings.RememberMe.name, rememberMe)
+            sp?.putBoolean(Settings.LightDarkAutomaticTheme.name, lightDarkAutomaticTheme)
+            sp?.putBoolean(Settings.LightOrDarkTheme.name, lightOrDarkTheme)
+            sp?.putBoolean(Settings.AutomaticLanguage.name, automaticLanguage)
+            sp?.putBoolean(Settings.AutomaticColors.name, automaticColors)
+            sp?.putLong(Settings.TimeLimitAutoLoading.name, timeLimitAutoLoading)
+            sp?.putInt(Settings.TextSize.name, textSize)
 
             sp?.apply()
         }
@@ -89,39 +89,46 @@ class StateLogin @Inject constructor(
 
     fun loadSettings(): List<Any> {
         val list: MutableList<Any> = mutableListOf()
-
-        _sharedPreferences?.let { sp ->
-            if (!sp.getString("name", "").isNullOrEmpty()) {
-                list.addAll(getSharedPreferences())
-            } else {
-                sp.edit().let { spe ->
-                    list.add(spe.putString("last_login_date", Date.from(Instant.now()).toString()))
-                    list.add(spe.putBoolean("remember_me", false))
-                    list.add(spe.putBoolean("light_dark_automatic_theme", true))
-                    list.add(spe.putBoolean("light_or_dark_theme", false))
-                    list.add(spe.putBoolean("automatic_language", true))
-                    list.add(spe.putBoolean("automatic_colors", false))
-                    list.add(spe.putLong("time_limit_auto_loading", 604800000L))
-                    list.add(spe.putInt("text_size", 0))
-
-                    spe.apply()
-                }
-            }
+        if (!_sharedPreferences?.getString(Settings.Name.name, "").isNullOrEmpty()) {
+            list.addAll(getSharedPreferences())
+        } else {
+            list.addAll(setSharedPreferencesFirst())
         }
         return list
     }
 
-    fun getSharedPreferences(): List<Any> {
+    private fun setSharedPreferencesFirst(): List<Any> {
+        _sharedPreferences?.edit()?.let { spe ->
+            spe.putString(Settings.LastLoginDate.name, Date.from(Instant.now()).toString())
+            spe.putBoolean(Settings.RememberMe.name, false)
+            spe.putBoolean(Settings.LightDarkAutomaticTheme.name, true)
+            spe.putBoolean(Settings.LightOrDarkTheme.name, false)
+            spe.putBoolean(Settings.AutomaticLanguage.name, true)
+            spe.putBoolean(Settings.AutomaticColors.name, false)
+            spe.putLong(Settings.TimeLimitAutoLoading.name, 604800000L)
+            spe.putInt(Settings.TextSize.name, 0)
+
+            spe.apply()
+        }
+        return getSharedPreferences()
+    }
+
+    private fun getSharedPreferences(): List<Any> {
         val list: MutableList<Any> = mutableListOf()
         _sharedPreferences?.let { sp ->
-            list.add(sp.getString("last_login_date", Date.from(Instant.now()).toString())!!)
-            list.add(sp.getBoolean("remember_me", false))
-            list.add(sp.getBoolean("light_dark_automatic_theme", true))
-            list.add(sp.getBoolean("light_or_dark_theme", false))
-            list.add(sp.getBoolean("automatic_language", true))
-            list.add(sp.getBoolean("automatic_colors", false))
-            list.add(sp.getLong("time_limit_auto_loading", 604800000L))
-            list.add(sp.getInt("text_size", 0))
+            list.add(
+                sp.getString(
+                    Settings.LastLoginDate.name,
+                    Date.from(Instant.now()).toString()
+                )!!
+            )
+            list.add(sp.getBoolean(Settings.RememberMe.name, false))
+            list.add(sp.getBoolean(Settings.LightDarkAutomaticTheme.name, true))
+            list.add(sp.getBoolean(Settings.LightOrDarkTheme.name, false))
+            list.add(sp.getBoolean(Settings.AutomaticLanguage.name, true))
+            list.add(sp.getBoolean(Settings.AutomaticColors.name, false))
+            list.add(sp.getLong(Settings.TimeLimitAutoLoading.name, 604800000L))
+            list.add(sp.getInt(Settings.TextSize.name, 0))
         }
         return list
     }
