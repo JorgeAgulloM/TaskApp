@@ -1,48 +1,34 @@
 package com.softyorch.taskapp.activities
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("CoroutineCreationDuringComposition")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
             val viewModel = hiltViewModel<MainActivityViewModel>()
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
-            var settingList: List<Any> = emptyList()
-
-            viewModel.viewModelScope.launch{
-                settingList = viewModel.loadSettings()
-
-
-
-                Log.d("settingList", "settingList -> ${settingList.size}")
-
-            }.isCompleted.let {
-                TaskApp(settingList = settingList)
-            }
+            val settingList = viewModel.loadSettings()
+            TaskApp(settingList = settingList)
         }
     }
 }
@@ -60,10 +46,15 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 @Composable
 fun TaskApp(settingList: List<Any>) {
+
+    val darkSystem by rememberSaveable { mutableStateOf(settingList[2] as Boolean) }
+    val light by rememberSaveable { mutableStateOf(settingList[3] as Boolean) }
+    val colorSystem by rememberSaveable { mutableStateOf(settingList[5] as Boolean) }
+
     TaskAppTheme(
-        darkTheme = if (settingList[2] as Boolean) isSystemInDarkTheme()
-        else settingList[3] as Boolean,
-        dynamicColor = settingList[5] as Boolean
+        darkTheme = if (darkSystem) isSystemInDarkTheme()
+        else light,
+        dynamicColor = colorSystem
     ) {
         Surface(
             modifier = Modifier.fillMaxSize()
@@ -72,3 +63,12 @@ fun TaskApp(settingList: List<Any>) {
         }
     }
 }
+
+/*@OptIn(ExperimentalMaterial3Api::class)
+fun reloadApp(context: MainActivity){
+    val intent = Intent(context, MainActivity::class.java)
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    context.startActivity(intent)
+    context.finish()
+    Runtime.getRuntime().exit(0)
+}*/

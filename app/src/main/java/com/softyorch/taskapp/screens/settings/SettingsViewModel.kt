@@ -30,6 +30,8 @@ class SettingsViewModel @Inject constructor(
             userData.textSize = settingsUserData.textSize
 
             repository.updateUserData(userData = userData)
+
+            stateLogin.logIn(userData = userData)
         }
     }
 }

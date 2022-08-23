@@ -2,7 +2,6 @@ package com.softyorch.taskapp.screens.login
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -168,8 +167,11 @@ private fun loginContent(
             pushCreate = false
 
             if (viewModel.loginUserIntent(name = name, password = pass, rememberMe = rememberMe)) {
-                navController.popBackStack()
-                navController.navigate(AppScreensRoutes.MainScreen.route)
+                navController.navigate(AppScreensRoutes.MainScreen.route){
+                    popUpTo(AppScreensRoutes.LoginScreen.route) {
+                        inclusive = true
+                    }
+                }
             } else {
                 Toast.makeText(
                     context,
@@ -179,37 +181,6 @@ private fun loginContent(
             }
         }
     }
-
-    /*if (goToMain) {
-        produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
-            value = viewModel.signInUserWithNameAndPassword(name = name, password = pass)
-            if (value.data?.username.isNullOrEmpty()) {
-                Toast.makeText(
-                    context,
-                    "Incorrect User or Password",
-                    Toast.LENGTH_SHORT
-                ).show().let {
-                    goToMain = false
-                    pushCreate = false
-                }
-            }
-        }.value
-            .let { data ->
-                data.data?.let { user ->
-                    goToMain = false
-                    pushCreate = false
-                    //userActive = true
-
-                    user.lastLoginDate = Date.from(Instant.now())
-                    user.rememberMe = rememberMe
-                    viewModel.updateLastLoginUser(userData = user)
-                    AutoLogin().logIn(userData = user)
-
-                    navController.popBackStack()
-                    navController.navigate(AppScreensRoutes.MainScreen.route)
-                }
-            }
-    }*/
     return newAccount
 }
 

@@ -26,6 +26,7 @@ class StateLogin @Inject constructor(
             name = userData.username,
             pass = userData.userPass,
             lastLoginDate = userData.lastLoginDate,
+            activate = true,
             rememberMe = userData.rememberMe,
             lightDarkAutomaticTheme = userData.lightDarkAutomaticTheme,
             lightOrDarkTheme = userData.lightOrDarkTheme,
@@ -71,12 +72,12 @@ class StateLogin @Inject constructor(
     }
 
     fun userActive(): UserData {
-        _sharedPreferences.let { sp ->
+        _sharedPreferences!!.let { sp ->
             return UserData(
-                username = sp?.getString("name", "").toString(),
+                username = sp.getString(Settings.Name.name, "").toString(),
                 userEmail = "",
-                userPass = sp?.getString("pass", "").toString(),
-                rememberMe = sp?.getBoolean("remember_me", false) == true
+                userPass = sp.getString(Settings.Pass.name, "").toString(),
+                rememberMe = sp.getBoolean(Settings.RememberMe.name, false)
             )
         }
     }
@@ -97,6 +98,9 @@ class StateLogin @Inject constructor(
         return list
     }
 
+    /**
+     * Is only used the first time the user starts the application
+     */
     private fun setSharedPreferencesFirst(): List<Any> {
         _sharedPreferences?.edit()?.let { spe ->
             spe.putString(Settings.LastLoginDate.name, Date.from(Instant.now()).toString())

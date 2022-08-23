@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.softyorch.taskapp.activities.MainActivity
 import com.softyorch.taskapp.screens.detail.DetailScreen
 import com.softyorch.taskapp.screens.history.HistoryScreen
 import com.softyorch.taskapp.screens.login.LoginScreen
