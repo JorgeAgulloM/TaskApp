@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.CircularIndicatorCustom
 import com.softyorch.taskapp.components.SwitchCustom
+import com.softyorch.taskapp.components.sliderCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
@@ -109,9 +110,22 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
                 onCheckedChange = {
                     settingsUserData.rememberMe = !settingsUserData.rememberMe
                     viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    needReloadDialog = true
                 },
                 enable = !needReloadDialog
             )
+
+            settingsUserData.timeLimitAutoLoading = sliderCustom(
+                text = "Time to automatic login",
+                initValue = settingsUserData.timeLimitAutoLoading,
+                onValueFinished = {
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    needReloadDialog = true
+                },
+                enable = !needReloadDialog
+            )
+
+
 
             if (needReloadDialog) {
                 ApplyChanges(viewModel, settingsUserData, changeTheme)
@@ -139,3 +153,33 @@ private fun ApplyChanges(
         changeTheme.invoke()
     }
 }
+
+/*
+private fun loadData(selection: Int){
+    when (selection) {
+        0 -> TimeLimitAutoLogin.OneDay().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+        1 -> TimeLimitAutoLogin.OneWeek().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+        2 -> TimeLimitAutoLogin.TwoWeeks().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+        3 -> TimeLimitAutoLogin.OneMonth().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+        4 -> TimeLimitAutoLogin.SixMonth().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+        5 -> TimeLimitAutoLogin.OneYear().let {
+            returnedValue = it.time
+            textShow = it.textTime
+        }
+    }
+}*/

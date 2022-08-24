@@ -51,7 +51,7 @@ class StateLogin @Inject constructor(
         lightOrDarkTheme: Boolean = false,
         automaticLanguage: Boolean = true,
         automaticColors: Boolean = false,
-        timeLimitAutoLoading: Long = 604800000L, //One week
+        timeLimitAutoLoading: Int = 1, //One week
         textSize: Int = 0
     ) {
         _sharedPreferences?.edit().let { sp ->
@@ -64,7 +64,7 @@ class StateLogin @Inject constructor(
             sp?.putBoolean(Settings.LightOrDarkTheme.name, lightOrDarkTheme)
             sp?.putBoolean(Settings.AutomaticLanguage.name, automaticLanguage)
             sp?.putBoolean(Settings.AutomaticColors.name, automaticColors)
-            sp?.putLong(Settings.TimeLimitAutoLoading.name, timeLimitAutoLoading)
+            sp?.putInt(Settings.TimeLimitAutoLoading.name, timeLimitAutoLoading)
             sp?.putInt(Settings.TextSize.name, textSize)
 
             sp?.apply()
@@ -109,7 +109,7 @@ class StateLogin @Inject constructor(
             spe.putBoolean(Settings.LightOrDarkTheme.name, false)
             spe.putBoolean(Settings.AutomaticLanguage.name, true)
             spe.putBoolean(Settings.AutomaticColors.name, false)
-            spe.putLong(Settings.TimeLimitAutoLoading.name, 604800000L)
+            spe.putLong(Settings.TimeLimitAutoLoading.name, 1)
             spe.putInt(Settings.TextSize.name, 0)
 
             spe.apply()
@@ -131,7 +131,7 @@ class StateLogin @Inject constructor(
             list.add(sp.getBoolean(Settings.LightOrDarkTheme.name, false))
             list.add(sp.getBoolean(Settings.AutomaticLanguage.name, true))
             list.add(sp.getBoolean(Settings.AutomaticColors.name, false))
-            list.add(sp.getLong(Settings.TimeLimitAutoLoading.name, 604800000L))
+            list.add(sp.getInt(Settings.TimeLimitAutoLoading.name, 1))
             list.add(sp.getInt(Settings.TextSize.name, 0))
         }
         return list

@@ -5,6 +5,9 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
+import com.softyorch.taskapp.utils.TimeLimitAutoLogin
+import com.softyorch.taskapp.utils.TimeLimitAutoLogin.*
+import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
 import java.util.*
@@ -27,7 +30,8 @@ class SplashViewModel @Inject constructor(
                 ).let { data ->
                     data.data?.let { user ->
                         if (user.rememberMe) {
-                            val timeWeekInMillis = 604800000L
+                            val timeWeekInMillis =
+                                timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
                             user.lastLoginDate?.time?.let { timeDiff ->
                                 Date.from(Instant.now()).time.minus(timeDiff)
                                 timeDiff.compareTo(timeWeekInMillis).let {

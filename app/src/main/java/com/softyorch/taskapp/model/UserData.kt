@@ -21,6 +21,6 @@ data class UserData(
     @ColumnInfo(name = "light_or_dark_theme") var lightOrDarkTheme: Boolean = false,
     @ColumnInfo(name = "automatic_language") var automaticLanguage: Boolean = true,
     @ColumnInfo(name = "automatic_colors") var automaticColors: Boolean = false,
-    @ColumnInfo(name = "time_limit_auto_loading") var timeLimitAutoLoading: Long = 604800000L, //One week
+    @ColumnInfo(name = "time_limit_auto_loading") var timeLimitAutoLoading: Int = 1, //One week
     @ColumnInfo(name = "text_size") var textSize: Int = 0
 )
