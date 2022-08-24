@@ -19,6 +19,7 @@ import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.widgets.RowInfo
 import com.softyorch.taskapp.widgets.ShowTask
+import com.softyorch.taskapp.widgets.newTask
 import java.time.Instant
 import java.util.*
 
@@ -52,7 +53,6 @@ private fun Content(
     navController: NavController,
     id: String
 ) {
-
 
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = viewModel.getTaskId(id = id)
@@ -90,7 +90,17 @@ private fun Content(
                         verticalArrangement = Arrangement.Top
                     ) {
 
+                        var openEditDialog by rememberSaveable { mutableStateOf(false) }
                         var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
+                        var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
+                        ButtonCustom(
+                            onClick = {
+                                openEditDialog = true
+                            },
+                            text = "Edit task",
+                            primary = true
+                        )
 
                         ButtonCustom(
                             onClick = {
@@ -105,6 +115,21 @@ private fun Content(
                                 "Completed",
                             primary = true
                         )
+
+                        ButtonCustom(
+                            onClick = {
+                                openDeleteDialog = true
+                            },
+                            text = "Delete"
+                        )
+
+                        if (openEditDialog) {
+                            openEditDialog = newTask(
+                                addOrEditTaskFunc = viewModel::updateTask,
+                                userName = viewModel.nameOfUserLogin(),
+                                taskToEdit = task
+                            )
+                        }
 
                         if (openCompleteDialog) {
                             AlertDialog(onDismissRequest = {
@@ -128,15 +153,6 @@ private fun Content(
                                     )
                                 })
                         }
-
-                        var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
-
-                        ButtonCustom(
-                            onClick = {
-                                openDeleteDialog = true
-                            },
-                            text = "Delete"
-                        )
 
                         if (openDeleteDialog) {
                             AlertDialog(
