@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.components.fabCustom
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -10,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.widgets.newTask
 
@@ -38,25 +36,10 @@ fun FABCustom() {
     )
 
     if (openDialog) {
-        Dialog(
-            onDismissRequest = {
-                openDialog = false
-            },
-            content = {
-                Column(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth(1.1f)
-                        .fillMaxHeight(0.7f)
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = MaterialTheme.shapes.large
-                        ),
-                    content = {
-                        openDialog = newTask(addTask = viewModel::addTask, userName = userName)
-                    }
-                )
-            }
+        openDialog = newTask(
+            addOrEditTaskFunc = viewModel::addTask,
+            userName = userName,
+            taskToEdit = null
         )
     }
 
