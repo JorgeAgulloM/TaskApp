@@ -102,7 +102,7 @@ fun textFieldCustom(
         else PasswordVisualTransformation(),
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
-        maxLines = 5,
+        maxLines = 3,
         shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
