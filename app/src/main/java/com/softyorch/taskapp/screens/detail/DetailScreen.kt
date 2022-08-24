@@ -16,9 +16,11 @@ import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.screens.main.MainViewModel
+import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.widgets.RowInfo
 import com.softyorch.taskapp.widgets.ShowTask
+import java.time.Instant
+import java.util.*
 
 
 @ExperimentalMaterial3Api
@@ -52,7 +54,6 @@ private fun Content(
 ) {
 
 
-
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = viewModel.getTaskId(id = id)
     }.value
@@ -75,8 +76,9 @@ private fun Content(
                     RowInfo("Details", fontSize = 20.sp, paddingStart = 24.dp)
                     ShowTask(
                         author = task.author,
-                        date = task.entryDate.toString(),
-                        completedDate = task.finishDate.toString(),
+                        date = task.entryDate.toStringFormatted(task.entryDate),
+                        completedDate = task.finishDate?.toStringFormatted(task.finishDate!!)
+                            ?: "Unknown",
                         paddingStart = 0.dp
                     )
 
@@ -93,6 +95,7 @@ private fun Content(
                         ButtonCustom(
                             onClick = {
                                 task.checkState = !task.checkState
+                                task.finishDate = Date.from(Instant.now())
                                 viewModel.updateTask(task = task)
                                 openCompleteDialog = true
                             },

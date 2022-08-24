@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.model.Task
+import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
 import java.time.Instant
 import java.util.*
@@ -22,7 +23,8 @@ fun newTask(addTask: KFunction1<Task, Job>, userName: String): Boolean {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var openDialog by remember { mutableStateOf(true) }
-    val date by remember { mutableStateOf(Date.from(Instant.now()).toString().split(" GMT")[0]) }
+    val date by remember { mutableStateOf(Date.from(Instant.now())) }
+    val dateFormatted = date.toStringFormatted(date = date)
 
     Column(
         modifier = Modifier
@@ -34,7 +36,7 @@ fun newTask(addTask: KFunction1<Task, Job>, userName: String): Boolean {
 
         ShowTask(
             author = userName,
-            date = date,
+            date = dateFormatted,
         )
 
         RowInfo(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)

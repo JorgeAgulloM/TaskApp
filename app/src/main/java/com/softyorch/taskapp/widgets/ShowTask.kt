@@ -43,8 +43,7 @@ fun ShowTask(
         ) {
             TextCustom("Created By:", true)
             TextCustom("Created date:", true)
-            if (completedDate.isNotEmpty() && completedDate != "null")
-                TextCustom("Completed date:", true)
+            TextCustom("Completed date:", true)
         }
         Column(
             horizontalAlignment = Alignment.Start,
@@ -52,9 +51,7 @@ fun ShowTask(
         ) {
             TextCustom(author)
             TextCustom(date)
-            if (completedDate.isNotEmpty() && completedDate != "null")
-                TextCustom(completedDate)
-
+            TextCustom(completedDate)
         }
     }
 }

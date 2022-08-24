@@ -5,14 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -21,6 +16,7 @@ import com.softyorch.taskapp.components.SwitchCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.widgets.RowInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,8 +54,10 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
         if (settingsUserData != null) {
 
             RowInfo(
-                text = "Last login manual: ${settingsUserData.lastLoginDate}",
-                fontSize = 16.sp,
+                text = "Last login manual: ${settingsUserData.lastLoginDate?.toStringFormatted(
+                    settingsUserData.lastLoginDate!!
+                )}",
+                fontSize = 12.sp,
                 paddingStart = 16.dp
             )
 

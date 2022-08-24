@@ -20,6 +20,8 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.screens.main.MainViewModel
+import com.softyorch.taskapp.utils.toStringFormatDate
+import com.softyorch.taskapp.utils.toStringFormatted
 
 
 @ExperimentalMaterial3Api
@@ -65,7 +67,7 @@ private fun Content(
             ) {
                 Text(
                     modifier = Modifier.padding(end = 8.dp),
-                    text = task.entryDate.toInstant().toString().split("T")[0],
+                    text = task.entryDate.toStringFormatDate(task.entryDate),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 10.sp,
                     overflow = TextOverflow.Ellipsis,
