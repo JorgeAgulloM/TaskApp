@@ -16,6 +16,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.components.CircularIndicatorCustom
 import com.softyorch.taskapp.components.SwitchCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.UserData
@@ -132,24 +133,7 @@ private fun ApplyChanges(
 
     var showDialog = true
 
-    if (showDialog) Dialog(
-        onDismissRequest = {
-            showDialog = false
-        },
-        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-    ) {
-        Column(
-            modifier = Modifier.safeContentPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.tertiary
-            )
-            Text(text = "Realizando los cambios", style = TextStyle(textAlign = TextAlign.Center))
-        }
-
-    }
+    if (showDialog) CircularIndicatorCustom(text = "Realizando los cambios")
 
     viewModel.viewModelScope.launch {
         showDialog = false
