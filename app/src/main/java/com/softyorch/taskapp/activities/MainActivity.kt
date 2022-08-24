@@ -10,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.navigation.TaskAppNavigation
@@ -28,7 +27,9 @@ class MainActivity : ComponentActivity() {
             val viewModel = hiltViewModel<MainActivityViewModel>()
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
             val settingList = viewModel.loadSettings()
-            TaskApp(settingList = settingList)
+            val changeTheme: () -> Unit = { this.recreate() }
+
+            TaskApp(settingList = settingList, changeTheme = changeTheme)
         }
     }
 }
@@ -45,11 +46,11 @@ class MainActivity : ComponentActivity() {
  * */
 @ExperimentalMaterial3Api
 @Composable
-fun TaskApp(settingList: List<Any>) {
+fun TaskApp(settingList: List<Any>, changeTheme: () -> Unit) {
 
-    val darkSystem by rememberSaveable { mutableStateOf(settingList[2] as Boolean) }
-    val light by rememberSaveable { mutableStateOf(settingList[3] as Boolean) }
-    val colorSystem by rememberSaveable { mutableStateOf(settingList[5] as Boolean) }
+    val darkSystem by remember { mutableStateOf(settingList[2] as Boolean) }
+    val light by remember { mutableStateOf(settingList[3] as Boolean) }
+    val colorSystem by remember { mutableStateOf(settingList[5] as Boolean) }
 
     TaskAppTheme(
         darkTheme = if (darkSystem) isSystemInDarkTheme()
@@ -59,16 +60,8 @@ fun TaskApp(settingList: List<Any>) {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation()
+            TaskAppNavigation(changeTheme = changeTheme)
         }
     }
 }
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-fun reloadApp(context: MainActivity){
-    val intent = Intent(context, MainActivity::class.java)
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-    context.startActivity(intent)
-    context.finish()
-    Runtime.getRuntime().exit(0)
-}*/

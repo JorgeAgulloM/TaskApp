@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.softyorch.taskapp.activities.MainActivity
 import com.softyorch.taskapp.screens.detail.DetailScreen
 import com.softyorch.taskapp.screens.history.HistoryScreen
 import com.softyorch.taskapp.screens.login.LoginScreen
@@ -22,7 +21,7 @@ import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation() {
+fun TaskAppNavigation(changeTheme: () -> Unit) {
     val navController = rememberNavController()
     val mainViewModel = hiltViewModel<MainViewModel>()
     val userDataViewModel = hiltViewModel<UserDataViewModel>()
@@ -58,7 +57,7 @@ fun TaskAppNavigation() {
             HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
-            SettingsScreen(navController = navController)
+            SettingsScreen(navController = navController, changeTheme = changeTheme)
         }
         composable(route = "${AppScreensRoutes.UserDataScreen.route}/{id}", arguments = listOf(
             navArgument(name = "id") {
