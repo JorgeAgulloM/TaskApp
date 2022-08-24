@@ -49,9 +49,9 @@ fun SwitchCustom(
                 checkedThumbColor = MaterialTheme.colorScheme.tertiary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,
                 checkedIconColor = MaterialTheme.colorScheme.primary,
-                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
                 uncheckedTrackColor = MaterialTheme.colorScheme.primary,
-                uncheckedBorderColor = MaterialTheme.colorScheme.onSurface
+                uncheckedBorderColor = MaterialTheme.colorScheme.secondary
             )
         )
         Text(
