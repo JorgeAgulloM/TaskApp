@@ -21,7 +21,7 @@ import com.softyorch.taskapp.screens.userdata.UserDataScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(changeTheme: () -> Unit) {
+fun TaskAppNavigation(reloadComposable: () -> Unit) {
     val navController = rememberNavController()
     val mainViewModel = hiltViewModel<MainViewModel>()
     val userDataViewModel = hiltViewModel<UserDataViewModel>()
@@ -57,7 +57,7 @@ fun TaskAppNavigation(changeTheme: () -> Unit) {
             HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
-            SettingsScreen(navController = navController, changeTheme = changeTheme)
+            SettingsScreen(navController = navController, reloadComposable = reloadComposable)
         }
         composable(route = "${AppScreensRoutes.UserDataScreen.route}/{id}", arguments = listOf(
             navArgument(name = "id") {

@@ -27,9 +27,9 @@ class MainActivity : ComponentActivity() {
             val viewModel = hiltViewModel<MainActivityViewModel>()
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
             val settingList = viewModel.loadSettings()
-            val changeTheme: () -> Unit = { this.recreate() }
+            val reloadComposable: () -> Unit = { this.recreate() }
 
-            TaskApp(settingList = settingList, changeTheme = changeTheme)
+            TaskApp(settingList = settingList, reloadComposable = reloadComposable)
         }
     }
 }
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
  * */
 @ExperimentalMaterial3Api
 @Composable
-fun TaskApp(settingList: List<Any>, changeTheme: () -> Unit) {
+fun TaskApp(settingList: List<Any>, reloadComposable: () -> Unit) {
 
     val darkSystem by remember { mutableStateOf(settingList[2] as Boolean) }
     val light by remember { mutableStateOf(settingList[3] as Boolean) }
@@ -60,7 +60,7 @@ fun TaskApp(settingList: List<Any>, changeTheme: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation(changeTheme = changeTheme)
+            TaskAppNavigation(reloadComposable = reloadComposable)
         }
     }
 }

@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
-fun SettingsScreen(navController: NavHostController, changeTheme: () -> Unit) {
+fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -37,13 +37,13 @@ fun SettingsScreen(navController: NavHostController, changeTheme: () -> Unit) {
             )
         },
         content = {
-            Content(it = it, changeTheme = changeTheme)
+            Content(it = it, reloadComposable = reloadComposable)
         })
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
+private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val settingsUserData = viewModel.getUserActiveSharedPreferences()
     var needReloadDialog by remember { mutableStateOf(false) }
@@ -160,7 +160,7 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
             )
 
             if (needReloadDialog) {
-                ApplyChanges(viewModel, settingsUserData, changeTheme)
+                ApplyChanges(viewModel, settingsUserData, reloadComposable)
             }
         }
     }
