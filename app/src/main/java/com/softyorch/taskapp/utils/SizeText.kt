@@ -3,9 +3,7 @@ package com.softyorch.taskapp.utils
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.softyorch.taskapp.utils.SizeText.*
-import javax.inject.Singleton
 
-@Singleton
 sealed class SizeText {
     data class MinimumSizeText(
         val size: TextUnit = 12.sp,
@@ -33,7 +31,6 @@ sealed class SizeText {
     ) : SizeText()
 }
 
-@Singleton
 class StandardizedSizes(selector: Int) {
     val littleSize = (sizeTextUnits(selector).value.toInt() - 2).sp
     val minimumSize = (sizeTextUnits(selector).value.toInt() - 2).sp
