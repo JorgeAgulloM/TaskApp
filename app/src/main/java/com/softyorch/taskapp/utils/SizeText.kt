@@ -6,7 +6,8 @@ import com.softyorch.taskapp.utils.SizeText.*
 
 sealed class SizeText {
     data class MinimumSizeText(
-        val size: TextUnit = 12.sp, val sizeText: String = "Minimum size"
+        val size: TextUnit = 12.sp,
+        val sizeText: String = "Minimum size"
     ) : SizeText()
 
     data class MiddleSizeText(
@@ -30,6 +31,14 @@ sealed class SizeText {
     ) : SizeText()
 }
 
+class StandardizedSizes(selector: Int) {
+    val littleSize = (sizeTextUnits(selector).value.toInt() - 2).sp
+    val minimumSize = (sizeTextUnits(selector).value.toInt() - 2).sp
+    val normalSize = sizeTextUnits(selector)
+    val largeSize = (sizeTextUnits(selector).value.toInt() + 2).sp
+    val highSize = (sizeTextUnits(selector).value.toInt() + 4).sp
+}
+
 fun sizeTextUnits(selector: Int): TextUnit =
     when (selector) {
         0 -> MinimumSizeText().size
@@ -38,9 +47,8 @@ fun sizeTextUnits(selector: Int): TextUnit =
         3 -> HighSizeText().size
         4 -> HigherSizeText().size
         5 -> ExtraHighSizeText().size
-        else -> { MiddleSizeText().size }
+        else -> { MiddleSizeText().size}
     }
-
 
 fun sizeTextName(selector: Int): String =
     when (selector) {
@@ -52,3 +60,5 @@ fun sizeTextName(selector: Int): String =
         5 -> ExtraHighSizeText().sizeText
         else -> { MiddleSizeText().sizeText }
     }
+
+
