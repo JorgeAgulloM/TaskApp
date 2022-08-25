@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.repository.TaskRepository
+import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,4 +21,7 @@ class DetailScreenViewModel @Inject constructor(
     fun removeTask(task: Task) = viewModelScope.launch { repository.deleteTask(task = task) }
 
     fun nameOfUserLogin(): String = stateLogin.userActive().username
+
+    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
+
 }
