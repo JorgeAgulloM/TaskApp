@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.utils
 
+import com.softyorch.taskapp.utils.TimeLimitAutoLogin.*
+
 sealed class TimeLimitAutoLogin {
     data class OneDay(
         val time: Long = weekMillis / 7, val textTime: String = "One day"
@@ -25,28 +27,24 @@ sealed class TimeLimitAutoLogin {
     ) : TimeLimitAutoLogin()
 }
 
-fun timeLimitAutoLoginSelectTime(selector: Int): Long {
-    var timeResult = 0L
+fun timeLimitAutoLoginSelectTime(selector: Int): Long =
     when (selector){
-        0 -> TimeLimitAutoLogin.OneDay().let { timeResult = it.time }
-        1 -> TimeLimitAutoLogin.OneWeek().let { timeResult = it.time }
-        2 -> TimeLimitAutoLogin.TwoWeeks().let { timeResult = it.time }
-        3 -> TimeLimitAutoLogin.OneMonth().let { timeResult = it.time }
-        4 -> TimeLimitAutoLogin.SixMonth().let { timeResult = it.time }
-        5 -> TimeLimitAutoLogin.OneYear().let { timeResult = it.time }
+        0 -> OneDay().time
+        1 -> OneWeek().time
+        2 -> TwoWeeks().time
+        3 -> OneMonth().time
+        4 -> SixMonth().time
+        5 -> OneYear().time
+        else -> { weekMillis }
     }
-    return timeResult
-}
 
-fun timeLimitAutoLoginSelectText(selector: Int): String {
-    var textResult = ""
+fun timeLimitAutoLoginSelectText(selector: Int): String =
     when (selector) {
-        0 -> TimeLimitAutoLogin.OneDay().let { textResult = it.textTime }
-        1 -> TimeLimitAutoLogin.OneWeek().let { textResult = it.textTime }
-        2 -> TimeLimitAutoLogin.TwoWeeks().let { textResult = it.textTime }
-        3 -> TimeLimitAutoLogin.OneMonth().let { textResult = it.textTime }
-        4 -> TimeLimitAutoLogin.SixMonth().let { textResult = it.textTime }
-        5 -> TimeLimitAutoLogin.OneYear().let { textResult = it.textTime }
+        0 -> OneDay().textTime
+        1 -> OneWeek().textTime
+        2 -> TwoWeeks().textTime
+        3 -> OneMonth().textTime
+        4 -> SixMonth().textTime
+        5 -> OneYear().textTime
+        else -> { OneWeek().textTime }
     }
-    return textResult
-}

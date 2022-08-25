@@ -30,28 +30,25 @@ sealed class SizeText {
     ) : SizeText()
 }
 
-fun sizeTextUnits(selector: Int): TextUnit {
-    var size = 0.sp
+fun sizeTextUnits(selector: Int): TextUnit =
     when (selector) {
-        0 -> size = MinimumSizeText().size
-        1 -> size = MiddleSizeText().size
-        2 -> size = NormalSizeText().size
-        3 -> size = HighSizeText().size
-        4 -> size = HigherSizeText().size
-        5 -> size = ExtraHighSizeText().size
+        0 -> MinimumSizeText().size
+        1 -> MiddleSizeText().size
+        2 -> NormalSizeText().size
+        3 -> HighSizeText().size
+        4 -> HigherSizeText().size
+        5 -> ExtraHighSizeText().size
+        else -> { MiddleSizeText().size }
     }
-    return size
-}
 
-fun sizeTextName(selector: Int): String {
-    var name = ""
+
+fun sizeTextName(selector: Int): String =
     when (selector) {
-        0 -> name = MinimumSizeText().sizeText
-        1 -> name = MiddleSizeText().sizeText
-        2 -> name = NormalSizeText().sizeText
-        3 -> name = HighSizeText().sizeText
-        4 -> name = HigherSizeText().sizeText
-        5 -> name = ExtraHighSizeText().sizeText
+        0 -> MinimumSizeText().sizeText
+        1 -> MiddleSizeText().sizeText
+        2 -> NormalSizeText().sizeText
+        3 -> HighSizeText().sizeText
+        4 -> HigherSizeText().sizeText
+        5 -> ExtraHighSizeText().sizeText
+        else -> { MiddleSizeText().sizeText }
     }
-    return name
-}
