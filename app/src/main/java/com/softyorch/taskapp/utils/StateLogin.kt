@@ -110,7 +110,7 @@ class StateLogin @Inject constructor(
             spe.putBoolean(LightOrDarkTheme.name, false)
             spe.putBoolean(AutomaticLanguage.name, true)
             spe.putBoolean(AutomaticColors.name, false)
-            spe.putLong(TimeLimitAutoLoading.name, 1)
+            spe.putInt(TimeLimitAutoLoading.name, 1)
             spe.putInt(TextSize.name, 0)
 
             spe.apply()

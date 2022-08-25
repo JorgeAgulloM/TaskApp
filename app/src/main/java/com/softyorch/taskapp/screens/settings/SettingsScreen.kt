@@ -109,7 +109,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 onCheckedChange = {
                     settingsUserData.rememberMe = !settingsUserData.rememberMe
                     rememberMe = settingsUserData.rememberMe
-                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    //viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
                 enable = !needReloadDialog
@@ -132,29 +132,29 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 }
             )
 
-            var initialTime = settingsUserData.timeLimitAutoLoading
+            var initialTime by rememberSaveable { mutableStateOf(settingsUserData.timeLimitAutoLoading) }
 
             if (rememberMe) initialTime = sliderCustom(
                 initValue = initialTime,
-                onValueFinished = {
+                enable = !needReloadDialog,
+                onValueChangeFinished = {
                     settingsUserData.timeLimitAutoLoading = initialTime
-                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    //viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
-                enable = !needReloadDialog,
                 text = "Time to automatic login: ${timeLimitAutoLoginSelectText(initialTime)}"
             )
 
-            var initialSize = settingsUserData.textSize
+            var initialSize by rememberSaveable { mutableStateOf(settingsUserData.textSize) }
 
             initialSize = sliderCustom(
                 initValue = initialSize,
                 enable = !needReloadDialog,
-                valueRange = 0f..4f ,
+                valueRange = 0f..4f,
                 steps = 3,
-                onValueFinished = {
+                onValueChangeFinished = {
                     settingsUserData.textSize = initialSize
-                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    //viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
                 text = "Text base size: ${sizeTextName(initialSize)}"

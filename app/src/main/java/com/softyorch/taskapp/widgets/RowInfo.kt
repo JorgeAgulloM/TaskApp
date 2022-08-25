@@ -25,8 +25,6 @@ fun RowInfo(
     heightSize: Dp = 30.dp,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
-
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +37,7 @@ fun RowInfo(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            fontSize = textSizes.highSize,
+            fontSize = textSizes.littleSize,
             style = TextStyle(
                 shadow = Shadow(
                     color = MaterialTheme.colorScheme.primary,

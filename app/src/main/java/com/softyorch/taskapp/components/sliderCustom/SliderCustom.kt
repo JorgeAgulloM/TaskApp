@@ -18,11 +18,12 @@ fun sliderCustom(
     enable: Boolean = true,
     valueRange: ClosedFloatingPointRange<Float> = 0f..5f,
     steps: Int = 4,
-    onValueFinished: () -> Unit,
+    onValueChangeFinished: () -> Unit,
     text: String
 ): Int {
 
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
+    var size by rememberSaveable { mutableStateOf(selection)}
     val viewModel = hiltViewModel<SliderCustomViewModel>()
     val textSizes = viewModel.sizeSelectedOfUser()
 
@@ -43,7 +44,10 @@ fun sliderCustom(
                 enabled = enable,
                 valueRange = valueRange,
                 steps = steps,
-                onValueChangeFinished = onValueFinished,
+                onValueChangeFinished = {
+                    size = selection
+                    onValueChangeFinished.invoke()
+                },
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.tertiary,
                     disabledThumbColor = MaterialTheme.colorScheme.tertiary.copy(0.5f),
@@ -52,10 +56,12 @@ fun sliderCustom(
                     activeTickColor = MaterialTheme.colorScheme.secondary,
                     inactiveTickColor = MaterialTheme.colorScheme.secondary.copy(0.5f),
                 )
-            )
+            ).let {
+                size
+            }
         }
     )
 
-    return selection.toInt()
+    return size.toInt()
 }
 
