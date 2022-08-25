@@ -2,6 +2,7 @@ package com.softyorch.taskapp.utils
 
 import android.content.SharedPreferences
 import com.softyorch.taskapp.model.UserData
+import com.softyorch.taskapp.utils.NameOfSettings.*
 import java.time.Instant
 import java.util.*
 import javax.inject.Inject
@@ -55,17 +56,17 @@ class StateLogin @Inject constructor(
         textSize: Int = 0
     ) {
         _sharedPreferences?.edit().let { sp ->
-            sp?.putString(Settings.Name.name, name)
-            sp?.putString(Settings.Pass.name, pass)
-            sp?.putBoolean(Settings.Activate.name, activate)
-            sp?.putString(Settings.LastLoginDate.name, lastLoginDate.toString())
-            sp?.putBoolean(Settings.RememberMe.name, rememberMe)
-            sp?.putBoolean(Settings.LightDarkAutomaticTheme.name, lightDarkAutomaticTheme)
-            sp?.putBoolean(Settings.LightOrDarkTheme.name, lightOrDarkTheme)
-            sp?.putBoolean(Settings.AutomaticLanguage.name, automaticLanguage)
-            sp?.putBoolean(Settings.AutomaticColors.name, automaticColors)
-            sp?.putInt(Settings.TimeLimitAutoLoading.name, timeLimitAutoLoading)
-            sp?.putInt(Settings.TextSize.name, textSize)
+            sp?.putString(Name.name, name)
+            sp?.putString(Pass.name, pass)
+            sp?.putBoolean(Activate.name, activate)
+            sp?.putString(LastLoginDate.name, lastLoginDate.toString())
+            sp?.putBoolean(RememberMe.name, rememberMe)
+            sp?.putBoolean(LightDarkAutomaticTheme.name, lightDarkAutomaticTheme)
+            sp?.putBoolean(LightOrDarkTheme.name, lightOrDarkTheme)
+            sp?.putBoolean(AutomaticLanguage.name, automaticLanguage)
+            sp?.putBoolean(AutomaticColors.name, automaticColors)
+            sp?.putInt(TimeLimitAutoLoading.name, timeLimitAutoLoading)
+            sp?.putInt(TextSize.name, textSize)
 
             sp?.apply()
         }
@@ -74,10 +75,10 @@ class StateLogin @Inject constructor(
     fun userActive(): UserData {
         _sharedPreferences!!.let { sp ->
             return UserData(
-                username = sp.getString(Settings.Name.name, "").toString(),
+                username = sp.getString(Name.name, "").toString(),
                 userEmail = "",
-                userPass = sp.getString(Settings.Pass.name, "").toString(),
-                rememberMe = sp.getBoolean(Settings.RememberMe.name, false)
+                userPass = sp.getString(Pass.name, "").toString(),
+                rememberMe = sp.getBoolean(RememberMe.name, false)
             )
         }
     }
@@ -90,7 +91,7 @@ class StateLogin @Inject constructor(
 
     fun loadSettings(): List<Any> {
         val list: MutableList<Any> = mutableListOf()
-        if (!_sharedPreferences?.getString(Settings.Name.name, "").isNullOrEmpty()) {
+        if (!_sharedPreferences?.getString(Name.name, "").isNullOrEmpty()) {
             list.addAll(getSharedPreferences())
         } else {
             list.addAll(setSharedPreferencesFirst())
@@ -103,14 +104,14 @@ class StateLogin @Inject constructor(
      */
     private fun setSharedPreferencesFirst(): List<Any> {
         _sharedPreferences?.edit()?.let { spe ->
-            spe.putString(Settings.LastLoginDate.name, Date.from(Instant.now()).toString())
-            spe.putBoolean(Settings.RememberMe.name, false)
-            spe.putBoolean(Settings.LightDarkAutomaticTheme.name, true)
-            spe.putBoolean(Settings.LightOrDarkTheme.name, false)
-            spe.putBoolean(Settings.AutomaticLanguage.name, true)
-            spe.putBoolean(Settings.AutomaticColors.name, false)
-            spe.putLong(Settings.TimeLimitAutoLoading.name, 1)
-            spe.putInt(Settings.TextSize.name, 0)
+            spe.putString(LastLoginDate.name, Date.from(Instant.now()).toString())
+            spe.putBoolean(RememberMe.name, false)
+            spe.putBoolean(LightDarkAutomaticTheme.name, true)
+            spe.putBoolean(LightOrDarkTheme.name, false)
+            spe.putBoolean(AutomaticLanguage.name, true)
+            spe.putBoolean(AutomaticColors.name, false)
+            spe.putLong(TimeLimitAutoLoading.name, 1)
+            spe.putInt(TextSize.name, 0)
 
             spe.apply()
         }
@@ -122,17 +123,17 @@ class StateLogin @Inject constructor(
         _sharedPreferences?.let { sp ->
             list.add(
                 sp.getString(
-                    Settings.LastLoginDate.name,
+                    LastLoginDate.name,
                     Date.from(Instant.now()).toString()
                 )!!
             )
-            list.add(sp.getBoolean(Settings.RememberMe.name, false))
-            list.add(sp.getBoolean(Settings.LightDarkAutomaticTheme.name, true))
-            list.add(sp.getBoolean(Settings.LightOrDarkTheme.name, false))
-            list.add(sp.getBoolean(Settings.AutomaticLanguage.name, true))
-            list.add(sp.getBoolean(Settings.AutomaticColors.name, false))
-            list.add(sp.getInt(Settings.TimeLimitAutoLoading.name, 1))
-            list.add(sp.getInt(Settings.TextSize.name, 0))
+            list.add(sp.getBoolean(RememberMe.name, false))
+            list.add(sp.getBoolean(LightDarkAutomaticTheme.name, true))
+            list.add(sp.getBoolean(LightOrDarkTheme.name, false))
+            list.add(sp.getBoolean(AutomaticLanguage.name, true))
+            list.add(sp.getBoolean(AutomaticColors.name, false))
+            list.add(sp.getInt(TimeLimitAutoLoading.name, 1))
+            list.add(sp.getInt(TextSize.name, 0))
         }
         return list
     }

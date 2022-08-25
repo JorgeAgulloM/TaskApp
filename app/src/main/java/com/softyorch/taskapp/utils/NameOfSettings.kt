@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.utils
 
-enum class Settings {
+enum class NameOfSettings {
     Name,
     Pass,
     Activate,
