@@ -2,40 +2,27 @@ package com.softyorch.taskapp.utils
 
 sealed class TimeLimitAutoLogin {
     data class OneDay(
-        val time: Long = weekMillis / 7,
-        val textTime: String = "One day"
-    ) :
-        TimeLimitAutoLogin()
+        val time: Long = weekMillis / 7, val textTime: String = "One day"
+    ) : TimeLimitAutoLogin()
 
     data class OneWeek(
-        val time: Long = weekMillis,
-        val textTime: String = "One week"
-    ) :
-        TimeLimitAutoLogin()
+        val time: Long = weekMillis, val textTime: String = "One week"
+    ) : TimeLimitAutoLogin()
 
     data class TwoWeeks(
-        val time: Long = weekMillis * 2,
-        val textTime: String = "Two week"
-    ) :
-        TimeLimitAutoLogin()
+        val time: Long = weekMillis * 2, val textTime: String = "Two week"
+    ) : TimeLimitAutoLogin()
 
     data class OneMonth(
-        val time: Long = weekMillis * 4,
-        val textTime: String = "One month"
-    ) :
-        TimeLimitAutoLogin()
+        val time: Long = weekMillis * 4, val textTime: String = "One month"
+    ) : TimeLimitAutoLogin()
 
     data class SixMonth(
-        val time: Long = weekMillis * 28,
-        val textTime: String = "Six months"
-    ) :
-        TimeLimitAutoLogin()
+        val time: Long = weekMillis * 28, val textTime: String = "Six months"
+    ) : TimeLimitAutoLogin()
 
-    data class OneYear(
-        val time: Long = weekMillis * 56,
-        val textTime: String = "One year"
-    ) :
-        TimeLimitAutoLogin()
+    data class OneYear( val time: Long = weekMillis * 56, val textTime: String = "One year"
+    ) : TimeLimitAutoLogin()
 }
 
 fun timeLimitAutoLoginSelectTime(selector: Int): Long {
