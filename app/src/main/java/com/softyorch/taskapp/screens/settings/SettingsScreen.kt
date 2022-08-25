@@ -2,9 +2,12 @@ package com.softyorch.taskapp.screens.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,7 +20,7 @@ import com.softyorch.taskapp.components.sliderCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.utils.toStringFormatted
+import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.widgets.RowInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,12 +57,21 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
         if (settingsUserData != null) {
 
-            RowInfo(
-                text = "Last login manual: ${settingsUserData.lastLoginDate?.toStringFormatted(
-                    settingsUserData.lastLoginDate!!
-                )}",
-                fontSize = 12.sp,
-                paddingStart = 16.dp
+            Row(modifier = Modifier.padding(start = 32.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                content = {
+                    Icon(Icons.Rounded.Info, contentDescription = "Last time to manual login")
+                    RowInfo(
+                        text = "Last login manual: ${
+                            settingsUserData.lastLoginDate?.toStringFormatted(
+                                settingsUserData.lastLoginDate!!
+                            )
+                        }",
+                        fontSize = 12.sp,
+                        paddingStart = 8.dp
+                    )
+                }
             )
 
             SwitchCustom(
@@ -115,17 +127,31 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
                 enable = !needReloadDialog
             )
 
-            settingsUserData.timeLimitAutoLoading = sliderCustom(
-                text = "Time to automatic login",
-                initValue = settingsUserData.timeLimitAutoLoading,
+            var initialTime = settingsUserData.timeLimitAutoLoading
+
+            initialTime = sliderCustom(
+                initValue = initialTime,
                 onValueFinished = {
+                    settingsUserData.timeLimitAutoLoading = initialTime
                     viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
-                enable = !needReloadDialog
+                enable = !needReloadDialog,
+                text = "Time to automatic login: ${timeLimitAutoLoginSelectText(initialTime)}"
             )
 
+            var initialSize = settingsUserData.textSize
 
+            initialSize = sliderCustom(
+                initValue = initialSize,
+                onValueFinished = {
+                    settingsUserData.textSize = initialSize
+                    viewModel.updatePreferences(settingsUserData = settingsUserData)
+                    needReloadDialog = true
+                },
+                enable = !needReloadDialog,
+                text = "Text base size: ${sizeTextName(initialSize)}"
+            )
 
             if (needReloadDialog) {
                 ApplyChanges(viewModel, settingsUserData, changeTheme)

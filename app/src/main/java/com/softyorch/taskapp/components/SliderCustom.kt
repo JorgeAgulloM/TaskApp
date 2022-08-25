@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -11,35 +10,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectText
 import com.softyorch.taskapp.widgets.RowInfo
 
 @Composable
 fun sliderCustom(
-    text: String,
     initValue: Int,
+    enable: Boolean = true,
     valueRange: ClosedFloatingPointRange<Float> = 0f..6f,
     steps: Int = 5,
-    enable: Boolean = true,
-    onValueFinished: () -> Unit
+    onValueFinished: () -> Unit,
+    text: String
 ): Int {
 
-    var textShow by rememberSaveable { mutableStateOf(text) }
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
 
-    textShow = timeLimitAutoLoginSelectText(selector = selection.toInt())
-
-    Log.d("Slider", "Value of selection -> $selection")
-
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp).safeContentPadding(),
+        modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 8.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            RowInfo(text = "$text = $textShow", fontSize = 12.sp)
+            RowInfo(text = text, fontSize = 12.sp, paddingStart = 8.dp)
             Slider(
                 value = selection,
                 onValueChange = { selection = it },
+                modifier = Modifier.height(16.dp),
                 enabled = enable,
                 valueRange = valueRange,
                 steps = steps,
@@ -55,8 +49,6 @@ fun sliderCustom(
             )
         }
     )
-
-
 
     return selection.toInt()
 }

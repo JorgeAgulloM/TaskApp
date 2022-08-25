@@ -26,7 +26,7 @@ fun SwitchCustom(
     var stateSwitch by rememberSaveable { mutableStateOf(checked) }
 
     Row(
-        modifier = Modifier.padding(start = 16.dp),
+        modifier = Modifier.padding(start = 32.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
