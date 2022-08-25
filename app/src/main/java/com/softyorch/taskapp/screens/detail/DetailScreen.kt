@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.components.ButtonCustom
@@ -54,6 +54,8 @@ private fun Content(
     id: String
 ) {
 
+    val textSizes = viewModel.sizeSelectedOfUser()
+
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = viewModel.getTaskId(id = id)
     }.value
@@ -67,13 +69,13 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    RowInfo(task.title, fontSize = 20.sp, paddingStart = 24.dp)
+                    RowInfo(task.title, fontSize = textSizes.largeSize, paddingStart = 24.dp)
                     Text(
                         text = task.description,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfo("Details", fontSize = 20.sp, paddingStart = 24.dp)
+                    RowInfo("Details", fontSize = textSizes.largeSize, paddingStart = 24.dp)
                     ShowTask(
                         author = task.author,
                         date = task.entryDate.toStringFormatted(task.entryDate),
@@ -149,7 +151,8 @@ private fun Content(
                                 text = {
                                     Text(
                                         text = "Great, one less task. On to the next one...",
-                                        textAlign = TextAlign.Center
+                                        textAlign = TextAlign.Center,
+                                        fontSize = textSizes.normalSize
                                     )
                                 })
                         }
