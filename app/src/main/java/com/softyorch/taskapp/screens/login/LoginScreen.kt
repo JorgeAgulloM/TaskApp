@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -34,7 +33,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
-    val loginViewModel = hiltViewModel<LoginViewModel>()
+    val viewModel = hiltViewModel<LoginViewModel>()
+    val textSizes = viewModel.sizeSelectedOfUser()
+
     val context = LocalContext.current
     var loginOrNewAccount by rememberSaveable { mutableStateOf(false) }
 
@@ -46,8 +47,8 @@ fun LoginScreen(navController: NavHostController) {
     ) {
         RowInfo(
             text = "TASK APP",
-            fontSize = 24.sp,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            textSizes = textSizes
         )
         if (!loginOrNewAccount)
             Icon(
@@ -65,19 +66,19 @@ fun LoginScreen(navController: NavHostController) {
         else
             RowInfo(
                 text = "New Account",
-                fontSize = 16.sp,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                textSizes = textSizes
             )
 
         loginOrNewAccount = if (!loginOrNewAccount)
             loginContent(
-                viewModel = loginViewModel,
+                viewModel = viewModel,
                 navController = navController,
                 context = context
             )
         else
             newAccountContent(
-                viewModel = loginViewModel,
+                viewModel = viewModel,
                 context = context
             )
     }

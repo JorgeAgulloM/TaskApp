@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.components
+package com.softyorch.taskapp.components.switchCustom
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SwitchCustom(
@@ -23,6 +24,8 @@ fun SwitchCustom(
     onCheckedChange: () -> Unit
 ) {
 
+    val viewModel = hiltViewModel<SwitchCustomViewModel>()
+    val textSizes = viewModel.sizeSelectedOfUser()
     var stateSwitch by rememberSaveable { mutableStateOf(checked) }
 
     Row(
@@ -57,7 +60,8 @@ fun SwitchCustom(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = text,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = textSizes.normalSize
         )
     }
 }

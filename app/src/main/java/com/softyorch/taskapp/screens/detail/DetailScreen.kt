@@ -69,13 +69,22 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    RowInfo(task.title, fontSize = textSizes.largeSize, paddingStart = 24.dp)
+                    RowInfo(
+                        task.title,
+                        paddingStart = 24.dp,
+                        textSizes = textSizes
+                    )
                     Text(
                         text = task.description,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = textSizes.normalSize
                     )
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfo("Details", fontSize = textSizes.largeSize, paddingStart = 24.dp)
+                    RowInfo(
+                        "Details",
+                        paddingStart = 24.dp,
+                        textSizes = textSizes
+                    )
                     ShowTask(
                         author = task.author,
                         date = task.entryDate.toStringFormatted(task.entryDate),
@@ -129,7 +138,8 @@ private fun Content(
                             openEditDialog = newTask(
                                 addOrEditTaskFunc = viewModel::updateTask,
                                 userName = viewModel.nameOfUserLogin(),
-                                taskToEdit = task
+                                taskToEdit = task,
+                                textSizes = textSizes
                             )
                         }
 
@@ -178,11 +188,11 @@ private fun Content(
                                         }, "Cancel"
                                     )
                                 },
-                                //title = { Text(text = "Eliminar tarea") },
                                 text = {
                                     Text(
                                         text = "Are you sure you want to eliminate the task?",
-                                        textAlign = TextAlign.Center
+                                        textAlign = TextAlign.Center,
+                                        fontSize = textSizes.normalSize
                                     )
                                 },
                             )

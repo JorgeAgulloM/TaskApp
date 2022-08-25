@@ -2,20 +2,13 @@ package com.softyorch.taskapp.widgets
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.softyorch.taskapp.components.TextCustom
+import com.softyorch.taskapp.components.textCustom.TextCustom
 
 val elevationDp: Dp = 4.dp
 val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(

@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.fabCustom.FABCustom
@@ -36,44 +35,59 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
             FABCustom()
         },
     ) {
-        Content(it = it, mainViewModel = mainViewModel, navController = navController)
+        Content(it = it, viewModel = mainViewModel, navController = navController)
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun Content(it: PaddingValues, mainViewModel: MainViewModel, navController: NavController) {
+private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
 
-    val tasks = mainViewModel.taskList.collectAsState().value
+    val tasks = viewModel.taskList.collectAsState().value
+    val textSizes = viewModel.sizeSelectedOfUser()
 
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
     ) {
 
-        RowInfo(text = "My Tasks", paddingStart = 32.dp)
+        RowInfo(text = "My Tasks", paddingStart = 32.dp, textSizes = textSizes)
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        RowInfo(text = "To be made...", fontSize = 16.sp, paddingStart = 32.dp)
+        RowInfo(
+            text = "To be made...",
+            paddingStart = 32.dp,
+            textSizes = textSizes
+        )
         if (tasks.isEmpty())
-            RowInfo("Añade una nueva tarea...", fontSize = 14.sp)
+            RowInfo(
+                "Añade una nueva tarea...",
+                textSizes = textSizes
+            )
         else
             FillLazyColumn(
                 tasks = tasks,
-                mainViewModel = mainViewModel,
+                mainViewModel = viewModel,
                 navController = navController
             )
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        RowInfo(text = "Completed in the last 7 days", fontSize = 16.sp, paddingStart = 32.dp)
+        RowInfo(
+            text = "Completed in the last 7 days",
+            paddingStart = 32.dp,
+            textSizes = textSizes
+        )
         if (tasks.isEmpty())
-            RowInfo("Aún no has terminado ninguna tarea", fontSize = 14.sp)
+            RowInfo(
+                "Aún no has terminado ninguna tarea",
+                textSizes = textSizes
+            )
         else
             FillLazyColumn(
                 tasks = tasks,
-                mainViewModel = mainViewModel,
+                mainViewModel = viewModel,
                 checkOrNot = true,
                 navController = navController
             )

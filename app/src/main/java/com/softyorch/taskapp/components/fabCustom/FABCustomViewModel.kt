@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.repository.TaskRepository
+import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,4 +24,6 @@ class FABCustomViewModel @Inject constructor(
     }
 
     fun addTask(task: Task) = viewModelScope.launch { repository.addTask(task = task) }
+
+    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

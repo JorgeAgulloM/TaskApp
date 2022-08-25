@@ -9,11 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.softyorch.taskapp.components.ButtonCustom
 import com.softyorch.taskapp.components.textFieldCustom
 import com.softyorch.taskapp.model.Task
+import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
 import java.time.Instant
@@ -24,7 +24,8 @@ import kotlin.reflect.KFunction1
 fun newTask(
     addOrEditTaskFunc: KFunction1<Task, Job>,
     userName: String,
-    taskToEdit: Task?
+    taskToEdit: Task?,
+    textSizes: StandardizedSizes
 ): Boolean {
 
     var title by remember { mutableStateOf(value = taskToEdit?.title ?: "") }
@@ -61,7 +62,11 @@ fun newTask(
                             date = dateFormatted,
                         )
 
-                        RowInfo(text = "Name of task: ", paddingStart = 32.dp, fontSize = 16.sp)
+                        RowInfo(
+                            text = "Name of task: ",
+                            paddingStart = 32.dp,
+                            textSizes = textSizes
+                        )
 
                         title = textFieldCustom(
                             text = title,
@@ -73,7 +78,11 @@ fun newTask(
                             newTask = true,
                         )
 
-                        RowInfo(text = "Task description: ", paddingStart = 32.dp, fontSize = 16.sp)
+                        RowInfo(
+                            text = "Task description: ",
+                            paddingStart = 32.dp,
+                            textSizes = textSizes
+                        )
 
                         description = textFieldCustom(
                             text = description,

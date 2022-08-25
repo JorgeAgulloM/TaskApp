@@ -14,21 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.screens.main.MainViewModel
 import com.softyorch.taskapp.utils.toStringFormatDate
-import com.softyorch.taskapp.utils.toStringFormatted
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun HistoryScreen(navController: NavHostController) {
 
-    val viewMode = hiltViewModel<HistoryViewModel>()
+    val viewModel = hiltViewModel<HistoryViewModel>()
 
     Scaffold(
         topBar = {
@@ -39,7 +36,7 @@ fun HistoryScreen(navController: NavHostController) {
             )
         },
         content = {
-            Content(it = it, navController = navController, viewModel = viewMode)
+            Content(it = it, navController = navController, viewModel = viewModel)
         })
 }
 
@@ -50,6 +47,7 @@ private fun Content(
     viewModel: HistoryViewModel
 ) {
     val tasks = viewModel.taskList.collectAsState().value
+    val textSizes = viewModel.sizeSelectedOfUser()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -69,14 +67,14 @@ private fun Content(
                     modifier = Modifier.padding(end = 8.dp),
                     text = task.entryDate.toStringFormatDate(task.entryDate),
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 10.sp,
+                    fontSize = textSizes.minimumSize,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
                 Text(
                     text = task.title,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
+                    fontSize = textSizes.normalSize,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )

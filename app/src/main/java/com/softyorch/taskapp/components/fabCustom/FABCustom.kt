@@ -17,6 +17,7 @@ fun FABCustom() {
 
     val viewModel = hiltViewModel<FABCustomViewModel>()
     val userName = viewModel.getUserName()
+    val textSizes = viewModel.sizeSelectedOfUser()
 
     var openDialog by remember { mutableStateOf(false) }
     FloatingActionButton(
@@ -38,6 +39,7 @@ fun FABCustom() {
     if (openDialog) {
         openDialog = newTask(
             addOrEditTaskFunc = viewModel::addTask,
+            textSizes = textSizes,
             userName = userName,
             taskToEdit = null
         )

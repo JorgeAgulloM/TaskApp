@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.repository.TaskRepository
+import com.softyorch.taskapp.utils.StandardizedSizes
+import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor(private val repository: TaskRepository) : ViewModel() {
+class HistoryViewModel @Inject constructor(
+    private val repository: TaskRepository,
+    private val stateLogin: StateLogin
+) : ViewModel() {
     private val _taskList = MutableStateFlow<List<Task>>(emptyList())
     val taskList = _taskList.asStateFlow()
 
@@ -29,4 +34,6 @@ class HistoryViewModel @Inject constructor(private val repository: TaskRepositor
                 }
         }
     }
+
+    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

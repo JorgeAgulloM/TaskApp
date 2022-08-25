@@ -10,13 +10,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.components.CircularIndicatorCustom
-import com.softyorch.taskapp.components.SwitchCustom
-import com.softyorch.taskapp.components.sliderCustom
+import com.softyorch.taskapp.components.switchCustom.SwitchCustom
+import com.softyorch.taskapp.components.sliderCustom.sliderCustom
 import com.softyorch.taskapp.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
@@ -46,8 +45,8 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
 private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val settingsUserData = viewModel.getUserActiveSharedPreferences()
+    val textSizes = viewModel.sizeSelectedOfUser()
     var needReloadDialog by remember { mutableStateOf(false) }
-
     var hideLightDark by rememberSaveable {
         mutableStateOf(
             settingsUserData?.lightDarkAutomaticTheme ?: false
@@ -127,8 +126,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                                 settingsUserData.lastLoginDate!!
                             )
                         }",
-                        fontSize = 12.sp,
-                        paddingStart = 8.dp
+                        paddingStart = 8.dp,
+                        textSizes = textSizes
                     )
                 }
             )
@@ -150,12 +149,14 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 
             initialSize = sliderCustom(
                 initValue = initialSize,
+                enable = !needReloadDialog,
+                valueRange = 0f..4f ,
+                steps = 3,
                 onValueFinished = {
                     settingsUserData.textSize = initialSize
                     viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
-                enable = !needReloadDialog,
                 text = "Text base size: ${sizeTextName(initialSize)}"
             )
 

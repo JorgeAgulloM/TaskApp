@@ -11,7 +11,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.navigation.AppScreens
@@ -28,6 +27,7 @@ fun TopAppBarCustom(
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
     val userPicture = viewModel.getUserPicture()
+    val textSizes = viewModel.sizeSelectedOfUser()
 
     SmallTopAppBar(
         modifier = Modifier.shadow(
@@ -42,7 +42,7 @@ fun TopAppBarCustom(
                 color = LightMode90t,
                 style = TextStyle(
                     fontWeight = FontWeight.Medium,
-                    fontSize = 20.sp
+                    fontSize = textSizes.largeSize
                 ),
                 modifier = Modifier.padding(start = 4.dp)
             )

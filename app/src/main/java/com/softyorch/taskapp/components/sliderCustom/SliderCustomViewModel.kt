@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.components.topAppBarCustom
+package com.softyorch.taskapp.components.sliderCustom
 
 import androidx.lifecycle.ViewModel
 import com.softyorch.taskapp.utils.StandardizedSizes
@@ -7,10 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class TopAppBarCustomViewModel @Inject constructor(
+class SliderCustomViewModel @Inject constructor(
     private val stateLogin: StateLogin
-) : ViewModel() {
-    fun getUserPicture(): String? = stateLogin.userDataActive?.userPicture
+): ViewModel() {
 
     fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }
