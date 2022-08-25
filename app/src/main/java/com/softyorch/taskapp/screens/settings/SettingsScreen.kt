@@ -53,26 +53,14 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
             settingsUserData?.lightDarkAutomaticTheme ?: false
         )
     }
+    var rememberMe by rememberSaveable {
+        mutableStateOf(
+            settingsUserData?.rememberMe ?: false
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
         if (settingsUserData != null) {
-
-            Row(modifier = Modifier.padding(start = 32.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                content = {
-                    Icon(Icons.Rounded.Info, contentDescription = "Last time to manual login")
-                    RowInfo(
-                        text = "Last login manual: ${
-                            settingsUserData.lastLoginDate?.toStringFormatted(
-                                settingsUserData.lastLoginDate!!
-                            )
-                        }",
-                        fontSize = 12.sp,
-                        paddingStart = 8.dp
-                    )
-                }
-            )
 
             SwitchCustom(
                 "Light/Dark Automatic Theme",
@@ -121,15 +109,33 @@ private fun Content(it: PaddingValues, changeTheme: () -> Unit) {
                 checked = settingsUserData.rememberMe,
                 onCheckedChange = {
                     settingsUserData.rememberMe = !settingsUserData.rememberMe
+                    rememberMe = settingsUserData.rememberMe
                     viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
                 enable = !needReloadDialog
             )
 
+            if (rememberMe) Row(modifier = Modifier.padding(start = 40.dp, top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                content = {
+                    Icon(Icons.Rounded.Info, contentDescription = "Last time to manual login")
+                    RowInfo(
+                        text = "Last login manual: ${
+                            settingsUserData.lastLoginDate?.toStringFormatted(
+                                settingsUserData.lastLoginDate!!
+                            )
+                        }",
+                        fontSize = 12.sp,
+                        paddingStart = 8.dp
+                    )
+                }
+            )
+
             var initialTime = settingsUserData.timeLimitAutoLoading
 
-            initialTime = sliderCustom(
+            if (rememberMe) initialTime = sliderCustom(
                 initValue = initialTime,
                 onValueFinished = {
                     settingsUserData.timeLimitAutoLoading = initialTime

@@ -25,7 +25,7 @@ fun sliderCustom(
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
 
     Column(
-        modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 8.dp),
+        modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
