@@ -8,16 +8,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.softyorch.taskapp.screens.detail.DetailScreen
-import com.softyorch.taskapp.screens.history.HistoryScreen
-import com.softyorch.taskapp.screens.login.LoginScreen
-import com.softyorch.taskapp.screens.main.MainScreen
-import com.softyorch.taskapp.screens.main.MainViewModel
-import com.softyorch.taskapp.screens.settings.SettingsScreen
-import com.softyorch.taskapp.screens.splash.SplashScreen
-import com.softyorch.taskapp.screens.splash.SplashViewModel
-import com.softyorch.taskapp.screens.userdata.UserDataViewModel
-import com.softyorch.taskapp.screens.userdata.UserDataScreen
+import com.softyorch.taskapp.ui.screens.detail.DetailScreen
+import com.softyorch.taskapp.ui.screens.history.HistoryScreen
+import com.softyorch.taskapp.ui.screens.login.LoginScreen
+import com.softyorch.taskapp.ui.screens.main.MainScreen
+import com.softyorch.taskapp.ui.screens.main.MainViewModel
+import com.softyorch.taskapp.ui.screens.settings.SettingsScreen
+import com.softyorch.taskapp.ui.screens.splash.SplashScreen
+import com.softyorch.taskapp.ui.screens.splash.SplashViewModel
+import com.softyorch.taskapp.ui.screens.userdata.UserDataViewModel
+import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
 
 @ExperimentalMaterial3Api
 @Composable
