@@ -39,7 +39,8 @@ fun textFieldCustom(
     newTask: Boolean = false,
     readOnly: Boolean = false,
     isError: Boolean = false,
-    password: Boolean = false
+    password: Boolean = false,
+    onTextFieldChanged: (String) -> Unit = {}
 ): String {
     val focusedColor: Color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
     val unfocusedColor: Color = LightMode90t.copy(alpha = 0.8f)
@@ -53,8 +54,8 @@ fun textFieldCustom(
     var passVisible by rememberSaveable { mutableStateOf(password) }
 
     TextField(
-        value = textChange.value,
-        onValueChange = { textChange.value = it },
+        value = text,
+        onValueChange = { onTextFieldChanged(it) },
         modifier = Modifier
             .padding(
                 start = if (newTask) 8.dp else 32.dp,

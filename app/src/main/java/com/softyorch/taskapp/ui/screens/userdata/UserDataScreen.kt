@@ -98,7 +98,8 @@ fun UserDataScreen(
                                     placeholder = "Write your name",
                                     icon = Icons.Rounded.Person,
                                     contentDescription = "Name of user",
-                                    singleLine = true
+                                    singleLine = true,
+                                    //onTextFieldChanged = onTextFieldChanged
                                 )
 
                                 email = textFieldCustom(
@@ -108,7 +109,8 @@ fun UserDataScreen(
                                     placeholder = "Write your name",
                                     icon = Icons.Rounded.Person,
                                     contentDescription = "Name of user",
-                                    singleLine = true
+                                    singleLine = true,
+                                    //onTextFieldChanged = onTextFieldChanged
                                 )
 
                                 pass = textFieldCustom(
@@ -120,7 +122,8 @@ fun UserDataScreen(
                                     contentDescription = "Name of user",
                                     keyboardOptions = TaskKeyboardOptions.copy(keyboardType = KeyboardType.Password),
                                     singleLine = true,
-                                    password = true
+                                    password = true,
+                                    //onTextFieldChanged = onTextFieldChanged
                                 )
                             }
 

@@ -27,10 +27,10 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun signInUserWithNameAndPassword(name: String, password: String): Resource<UserData> {
+    suspend fun signInUserWithEmailAndPassword(email: String, password: String): Resource<UserData> {
         val response = try {
             Resource.Loading(data = true)
-            userDataBaseDao.signIn(name = name, password = password)
+            userDataBaseDao.signIn(email = email, password = password)
         } catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
@@ -42,7 +42,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
     suspend fun signInSharePreferences(name: String, password: String): Resource<UserData> {
         val response = try {
             Resource.Loading(data = true)
-            userDataBaseDao.signIn(name = name, password = password)
+            userDataBaseDao.signIn(email = name, password = password)
         } catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }

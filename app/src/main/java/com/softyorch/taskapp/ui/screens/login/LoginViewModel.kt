@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screens.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -46,6 +48,9 @@ class LoginViewModel @Inject constructor(
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
 
+    private val _rememberMe = MutableLiveData<Boolean>()
+    val rememberMe: LiveData<Boolean> = _rememberMe
+
     private val _loginEnable = MutableLiveData<Boolean>()
     val loginEnable: LiveData<Boolean> = _loginEnable
 
@@ -55,9 +60,10 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun onLoginChange(email: String, pass: String) {
+    fun onLoginChange(email: String, pass: String, rememberMe: Boolean) {
         _email.value = email
         _pass.value = pass
+        _rememberMe.value = rememberMe
         _loginEnable.value = isValidEmail(email = email) && isValidPass(pass = pass)
     }
 
@@ -82,22 +88,30 @@ class LoginViewModel @Inject constructor(
 
     suspend fun onLoginSelected() {
         _isLoading.value = true
-        //TODO
+        loginUserIntent(
+            email = name.value!!,
+            password = pass.value!!,
+            rememberMe = rememberMe.value!!
+        )
+        //delay(3000)
         _isLoading.value = false
     }
 
     suspend fun onNewAccountSelected() {
         _isLoading.value = true
+        addUser(
+            UserData(
+                username = name.value!!,
+                userEmail = email.value!!,
+                userPass = pass.value!!
+            )
+        )
+        //delay(3000)
         //TODO
         _isLoading.value = false
     }
 
     private fun isNameValid(name: String): Boolean = name.length >= 3
-
-    private fun isValidPass(pass: String): Boolean = pass.length >= 8
-
-    private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        pass.length >= 8 && passRepeat.length >= 8
 
     private fun isValidEmail(email: String): Boolean =
         Patterns.EMAIL_ADDRESS.matcher(email).matches()
@@ -106,6 +120,11 @@ class LoginViewModel @Inject constructor(
         return Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
                 Patterns.EMAIL_ADDRESS.matcher(emailRepeat).matches()
     }
+
+    private fun isValidPass(pass: String): Boolean = pass.length >= 8
+
+    private fun isValidPass(pass: String, passRepeat: String): Boolean =
+        pass.length >= 8 && passRepeat.length >= 8
 
 
     /**
@@ -129,28 +148,34 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun signInUserWithNameAndPassword(
-        name: String,
+    private suspend fun signInUserWithEmailAndPassword(
+        email: String,
         password: String
     ): Resource<UserData> =
-        repository.signInUserWithNameAndPassword(name = name, password = password)
+        repository.signInUserWithEmailAndPassword(email = email, password = password)
 
-    fun addUser(userData: UserData) =
+    private fun addUser(userData: UserData) =
         viewModelScope.launch { repository.addUserData(userData = userData) }
 
     private fun updateLastLoginUser(userData: UserData) =
         viewModelScope.launch { repository.updateUserData(userData = userData) }
 
-    suspend fun loginUserIntent(name: String, password: String, rememberMe: Boolean): Boolean {
-        signInUserWithNameAndPassword(name = name, password = password).let { data ->
+    private suspend fun loginUserIntent(
+        email: String,
+        password: String,
+        rememberMe: Boolean
+    ): Boolean {
+        signInUserWithEmailAndPassword(email = email, password = password).let { data ->
             data.data?.let { user ->
                 user.lastLoginDate = Date.from(Instant.now())
                 user.rememberMe = rememberMe
                 updateLastLoginUser(userData = user)
                 stateLogin.logIn(userData = user)
+                Log.d("LOGIN", "Login is true")
                 return true
             }
         }
+        Log.d("LOGIN", "Login is false")
         return false
     }
 }

@@ -33,7 +33,7 @@ fun ButtonCustom(
 
     Button(
         onClick = {
-            onClick.invoke()
+            onClick()
         },
         modifier = Modifier.width(144.dp).height(40.dp).padding(2.dp),
         enabled = enable,

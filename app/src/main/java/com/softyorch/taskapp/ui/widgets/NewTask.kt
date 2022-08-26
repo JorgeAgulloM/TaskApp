@@ -76,6 +76,7 @@ fun newTask(
                             contentDescription = "name",
                             singleLine = true,
                             newTask = true,
+                            //onTextFieldChanged = onTextFieldChanged,
                         )
 
                         RowInfo(
@@ -91,6 +92,7 @@ fun newTask(
                             icon = Icons.Rounded.TextFields,
                             contentDescription = "description",
                             newTask = true,
+                            //onTextFieldChanged = onTextFieldChanged,
                         )
 
                         Column(
