@@ -93,6 +93,8 @@ private fun loginContent(
     context: Context
 ): Boolean {
 
+    val coroutineScope = rememberCoroutineScope()
+
     var name by rememberSaveable { mutableStateOf(value = "") }
     var pass by rememberSaveable { mutableStateOf(value = "") }
     var rememberMe by rememberSaveable { mutableStateOf(value = false) }
@@ -163,7 +165,7 @@ private fun loginContent(
     }
 
     if (goToMain) {
-        viewModel.viewModelScope.launch {
+        coroutineScope.launch {
             goToMain = false
             pushCreate = false
 
