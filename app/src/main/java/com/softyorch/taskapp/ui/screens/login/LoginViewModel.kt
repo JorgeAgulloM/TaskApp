@@ -89,7 +89,7 @@ class LoginViewModel @Inject constructor(
     suspend fun onLoginSelected() {
         _isLoading.value = true
         loginUserIntent(
-            email = name.value!!,
+            email = email.value!!,
             password = pass.value!!,
             rememberMe = rememberMe.value!!
         )
