@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screens.login
 
-import android.media.Image
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -50,8 +49,11 @@ class LoginViewModel @Inject constructor(
     private val _loginEnable = MutableLiveData<Boolean>()
     val loginEnable: LiveData<Boolean> = _loginEnable
 
-    private val _newAccount = MutableLiveData<Boolean>()
-    val newAccount: LiveData<Boolean> = _newAccount
+    private val _newAccountEnable = MutableLiveData<Boolean>()
+    val newAccountEnable: LiveData<Boolean> = _newAccountEnable
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     fun onLoginChange(email: String, pass: String) {
         _email.value = email
@@ -59,13 +61,13 @@ class LoginViewModel @Inject constructor(
         _loginEnable.value = isValidEmail(email = email) && isValidPass(pass = pass)
     }
 
-    suspend fun onCreateNewAccount(
+    fun onNewAccountChange(
         name: String,
         email: String,
         emailRepeat: String,
         pass: String,
         passRepeat: String,
-        image: String
+        image: String = ""
     ) {
         _name.value = name
         _email.value = email
@@ -73,13 +75,24 @@ class LoginViewModel @Inject constructor(
         _pass.value = pass
         _passRepeat.value = passRepeat
         _image.value = image
-        _newAccount.value = isFreeName(name = name) &&
+        _newAccountEnable.value = isNameValid(name = name) &&
                 isValidEmail(email = email, emailRepeat = emailRepeat) &&
                 isValidPass(pass = pass, passRepeat = passRepeat)
     }
 
-    private suspend fun isFreeName(name: String): Boolean =
-        isUserExist(name = name)
+    suspend fun onLoginSelected() {
+        _isLoading.value = true
+        //TODO
+        _isLoading.value = false
+    }
+
+    suspend fun onNewAccountSelected() {
+        _isLoading.value = true
+        //TODO
+        _isLoading.value = false
+    }
+
+    private fun isNameValid(name: String): Boolean = name.length >= 3
 
     private fun isValidPass(pass: String): Boolean = pass.length >= 8
 
@@ -116,9 +129,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun isUserExist(name: String): Boolean =
-        repository.isUserExistWithName(name = name)
-
     private suspend fun signInUserWithNameAndPassword(
         name: String,
         password: String
@@ -143,7 +153,5 @@ class LoginViewModel @Inject constructor(
         }
         return false
     }
-
-
 }
 
