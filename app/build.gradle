@@ -62,8 +62,12 @@ dependencies {
 
     // Coroutine Lifecycle Scopes
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
-    //lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+
+    //Lifecycle
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+
+    //LiveData
+    implementation "androidx.compose.runtime:runtime-livedata:1.2.1"
 
     //material icons - use with caution!
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
