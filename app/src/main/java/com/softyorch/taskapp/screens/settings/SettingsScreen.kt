@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.screens.settings
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -132,32 +133,28 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 }
             )
 
-            var initialTime by rememberSaveable { mutableStateOf(settingsUserData.timeLimitAutoLoading) }
-
-            if (rememberMe) initialTime = sliderCustom(
-                initValue = initialTime,
+            if (rememberMe) settingsUserData.timeLimitAutoLoading = sliderCustom(
+                initValue = settingsUserData.timeLimitAutoLoading,
                 enable = !needReloadDialog,
                 onValueChangeFinished = {
-                    settingsUserData.timeLimitAutoLoading = initialTime
-                    //viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
-                text = "Time to automatic login: ${timeLimitAutoLoginSelectText(initialTime)}"
+                text = "Time to automatic login: ${
+                    timeLimitAutoLoginSelectText(
+                        settingsUserData.timeLimitAutoLoading
+                    )
+                }"
             )
 
-            var initialSize by rememberSaveable { mutableStateOf(settingsUserData.textSize) }
-
-            initialSize = sliderCustom(
-                initValue = initialSize,
+            settingsUserData.textSize = sliderCustom(
+                initValue = settingsUserData.textSize,
                 enable = !needReloadDialog,
                 valueRange = 0f..4f,
                 steps = 3,
                 onValueChangeFinished = {
-                    settingsUserData.textSize = initialSize
-                    //viewModel.updatePreferences(settingsUserData = settingsUserData)
                     needReloadDialog = true
                 },
-                text = "Text base size: ${sizeTextName(initialSize)}"
+                text = "Text base size: ${sizeTextName(settingsUserData.textSize)}"
             )
 
             if (needReloadDialog) {
