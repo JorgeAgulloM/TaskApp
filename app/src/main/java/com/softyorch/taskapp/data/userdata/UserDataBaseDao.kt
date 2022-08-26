@@ -13,6 +13,9 @@ interface UserDataBaseDao {
     @Query("SELECT * FROM userdata_tbl WHERE id =:id")
     suspend fun getUserId(id: String): UserData
 
+    @Query("SELECT * FROM userdata_tbl WHERE user_name =:name")
+    suspend fun isUserExistWithName(name: String): Boolean
+
     @Query("SELECT * FROM userdata_tbl WHERE user_name =:name AND user_pass =:password")
     suspend fun signIn(name: String, password: String): UserData
 

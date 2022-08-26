@@ -55,4 +55,5 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
     suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()
     suspend fun deleteUserData(userData: UserData) = userDataBaseDao.delete(userData = userData)
+    suspend fun isUserExistWithName(name: String): Boolean = userDataBaseDao.isUserExistWithName(name = name)
 }
