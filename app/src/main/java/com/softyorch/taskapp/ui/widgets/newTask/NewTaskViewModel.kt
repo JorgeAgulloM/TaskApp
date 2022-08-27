@@ -1,10 +1,12 @@
 package com.softyorch.taskapp.ui.widgets.newTask
 
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.softyorch.taskapp.utils.toStringFormatted
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Instant
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,15 +15,8 @@ class NewTaskViewModel @Inject constructor() : ViewModel() {
     val title: LiveData<String> = _title
     private val _description = MutableLiveData<String>()
     val description: LiveData<String> = _description
-/*    private val _openDialog = MutableLiveData<Boolean>()
-    val openDialog: LiveData<Boolean> = _openDialog*/
-    private val _date = MutableLiveData<String>()
-    val date: LiveData<String> = _date
-    private val _dateFormatted = MutableLiveData<String>()
-    val dateFormatted: LiveData<String> = _dateFormatted
     private val _saveTaskEnabled = MutableLiveData<Boolean>()
     val saveTaskEnable: LiveData<Boolean> = _saveTaskEnabled
-
 
     fun onTextFieldChanged(title: String, description: String) {
         _title.value = title
@@ -29,6 +24,9 @@ class NewTaskViewModel @Inject constructor() : ViewModel() {
         _saveTaskEnabled.value = isTittleValid(title = title) &&
                 isDescriptionValid(description = description)
     }
+
+    fun dateFormatted(): String =
+        Date.from(Instant.now()).toStringFormatted(Date.from(Instant.now()))
 
     private fun isTittleValid(title: String): Boolean =
         title.length >= 3

@@ -19,7 +19,7 @@ import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.ui.widgets.ShowTask
-import com.softyorch.taskapp.ui.widgets.newTask
+import com.softyorch.taskapp.ui.widgets.newTask.newTask
 import java.time.Instant
 import java.util.*
 

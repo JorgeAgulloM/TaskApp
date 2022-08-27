@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.widgets
+package com.softyorch.taskapp.ui.widgets.newTask
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.textFieldCustom
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.ui.widgets.newTask.NewTaskViewModel
+import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
@@ -28,12 +29,14 @@ fun newTask(
     addOrEditTaskFunc: KFunction1<Task, Job>,
     userName: String,
     taskToEdit: Task?,
+    dateTask: String = "",
     textSizes: StandardizedSizes
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
     val title: String by viewModel.title.observeAsState(initial = "")
     val description: String by viewModel.description.observeAsState(initial = "")
+    val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = false)
 
     var openDialog by remember { mutableStateOf(true) }
     val date by remember { mutableStateOf(Date.from(Instant.now())) }
@@ -78,33 +81,15 @@ fun newTask(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            ButtonCustomNewTask(taskToEdit = taskToEdit, primary = true) {
-
-                                /**esto hay que trasladarlo al ViewModel*/
-                                val task = taskToEdit?.copy(
-                                    title = title,
-                                    description = description,
-                                    entryDate = Date.from(Instant.now())
+                            ButtonCustomNewTask(
+                                taskToEdit = taskToEdit, enable = saveTaskEnable
+                            ) {
+                                addOrEditTaskFunc(
+                                    taskToEditOrNewTask(taskToEdit, title, description, userName)
                                 )
-                                    ?: Task(
-                                        title = title,
-                                        description = description,
-                                        author = userName
-                                    )
-                                addOrEditTaskFunc(task)
                                 openDialog = false
-                                //navController.popBackStack()
                             }
-
-                            ButtonCustom(
-                                onClick = {
-                                    title.isBlank()
-                                    description.isBlank()
-                                    openDialog = false
-                                    //navController.popBackStack()
-                                },
-                                text = "Cancel"
-                            )
+                            ButtonCustom(onClick = { openDialog = false }, text = "Cancel")
                         }
                     }
                 }
@@ -114,16 +99,33 @@ fun newTask(
     return openDialog
 }
 
+private fun taskToEditOrNewTask(
+    taskToEdit: Task?,
+    title: String,
+    description: String,
+    userName: String
+): Task = (taskToEdit?.copy(
+    title = title,
+    description = description,
+    entryDate = Date.from(Instant.now())
+)
+    ?: Task(
+        title = title,
+        description = description,
+        author = userName
+    ))
+
 @Composable
 private fun ButtonCustomNewTask(
     taskToEdit: Task?,
-    primary: Boolean = false,
+    enable: Boolean,
     onClick: () -> Unit
 ) {
     ButtonCustom(
         onClick = onClick,
         text = if (taskToEdit == null) "Create" else "Edit Task",
-        primary = primary
+        primary = true,
+        enable = enable
     )
 }
 
