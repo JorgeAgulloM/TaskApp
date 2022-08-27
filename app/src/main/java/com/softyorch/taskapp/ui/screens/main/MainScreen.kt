@@ -16,6 +16,7 @@ import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.utils.StandardizedSizes
 import java.time.Instant
 import java.util.*
 
@@ -51,47 +52,34 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
     ) {
 
-        RowInfo(text = "My Tasks", paddingStart = 32.dp, textSizes = textSizes)
-
+        RowInfoMain(text = "My Tasks", textSizes = textSizes)
         Spacer(modifier = Modifier.padding(8.dp))
-
-        RowInfo(
-            text = "To be made...",
-            paddingStart = 32.dp,
-            textSizes = textSizes
-        )
+        RowInfoMain(text = "To be made...", textSizes = textSizes)
         if (tasks.isEmpty())
             RowInfo(
-                "Añade una nueva tarea...",
-                textSizes = textSizes
+                text = "Añade una nueva tarea...", textSizes = textSizes
             )
         else
             FillLazyColumn(
-                tasks = tasks,
-                mainViewModel = viewModel,
-                navController = navController
+                tasks = tasks, mainViewModel = viewModel, navController = navController
             )
-
         Spacer(modifier = Modifier.padding(8.dp))
-
-        RowInfo(
-            text = "Completed in the last 7 days",
-            paddingStart = 32.dp,
-            textSizes = textSizes
-        )
+        RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes)
         if (tasks.isEmpty())
             RowInfo(
-                "Aún no has terminado ninguna tarea",
-                textSizes = textSizes
+                text = "Aún no has terminado ninguna tarea", textSizes = textSizes
             )
         else
             FillLazyColumn(
-                tasks = tasks,
-                mainViewModel = viewModel,
-                checkOrNot = true,
+                tasks = tasks, mainViewModel = viewModel, checkOrNot = true,
                 navController = navController
             )
     }
+}
+
+@Composable
+private fun RowInfoMain(text: String, textSizes: StandardizedSizes) {
+    RowInfo(text = text, paddingStart = 32.dp, textSizes = textSizes)
 }
 
 @ExperimentalMaterial3Api
@@ -105,23 +93,32 @@ private fun FillLazyColumn(
     LazyColumn {
         items(tasks) { task ->
             if (checkOrNot == task.checkState)
-                CheckCustom(
-                    checked = task.checkState,
-                    onCheckedChange = {
-                        task.checkState = it
-                        task.finishDate = if (it) Date.from(Instant.now()) else null
-                        mainViewModel.updateTask(task)
-                        //Esto debe cambiar, no es correcto, aunque funciona
-                        navController.popBackStack()
-                        navController.navigate(AppScreensRoutes.MainScreen.route)
-                    },
-                    text = task.title,
-                    onClick = {
-                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                    }
-                )
-        }.apply {
-            //TODO Averiguar la lógica para obtener las tareas con check true y mostrar un mensaje
+                CheckCustomMain(task, mainViewModel, navController)
+            else Text("Añade alguna tarea")
         }
     }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun CheckCustomMain(
+    task: Task,
+    mainViewModel: MainViewModel,
+    navController: NavController
+) {
+    CheckCustom(
+        checked = task.checkState,
+        onCheckedChange = {
+            task.checkState = it
+            task.finishDate = if (it) Date.from(Instant.now()) else null
+            mainViewModel.updateTask(task)
+            //Esto debe cambiar, no es correcto, aunque funciona
+            navController.popBackStack()
+            navController.navigate(AppScreensRoutes.MainScreen.route)
+        },
+        text = task.title,
+        onClick = {
+            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+        }
+    )
 }
