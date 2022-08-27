@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.login
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.textFieldCustom
@@ -38,7 +40,8 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
             viewModel = viewModel,
             textSizes = textSizes,
-            context = context
+            context = context,
+            navController = navController
         )
     }
 }
@@ -49,7 +52,8 @@ private fun LoginOrNewAccount(
     modifier: Modifier,
     viewModel: LoginViewModel,
     textSizes: StandardizedSizes,
-    context: Context
+    context: Context,
+    navController: NavHostController
 ) {
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     val name: String by viewModel.name.observeAsState(initial = "")
@@ -137,10 +141,25 @@ private fun LoginOrNewAccount(
                 primary = true
             ) {
                 coroutineScope.launch {
-                    if (!newAccount)
-                        viewModel.onLoginSelected()
-                    else
-                        viewModel.onNewAccountSelected()
+                    if (!newAccount) {
+                        if (viewModel.onLoginSelected()) navController.navigate(
+                            AppScreensRoutes.MainScreen.route
+                        ) {
+                            popUpTo(AppScreensRoutes.LoginScreen.route) {
+                                inclusive = true
+                            }
+                        }
+                    } else {
+                        if (viewModel.onNewAccountSelected()) {
+                            newAccount = false
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Error, ya existe una cuenta con el correo introducido",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
             ButtonLogin(
@@ -257,10 +276,7 @@ private fun TextFieldPassRepeat(passRepeat: String, onTextFieldChanged: (String)
 
 @Composable
 private fun ButtonLogin(
-    text: String,
-    enable: Boolean = true,
-    primary: Boolean = false,
-    onClickSelect: () -> Unit
+    text: String, enable: Boolean = true, primary: Boolean = false, onClickSelect: () -> Unit
 ) {
     ButtonCustom(
         onClick = { onClickSelect() },

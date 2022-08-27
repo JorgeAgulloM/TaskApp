@@ -86,29 +86,28 @@ class LoginViewModel @Inject constructor(
                 isValidPass(pass = pass, passRepeat = passRepeat)
     }
 
-    suspend fun onLoginSelected() {
+    suspend fun onLoginSelected() : Boolean {
         _isLoading.value = true
-        loginUserIntent(
+        val login = loginUserIntent(
             email = email.value!!,
             password = pass.value!!,
             rememberMe = rememberMe.value!!
         )
         //delay(3000)
         _isLoading.value = false
+        return login
     }
 
-    suspend fun onNewAccountSelected() {
+    suspend fun onNewAccountSelected(): Boolean {
         _isLoading.value = true
         addUser(
-            UserData(
-                username = name.value!!,
-                userEmail = email.value!!,
-                userPass = pass.value!!
-            )
-        )
-        //delay(3000)
-        //TODO
-        _isLoading.value = false
+            UserData(username = name.value!!, userEmail = email.value!!, userPass = pass.value!!)
+        ).let {
+            delay(500)
+            Log.d("LOGIN", "LoginViewModel.onNewAccountSelected -> $it")
+            _isLoading.value = false
+            return it
+        }
     }
 
     private fun isNameValid(name: String): Boolean = name.length >= 3
@@ -154,8 +153,9 @@ class LoginViewModel @Inject constructor(
     ): Resource<UserData> =
         repository.signInUserWithEmailAndPassword(email = email, password = password)
 
-    private fun addUser(userData: UserData) =
-        viewModelScope.launch { repository.addUserData(userData = userData) }
+    private suspend fun addUser(userData: UserData): Boolean {
+        return repository.addUserData(userData = userData)
+    }
 
     private fun updateLastLoginUser(userData: UserData) =
         viewModelScope.launch { repository.updateUserData(userData = userData) }
@@ -171,11 +171,9 @@ class LoginViewModel @Inject constructor(
                 user.rememberMe = rememberMe
                 updateLastLoginUser(userData = user)
                 stateLogin.logIn(userData = user)
-                Log.d("LOGIN", "Login is true")
                 return true
             }
         }
-        Log.d("LOGIN", "Login is false")
         return false
     }
 }

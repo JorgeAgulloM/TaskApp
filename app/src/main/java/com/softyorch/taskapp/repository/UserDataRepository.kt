@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.repository
 
+import android.util.Log
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.userdata.UserDataBaseDao
 import com.softyorch.taskapp.model.UserData
@@ -27,7 +28,22 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun signInUserWithEmailAndPassword(email: String, password: String): Resource<UserData> {
+    suspend fun getUserDataEmail(email: String): Resource<UserData> {
+        val response = try {
+            Resource.Loading(data = true)
+            userDataBaseDao.getUserEmail(email = email)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
+
+        Resource.Loading(data = false)
+        return Resource.Success(data = response)
+    }
+
+    suspend fun signInUserWithEmailAndPassword(
+        email: String,
+        password: String
+    ): Resource<UserData> {
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.signIn(email = email, password = password)
@@ -51,7 +67,21 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun addUserData(userData: UserData) = userDataBaseDao.insert(userData = userData)
+    suspend fun addUserData(userData: UserData): Boolean {
+        Log.d("LOGIN", "UserDataRepository.UserData recibido -> $userData")
+        return getUserDataEmail(email = userData.userEmail).let {
+            if (it.data?.userEmail.isNullOrEmpty()) {
+                Log.d("LOGIN", "UserDataRepository.Insert isNullOrEmpty -> true")
+                val user = userDataBaseDao.insert(userData = userData)
+                Log.d("LOGIN", "UserDataRepository.create user -> $user")
+                true
+            } else {
+                Log.d("LOGIN", "UserDataRepository.Insert isNullOrEmpty -> false")
+                false
+            }
+        }
+    }
+
     suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()
     suspend fun deleteUserData(userData: UserData) = userDataBaseDao.delete(userData = userData)
