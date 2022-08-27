@@ -33,10 +33,7 @@ fun SplashScreen(
 ) {
 
     val goToAutoLogin = viewModel.goToAutologin.observeAsState()
-
-    val scale = remember {
-        Animatable(0f)
-    }
+    val scale = remember { Animatable(0f) }
 
     LaunchedEffect(key1 = true, block = {
         scale.animateTo(
@@ -72,17 +69,27 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.notes_512x512),
-                contentDescription = "Splash image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(95.dp)
-            )
-            Text(
-                text = "Task App",
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.tertiary
-            )
+            ImageSplash()
+            TextSplash()
         }
     }
+}
+
+@Composable
+private fun TextSplash() {
+    Text(
+        text = "Task App",
+        style = MaterialTheme.typography.displayLarge,
+        color = MaterialTheme.colorScheme.tertiary
+    )
+}
+
+@Composable
+private fun ImageSplash() {
+    Image(
+        painter = painterResource(id = R.drawable.notes_512x512),
+        contentDescription = "Splash image",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.size(95.dp)
+    )
 }
