@@ -31,7 +31,7 @@ fun TaskAppNavigation(reloadComposable: () -> Unit) {
             val splashViewModel = hiltViewModel<SplashViewModel>()
             SplashScreen(
                 navController = navController,
-                splashViewModel = splashViewModel
+                viewModel = splashViewModel
             )
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {

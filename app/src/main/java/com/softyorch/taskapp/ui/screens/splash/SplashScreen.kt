@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,18 +29,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun SplashScreen(
     navController: NavHostController,
-    splashViewModel: SplashViewModel
+    viewModel: SplashViewModel
 ) {
+
+    val goToAutoLogin = viewModel.goToAutologin.observeAsState()
 
     val scale = remember {
         Animatable(0f)
-    }
-
-    var goToAutoLogin by rememberSaveable { mutableStateOf(value = false) }
-    //val context = LocalContext.current
-
-    splashViewModel.viewModelScope.launch {
-        if (!goToAutoLogin) goToAutoLogin = splashViewModel.userActivated()
     }
 
     LaunchedEffect(key1 = true, block = {
@@ -52,7 +48,7 @@ fun SplashScreen(
 
         delay(1500L) //2000
 
-        val route = if (goToAutoLogin)
+        val route = if (goToAutoLogin.value == true)
             AppScreensRoutes.MainScreen.route
         else AppScreensRoutes.LoginScreen.route
 
