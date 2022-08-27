@@ -12,14 +12,11 @@ import com.softyorch.taskapp.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,9 +24,6 @@ class LoginViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
-    private val _userDataList = MutableStateFlow<List<UserData>>(emptyList())
-    val userDataList = _userDataList.asStateFlow()
-
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
 
@@ -88,23 +82,21 @@ class LoginViewModel @Inject constructor(
 
     suspend fun onLoginSelected() : Boolean {
         _isLoading.value = true
-        val login = loginUserIntent(
-            email = email.value!!,
-            password = pass.value!!,
-            rememberMe = rememberMe.value!!
-        )
-        //delay(3000)
-        _isLoading.value = false
-        return login
+        loginAndUpdateData(
+            email = email.value!!, password = pass.value!!, rememberMe = rememberMe.value!!
+        ).let {
+            //delay(3000)
+            _isLoading.value = false
+            return it
+        }
     }
 
     suspend fun onNewAccountSelected(): Boolean {
         _isLoading.value = true
-        addUser(
+        addNewUser(
             UserData(username = name.value!!, userEmail = email.value!!, userPass = pass.value!!)
         ).let {
-            delay(500)
-            Log.d("LOGIN", "LoginViewModel.onNewAccountSelected -> $it")
+            //delay(1000)
             _isLoading.value = false
             return it
         }
@@ -123,44 +115,22 @@ class LoginViewModel @Inject constructor(
     private fun isValidPass(pass: String): Boolean = pass.length >= 8
 
     private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        pass.length >= 8 && passRepeat.length >= 8
+        Pattern.matches("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}${'$'}""", pass) &&
+        pass == passRepeat
 
-
-    /**
-     * stateLogin
-     */
-
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 
     /**
      * data
      */
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllUser().distinctUntilChanged()
-                .collect { listOfUsers ->
-                    if (listOfUsers.isEmpty()) {
-                        //TODO
-                    } else _userDataList.value = listOfUsers
-                }
-        }
-    }
-
-    private suspend fun signInUserWithEmailAndPassword(
-        email: String,
-        password: String
-    ): Resource<UserData> =
-        repository.signInUserWithEmailAndPassword(email = email, password = password)
-
-    private suspend fun addUser(userData: UserData): Boolean {
+    private suspend fun addNewUser(userData: UserData): Boolean {
         return repository.addUserData(userData = userData)
     }
 
     private fun updateLastLoginUser(userData: UserData) =
         viewModelScope.launch { repository.updateUserData(userData = userData) }
 
-    private suspend fun loginUserIntent(
+    private suspend fun loginAndUpdateData(
         email: String,
         password: String,
         rememberMe: Boolean
@@ -176,5 +146,18 @@ class LoginViewModel @Inject constructor(
         }
         return false
     }
+
+    private suspend fun signInUserWithEmailAndPassword(
+        email: String,
+        password: String
+    ): Resource<UserData> =
+        repository.signInUserWithEmailAndPassword(email = email, password = password)
+
+
+    /**
+     * stateLogin
+     */
+
+    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }
 

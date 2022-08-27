@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.login
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -129,6 +130,8 @@ private fun LoginOrNewAccount(
                     viewModel.onLoginChange(
                         email = email, pass = pass, rememberMe = it
                     )
+                    Log.d("LOGIN", "RememberMe -> $rememberMe")
+                    Log.d("LOGIN", "it -> $it")
                 }
 
                 Spacer(modifier = modifier.padding(vertical = 8.dp))
@@ -256,6 +259,7 @@ private fun TextFieldPass(pass: String, onTextFieldChanged: (String) -> Unit) {
         contentDescription = "type your password",
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
+        password = true
         //isError = email.isEmpty() && pushCreate
     )
 }
@@ -270,6 +274,7 @@ private fun TextFieldPassRepeat(passRepeat: String, onTextFieldChanged: (String)
         contentDescription = "repeat your password",
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
+        password = true
         //isError = email.isEmpty() && pushCreate
     )
 }
