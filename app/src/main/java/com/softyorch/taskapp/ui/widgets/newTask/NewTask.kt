@@ -6,13 +6,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.textFieldCustom
 import com.softyorch.taskapp.model.Task
+import com.softyorch.taskapp.ui.widgets.newTask.NewTaskViewModel
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
@@ -28,8 +31,10 @@ fun newTask(
     textSizes: StandardizedSizes
 ): Boolean {
 
-    var title by remember { mutableStateOf(value = taskToEdit?.title ?: "") }
-    var description by remember { mutableStateOf(value = taskToEdit?.description ?: "") }
+    val viewModel = hiltViewModel<NewTaskViewModel>()
+    val title: String by viewModel.title.observeAsState(initial = "")
+    val description: String by viewModel.description.observeAsState(initial = "")
+
     var openDialog by remember { mutableStateOf(true) }
     val date by remember { mutableStateOf(Date.from(Instant.now())) }
     val dateFormatted = date.toStringFormatted(date = date)
@@ -57,43 +62,15 @@ fun newTask(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        ShowTask(
-                            author = userName,
-                            date = dateFormatted,
-                        )
-
-                        RowInfo(
-                            text = "Name of task: ",
-                            paddingStart = 32.dp,
-                            textSizes = textSizes
-                        )
-
-                        title = textFieldCustom(
-                            text = title,
-                            label = "Nombre",
-                            placeholder = "Escribe tu nombre",
-                            icon = Icons.Rounded.TextFields,
-                            contentDescription = "name",
-                            singleLine = true,
-                            newTask = true,
-                            //onTextFieldChanged = onTextFieldChanged,
-                        )
-
-                        RowInfo(
-                            text = "Task description: ",
-                            paddingStart = 32.dp,
-                            textSizes = textSizes
-                        )
-
-                        description = textFieldCustom(
-                            text = description,
-                            label = "descripción",
-                            placeholder = "Escribe algo...",
-                            icon = Icons.Rounded.TextFields,
-                            contentDescription = "description",
-                            newTask = true,
-                            //onTextFieldChanged = onTextFieldChanged,
-                        )
+                        ShowTaskNewTask(userName = userName, dateFormatted = dateFormatted)
+                        RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
+                        TextFieldCustomNewTask(text = title, label = "name") {
+                            viewModel.onTextFieldChanged(title = it, description = description)
+                        }
+                        RowInfoNewTask(text = "Task description: ", textSizes = textSizes)
+                        TextFieldCustomNewTask(text = description, label = "description") {
+                            viewModel.onTextFieldChanged(title = title, description = it)
+                        }
 
                         Column(
                             modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
@@ -101,25 +78,23 @@ fun newTask(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            ButtonCustom(
-                                onClick = {
-                                    val task = taskToEdit?.copy(
+                            ButtonCustomNewTask(taskToEdit = taskToEdit, primary = true) {
+
+                                /**esto hay que trasladarlo al ViewModel*/
+                                val task = taskToEdit?.copy(
+                                    title = title,
+                                    description = description,
+                                    entryDate = Date.from(Instant.now())
+                                )
+                                    ?: Task(
                                         title = title,
                                         description = description,
-                                        entryDate = Date.from(Instant.now())
+                                        author = userName
                                     )
-                                        ?: Task(
-                                            title = title,
-                                            description = description,
-                                            author = userName
-                                        )
-                                    addOrEditTaskFunc(task)
-                                    openDialog = false
-                                    //navController.popBackStack()
-                                },
-                                text = if (taskToEdit == null) "Create" else "Edit Task",
-                                true
-                            )
+                                addOrEditTaskFunc(task)
+                                openDialog = false
+                                //navController.popBackStack()
+                            }
 
                             ButtonCustom(
                                 onClick = {
@@ -137,4 +112,52 @@ fun newTask(
         }
     )
     return openDialog
+}
+
+@Composable
+private fun ButtonCustomNewTask(
+    taskToEdit: Task?,
+    primary: Boolean = false,
+    onClick: () -> Unit
+) {
+    ButtonCustom(
+        onClick = onClick,
+        text = if (taskToEdit == null) "Create" else "Edit Task",
+        primary = primary
+    )
+}
+
+@Composable
+private fun TextFieldCustomNewTask(
+    text: String,
+    label: String,
+    onCheckedChange: (String) -> Unit
+) {
+    textFieldCustom(
+        text = text,
+        label = label,
+        placeholder = "Escribe tu $label",
+        icon = Icons.Rounded.TextFields,
+        contentDescription = label,
+        singleLine = true,
+        newTask = true,
+        onTextFieldChanged = onCheckedChange
+    )
+}
+
+@Composable
+private fun RowInfoNewTask(text: String, textSizes: StandardizedSizes) {
+    RowInfo(
+        text = text,
+        paddingStart = 32.dp,
+        textSizes = textSizes
+    )
+}
+
+@Composable
+private fun ShowTaskNewTask(userName: String, dateFormatted: String) {
+    ShowTask(
+        author = userName,
+        date = dateFormatted,
+    )
 }
