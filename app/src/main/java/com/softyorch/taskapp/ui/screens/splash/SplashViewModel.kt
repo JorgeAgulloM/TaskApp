@@ -16,14 +16,14 @@ class SplashViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
-    private suspend fun logInWithRememberMe(name: String, pass: String): Resource<UserData> =
-        repository.signInSharePreferences(name = name, password = pass)
+    private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
+        repository.signInSharePreferences(email = email, password = pass)
 
     suspend fun userActivated(): Boolean {
         if (stateLogin.isTheUserActive()) {
             stateLogin.userActive().let { userData ->
                 logInWithRememberMe(
-                    name = userData.username,
+                    email = userData.userEmail,
                     pass = userData.userPass
                 ).let { data ->
                     data.data?.let { user ->

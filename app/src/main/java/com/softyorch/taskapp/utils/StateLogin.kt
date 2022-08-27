@@ -25,6 +25,7 @@ class StateLogin @Inject constructor(
         userDataActive = userData
         sharedPreferencesSetUser(
             name = userData.username,
+            email = userData.userEmail,
             pass = userData.userPass,
             lastLoginDate = userData.lastLoginDate,
             activate = true,
@@ -44,6 +45,7 @@ class StateLogin @Inject constructor(
 
     private fun sharedPreferencesSetUser(
         name: String = "",
+        email: String = "",
         pass: String = "",
         activate: Boolean = false,
         lastLoginDate: Date? = null,
@@ -57,6 +59,7 @@ class StateLogin @Inject constructor(
     ) {
         _sharedPreferences?.edit().let { sp ->
             sp?.putString(Name.name, name)
+            sp?.putString(Email.name, email)
             sp?.putString(Pass.name, pass)
             sp?.putBoolean(Activate.name, activate)
             sp?.putString(LastLoginDate.name, lastLoginDate.toString())
@@ -76,7 +79,7 @@ class StateLogin @Inject constructor(
         _sharedPreferences!!.let { sp ->
             return UserData(
                 username = sp.getString(Name.name, "").toString(),
-                userEmail = "",
+                userEmail = sp.getString(Email.name, "").toString(),
                 userPass = sp.getString(Pass.name, "").toString(),
                 rememberMe = sp.getBoolean(RememberMe.name, false)
             )
