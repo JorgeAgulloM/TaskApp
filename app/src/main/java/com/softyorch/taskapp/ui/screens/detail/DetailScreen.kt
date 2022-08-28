@@ -7,6 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,10 +17,12 @@ import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
 import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.ui.widgets.newTask.newTask
+import com.softyorch.taskapp.utils.StandardizedSizes
 import java.time.Instant
 import java.util.*
 
@@ -69,29 +72,11 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    RowInfo(
-                        task.title,
-                        paddingStart = 24.dp,
-                        textSizes = textSizes
-                    )
-                    Text(
-                        text = task.description,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = textSizes.normalSize
-                    )
+                    RowInfoDetail(text = task.title, textSizes = textSizes)
+                    TextDescriptionDetails(task, textSizes)
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfo(
-                        "Details",
-                        paddingStart = 24.dp,
-                        textSizes = textSizes
-                    )
-                    ShowTask(
-                        author = task.author,
-                        date = task.entryDate.toStringFormatted(),
-                        completedDate = task.finishDate?.toStringFormatted()
-                            ?: "Unknown",
-                        paddingStart = 0.dp
-                    )
+                    RowInfoDetail(text = "Details", textSizes = textSizes)
+                    ShowTaskDetails(task)
 
                     Column(
                         modifier = Modifier
@@ -105,39 +90,24 @@ private fun Content(
                         var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
                         var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-                        ButtonCustom(
-                            onClick = {
-                                openEditDialog = true
-                            },
-                            text = "Edit task",
+                        ButtonCustomDetails(text = "Edit task", primary = true) {
+                            openEditDialog = true
+                        }
+                        ButtonCustomDetails(
+                            text = if (!task.checkState) "Complete?" else "Completed",
                             primary = true
-                        )
-
-                        ButtonCustom(
-                            onClick = {
-                                task.checkState = !task.checkState
-                                task.finishDate = Date.from(Instant.now())
-                                viewModel.updateTask(task = task)
-                                openCompleteDialog = true
-                            },
-                            text = if (!task.checkState)
-                                "Complete?"
-                            else
-                                "Completed",
-                            primary = true
-                        )
-
-                        ButtonCustom(
-                            onClick = {
-                                openDeleteDialog = true
-                            },
-                            text = "Delete"
-                        )
+                        ) {
+                            task.checkState = !task.checkState
+                            task.finishDate = Date.from(Instant.now())
+                            viewModel.updateTask(task = task)
+                            openCompleteDialog = true
+                        }
+                        ButtonCustomDetails(text = "Delete") { openDeleteDialog = true }
 
                         if (openEditDialog) {
                             openEditDialog = newTask(
                                 addOrEditTaskFunc = viewModel::updateTask,
-                                userName = viewModel.nameOfUserLogin(),
+                                userName = task.author,
                                 taskToEdit = task,
                                 textSizes = textSizes
                             )
@@ -148,23 +118,19 @@ private fun Content(
                                 openCompleteDialog = false
                             },
                                 confirmButton = {
-                                    ButtonCustom(
-                                        onClick = {
-                                            navController.popBackStack()
-                                            navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
-                                            openCompleteDialog = false
-                                        },
-                                        text = "OK",
-                                        primary = true
-                                    )
+                                    ButtonCustomDetails(text = "OK", primary = true) {
+                                        navController.popBackStack()
+                                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                                        openCompleteDialog = false
+                                    }
                                 },
                                 text = {
-                                    Text(
+                                    TextDetails(
                                         text = "Great, one less task. On to the next one...",
-                                        textAlign = TextAlign.Center,
                                         fontSize = textSizes.normalSize
                                     )
-                                })
+                                }
+                            )
                         }
 
                         if (openDeleteDialog) {
@@ -173,25 +139,20 @@ private fun Content(
                                     openDeleteDialog = false
                                 },
                                 confirmButton = {
-                                    ButtonCustom(
-                                        onClick = {
-                                            openDeleteDialog = false
-                                            viewModel.removeTask(task = task)
-                                            navController.navigate(AppScreens.MainScreen.name)
-                                        }, "Delete it", true
-                                    )
+                                    ButtonCustomDetails(text = "Delete it", primary = true) {
+                                        openDeleteDialog = false
+                                        viewModel.removeTask(task = task)
+                                        navController.navigate(AppScreens.MainScreen.name)
+                                    }
                                 },
                                 dismissButton = {
-                                    ButtonCustom(
-                                        onClick = {
-                                            openDeleteDialog = false
-                                        }, "Cancel"
-                                    )
+                                    ButtonCustomDetails(text = "Cancel") {
+                                        openDeleteDialog = false
+                                    }
                                 },
                                 text = {
-                                    Text(
+                                    TextDetails(
                                         text = "Are you sure you want to eliminate the task?",
-                                        textAlign = TextAlign.Center,
                                         fontSize = textSizes.normalSize
                                     )
                                 },
@@ -201,4 +162,61 @@ private fun Content(
                 }
             }
         }
+}
+
+@Composable
+private fun ButtonCustomDetails(
+    text: String,
+    primary: Boolean = false,
+    onClick: () -> Unit
+) {
+    ButtonCustom(
+        onClick = { onClick() },
+        text = text,
+        primary = primary
+    )
+}
+
+@Composable
+private fun RowInfoDetail(
+    text: String,
+    textSizes: StandardizedSizes
+) {
+    RowInfo(
+        text = text,
+        paddingStart = 24.dp,
+        textSizes = textSizes
+    )
+}
+
+@Composable
+private fun TextDescriptionDetails(
+    task: Task,
+    textSizes: StandardizedSizes
+) {
+    Text(
+        text = task.description,
+        color = MaterialTheme.colorScheme.onSurface,
+        fontSize = textSizes.normalSize
+    )
+}
+
+@Composable
+private fun ShowTaskDetails(task: Task) {
+    ShowTask(
+        author = task.author,
+        date = task.entryDate.toStringFormatted(),
+        completedDate = task.finishDate?.toStringFormatted()
+            ?: "Unknown",
+        paddingStart = 0.dp
+    )
+}
+
+@Composable
+private fun TextDetails(text: String, fontSize: TextUnit, ) {
+    Text(
+        text = text,
+        textAlign = TextAlign.Center,
+        fontSize = fontSize
+    )
 }
