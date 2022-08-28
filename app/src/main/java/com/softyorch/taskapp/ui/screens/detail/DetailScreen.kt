@@ -104,65 +104,69 @@ private fun Content(
                         }
                         ButtonCustomDetails(text = "Delete") { openDeleteDialog = true }
 
-                        if (openEditDialog) {
-                            openEditDialog = newTask(
-                                addOrEditTaskFunc = viewModel::updateTask,
-                                userName = task.author,
-                                taskToEdit = task,
-                                textSizes = textSizes
-                            )
-                        }
+                        if (openEditDialog) openEditDialog = newTaskDetails(
+                            viewModel = viewModel, task = task, textSizes = textSizes
+                        )
 
-                        if (openCompleteDialog) {
-                            AlertDialog(onDismissRequest = {
-                                openCompleteDialog = false
-                            },
-                                confirmButton = {
-                                    ButtonCustomDetails(text = "OK", primary = true) {
-                                        navController.popBackStack()
-                                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                                        openCompleteDialog = false
-                                    }
-                                },
-                                text = {
-                                    TextDetails(
-                                        text = "Great, one less task. On to the next one...",
-                                        fontSize = textSizes.normalSize
-                                    )
+                        if (openCompleteDialog) AlertDialog(onDismissRequest = {
+                            openCompleteDialog = false
+                        },
+                            confirmButton = {
+                                ButtonCustomDetails(text = "OK", primary = true) {
+                                    navController.popBackStack()
+                                    navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                                    openCompleteDialog = false
                                 }
-                            )
-                        }
+                            },
+                            text = {
+                                TextDetails(
+                                    text = "Great, one less task. On to the next one...",
+                                    fontSize = textSizes.normalSize
+                                )
+                            }
+                        )
 
-                        if (openDeleteDialog) {
-                            AlertDialog(
-                                onDismissRequest = {
+                        if (openDeleteDialog) AlertDialog(
+                            onDismissRequest = {
+                                openDeleteDialog = false
+                            },
+                            confirmButton = {
+                                ButtonCustomDetails(text = "Delete it", primary = true) {
                                     openDeleteDialog = false
-                                },
-                                confirmButton = {
-                                    ButtonCustomDetails(text = "Delete it", primary = true) {
-                                        openDeleteDialog = false
-                                        viewModel.removeTask(task = task)
-                                        navController.navigate(AppScreens.MainScreen.name)
-                                    }
-                                },
-                                dismissButton = {
-                                    ButtonCustomDetails(text = "Cancel") {
-                                        openDeleteDialog = false
-                                    }
-                                },
-                                text = {
-                                    TextDetails(
-                                        text = "Are you sure you want to eliminate the task?",
-                                        fontSize = textSizes.normalSize
-                                    )
-                                },
-                            )
-                        }
+                                    viewModel.removeTask(task = task)
+                                    navController.navigate(AppScreens.MainScreen.name)
+                                }
+                            },
+                            dismissButton = {
+                                ButtonCustomDetails(text = "Cancel") {
+                                    openDeleteDialog = false
+                                }
+                            },
+                            text = {
+                                TextDetails(
+                                    text = "Are you sure you want to eliminate the task?",
+                                    fontSize = textSizes.normalSize
+                                )
+                            },
+                        )
+
                     }
                 }
             }
         }
 }
+
+@Composable
+private fun newTaskDetails(
+    viewModel: DetailScreenViewModel,
+    task: Task,
+    textSizes: StandardizedSizes
+): Boolean = newTask(
+    addOrEditTaskFunc = viewModel::updateTask,
+    userName = task.author,
+    taskToEdit = task,
+    textSizes = textSizes
+)
 
 @Composable
 private fun ButtonCustomDetails(
@@ -213,7 +217,7 @@ private fun ShowTaskDetails(task: Task) {
 }
 
 @Composable
-private fun TextDetails(text: String, fontSize: TextUnit, ) {
+private fun TextDetails(text: String, fontSize: TextUnit) {
     Text(
         text = text,
         textAlign = TextAlign.Center,
