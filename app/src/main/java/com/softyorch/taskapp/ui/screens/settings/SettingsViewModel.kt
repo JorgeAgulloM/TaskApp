@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.ui.screens.settings
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.model.UserData
@@ -14,6 +16,13 @@ class SettingsViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
+
+    private val _settings = MutableLiveData<UserData>()
+    val settings: LiveData<UserData> = _settings
+
+    init {
+        _settings.postValue(getUserActiveSharedPreferences())
+    }
 
     fun getUserActiveSharedPreferences(): UserData? {
         return stateLogin.userDataActive

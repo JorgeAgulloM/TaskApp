@@ -1,12 +1,12 @@
 package com.softyorch.taskapp.ui.screens.settings
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +46,14 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
 private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val settingsUserData = viewModel.getUserActiveSharedPreferences()
+    val settings: UserData by viewModel.settings.observeAsState(
+        initial = UserData(
+            username = "",
+            userEmail = "",
+            userPass = ""
+        )
+    )
+
     val textSizes = viewModel.sizeSelectedOfUser()
     var needReloadDialog by remember { mutableStateOf(false) }
     var hideLightDark by rememberSaveable {
