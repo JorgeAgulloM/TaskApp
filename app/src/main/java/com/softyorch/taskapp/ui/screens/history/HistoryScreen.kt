@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,15 +51,15 @@ private fun Content(
     navController: NavHostController,
     viewModel: HistoryViewModel
 ) {
-    //val tasks = viewModel.taskList.collectAsState().value
-    val tasks: State<List<Task>> = viewModel.taskList.observeAsState(initial = emptyList())
+
+    val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
     val textSizes = viewModel.sizeSelectedOfUser()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
             .padding(top = it.calculateTopPadding() * 1.5f, start = 16.dp, end = 16.dp)
     ) {
-        items(tasks.value) { task ->
+        items(tasks) { task ->
             Row(
                 modifier = Modifier
                     .padding(top = 4.dp)
