@@ -29,18 +29,21 @@ fun newTask(
     addOrEditTaskFunc: KFunction1<Task, Job>,
     userName: String,
     taskToEdit: Task?,
-    dateTask: Date? = null,
     textSizes: StandardizedSizes
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
-    val title: String by viewModel.title.observeAsState(initial = "")
-    val description: String by viewModel.description.observeAsState(initial = "")
-    val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = false)
+    val title: String by viewModel.title.observeAsState(initial = taskToEdit?.title ?: "")
+    val description: String by viewModel.description.observeAsState(
+        initial = taskToEdit?.description ?: ""
+    )
+    val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = taskToEdit != null)
 
     var openDialog by remember { mutableStateOf(true) }
-
-    val dateFormatted = dateTask?.toStringFormatted()
+    val dateCreatedFormatted =
+        taskToEdit?.entryDate?.toStringFormatted() ?: Date.from(Instant.now()).toStringFormatted()
+    val dateCompletedFormatted =
+        taskToEdit?.finishDate?.toStringFormatted() ?: "Unknown"
 
     Dialog(
         onDismissRequest = {
@@ -65,7 +68,10 @@ fun newTask(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        ShowTaskNewTask(userName = userName, dateFormatted = dateFormatted ?: "")
+                        ShowTaskNewTask(
+                            userName = userName, dateFormatted = dateCreatedFormatted,
+                            dateCompletedFormatted = dateCompletedFormatted
+                        )
                         RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
                         TextFieldCustomNewTask(text = title, label = "name") {
                             viewModel.onTextFieldChanged(title = it, description = description)
@@ -85,7 +91,10 @@ fun newTask(
                                 taskToEdit = taskToEdit, enable = saveTaskEnable
                             ) {
                                 addOrEditTaskFunc(
-                                    taskToEditOrNewTask(taskToEdit, title, description, userName)
+                                    taskToEditOrNewTask(
+                                        taskToEdit = taskToEdit, title = title,
+                                        description = description, userName = userName
+                                    )
                                 )
                                 openDialog = false
                             }
@@ -106,14 +115,12 @@ private fun taskToEditOrNewTask(
     userName: String
 ): Task = (taskToEdit?.copy(
     title = title,
+    description = description
+) ?: Task(
+    title = title,
     description = description,
-    entryDate = Date.from(Instant.now())
-)
-    ?: Task(
-        title = title,
-        description = description,
-        author = userName
-    ))
+    author = userName
+))
 
 @Composable
 private fun ButtonCustomNewTask(
@@ -157,9 +164,10 @@ private fun RowInfoNewTask(text: String, textSizes: StandardizedSizes) {
 }
 
 @Composable
-private fun ShowTaskNewTask(userName: String, dateFormatted: String) {
+private fun ShowTaskNewTask(userName: String, dateFormatted: String, dateCompletedFormatted: String) {
     ShowTask(
         author = userName,
         date = dateFormatted,
+        completedDate = dateCompletedFormatted
     )
 }
