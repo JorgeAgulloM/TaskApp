@@ -65,7 +65,7 @@ private fun Content(
             ) {
                 Text(
                     modifier = Modifier.padding(end = 8.dp),
-                    text = task.entryDate.toStringFormatDate(task.entryDate),
+                    text = task.entryDate.toStringFormatDate(),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = textSizes.minimumSize,
                     overflow = TextOverflow.Ellipsis,

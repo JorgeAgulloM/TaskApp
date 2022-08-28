@@ -87,8 +87,8 @@ private fun Content(
                     )
                     ShowTask(
                         author = task.author,
-                        date = task.entryDate.toStringFormatted(task.entryDate),
-                        completedDate = task.finishDate?.toStringFormatted(task.finishDate!!)
+                        date = task.entryDate.toStringFormatted(),
+                        completedDate = task.finishDate?.toStringFormatted()
                             ?: "Unknown",
                         paddingStart = 0.dp
                     )

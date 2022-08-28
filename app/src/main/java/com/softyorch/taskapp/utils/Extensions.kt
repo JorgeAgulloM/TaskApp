@@ -5,18 +5,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
-fun Date.toStringFormatted(date: Date): String {
-    return date.toStringFormatDate(date = date) +
+fun Date.toStringFormatted(): String {
+    return this.toStringFormatDate() +
             " at " +
-            date.toStringFormatHour(date = date)
+            this.toStringFormatHour()
 }
 
+@SuppressLint("SimpleDateFormat")
+fun Date.toStringFormatDate(): String =
+    SimpleDateFormat("yyyy-MM-dd").format(this)
 
 @SuppressLint("SimpleDateFormat")
-fun Date.toStringFormatDate(date: Date): String =
-    SimpleDateFormat("yyyy-MM-dd").format(date)
-
-@SuppressLint("SimpleDateFormat")
-fun Date.toStringFormatHour(date: Date): String =
-    SimpleDateFormat("HH:mm:ss").format(date)
+fun Date.toStringFormatHour(): String =
+    SimpleDateFormat("HH:mm:ss").format(this)
 

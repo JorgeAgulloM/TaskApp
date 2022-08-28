@@ -123,9 +123,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                     Icon(Icons.Rounded.Info, contentDescription = "Last time to manual login")
                     RowInfo(
                         text = "Last login manual: ${
-                            settingsUserData.lastLoginDate?.toStringFormatted(
-                                settingsUserData.lastLoginDate!!
-                            )
+                            settingsUserData.lastLoginDate?.toStringFormatted()
                         }",
                         paddingStart = 8.dp,
                         textSizes = textSizes

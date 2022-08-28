@@ -29,7 +29,7 @@ fun newTask(
     addOrEditTaskFunc: KFunction1<Task, Job>,
     userName: String,
     taskToEdit: Task?,
-    dateTask: String = "",
+    dateTask: Date? = null,
     textSizes: StandardizedSizes
 ): Boolean {
 
@@ -39,8 +39,8 @@ fun newTask(
     val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = false)
 
     var openDialog by remember { mutableStateOf(true) }
-    val date by remember { mutableStateOf(Date.from(Instant.now())) }
-    val dateFormatted = date.toStringFormatted(date = date)
+
+    val dateFormatted = dateTask?.toStringFormatted()
 
     Dialog(
         onDismissRequest = {
@@ -65,7 +65,7 @@ fun newTask(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        ShowTaskNewTask(userName = userName, dateFormatted = dateFormatted)
+                        ShowTaskNewTask(userName = userName, dateFormatted = dateFormatted ?: "")
                         RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
                         TextFieldCustomNewTask(text = title, label = "name") {
                             viewModel.onTextFieldChanged(title = it, description = description)

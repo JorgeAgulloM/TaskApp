@@ -25,9 +25,6 @@ class NewTaskViewModel @Inject constructor() : ViewModel() {
                 isDescriptionValid(description = description)
     }
 
-    fun dateFormatted(): String =
-        Date.from(Instant.now()).toStringFormatted(Date.from(Instant.now()))
-
     private fun isTittleValid(title: String): Boolean =
         title.length >= 3
 
