@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -44,7 +45,8 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
 
-    val tasks = viewModel.taskList.collectAsState().value
+    val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
+
     val textSizes = viewModel.sizeSelectedOfUser()
 
     Column(
@@ -55,25 +57,16 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         RowInfoMain(text = "My Tasks", textSizes = textSizes)
         Spacer(modifier = Modifier.padding(8.dp))
         RowInfoMain(text = "To be made...", textSizes = textSizes)
-        if (tasks.isEmpty())
-            RowInfo(
-                text = "Añade una nueva tarea...", textSizes = textSizes
-            )
-        else
-            FillLazyColumn(
-                tasks = tasks, mainViewModel = viewModel, navController = navController
-            )
+        FillLazyColumn(
+            tasks = tasks, mainViewModel = viewModel, navController = navController,
+            text = "Añade una nueva tarea...", textSizes = textSizes, checked = false
+        )
         Spacer(modifier = Modifier.padding(8.dp))
         RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes)
-        if (tasks.isEmpty())
-            RowInfo(
-                text = "Aún no has terminado ninguna tarea", textSizes = textSizes
-            )
-        else
-            FillLazyColumn(
-                tasks = tasks, mainViewModel = viewModel, checkOrNot = true,
-                navController = navController
-            )
+        FillLazyColumn(
+            tasks = tasks, mainViewModel = viewModel, navController = navController,
+            textSizes = textSizes, text = "Aún no has terminado ninguna tarea", checked = true
+        )
     }
 }
 
@@ -87,16 +80,16 @@ private fun RowInfoMain(text: String, textSizes: StandardizedSizes) {
 private fun FillLazyColumn(
     tasks: List<Task>,
     mainViewModel: MainViewModel,
-    checkOrNot: Boolean = false,
-    navController: NavController
+    navController: NavController,
+    textSizes: StandardizedSizes,
+    text: String,
+    checked: Boolean
 ) {
-    LazyColumn {
-        items(tasks) { task ->
-            if (checkOrNot == task.checkState)
-                CheckCustomMain(task, mainViewModel, navController)
-            else Text("Añade alguna tarea")
+    if (tasks.any { it.checkState == checked }) LazyColumn {
+        items(tasks.filter { it.checkState == checked }) { task ->
+            CheckCustomMain(task, mainViewModel, navController)
         }
-    }
+    } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
 }
 
 @ExperimentalMaterial3Api
