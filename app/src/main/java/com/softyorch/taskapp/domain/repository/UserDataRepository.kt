@@ -68,15 +68,11 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
     }
 
     suspend fun addUserData(userData: UserData): Boolean {
-        Log.d("LOGIN", "UserDataRepository.UserData recibido -> $userData")
         return getUserDataEmail(email = userData.userEmail).let {
             if (it.data?.userEmail.isNullOrEmpty()) {
-                Log.d("LOGIN", "UserDataRepository.Insert isNullOrEmpty -> true")
-                val user = userDataBaseDao.insert(userData = userData)
-                Log.d("LOGIN", "UserDataRepository.create user -> $user")
+                userDataBaseDao.insert(userData = userData)
                 true
             } else {
-                Log.d("LOGIN", "UserDataRepository.Insert isNullOrEmpty -> false")
                 false
             }
         }
