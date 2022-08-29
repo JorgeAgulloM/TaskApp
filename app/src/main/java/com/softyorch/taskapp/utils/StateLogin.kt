@@ -23,6 +23,14 @@ class StateLogin @Inject constructor(
         userData: UserData
     ) {
         userDataActive = userData
+        refreshData(userData = userData)
+    }
+
+    fun logOut() {
+        sharedPreferencesSetUser()
+    }
+
+    fun refreshData(userData: UserData) {
         sharedPreferencesSetUser(
             name = userData.username,
             email = userData.userEmail,
@@ -37,10 +45,6 @@ class StateLogin @Inject constructor(
             timeLimitAutoLoading = userData.timeLimitAutoLoading,
             textSize = userData.textSize
         )
-    }
-
-    fun logOut() {
-        sharedPreferencesSetUser()
     }
 
     private fun sharedPreferencesSetUser(
