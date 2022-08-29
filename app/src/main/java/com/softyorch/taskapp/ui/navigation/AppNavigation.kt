@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.navigation
+package com.softyorch.taskapp.ui.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*

@@ -16,8 +16,8 @@ import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.ui.widgets.ShowTask

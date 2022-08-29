@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.navigation
+package com.softyorch.taskapp.ui.navigation
 
 sealed class AppScreensRoutes(val route: String) {
     object SplashScreen: AppScreensRoutes(route = AppScreens.SplashScreen.name)

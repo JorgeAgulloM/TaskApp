@@ -14,8 +14,8 @@ import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.model.Task
-import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.StandardizedSizes
 import java.time.Instant

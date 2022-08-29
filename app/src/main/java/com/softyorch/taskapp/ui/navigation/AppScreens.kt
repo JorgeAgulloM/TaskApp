@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.navigation
+package com.softyorch.taskapp.ui.navigation
 
 enum class AppScreens {
     SplashScreen,

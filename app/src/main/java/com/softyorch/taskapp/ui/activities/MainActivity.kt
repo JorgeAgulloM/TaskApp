@@ -12,7 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.softyorch.taskapp.navigation.TaskAppNavigation
+import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 

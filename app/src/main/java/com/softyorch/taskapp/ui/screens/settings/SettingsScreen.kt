@@ -17,7 +17,7 @@ import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.switchCustom.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.navigation.AppScreens
+import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import kotlinx.coroutines.launch

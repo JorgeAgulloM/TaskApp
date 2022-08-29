@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

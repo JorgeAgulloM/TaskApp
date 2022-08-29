@@ -20,8 +20,8 @@ import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.components.textFieldCustom
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.model.UserData
-import com.softyorch.taskapp.navigation.AppScreens
-import com.softyorch.taskapp.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.TaskKeyboardOptions
 
 @ExperimentalMaterial3Api
