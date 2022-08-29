@@ -19,6 +19,7 @@ import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.theme.LightMode90t
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarCustom(
     title: String,
