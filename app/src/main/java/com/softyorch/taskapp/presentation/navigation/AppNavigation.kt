@@ -66,10 +66,7 @@ fun TaskAppNavigation(reloadComposable: () -> Unit) {
         )
         ) { navBack ->
             navBack.arguments?.getString("id").let { id ->
-                UserDataScreen(
-                    navController = navController,
-                    id = id.toString()
-                )
+                UserDataScreen(navController = navController)
             }
         }
     }

@@ -26,13 +26,11 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
-    navController: NavHostController,
-    id: String?
+    navController: NavHostController
 ) {
 
     val viewModel = hiltViewModel<UserDataViewModel>()
