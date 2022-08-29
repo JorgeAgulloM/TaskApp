@@ -17,11 +17,9 @@ import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.switchCustom.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.model.UserData
 import com.softyorch.taskapp.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.ui.widgets.RowInfo
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -57,7 +55,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enable = !reloading
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
@@ -66,7 +64,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enable = !reloading
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             SwitchCustomSettings(
@@ -75,7 +73,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enable = !reloading
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             SwitchCustomSettings(
@@ -84,7 +82,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enable = !reloading
             ) {
                 settings.automaticColors = !settings.automaticColors
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             SwitchCustomSettings(
@@ -93,7 +91,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enable = !reloading
             ) {
                 settings.rememberMe = !settings.rememberMe
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             if (settings.rememberMe) Row(modifier = Modifier.padding(start = 40.dp, top = 16.dp),
@@ -115,13 +113,13 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 sliderCustomSettingsAutoLoading(
                     initValue = settings.timeLimitAutoLoading, needReloadDialog = reloading
                 ) {
-                    ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                    ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
                 }
 
             settings.textSize = sliderCustomSettingsText(
                 initValue = settings.textSize, needReloadDialog = reloading
             ) {
-                ApplyChanges2(viewModel = viewModel, reloadComposable = reloadComposable)
+                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
             }
 
             if (reloading) CircularIndicatorCustom(text = "Realizando los cambios")
@@ -174,7 +172,7 @@ private fun sliderCustomSettingsAutoLoading(
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-private fun ApplyChanges2(viewModel: SettingsViewModel, reloadComposable: () -> Unit){
+private fun ApplyChanges(viewModel: SettingsViewModel, reloadComposable: () -> Unit){
     viewModel.viewModelScope.launch {
         viewModel.applyChanges()
         reloadComposable.invoke()
