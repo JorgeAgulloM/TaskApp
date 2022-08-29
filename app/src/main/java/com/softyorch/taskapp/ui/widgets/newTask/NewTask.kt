@@ -3,7 +3,9 @@ package com.softyorch.taskapp.ui.widgets.newTask
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.TextFields
+import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -54,7 +56,7 @@ fun newTask(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .fillMaxWidth(1.1f)
-                    .fillMaxHeight(0.7f)
+                    .fillMaxHeight(0.72f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = MaterialTheme.shapes.large
@@ -73,11 +75,12 @@ fun newTask(
                             dateCompletedFormatted = dateCompletedFormatted
                         )
                         RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
-                        TextFieldCustomNewTask(text = title, label = "name") {
+                        TextFieldCustomNewTaskName(text = title, label = "name") {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
                         RowInfoNewTask(text = "Task description: ", textSizes = textSizes)
-                        TextFieldCustomNewTask(text = description, label = "description") {
+                        TextFieldCustomNewTaskDescription(text = description, label = "description"
+                        ) {
                             viewModel.onTextFieldChanged(title = title, description = it)
                         }
 
@@ -137,7 +140,7 @@ private fun ButtonCustomNewTask(
 }
 
 @Composable
-private fun TextFieldCustomNewTask(
+private fun TextFieldCustomNewTaskName(
     text: String,
     label: String,
     onCheckedChange: (String) -> Unit
@@ -146,9 +149,26 @@ private fun TextFieldCustomNewTask(
         text = text,
         label = label,
         placeholder = "Escribe tu $label",
-        icon = Icons.Rounded.TextFields,
+        icon = Icons.Rounded.Title,
         contentDescription = label,
         singleLine = true,
+        newTask = true,
+        onTextFieldChanged = onCheckedChange
+    )
+}
+
+@Composable
+private fun TextFieldCustomNewTaskDescription(
+    text: String,
+    label: String,
+    onCheckedChange: (String) -> Unit
+) {
+    textFieldCustom(
+        text = text,
+        label = label,
+        placeholder = "Escribe una $label",
+        icon = Icons.Rounded.Description,
+        contentDescription = label,
         newTask = true,
         onTextFieldChanged = onCheckedChange
     )

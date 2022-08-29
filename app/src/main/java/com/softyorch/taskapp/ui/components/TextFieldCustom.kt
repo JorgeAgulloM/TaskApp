@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.ZeroCornerSize
@@ -64,6 +65,10 @@ fun textFieldCustom(
                 end = if (newTask) 8.dp else 0.dp
             )
             .width(width = if (newTask) 370.dp else 270.dp)
+            .height(
+                height =
+                if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
+            )
             .shadow(
                 elevation = elevationDp, shape = personalizedShape
             ),
@@ -103,7 +108,7 @@ fun textFieldCustom(
         else PasswordVisualTransformation(),
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
-        maxLines = 3,
+        maxLines = 5,
         shape = personalizedShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
