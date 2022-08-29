@@ -7,6 +7,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,7 +17,7 @@ import com.softyorch.taskapp.ui.widgets.newTask.newTask
 fun FABCustom() {
 
     val viewModel = hiltViewModel<FABCustomViewModel>()
-    val userName = viewModel.getUserName()
+    val userName: String by viewModel.user.observeAsState(initial = "")
     val textSizes = viewModel.sizeSelectedOfUser()
 
     var openDialog by remember { mutableStateOf(false) }

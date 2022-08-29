@@ -1,6 +1,8 @@
 package com.softyorch.taskapp.ui.components.fabCustom
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.model.Task
@@ -16,7 +18,14 @@ class FABCustomViewModel @Inject constructor(
     private val repository: TaskRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
-    fun getUserName(): String {
+    private val _user = MutableLiveData<String>()
+    val user: LiveData<String> = _user
+
+    init {
+        _user.postValue(getUserName())
+    }
+
+    private fun getUserName(): String {
         val user = stateLogin.userDataActive?.username.toString()
         Log.d("FABVM", "user of autologin -> $user")
         Log.d("AUTOLOGINLOAD", "autologin FAB -> $stateLogin")
