@@ -22,15 +22,12 @@ import com.softyorch.taskapp.ui.widgets.elevationF
 
 @Composable
 fun ButtonCustom(
-    onClick: () -> Unit,
     text: String,
     primary: Boolean = false,
-    enable: Boolean = true
+    enable: Boolean = true,
+    onClick: () -> Unit
 
 ) {
-
-    //TODO
-
     Button(
         onClick = {
             onClick()

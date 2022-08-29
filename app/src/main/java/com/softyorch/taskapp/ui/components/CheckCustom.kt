@@ -23,8 +23,6 @@ fun CheckCustom(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
 
-    val onChange by rememberSaveable { mutableStateOf(checked) }
-
     Row(
         modifier = Modifier.fillMaxWidth(1f).padding(end = 8.dp).height(30.dp).clickable {
             onClick.invoke()
