@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,9 +25,6 @@ class UserDataViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin
 ) : ViewModel() {
-    private val _userDataList = MutableStateFlow<List<UserData>>(emptyList())
-    val userDataList = _userDataList.asStateFlow()
-
     private val _userDataActive = MutableLiveData<UserData>()
     val userDataActive: LiveData<UserData> = _userDataActive
 
@@ -47,24 +46,23 @@ class UserDataViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _loadScreen = MutableLiveData<Boolean>()
+    val loadScreen: LiveData<Boolean> = _loadScreen
+
     init {
-        _userDataActive.postValue(getUserActive())
 
-        _name.postValue(_userDataActive.value?.username)
-        _email.postValue(_userDataActive.value?.userEmail)
-        _pass.postValue(_userDataActive.value?.userPass)
-        _image.postValue(_userDataActive.value?.userPicture)
+        viewModelScope.launch(IO) {
+            _userDataActive.postValue(getUserActive())
+            while (userDataActive.value == null){
+                _loadScreen.postValue(true)
+            }
 
-
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllUser().distinctUntilChanged()
-                .collect { listOfUserData ->
-                    if (listOfUserData.isNullOrEmpty()) {
-                        //TODO meter la barra de carga para mostrar al usuario
-                    } else {
-                        _userDataList.value = listOfUserData
-                    }
-                }
+            _name.postValue(_userDataActive.value?.username ?: "")
+            _email.postValue(_userDataActive.value?.userEmail ?: "")
+            _pass.postValue(_userDataActive.value?.userPass ?: "")
+            _image.postValue(_userDataActive.value?.userPicture ?: "")
+            _loadScreen.postValue(false)
+            Log.d("DATA", "UserDataActive.value = ${userDataActive.value}")
         }
     }
 
@@ -84,9 +82,9 @@ class UserDataViewModel @Inject constructor(
         Pattern.matches("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}${'$'}""", pass)
 
     private suspend fun isValidEmail(email: String): Boolean =
-        getUserDataEmail(email = email).data?.userEmail == null
+        getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
 
-    suspend fun onNewDataSelect(): Boolean {
+    suspend fun onUpdateData(): Boolean {
         _isLoading.value = true
 
         if (_saveEnabled.value == true) _userDataActive.value?.let { data ->
@@ -114,8 +112,9 @@ class UserDataViewModel @Inject constructor(
     private suspend fun getUserDataEmail(email: String): Resource<UserData> =
         repository.getUserDataEmail(email = email)
 
-    fun updateUserData(userData: UserData) = viewModelScope.launch {
+    private fun updateUserData(userData: UserData) = viewModelScope.launch {
         repository.updateUserData(userData = userData)
+        stateLogin.refreshData(userData = userData)
     }
 
     fun deleteUserData(userData: UserData) = viewModelScope.launch {
