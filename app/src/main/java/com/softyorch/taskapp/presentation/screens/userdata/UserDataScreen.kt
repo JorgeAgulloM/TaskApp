@@ -7,13 +7,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
@@ -23,12 +26,13 @@ import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.TaskKeyboardOptions
+import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
     navController: NavHostController,
-    userDataViewModel: UserDataViewModel,
+    viewModel: UserDataViewModel,
     id: String?
 ) {
     Scaffold(
@@ -40,176 +44,165 @@ fun UserDataScreen(
             )
         },
         content = {
-
-            val data = userDataViewModel.userDataList.collectAsState().value
-            val userId = id.let {
-                if (id == "0") {
-                    data[0].id.toString()
-                } else {
-                    id
-                }
-            }
-
-            produceState<Resource<UserData>>(initialValue = Resource.Loading()) {
-                value = userDataViewModel.getUserDataId(id = userId.toString())
-            }.value
-                .let { dataIt ->
-                    dataIt.data?.let { userData ->
-                        var name by remember { mutableStateOf(userData.username) }
-                        var email by remember { mutableStateOf(userData.userEmail) }
-                        var pass by remember { mutableStateOf(userData.userPass) }
-                        var confirmDialog by rememberSaveable { mutableStateOf(false) }
-                        var cancelDialog by rememberSaveable { mutableStateOf(false) }
-                        var logOutDialog by rememberSaveable { mutableStateOf(false) }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(
-                                    top = it.calculateTopPadding() * 1.5f
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Person,
-                                contentDescription = "Image of user",
-                                modifier = Modifier
-                                    .size(194.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        shape = MaterialTheme.shapes.medium.copy(
-                                            CornerSize(25.dp)
-                                        )
-                                    )
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                name = textFieldCustom(
-                                    text = name,
-                                    //onTextChange = {},
-                                    label = "Name",
-                                    placeholder = "Write your name",
-                                    icon = Icons.Rounded.Person,
-                                    contentDescription = "Name of user",
-                                    singleLine = true,
-                                    //onTextFieldChanged = onTextFieldChanged
-                                )
-
-                                email = textFieldCustom(
-                                    text = email,
-                                    //onTextChange = {},
-                                    label = "Email",
-                                    placeholder = "Write your name",
-                                    icon = Icons.Rounded.Person,
-                                    contentDescription = "Name of user",
-                                    singleLine = true,
-                                    //onTextFieldChanged = onTextFieldChanged
-                                )
-
-                                pass = textFieldCustom(
-                                    text = pass,
-                                    //onTextChange = {},
-                                    label = "Password",
-                                    placeholder = "Write your name",
-                                    icon = Icons.Rounded.Person,
-                                    contentDescription = "Name of user",
-                                    keyboardOptions = TaskKeyboardOptions.copy(keyboardType = KeyboardType.Password),
-                                    singleLine = true,
-                                    password = true,
-                                    //onTextFieldChanged = onTextFieldChanged
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.SpaceBetween,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-
-                                val changeData = (
-                                        name != userData.username ||
-                                                email != userData.userEmail ||
-                                                pass != userData.userPass
-                                        )
-
-                                ButtonCustom(
-                                    onClick = {
-                                        logOutDialog = true
-                                    },
-                                    text = "LogOut",
-                                    primary = true
-                                )
-
-                                ButtonCustom(
-                                    onClick = {
-                                        confirmDialog = true
-                                    },
-                                    text = "Save",
-                                    primary = true,
-                                    enable = changeData
-                                )
-
-                                ButtonCustom(
-                                    onClick = {
-                                        cancelDialog = true
-                                    },
-                                    text = "Cancel",
-                                    enable = changeData
-                                )
-
-                                if (logOutDialog) {
-                                    logOutDialog = UserDataDialog(
-                                        cancelOrChangeData = 0,
-                                        userDataViewModel = userDataViewModel,
-                                        userData = userData,
-                                        name = name,
-                                        email = email,
-                                        pass = pass,
-                                        navController = navController,
-                                        id = id
-                                    )
-                                }
-
-                                if (confirmDialog) {
-                                    confirmDialog = UserDataDialog(
-                                        cancelOrChangeData = 1,
-                                        userDataViewModel = userDataViewModel,
-                                        userData = userData,
-                                        name = name,
-                                        email = email,
-                                        pass = pass,
-                                        navController = navController,
-                                        id = id
-                                    )
-                                }
-
-                                if (cancelDialog) {
-                                    cancelDialog = UserDataDialog(
-                                        cancelOrChangeData = 2,
-                                        userDataViewModel = userDataViewModel,
-                                        userData = userData,
-                                        name = name,
-                                        email = email,
-                                        pass = pass,
-                                        navController = navController,
-                                        id = id
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            ContentUserDataScreen(it = it, navController = navController, viewModel = viewModel)
         })
 }
+
+fun ContentUserDataScreen(
+    it: PaddingValues,
+    navController: NavHostController,
+    viewModel: UserDataViewModel
+) {
+
+    val name: String by viewModel.name.observeAsState(initial = "")
+    val email: String by viewModel.email.observeAsState(initial = "")
+    val pass: String by viewModel.pass.observeAsState(initial = "")
+    val image: String by viewModel.image.observeAsState(initial = "")
+    val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+
+    var confirmDialog by rememberSaveable { mutableStateOf(false) }
+    var cancelDialog by rememberSaveable { mutableStateOf(false) }
+    var logOutDialog by rememberSaveable { mutableStateOf(false) }
+    IconDataScreen()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = it.calculateTopPadding() * 1.5f
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
+    ) {
+
+        TextFieldCustomDataScreen(
+            text = name, label = "Name", icon = Icons.Rounded.Person
+        ) {
+            viewModel.viewModelScope.launch {
+                viewModel.onDataChange(name = it, email = email, pass = pass, image = image)
+            }
+        }
+        TextFieldCustomDataScreen(
+            text = name, label = "Email", icon = Icons.Rounded.Person
+        ) {
+            viewModel.viewModelScope.launch {
+                viewModel.onDataChange(name = name, email = it, pass = pass, image = image)
+            }
+        }
+        TextFieldCustomDataScreen(
+            text = name, label = "Name", icon = Icons.Rounded.Person
+        ) {
+            viewModel.viewModelScope.launch {
+                viewModel.onDataChange(name = name, email = email, pass = it, image = image)
+            }
+        }
+    }
+    Column(
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ButtonCustomDataScreen(text = "Logout", primary = true) { cancelDialog = true } //viewModel
+        Spacer(modifier = Modifier.padding(bottom = 4.dp))
+        ButtonCustomDataScreen(text = "Save", enable = saveEnabled, primary = true) {
+            confirmDialog = true
+        }
+        ButtonCustomDataScreen(text = "Cancel", enable = saveEnabled) {
+            cancelDialog = true
+        }
+    }
+
+
+    if (logOutDialog) {
+        logOutDialog = UserDataDialog(
+            cancelOrChangeData = 0,
+            userDataViewModel = viewModel,
+            userData = userData,
+            name = name,
+            email = email,
+            pass = pass,
+            navController = navController,
+            id = id
+        )
+    }
+
+    if (confirmDialog) {
+        confirmDialog = UserDataDialog(
+            cancelOrChangeData = 1,
+            userDataViewModel = viewModel,
+            userData = userData,
+            name = name,
+            email = email,
+            pass = pass,
+            navController = navController,
+            id = id
+        )
+    }
+
+    if (cancelDialog) {
+        cancelDialog = UserDataDialog(
+            cancelOrChangeData = 2,
+            userDataViewModel = viewModel,
+            userData = userData,
+            name = name,
+            email = email,
+            pass = pass,
+            navController = navController,
+            id = id
+        )
+    }
+}
+
+@Composable
+private fun ButtonCustomDataScreen(
+    text: String, enable: Boolean = true, primary: Boolean = false, onclick: () -> Unit
+) {
+    ButtonCustom(
+        onClick = { onclick() },
+        text = text,
+        enable = enable,
+        primary = primary
+    )
+}
+
+@Composable
+private fun TextFieldCustomDataScreen(
+    text: String,
+    label: String,
+    icon: ImageVector,
+    onTextFieldChanged: (String) -> Unit
+) {
+    textFieldCustom(
+        text = text,
+        label = label,
+        placeholder = "Write your ${label.lowercase()}",
+        icon = icon,
+        contentDescription = "$label of user",
+        singleLine = true,
+        onTextFieldChanged = { onTextFieldChanged() }
+    )
+}
+
+@Composable
+private fun IconDataScreen() {
+    Icon(
+        imageVector = Icons.Rounded.Person,
+        contentDescription = "Image of user",
+        modifier = Modifier
+            .size(194.dp)
+            .background(
+                color = MaterialTheme.colorScheme.secondary,
+                shape = MaterialTheme.shapes.medium.copy(
+                    CornerSize(25.dp)
+                )
+            )
+    )
+}
+
+
+
 
 @Composable
 private fun UserDataDialog(
@@ -221,7 +214,8 @@ private fun UserDataDialog(
     pass: String,
     rememberMe: Boolean = false,
     navController: NavHostController,
-    id: String?
+    id: String?,
+    onConfirmButtonClick: () -> Unit
 ): Boolean {
     var openDialog by rememberSaveable { mutableStateOf(value = true) }
     val text = when (cancelOrChangeData) {
