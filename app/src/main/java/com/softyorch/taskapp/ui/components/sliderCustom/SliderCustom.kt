@@ -23,7 +23,7 @@ fun sliderCustom(
 ): Int {
 
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
-    var size by rememberSaveable { mutableStateOf(selection)}
+    var size by rememberSaveable { mutableStateOf(selection) }
     val viewModel = hiltViewModel<SliderCustomViewModel>()
     val textSizes = viewModel.sizeSelectedOfUser()
 
@@ -32,11 +32,7 @@ fun sliderCustom(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            RowInfo(
-                text = text,
-                paddingStart = 8.dp,
-                textSizes = textSizes
-            )
+            RowInfo(text = text, paddingStart = 8.dp, textSizes = textSizes)
             Slider(
                 value = selection,
                 onValueChange = { selection = it },
