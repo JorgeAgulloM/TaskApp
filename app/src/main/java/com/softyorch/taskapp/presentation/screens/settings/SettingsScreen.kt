@@ -124,7 +124,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 
             if (reloading) CircularIndicatorCustom(text = "Realizando los cambios")
 
-        }
+        } else CircularIndicatorCustom(text = "...loading")
     }
 }
 
