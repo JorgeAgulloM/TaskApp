@@ -8,8 +8,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -37,75 +39,71 @@ fun TopAppBarCustom(
             )
         ),
         title = {
-            Text(
-                text = title,
-                color = LightMode90t,
-                style = TextStyle(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = textSizes.largeSize
-                ),
-                modifier = Modifier.padding(start = 4.dp)
-            )
+            TextTABC(title = title, textSize = textSizes.largeSize)
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.secondary),
         navigationIcon = {
-            if (!isMainScreen) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Go Back",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+            if (!isMainScreen) IconButtonTABC(
+                imageVector = Icons.Rounded.ArrowBack,
+                text = "Go Back",
+            ) {
+                navController.popBackStack()
             }
+
         },
         actions = {
-            if (nameScreen != AppScreens.MainScreen.name) {
-                IconButton(onClick = {
-                    navController.navigate(AppScreensRoutes.MainScreen.route)
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = "Go Home",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+            if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
+                imageVector = Icons.Rounded.Home, text = "Go Home"
+            ) {
+                navController.navigate(AppScreensRoutes.MainScreen.route)
             }
-            if (nameScreen != AppScreens.HistoryScreen.name) {
-                IconButton(onClick = {
-                    navController.navigate(AppScreensRoutes.HistoryScreen.route)
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.History,
-                        contentDescription = "History",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+
+            if (nameScreen != AppScreens.HistoryScreen.name) IconButtonTABC(
+                imageVector = Icons.Rounded.History, text = "History"
+            ) {
+                navController.navigate(AppScreensRoutes.HistoryScreen.route)
             }
-            if (nameScreen != AppScreens.SettingsScreen.name) {
-                IconButton(onClick = {
-                    navController.navigate(AppScreensRoutes.SettingsScreen.route)
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+
+            if (nameScreen != AppScreens.SettingsScreen.name) IconButtonTABC(
+                imageVector = Icons.Rounded.Settings, text = "Settings"
+            ) {
+                navController.navigate(AppScreensRoutes.SettingsScreen.route)
             }
-            if (nameScreen != AppScreens.UserDataScreen.name) {
-                IconButton(onClick = {
-                    navController.navigate(AppScreensRoutes.UserDataScreen.route + "/${"0"}")
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.SupervisedUserCircle,
-                        contentDescription = "User data",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+
+            if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABC(
+                imageVector = Icons.Rounded.SupervisedUserCircle, text = "User data",
+            ) {
+                navController.navigate(AppScreensRoutes.UserDataScreen.route + "/${"0"}")
             }
         }
     )
+}
+
+@Composable
+private fun TextTABC(
+    title: String,
+    textSize: TextUnit
+) {
+    Text(
+        text = title,
+        color = LightMode90t,
+        style = TextStyle(
+            fontWeight = FontWeight.Medium,
+            fontSize = textSize
+        ),
+        modifier = Modifier.padding(start = 4.dp)
+    )
+}
+
+@Composable
+private fun IconButtonTABC(
+    imageVector: ImageVector, text: String, onClick: () -> Unit
+) {
+    IconButton(onClick = { onClick() }) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = text,
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
 }
