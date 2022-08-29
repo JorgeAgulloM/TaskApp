@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.content.SharedPreferences
-import com.softyorch.taskapp.model.UserData
+import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import java.time.Instant
 import java.util.*

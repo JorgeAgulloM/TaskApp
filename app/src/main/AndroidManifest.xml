@@ -15,7 +15,7 @@
         android:theme="@style/Theme.TaskApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name=".presentation.activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.TaskApp">
             <intent-filter>
