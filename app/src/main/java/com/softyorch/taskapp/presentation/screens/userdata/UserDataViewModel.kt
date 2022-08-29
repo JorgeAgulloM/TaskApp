@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,13 +8,10 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
+import com.softyorch.taskapp.utils.RegexPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -50,9 +46,8 @@ class UserDataViewModel @Inject constructor(
     val loadScreen: LiveData<Boolean> = _loadScreen
 
     init {
-
         viewModelScope.launch(IO) {
-            _userDataActive.postValue(getUserActive())
+            _userDataActive.postValue(getUserActiveSharedPreferences())
             while (userDataActive.value == null){
                 _loadScreen.postValue(true)
             }
@@ -61,8 +56,8 @@ class UserDataViewModel @Inject constructor(
             _email.postValue(_userDataActive.value?.userEmail ?: "")
             _pass.postValue(_userDataActive.value?.userPass ?: "")
             _image.postValue(_userDataActive.value?.userPicture ?: "")
+
             _loadScreen.postValue(false)
-            Log.d("DATA", "UserDataActive.value = ${userDataActive.value}")
         }
     }
 
@@ -79,7 +74,7 @@ class UserDataViewModel @Inject constructor(
     private fun isValidName(name: String): Boolean = name.length >= 3
 
     private fun isValidPass(pass: String): Boolean =
-        Pattern.matches("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}${'$'}""", pass)
+        Pattern.matches(RegexPassword, pass)
 
     private suspend fun isValidEmail(email: String): Boolean =
         getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
@@ -128,6 +123,6 @@ class UserDataViewModel @Inject constructor(
 
     fun logOut() = stateLogin.logOut()
 
-    private fun getUserActive(): UserData? =
+    private fun getUserActiveSharedPreferences(): UserData? =
         stateLogin.userDataActive
 }

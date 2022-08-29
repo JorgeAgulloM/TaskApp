@@ -26,6 +26,7 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 @ExperimentalMaterial3Api
 @Composable
@@ -35,6 +36,7 @@ fun UserDataScreen(
 ) {
 
     val viewModel = hiltViewModel<UserDataViewModel>()
+    val data = viewModel.userDataActive.observeAsState().value
     val loadScreen: Boolean by viewModel.loadScreen.observeAsState(initial = true)
 
     Scaffold(
@@ -47,6 +49,7 @@ fun UserDataScreen(
         }) {
         if (loadScreen) {
             CircularIndicatorCustom(text = "...loading")
+
         } else {
             Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
             horizontalAlignment = Alignment.CenterHorizontally,
