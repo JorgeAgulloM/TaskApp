@@ -24,7 +24,7 @@ import com.softyorch.taskapp.presentation.screens.userdata.UserDataScreen
 fun TaskAppNavigation(reloadComposable: () -> Unit) {
     val navController = rememberNavController()
     val mainViewModel = hiltViewModel<MainViewModel>()
-    val userDataViewModel = hiltViewModel<UserDataViewModel>()
+    //val userDataViewModel = hiltViewModel<UserDataViewModel>()
 
     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
@@ -68,7 +68,6 @@ fun TaskAppNavigation(reloadComposable: () -> Unit) {
             navBack.arguments?.getString("id").let { id ->
                 UserDataScreen(
                     navController = navController,
-                    viewModel = userDataViewModel,
                     id = id.toString()
                 )
             }

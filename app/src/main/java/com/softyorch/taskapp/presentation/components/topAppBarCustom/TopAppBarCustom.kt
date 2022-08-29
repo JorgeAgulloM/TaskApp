@@ -47,9 +47,8 @@ fun TopAppBarCustom(
                 imageVector = Icons.Rounded.ArrowBack,
                 text = "Go Back",
             ) {
-                navController.popBackStack()
+                navController.navigate(AppScreensRoutes.MainScreen.route)
             }
-
         },
         actions = {
             if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
