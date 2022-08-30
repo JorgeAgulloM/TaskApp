@@ -4,6 +4,7 @@ enum class NameOfSettings {
     Name,
     Email,
     Pass,
+    Picture,
     Activate,
     LastLoginDate,
     RememberMe,
@@ -19,6 +20,7 @@ enum class NameOfSettings {
             Name.name -> "name"
             Email.name -> "email"
             Pass.name -> "pass"
+            Picture.name -> "picture"
             Activate.name -> "activate"
             LastLoginDate.name -> "last_login_date"
             RememberMe.name -> "remember_me"

@@ -35,6 +35,7 @@ class StateLogin @Inject constructor(
             name = userData.username,
             email = userData.userEmail,
             pass = userData.userPass,
+            picture = userData.userPicture ?: "",
             lastLoginDate = userData.lastLoginDate,
             activate = true,
             rememberMe = userData.rememberMe,
@@ -51,6 +52,7 @@ class StateLogin @Inject constructor(
         name: String = "",
         email: String = "",
         pass: String = "",
+        picture: String = "",
         activate: Boolean = false,
         lastLoginDate: Date? = null,
         rememberMe: Boolean = false,
@@ -65,6 +67,7 @@ class StateLogin @Inject constructor(
             sp?.putString(Name.name, name)
             sp?.putString(Email.name, email)
             sp?.putString(Pass.name, pass)
+            sp?.putString(Picture.name, picture)
             sp?.putBoolean(Activate.name, activate)
             sp?.putString(LastLoginDate.name, lastLoginDate.toString())
             sp?.putBoolean(RememberMe.name, rememberMe)
@@ -85,6 +88,7 @@ class StateLogin @Inject constructor(
                 username = sp.getString(Name.name, "").toString(),
                 userEmail = sp.getString(Email.name, "").toString(),
                 userPass = sp.getString(Pass.name, "").toString(),
+                userPicture = sp.getString(Picture.name, "").toString(),
                 rememberMe = sp.getBoolean(RememberMe.name, false)
             )
         }

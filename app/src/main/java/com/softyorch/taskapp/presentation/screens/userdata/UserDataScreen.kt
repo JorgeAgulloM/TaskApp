@@ -1,8 +1,10 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import androidx.compose.foundation.background
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Key
@@ -13,13 +15,27 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import com.softyorch.taskapp.R
+import com.softyorch.taskapp.presentation.activities.newImageUser
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
@@ -30,12 +46,15 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    getImage: () -> Unit,
+    reloadComposable: () -> Unit
 ) {
 
     val viewModel = hiltViewModel<UserDataViewModel>()
     val data = viewModel.userDataActive.observeAsState().value
-    val loadScreen: Boolean by viewModel.loadScreen.observeAsState(initial = true)
+    val image: Uri? by viewModel.image.observeAsState(initial = null)
+
 
     Scaffold(
         topBar = {
@@ -45,14 +64,24 @@ fun UserDataScreen(
                 navController = navController,
             )
         }) {
-        if (loadScreen) {
-            CircularIndicatorCustom(text = "...loading")
-
-        } else {
-            Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
+        Column(
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top) {
-                ContentUserDataScreen(it = it, navController = navController, viewModel = viewModel)
+            verticalArrangement = Arrangement.Top
+        ) {
+
+            if (data == null) {
+                CircularIndicatorCustom(text = "...loading")
+
+            } else {
+                viewModel.loadData()
+
+
+                ContentUserDataScreen(
+                    navController = navController,
+                    viewModel = viewModel,
+                    getImage = getImage
+                )
             }
         }
     }
@@ -60,22 +89,74 @@ fun UserDataScreen(
 
 @Composable
 private fun ContentUserDataScreen(
-    it: PaddingValues,
     navController: NavHostController,
-    viewModel: UserDataViewModel
+    viewModel: UserDataViewModel,
+    getImage: () -> Unit
 ) {
 
+    val image: Uri? by viewModel.image.observeAsState(initial = null)
     val name: String by viewModel.name.observeAsState(initial = "")
     val email: String by viewModel.email.observeAsState(initial = "")
     val pass: String by viewModel.pass.observeAsState(initial = "")
-    val image: String by viewModel.image.observeAsState(initial = "")
     val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+
+    val newImage = newImageUser.observeAsState().value
 
     var confirmDialog by rememberSaveable { mutableStateOf(false) }
     var cancelDialog by rememberSaveable { mutableStateOf(false) }
     var logOutDialog by rememberSaveable { mutableStateOf(false) }
-    IconDataScreen()
+
+
+
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(
+                data = newImage
+            )
+            .crossfade(true)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .build()
+    )
+
+    when (painter.state) {
+        AsyncImagePainter.State.Empty -> Text("Empty")
+        is AsyncImagePainter.State.Error -> Text("Error")
+        is AsyncImagePainter.State.Loading -> Text("..loading")
+        is AsyncImagePainter.State.Success -> Text("Ok")
+    }
+
+
+    Log.d("LOADIMAGE?", "image -> $image")
+    Log.d("LOADIMAGE?", "newImage -> $newImage")
+
+    if (newImage != null) {
+        Log.d("LOADIMAGE?", "image -> $image")
+        Log.d("LOADIMAGE?", "newImage -> $newImage")
+        Log.d("LOADIMAGE?", "newImage ==? image ${newImage == image}")
+        viewModel.saveUserImage(newImage)
+    }
+
+    val myImage: LiveData<Uri> = viewModel.image
+    Log.d("LOADIMAGE?", "myImage -> ${myImage.value}")
+    Button(
+        onClick = {
+            getImage()
+        },
+        modifier = Modifier.size(200.dp),
+        shape = MaterialTheme.shapes.large,
+        content = {
+            Image(
+                painter = painter,//rememberImagePainter(data = image.toString()),
+                contentDescription = "Image of user",
+                modifier = Modifier.size(200.dp),
+                //placeholder = painterResource(R.drawable.ic_person_24),
+                contentScale = ContentScale.Crop
+            )
+
+
+        }
+    )
     Spacer(modifier = Modifier.padding(top = 16.dp))
     Column(
         modifier = Modifier
@@ -91,8 +172,7 @@ private fun ContentUserDataScreen(
                 viewModel.onDataChange(
                     name = it,
                     email = email,
-                    pass = pass,
-                    image = image
+                    pass = pass
                 )
             }
         }
@@ -103,8 +183,7 @@ private fun ContentUserDataScreen(
                 viewModel.onDataChange(
                     name = name,
                     email = it,
-                    pass = pass,
-                    image = image
+                    pass = pass
                 )
             }
         }
@@ -115,8 +194,7 @@ private fun ContentUserDataScreen(
                 viewModel.onDataChange(
                     name = name,
                     email = email,
-                    pass = it,
-                    image = image
+                    pass = it
                 )
             }
         }
@@ -204,21 +282,26 @@ private fun TextFieldCustomDataScreen(
     )
 }
 
-@Composable
-private fun IconDataScreen() {
-    Icon(
-        imageVector = Icons.Rounded.Person,
-        contentDescription = "Image of user",
-        modifier = Modifier
-            .size(194.dp)
-            .background(
-                color = MaterialTheme.colorScheme.secondary,
-                shape = MaterialTheme.shapes.medium.copy(
-                    CornerSize(25.dp)
-                )
+/*@Composable
+private fun IconDataScreen(image: String, getImage: () -> Unit) {
+
+    Log.d("LOADIMAGE?", "IconDataScreen.Image -> $image")
+
+    Button(
+        onClick = { getImage() },
+        modifier = Modifier.size(200.dp),
+        shape = MaterialTheme.shapes.large,
+        content = {
+            Image(
+                painter = rememberAsyncImagePainter(image),
+                contentDescription = "Image of user",
+                modifier = Modifier.size(180.dp),
+                //placeholder = painterResource(R.drawable.ic_person_24),
+                contentScale = ContentScale.Crop
             )
+        }
     )
-}
+}*/
 
 
 @Composable

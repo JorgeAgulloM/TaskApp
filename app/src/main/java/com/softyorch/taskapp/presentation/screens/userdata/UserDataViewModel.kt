@@ -1,5 +1,9 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
+import android.net.Uri
+import android.util.Log
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +14,6 @@ import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.RegexPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
@@ -24,6 +27,9 @@ class UserDataViewModel @Inject constructor(
     private val _userDataActive = MutableLiveData<UserData>()
     val userDataActive: LiveData<UserData> = _userDataActive
 
+    private val _image = MutableLiveData<Uri>()
+    val image: LiveData<Uri> = _image
+
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
 
@@ -32,9 +38,6 @@ class UserDataViewModel @Inject constructor(
 
     private val _pass = MutableLiveData<String>()
     val pass: LiveData<String> = _pass
-
-    private val _image = MutableLiveData<String>()
-    val image: LiveData<String> = _image
 
     private val _saveEnabled = MutableLiveData<Boolean>()
     val saveEnabled: LiveData<Boolean> = _saveEnabled
@@ -45,30 +48,32 @@ class UserDataViewModel @Inject constructor(
     private val _loadScreen = MutableLiveData<Boolean>()
     val loadScreen: LiveData<Boolean> = _loadScreen
 
+    private val _imageChange = MutableLiveData<Boolean>()
+    val imageChange: LiveData<Boolean> = _imageChange
+
     init {
-        viewModelScope.launch(IO) {
-            _userDataActive.postValue(getUserActiveSharedPreferences())
-            while (userDataActive.value == null){
-                _loadScreen.postValue(true)
-            }
-
-            _name.postValue(_userDataActive.value?.username ?: "")
-            _email.postValue(_userDataActive.value?.userEmail ?: "")
-            _pass.postValue(_userDataActive.value?.userPass ?: "")
-            _image.postValue(_userDataActive.value?.userPicture ?: "")
-
-            _loadScreen.postValue(false)
-        }
+        _userDataActive.postValue(getUserActiveSharedPreferences())
     }
 
-    suspend fun onDataChange(name: String, email: String, pass: String, image: String) {
+    fun loadData() {
+        _image.postValue(_userDataActive.value?.userPicture?.trim()?.toUri())
+        _name.postValue(_userDataActive.value?.username ?: "")
+        _email.postValue(_userDataActive.value?.userEmail ?: "")
+        _pass.postValue(_userDataActive.value?.userPass ?: "")
+    }
+
+    suspend fun onDataChange(name: String, email: String, pass: String) {
         _name.value = name
         _email.value = email
         _pass.value = pass
-        _image.value = image
-        _saveEnabled.value =
-            isValidName(name = name) && isValidEmail(email = email) && isValidPass(pass = pass)
+        _saveEnabled.value = isValidName(name = name) &&
+                isValidEmail(email = email) &&
+                isValidPass(pass = pass)
+    }
 
+    fun saveUserImage(image: Uri) {
+        _image.value = image
+        _saveEnabled.value = true
     }
 
     private fun isValidName(name: String): Boolean = name.length >= 3
@@ -86,7 +91,7 @@ class UserDataViewModel @Inject constructor(
             data.username = name.value!!
             data.userEmail = email.value!!
             data.userPass = pass.value!!
-            data.userPicture = image.value!!
+            data.userPicture = image.value!!.toString()
 
             updateUserData(userData = data)
             delay(500)
@@ -101,9 +106,6 @@ class UserDataViewModel @Inject constructor(
      * data
      */
 
-    suspend fun getUserDataId(id: String): Resource<UserData> =
-        repository.getUserDataId(id = id)
-
     private suspend fun getUserDataEmail(email: String): Resource<UserData> =
         repository.getUserDataEmail(email = email)
 
@@ -112,9 +114,9 @@ class UserDataViewModel @Inject constructor(
         stateLogin.refreshData(userData = userData)
     }
 
-    fun deleteUserData(userData: UserData) = viewModelScope.launch {
+/*    fun deleteUserData(userData: UserData) = viewModelScope.launch {
         repository.deleteUserData(userData = userData)
-    }
+    }*/
 
 
     /**

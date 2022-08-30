@@ -16,12 +16,11 @@ import com.softyorch.taskapp.presentation.screens.main.MainViewModel
 import com.softyorch.taskapp.presentation.screens.settings.SettingsScreen
 import com.softyorch.taskapp.presentation.screens.splash.SplashScreen
 import com.softyorch.taskapp.presentation.screens.splash.SplashViewModel
-import com.softyorch.taskapp.presentation.screens.userdata.UserDataViewModel
 import com.softyorch.taskapp.presentation.screens.userdata.UserDataScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(reloadComposable: () -> Unit) {
+fun TaskAppNavigation(reloadComposable: () -> Unit, getImage: () -> Unit) {
     val navController = rememberNavController()
     val mainViewModel = hiltViewModel<MainViewModel>()
     //val userDataViewModel = hiltViewModel<UserDataViewModel>()
@@ -66,7 +65,11 @@ fun TaskAppNavigation(reloadComposable: () -> Unit) {
         )
         ) { navBack ->
             navBack.arguments?.getString("id").let { id ->
-                UserDataScreen(navController = navController)
+                UserDataScreen(
+                    navController = navController,
+                    getImage = getImage,
+                    reloadComposable = reloadComposable
+                )
             }
         }
     }
