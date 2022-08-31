@@ -22,19 +22,38 @@ class MainViewModel @Inject constructor(
     private val _taskList = MutableLiveData<List<Task>>()
     val taskList: LiveData<List<Task>> = _taskList
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     init {
+        loadData()
+    }
+
+    private fun loadData() {
+        _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllTasks().distinctUntilChanged()
                 .collect { listOfTasks ->
                     if (listOfTasks.isEmpty()) {
                         //TODO meter la barra de carga para mostrar al usuario
+                        _isLoading.postValue(false)
                     } else {
                         _taskList.postValue(listOfTasks)
+                        _isLoading.postValue(false)
                     }
                 }
         }
     }
 
-    fun updateTask(task: Task) = viewModelScope.launch { repository.updateTask(task = task) }
+    suspend fun updateTask(task: Task) {
+        _isLoading.value = true
+        val state = viewModelScope.launch {
+            repository.updateTask(task = task)
+        }
+        state.join()
+
+        loadData()
+        _isLoading.postValue(false)
+    }
     fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }
