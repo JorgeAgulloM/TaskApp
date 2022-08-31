@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,6 +117,7 @@ private fun ContentUserDataScreen(
             }
             TextFieldCustomDataScreen(
                 text = email, label = "Email", icon = Icons.Rounded.Email,
+                capitalization = KeyboardCapitalization.None,
                 keyboardType = KeyboardType.Email
             ) {
                 viewModel.viewModelScope.launch {
@@ -129,12 +131,12 @@ private fun ContentUserDataScreen(
             TextFieldCustomDataScreen(
                 text = pass, label = "Name", icon = Icons.Rounded.Key,
                 keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Go, password = true,
                 keyboardActions = KeyboardActions(
                     onGo = {
                         confirmDialog = true
                     }
-                ),
-                imeAction = ImeAction.Go, password = true
+                )
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -236,9 +238,10 @@ private fun TextFieldCustomDataScreen(
     text: String,
     label: String,
     icon: ImageVector,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
     keyboardType: KeyboardType = KeyboardType.Text,
-    keyboardActions: KeyboardActions = KeyboardActions(),
     imeAction: ImeAction = ImeAction.Next,
+    keyboardActions: KeyboardActions = KeyboardActions(),
     password: Boolean = false,
     onTextFieldChanged: (String) -> Unit
 ) {
@@ -249,7 +252,9 @@ private fun TextFieldCustomDataScreen(
         icon = icon,
         contentDescription = "$label of user",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            keyboardType = keyboardType, imeAction = imeAction),
+            capitalization = capitalization,
+            keyboardType = keyboardType,
+            imeAction = imeAction),
         keyboardActions = keyboardActions,
         singleLine = true,
         password = password,
