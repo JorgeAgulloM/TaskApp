@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -114,7 +115,20 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                TextFieldPass(pass = pass, newAccount = newAccount) {
+                TextFieldPass(pass = pass, newAccount = newAccount, keyboardActions = KeyboardActions(
+                    onGo = {
+                        /**TODO Tengo que sacar esto de aquí, es código repetido*/
+                        coroutineScope.launch {
+                            if (viewModel.onLoginSelected()) navController.navigate(
+                                AppScreensRoutes.MainScreen.route
+                            ) {
+                                popUpTo(AppScreensRoutes.LoginScreen.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                )) {
                     viewModel.onLoginChange(
                         email = email,
                         pass = it.trim(),
@@ -122,7 +136,23 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                if (newAccount) TextFieldPassRepeat(passRepeat = passRepeat) {
+                if (newAccount) TextFieldPassRepeat(
+                    passRepeat = passRepeat, keyboardActions = KeyboardActions(
+                        onGo = {
+                            /**TODO Tengo que sacar esto de aquí, es código repetido*/
+                            coroutineScope.launch {
+                                if (viewModel.onNewAccountSelected()) {
+                                    newAccount = false
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Error, ya existe una cuenta con el correo introducido",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    )) {
                     viewModel.onNewAccountChange(
                         name = name, email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = it.trim()
@@ -255,7 +285,10 @@ private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> 
 }
 
 @Composable
-private fun TextFieldPass(pass: String, newAccount: Boolean, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldPass(
+    pass: String, newAccount: Boolean, keyboardActions: KeyboardActions,
+    onTextFieldChanged: (String) -> Unit
+) {
     textFieldCustom(
         text = pass,
         label = "Password",
@@ -265,6 +298,7 @@ private fun TextFieldPass(pass: String, newAccount: Boolean, onTextFieldChanged:
             keyboardType = KeyboardType.Password,
             imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
         ),
+        keyboardActions = keyboardActions,
         contentDescription = "type your password",
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
@@ -274,7 +308,9 @@ private fun TextFieldPass(pass: String, newAccount: Boolean, onTextFieldChanged:
 }
 
 @Composable
-private fun TextFieldPassRepeat(passRepeat: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldPassRepeat(
+    passRepeat: String, keyboardActions: KeyboardActions, onTextFieldChanged: (String) -> Unit
+) {
     textFieldCustom(
         text = passRepeat,
         label = "Password",
@@ -284,6 +320,7 @@ private fun TextFieldPassRepeat(passRepeat: String, onTextFieldChanged: (String)
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             keyboardType = KeyboardType.Password, imeAction = ImeAction.Go
         ),
+        keyboardActions = keyboardActions,
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         password = true
