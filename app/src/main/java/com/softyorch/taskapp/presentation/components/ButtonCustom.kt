@@ -17,7 +17,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.theme.DarkMode90t
-import com.softyorch.taskapp.presentation.widgets.elevationF
+import com.softyorch.taskapp.utils.ELEVATION_FLOAT
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable
@@ -45,10 +45,10 @@ fun ButtonCustom(
                     shadow = Shadow(
                         color = MaterialTheme.colorScheme.primary,
                         offset = if (primary) Offset(x = 0f, y = 0f) else Offset(
-                            x = elevationF,
-                            y = elevationF
+                            x = ELEVATION_FLOAT,
+                            y = ELEVATION_FLOAT
                         ),
-                        blurRadius = if (primary) 0f else elevationF
+                        blurRadius = if (primary) 0f else ELEVATION_FLOAT
                     )
                 ),
                 textDecoration = if (!primary) TextDecoration.Underline else null

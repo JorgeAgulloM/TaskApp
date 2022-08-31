@@ -8,7 +8,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.regex.Pattern.*
 
-val ELEVATION_DP: Dp = 4.dp
+private const val ELEVATION: Int = 4
+val ELEVATION_DP: Dp = ELEVATION.dp
+const val ELEVATION_FLOAT: Float = ELEVATION.toFloat()
+
 val KEYBOARD_OPTIONS_CUSTOM: KeyboardOptions = KeyboardOptions.Default.copy(
     capitalization = KeyboardCapitalization.Sentences,
     autoCorrect = true,

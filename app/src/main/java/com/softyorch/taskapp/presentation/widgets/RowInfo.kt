@@ -13,9 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.utils.StandardizedSizes
-
-const val elevationF: Float = 4f
+import com.softyorch.taskapp.utils.ELEVATION_FLOAT
 
 @Composable
 fun RowInfo(
@@ -42,10 +40,10 @@ fun RowInfo(
                 shadow = Shadow(
                     color = MaterialTheme.colorScheme.primary,
                     offset = Offset(
-                        x = elevationF,
-                        y = elevationF
+                        x = ELEVATION_FLOAT,
+                        y = ELEVATION_FLOAT
                     ),
-                    blurRadius = elevationF
+                    blurRadius = ELEVATION_FLOAT
                 )
             )
         )
