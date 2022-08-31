@@ -3,6 +3,7 @@ package com.softyorch.taskapp.presentation.widgets.newTask
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Title
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,6 +21,7 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
@@ -78,11 +81,25 @@ fun newTask(
                             dateCompletedFormatted = dateCompletedFormatted
                         )
                         RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
-                        TextFieldCustomNewTaskName(text = title, label = "name") {
+                        TextFieldCustomNewTaskName(text = title) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
                         RowInfoNewTask(text = "Task description: ", textSizes = textSizes)
-                        TextFieldCustomNewTaskDescription(text = description, label = "description"
+                        TextFieldCustomNewTaskDescription(
+                            text = description,
+                            keyboardActions = KeyboardActions(
+                                onGo = {
+                                    /**Revisar esto, duplica el código*/
+                                    addOrEditTaskFunc(
+                                        taskToEditOrNewTask(
+                                            taskToEdit = taskToEdit, title = title,
+                                            description = description, userName = userName
+                                        )
+                                    )
+                                    viewModel.onResetValues()
+                                    openDialog = false
+                                }
+                            )
                         ) {
                             viewModel.onTextFieldChanged(title = title, description = it)
                         }
@@ -146,15 +163,14 @@ private fun ButtonCustomNewTask(
 @Composable
 private fun TextFieldCustomNewTaskName(
     text: String,
-    label: String,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
         text = text,
-        label = label,
-        placeholder = "Escribe tu $label",
+        label = "name",
+        placeholder = "Escribe tu name",
         icon = Icons.Rounded.Title,
-        contentDescription = label,
+        contentDescription = "name",
         singleLine = true,
         newTask = true,
         onTextFieldChanged = onCheckedChange
@@ -164,15 +180,19 @@ private fun TextFieldCustomNewTaskName(
 @Composable
 private fun TextFieldCustomNewTaskDescription(
     text: String,
-    label: String,
+    keyboardActions: KeyboardActions,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
         text = text,
-        label = label,
-        placeholder = "Escribe una $label",
+        label = "description",
+        placeholder = "Escribe una description",
         icon = Icons.Rounded.Description,
-        contentDescription = label,
+        contentDescription = "description",
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            imeAction = ImeAction.Go
+        ),
+        keyboardActions = keyboardActions,
         newTask = true,
         onTextFieldChanged = onCheckedChange
     )
@@ -188,7 +208,11 @@ private fun RowInfoNewTask(text: String, textSizes: StandardizedSizes) {
 }
 
 @Composable
-private fun ShowTaskNewTask(userName: String, dateFormatted: String, dateCompletedFormatted: String) {
+private fun ShowTaskNewTask(
+    userName: String,
+    dateFormatted: String,
+    dateCompletedFormatted: String
+) {
     ShowTask(
         author = userName,
         date = dateFormatted,
