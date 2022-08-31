@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.activities
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,19 +17,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.presentation.navigation.TaskAppNavigation
 import com.softyorch.taskapp.presentation.theme.TaskAppTheme
-import com.softyorch.taskapp.utils.ImageController
 import dagger.hilt.android.AndroidEntryPoint
 
 
-private val _newImageUser = MutableLiveData<Uri?>(null)
-val newImageUser: LiveData<Uri?> = _newImageUser
+private val _newImageGallery = MutableLiveData<String?>(null)
+val newImageGallery: LiveData<String?> = _newImageGallery
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val CODE_ACTIVITY = 1
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +35,9 @@ class MainActivity : ComponentActivity() {
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
             val settingList = viewModel.loadSettings()
             val reloadComposable: () -> Unit = { this.recreate() }
-            //val getImage: () -> Unit = { getImageFromGallery() }
 
             val getImage: () -> Unit = {
-                cosa.launch("image/*")
+                getImageGallery.launch("image/*")
             }
 
             TaskApp(
@@ -54,24 +48,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    val cosa = registerForActivityResult(GetContent()) { uri ->
-        _newImageUser.value = uri
+    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
+        _newImageGallery.value = uri.toString()
     }
-
-    fun getImageFromGallery() = ImageController.selectPhotoFromGallery(this, CODE_ACTIVITY)
-
-/*    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                //imageUri = data!!.data
-                _newImageUser.postValue(data!!.data)
-            }
-        }
-    }*/
 }
-
 
 /**
  * [0] String("last_login_date", Date.from(Instant.now()).toString())
@@ -85,7 +65,7 @@ class MainActivity : ComponentActivity() {
  * */
 @ExperimentalMaterial3Api
 @Composable
-fun TaskApp(settingList: List<Any>, reloadComposable: () -> Unit, getImage: () -> Unit) {
+private fun TaskApp(settingList: List<Any>, reloadComposable: () -> Unit, getImage: () -> Unit) {
 
     val darkSystem by remember { mutableStateOf(settingList[2] as Boolean) }
     val light by remember { mutableStateOf(settingList[3] as Boolean) }
