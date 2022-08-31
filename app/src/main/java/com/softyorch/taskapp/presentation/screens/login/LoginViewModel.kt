@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.utils.RegexPassword
+import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -114,7 +114,7 @@ class LoginViewModel @Inject constructor(
     private fun isValidPass(pass: String): Boolean = pass.length >= 8
 
     private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        Pattern.matches(RegexPassword, pass) &&
+        Pattern.matches(REGEX_PASSWORD, pass) &&
         pass == passRepeat
 
 

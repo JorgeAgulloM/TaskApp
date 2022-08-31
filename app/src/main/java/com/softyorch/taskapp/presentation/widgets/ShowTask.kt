@@ -10,13 +10,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.components.textCustom.TextCustom
 
-val elevationDp: Dp = 4.dp
-val TaskKeyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
-    capitalization = KeyboardCapitalization.Sentences,
-    autoCorrect = true,
-    keyboardType = KeyboardType.Text,
-    imeAction = ImeAction.Default
-)
+
 
 @Composable
 fun ShowTask(

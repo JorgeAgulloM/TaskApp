@@ -24,8 +24,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.theme.LightMode90t
-import com.softyorch.taskapp.presentation.widgets.TaskKeyboardOptions
-import com.softyorch.taskapp.presentation.widgets.elevationDp
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import com.softyorch.taskapp.utils.ELEVATION_DP
 
 //TextField V1
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +36,7 @@ fun textFieldCustom(
     placeholder: String = "",
     icon: ImageVector,
     contentDescription: String,
-    keyboardOptions: KeyboardOptions = TaskKeyboardOptions,
+    keyboardOptions: KeyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
     singleLine: Boolean = false,
     newTask: Boolean = false,
     readOnly: Boolean = false,
@@ -71,7 +71,7 @@ fun textFieldCustom(
                 if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
             )
             .shadow(
-                elevation = elevationDp, shape = personalizedShape
+                elevation = ELEVATION_DP, shape = personalizedShape
             ),
         readOnly = readOnly,
         textStyle = TextStyle(color = LightMode90t),

@@ -11,7 +11,7 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
-import com.softyorch.taskapp.utils.RegexPassword
+import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,7 +82,7 @@ class UserDataViewModel @Inject constructor(
     private fun isValidName(name: String): Boolean = name.length >= 3
 
     private fun isValidPass(pass: String): Boolean =
-        Pattern.matches(RegexPassword, pass)
+        Pattern.matches(REGEX_PASSWORD, pass)
 
     private suspend fun isValidEmail(email: String): Boolean =
         getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }

@@ -17,8 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.theme.DarkMode90t
-import com.softyorch.taskapp.presentation.widgets.elevationDp
 import com.softyorch.taskapp.presentation.widgets.elevationF
+import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable
 fun ButtonCustom(
@@ -55,6 +55,6 @@ fun ButtonCustom(
             )
         },
         contentPadding = PaddingValues(2.dp),
-        elevation = ButtonDefaults.buttonElevation(if (primary) elevationDp else 0.dp)
+        elevation = ButtonDefaults.buttonElevation(if (primary) ELEVATION_DP else 0.dp)
     )
 }

@@ -32,7 +32,7 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
-import com.softyorch.taskapp.presentation.widgets.elevationDp
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -196,7 +196,7 @@ private fun AsyncImageDataScreen(image: Uri?, getImage: () -> Unit) {
             .size(200.dp)
             .clickable {
                 getImage()
-            }.shadow(elevation = elevationDp, shape = MaterialTheme.shapes.large)
+            }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.primary,
                 shape = MaterialTheme.shapes.large
