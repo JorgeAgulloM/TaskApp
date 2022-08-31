@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
@@ -37,6 +38,7 @@ fun textFieldCustom(
     icon: ImageVector,
     contentDescription: String,
     keyboardOptions: KeyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
+    keyboardActions: KeyboardActions = KeyboardActions(),
     singleLine: Boolean = false,
     newTask: Boolean = false,
     readOnly: Boolean = false,
@@ -108,6 +110,7 @@ fun textFieldCustom(
         visualTransformation = if (!passVisible) VisualTransformation.None
         else PasswordVisualTransformation(),
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         singleLine = singleLine,
         maxLines = 5,
         shape = personalizedShape,
