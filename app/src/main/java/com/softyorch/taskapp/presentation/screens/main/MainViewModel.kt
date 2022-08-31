@@ -18,7 +18,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val repository: TaskRepository,
     private val stateLogin: StateLogin
-    ) : ViewModel() {
+) : ViewModel() {
     private val _taskList = MutableLiveData<List<Task>>()
     val taskList: LiveData<List<Task>> = _taskList
 
@@ -26,11 +26,11 @@ class MainViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
+        _isLoading.value = true
         loadData()
     }
 
     private fun loadData() {
-        _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllTasks().distinctUntilChanged()
                 .collect { listOfTasks ->
@@ -53,7 +53,7 @@ class MainViewModel @Inject constructor(
         state.join()
 
         loadData()
-        _isLoading.postValue(false)
     }
+
     fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

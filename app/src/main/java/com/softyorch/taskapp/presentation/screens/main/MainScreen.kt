@@ -19,10 +19,10 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
-import com.softyorch.taskapp.utils.StandardizedSizes
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import kotlin.reflect.KSuspendFunction1
 
 @ExperimentalMaterial3Api
 @Composable
@@ -59,24 +59,34 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
     ) {
 
-        RowInfoMain(text = "My Tasks", textSizes = textSizes)
+        RowInfoMain(text = "My Tasks", textSizes = textSizes.normalSize)
         Spacer(modifier = Modifier.padding(8.dp))
-        RowInfoMain(text = "To be made...", textSizes = textSizes)
+        RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
         FillLazyColumn(
-            tasks = tasks, mainViewModel = viewModel, navController = navController,
-            text = "Añade una nueva tarea...", textSizes = textSizes, checked = false
-        )
+            tasks = tasks,
+            updateTask = viewModel::updateTask,
+            text = "Añade una nueva tarea...",
+            textSizes = textSizes.normalSize,
+            initStateCheck = false
+        ) {
+            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+        }
         Spacer(modifier = Modifier.padding(8.dp))
-        RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes)
+        RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
         FillLazyColumn(
-            tasks = tasks, mainViewModel = viewModel, navController = navController,
-            textSizes = textSizes, text = "Aún no has terminado ninguna tarea", checked = true
-        )
+            tasks = tasks,
+            updateTask = viewModel::updateTask,
+            textSizes = textSizes.normalSize,
+            text = "Aún no has terminado ninguna tarea",
+            initStateCheck = true,
+        ) {
+            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+        }
     }
 }
 
 @Composable
-private fun RowInfoMain(text: String, textSizes: StandardizedSizes) {
+private fun RowInfoMain(text: String, textSizes: TextUnit) {
     RowInfo(text = text, paddingStart = 32.dp, textSizes = textSizes)
 }
 
@@ -84,19 +94,25 @@ private fun RowInfoMain(text: String, textSizes: StandardizedSizes) {
 @Composable
 private fun FillLazyColumn(
     tasks: List<Task>,
-    mainViewModel: MainViewModel,
-    navController: NavController,
-    textSizes: StandardizedSizes,
+    updateTask: KSuspendFunction1<Task, Unit>,
+    textSizes: TextUnit,
     text: String,
-    checked: Boolean
+    initStateCheck: Boolean,
+    onClick: (UUID) -> Unit
 ) {
-    if (tasks.any { it.checkState == checked }) LazyColumn {
-        items(tasks.filter { it.checkState == checked }) { task ->
+    val coroutineScope = rememberCoroutineScope()
+    if (tasks.any { it.checkState == initStateCheck }) LazyColumn {
+        items(tasks.filter { it.checkState == initStateCheck }) { task ->
             CheckCustomMain(
-                task = task, mainViewModel = mainViewModel, navController = navController,
-                textSizes = textSizes.normalSize
+                task = task, textSizes = textSizes, onCheckedChange = {
+                    task.checkState = it
+                    task.finishDate = if (it) Date.from(Instant.now()) else null
+                    coroutineScope.launch {
+                        updateTask(task)
+                    }
+                }
             ) {
-                navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                onClick(task.id)
             }
         }
     } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
@@ -105,27 +121,13 @@ private fun FillLazyColumn(
 @ExperimentalMaterial3Api
 @Composable
 private fun CheckCustomMain(
-    task: Task,
-    mainViewModel: MainViewModel,
-    navController: NavController,
-    textSizes: TextUnit,
-    onClick: () -> Unit
+    task: Task, textSizes: TextUnit, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
     CheckCustom(
         checked = task.checkState,
-        onCheckedChange = {
-            task.checkState = it
-            task.finishDate = if (it) Date.from(Instant.now()) else null
-            coroutineScope.launch { mainViewModel.updateTask(task) }
-            //Esto debe cambiar, no es correcto, aunque funciona
-            /* navController.popBackStack()
-             navController.navigate(AppScreensRoutes.MainScreen.route)*/
-        },
+        onCheckedChange = { onCheckedChange(it) },
         text = task.title,
-        onClick = {
-            onClick()
-        },
-        textSizes = textSizes
+        textSizes = textSizes,
+        onClick = { onClick() }
     )
 }
