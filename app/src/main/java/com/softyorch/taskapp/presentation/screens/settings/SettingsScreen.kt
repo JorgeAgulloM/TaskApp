@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.settings
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -11,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.components.switchCustom.SwitchCustom
@@ -40,58 +38,68 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
 
 @Composable
 private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
+
     val viewModel = hiltViewModel<SettingsViewModel>()
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val settings = viewModel.settings.observeAsState().value
     val reloading: Boolean by viewModel.reloading.observeAsState(initial = false)
     val textSizes = viewModel.sizeSelectedOfUser()
-
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
+        if (isLoading) CircularIndicatorCustom(text = "...loading")
         if (settings != null) {
 
             SwitchCustomSettings(
                 text = "Light/Dark Automatic Theme",
-                checked = settings.lightDarkAutomaticTheme,
-                enable = !reloading
+                checked = settings.lightDarkAutomaticTheme
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch {
+                    viewModel.applyChanges()
+                    reloadComposable()
+                }
             }
 
             if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
                 text = "Manual light/dark theme",
-                checked = settings.lightOrDarkTheme,
-                enable = !reloading
+                checked = settings.lightOrDarkTheme
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch {
+                    viewModel.applyChanges()
+                    reloadComposable()
+                }
             }
 
             SwitchCustomSettings(
                 text = "Automatic language",
-                checked = settings.automaticLanguage,
-                enable = !reloading
+                checked = settings.automaticLanguage
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch {
+                    viewModel.applyChanges()
+                    reloadComposable()
+                }
             }
 
             SwitchCustomSettings(
                 text = "Automatic colors",
-                checked = settings.automaticColors,
-                enable = !reloading
+                checked = settings.automaticColors
             ) {
                 settings.automaticColors = !settings.automaticColors
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch {
+                    viewModel.applyChanges()
+                    reloadComposable()
+                }
             }
 
             SwitchCustomSettings(
                 text = "Remember Me",
-                checked = settings.rememberMe,
-                enable = !reloading
+                checked = settings.rememberMe
             ) {
                 settings.rememberMe = !settings.rememberMe
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch { viewModel.applyChanges() }
             }
 
             if (settings.rememberMe) Row(modifier = Modifier.padding(start = 40.dp, top = 16.dp),
@@ -113,32 +121,28 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 sliderCustomSettingsAutoLoading(
                     initValue = settings.timeLimitAutoLoading, needReloadDialog = reloading
                 ) {
-                    ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                    coroutineScope.launch { viewModel.applyChanges() }
                 }
 
             settings.textSize = sliderCustomSettingsText(
                 initValue = settings.textSize, needReloadDialog = reloading
             ) {
-                ApplyChanges(viewModel = viewModel, reloadComposable = reloadComposable)
+                coroutineScope.launch { viewModel.applyChanges() }
             }
-
-            if (reloading) CircularIndicatorCustom(text = "Realizando los cambios")
-
-        } else CircularIndicatorCustom(text = "...loading")
+        }
     }
 }
 
 @Composable
-fun SwitchCustomSettings(
+private fun SwitchCustomSettings(
     text: String,
     checked: Boolean,
-    enable: Boolean,
     onCheckedChange: () -> Unit
 ) = SwitchCustom(
     text = text,
     checked = checked,
-    onCheckedChange = { onCheckedChange() },
-    enable = enable
+    enable = true,
+    onCheckedChange = { onCheckedChange() }
 )
 
 @Composable
@@ -169,13 +173,5 @@ private fun sliderCustomSettingsAutoLoading(
         onValueChangeFinished = { onValueChangeFinished() },
         text = "Time to automatic login: ${timeLimitAutoLoginSelectText(initValue)}"
     )
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-private fun ApplyChanges(viewModel: SettingsViewModel, reloadComposable: () -> Unit){
-    viewModel.viewModelScope.launch {
-        viewModel.applyChanges()
-        reloadComposable.invoke()
-    }
 }
 

@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.settings
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,6 @@ import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 @HiltViewModel
@@ -24,16 +24,26 @@ class SettingsViewModel @Inject constructor(
     private val _reloading = MutableLiveData<Boolean>()
     val reloading: LiveData<Boolean> = _reloading
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     init {
+        _isLoading.value = true
+        loadData()
+    }
+
+    private fun loadData(){
         _settings.postValue(getUserActiveSharedPreferences())
+        _isLoading.value = false
     }
 
     suspend fun applyChanges() {
+        _isLoading.value = true
         _settings.value?.let {
-            _reloading.value = true
-            updatePreferences(settingsUserData = it)
-            delay(100)
-            _reloading.value = false
+            val result = updatePreferences(settingsUserData = it)
+            result.join()
+
+            _isLoading.postValue(false)
         }
     }
 
@@ -41,7 +51,7 @@ class SettingsViewModel @Inject constructor(
         return stateLogin.userDataActive
     }
 
-    fun updatePreferences(settingsUserData: UserData) = viewModelScope.launch {
+    private fun updatePreferences(settingsUserData: UserData) = viewModelScope.launch {
         stateLogin.userDataActive?.let { userData ->
             userData.lastLoginDate = settingsUserData.lastLoginDate
             userData.rememberMe = settingsUserData.rememberMe
@@ -51,7 +61,6 @@ class SettingsViewModel @Inject constructor(
             userData.automaticColors = settingsUserData.automaticColors
             userData.timeLimitAutoLoading = settingsUserData.timeLimitAutoLoading
             userData.textSize = settingsUserData.textSize
-
             updateUser(userData = userData)
             stateLogIn(userData = userData)
         }
