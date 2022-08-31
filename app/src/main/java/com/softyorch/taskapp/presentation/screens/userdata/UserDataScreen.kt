@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Key
@@ -19,6 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +36,7 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -111,7 +115,8 @@ private fun ContentUserDataScreen(
                 }
             }
             TextFieldCustomDataScreen(
-                text = email, label = "Email", icon = Icons.Rounded.Email
+                text = email, label = "Email", icon = Icons.Rounded.Email,
+                keyboardType = KeyboardType.Email
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -122,7 +127,14 @@ private fun ContentUserDataScreen(
                 }
             }
             TextFieldCustomDataScreen(
-                text = pass, label = "Name", icon = Icons.Rounded.Key, password = true
+                text = pass, label = "Name", icon = Icons.Rounded.Key,
+                keyboardType = KeyboardType.Password,
+                keyboardActions = KeyboardActions(
+                    onGo = {
+                        confirmDialog = true
+                    }
+                ),
+                imeAction = ImeAction.Go, password = true
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -224,6 +236,9 @@ private fun TextFieldCustomDataScreen(
     text: String,
     label: String,
     icon: ImageVector,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    imeAction: ImeAction = ImeAction.Next,
     password: Boolean = false,
     onTextFieldChanged: (String) -> Unit
 ) {
@@ -233,6 +248,9 @@ private fun TextFieldCustomDataScreen(
         placeholder = "Write your ${label.lowercase()}",
         icon = icon,
         contentDescription = "$label of user",
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            keyboardType = keyboardType, imeAction = imeAction),
+        keyboardActions = keyboardActions,
         singleLine = true,
         password = password,
         onTextFieldChanged = { onTextFieldChanged(it) }
