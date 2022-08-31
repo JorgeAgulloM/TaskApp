@@ -32,7 +32,7 @@ fun sliderCustom(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            RowInfo(text = text, paddingStart = 8.dp, textSizes = textSizes)
+            RowInfo(text = text, paddingStart = 8.dp, textSizes = textSizes.normalSize)
             Slider(
                 value = selection,
                 onValueChange = { selection = it },

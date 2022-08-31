@@ -104,7 +104,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                             settings.lastLoginDate?.toStringFormatted()
                         }",
                         paddingStart = 8.dp,
-                        textSizes = textSizes
+                        textSizes = textSizes.normalSize
                     )
                 }
             )

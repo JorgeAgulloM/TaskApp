@@ -189,7 +189,7 @@ private fun RowInfoDetail(
     RowInfo(
         text = text,
         paddingStart = 24.dp,
-        textSizes = textSizes
+        textSizes = textSizes.normalSize
     )
 }
 

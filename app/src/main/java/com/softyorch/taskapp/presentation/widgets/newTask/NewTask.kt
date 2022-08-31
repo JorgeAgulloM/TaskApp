@@ -81,11 +81,11 @@ fun newTask(
                             userName = userName, dateFormatted = dateCreatedFormatted,
                             dateCompletedFormatted = dateCompletedFormatted, textSizes = textSizes
                         )
-                        RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
+                        RowInfoNewTask(text = "Name of task: ", textSizes = textSizes.normalSize)
                         TextFieldCustomNewTaskName(text = title, textSizes = textSizes.normalSize) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
-                        RowInfoNewTask(text = "Task description: ", textSizes = textSizes)
+                        RowInfoNewTask(text = "Task description: ", textSizes = textSizes.normalSize)
                         TextFieldCustomNewTaskDescription(
                             text = description,
                             textSizes = textSizes.normalSize,
@@ -205,7 +205,7 @@ private fun TextFieldCustomNewTaskDescription(
 }
 
 @Composable
-private fun RowInfoNewTask(text: String, textSizes: StandardizedSizes) {
+private fun RowInfoNewTask(text: String, textSizes: TextUnit) {
     RowInfo(
         text = text,
         paddingStart = 32.dp,

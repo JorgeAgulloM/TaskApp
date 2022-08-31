@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.utils.StandardizedSizes
 
@@ -19,7 +20,7 @@ const val elevationF: Float = 4f
 @Composable
 fun RowInfo(
     text: String,
-    textSizes: StandardizedSizes,
+    textSizes: TextUnit,
     paddingStart: Dp = 0.dp,
     heightSize: Dp = 30.dp,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
@@ -36,7 +37,7 @@ fun RowInfo(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            fontSize = textSizes.littleSize,
+            fontSize = textSizes,
             style = TextStyle(
                 shadow = Shadow(
                     color = MaterialTheme.colorScheme.primary,
