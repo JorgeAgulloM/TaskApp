@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -25,6 +27,7 @@ import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.CheckCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.StandardizedSizes
 import kotlinx.coroutines.launch
 
@@ -111,7 +114,7 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                TextFieldPass(pass = pass) {
+                TextFieldPass(pass = pass, newAccount = newAccount) {
                     viewModel.onLoginChange(
                         email = email,
                         pass = it.trim(),
@@ -229,6 +232,7 @@ private fun TextFieldEmail(email: String, onTextFieldChanged: (String) -> Unit) 
         placeholder = "type your email",
         icon = Icons.Rounded.Email,
         contentDescription = "type your email",
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(keyboardType = KeyboardType.Email),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
@@ -243,6 +247,7 @@ private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> 
         placeholder = "repeat your email",
         icon = Icons.Rounded.Email,
         contentDescription = "repeat your email",
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(keyboardType = KeyboardType.Email),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
@@ -250,12 +255,16 @@ private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> 
 }
 
 @Composable
-private fun TextFieldPass(pass: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldPass(pass: String, newAccount: Boolean, onTextFieldChanged: (String) -> Unit) {
     textFieldCustom(
         text = pass,
         label = "Password",
         placeholder = "type your password",
         icon = Icons.Rounded.Key,
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            keyboardType = KeyboardType.Password,
+            imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+        ),
         contentDescription = "type your password",
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
@@ -272,6 +281,9 @@ private fun TextFieldPassRepeat(passRepeat: String, onTextFieldChanged: (String)
         placeholder = "repeat your password",
         icon = Icons.Rounded.Key,
         contentDescription = "repeat your password",
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            keyboardType = KeyboardType.Password, imeAction = ImeAction.Go
+        ),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         password = true

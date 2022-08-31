@@ -13,7 +13,7 @@ val KEYBOARD_OPTIONS_CUSTOM: KeyboardOptions = KeyboardOptions.Default.copy(
     capitalization = KeyboardCapitalization.Sentences,
     autoCorrect = true,
     keyboardType = KeyboardType.Text,
-    imeAction = ImeAction.Default
+    imeAction = ImeAction.Next
 )
 
 const val WEEK_IN_MILLIS: Long = 604800000L
