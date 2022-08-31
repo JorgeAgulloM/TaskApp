@@ -139,7 +139,7 @@ private fun ContentUserDataScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ButtonCustomDataScreen(text = "Logout", primary = true) {
-                cancelDialog = true
+                logOutDialog = true
             } //viewModel
             Spacer(modifier = Modifier.padding(bottom = 4.dp))
             ButtonCustomDataScreen(text = "Save", enable = saveEnabled, primary = true) {
