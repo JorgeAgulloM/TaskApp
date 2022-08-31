@@ -27,4 +27,9 @@ class NewTaskViewModel @Inject constructor() : ViewModel() {
 
     private fun isDescriptionValid(description: String): Boolean =
         description.length >= 3
+
+    fun onResetValues() {
+        _title.value = ""
+        _description.value = ""
+    }
 }

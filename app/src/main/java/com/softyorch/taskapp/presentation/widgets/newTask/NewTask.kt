@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.widgets.newTask
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -45,6 +46,9 @@ fun newTask(
         taskToEdit?.entryDate?.toStringFormatted() ?: Date.from(Instant.now()).toStringFormatted()
     val dateCompletedFormatted =
         taskToEdit?.finishDate?.toStringFormatted() ?: "Unknown"
+
+    Log.d("VALUES", "Tittle init -> $title")
+    Log.d("VALUES", "Tittle description -> $description")
 
     Dialog(
         onDismissRequest = {
@@ -98,6 +102,7 @@ fun newTask(
                                         description = description, userName = userName
                                     )
                                 )
+                                viewModel.onResetValues()
                                 openDialog = false
                             }
                             ButtonCustom(onClick = { openDialog = false }, text = "Cancel")
