@@ -36,6 +36,7 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
+import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import kotlinx.coroutines.launch
@@ -173,6 +174,11 @@ private fun ContentUserDataScreen(
         onDismissButtonClick = { logOutDialog = false }
     ) {
         viewModel.logOut()
+        logOutDialog = false
+        navController.navigate(AppScreensRoutes.SplashScreen.route) {
+            navController.backQueue.clear()
+        }
+
     }
 
     if (confirmDialog) UserDataDialog(
@@ -254,7 +260,8 @@ private fun TextFieldCustomDataScreen(
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = capitalization,
             keyboardType = keyboardType,
-            imeAction = imeAction),
+            imeAction = imeAction
+        ),
         keyboardActions = keyboardActions,
         singleLine = true,
         password = password,

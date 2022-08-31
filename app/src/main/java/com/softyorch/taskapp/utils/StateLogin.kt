@@ -28,6 +28,11 @@ class StateLogin @Inject constructor(
 
     fun logOut() {
         sharedPreferencesSetUser()
+        deleteUserActive()
+    }
+
+    private fun deleteUserActive() {
+        userDataActive = null
     }
 
     fun refreshData(userData: UserData) {
@@ -80,6 +85,10 @@ class StateLogin @Inject constructor(
 
             sp?.apply()
         }
+        /**
+        TODO(reason = "Me falta eliminar al usuario activo")
+        //userDataActive = null
+         */
     }
 
     fun userActive(): UserData {
