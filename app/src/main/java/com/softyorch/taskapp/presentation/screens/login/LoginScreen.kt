@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -102,7 +103,7 @@ private fun LoginOrNewAccount(
 
                 TextFieldEmail(email = email) {
                     viewModel.onLoginChange(
-                        email = it.trim(),
+                        email = it.trim().lowercase(),
                         pass = pass,
                         rememberMe = rememberMe
                     )
@@ -110,7 +111,7 @@ private fun LoginOrNewAccount(
 
                 if (newAccount) TextFieldEmailRepeat(email = emailRepeat) {
                     viewModel.onNewAccountChange(
-                        name = name, email = email, emailRepeat = it.trim(), pass = pass,
+                        name = name, email = email, emailRepeat = it.trim().lowercase(), pass = pass,
                         passRepeat = passRepeat
                     )
                 }
@@ -262,7 +263,9 @@ private fun TextFieldEmail(email: String, onTextFieldChanged: (String) -> Unit) 
         placeholder = "type your email",
         icon = Icons.Rounded.Email,
         contentDescription = "type your email",
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(keyboardType = KeyboardType.Email),
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Email),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
@@ -277,7 +280,9 @@ private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> 
         placeholder = "repeat your email",
         icon = Icons.Rounded.Email,
         contentDescription = "repeat your email",
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(keyboardType = KeyboardType.Email),
+        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Email),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
