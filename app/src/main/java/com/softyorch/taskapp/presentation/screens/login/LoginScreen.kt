@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -94,14 +95,14 @@ private fun LoginOrNewAccount(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.End
             ) {
-                if (newAccount) TextFieldName(name = name) {
+                if (newAccount) TextFieldName(name = name, textSizes = textSizes.normalSize) {
                     viewModel.onNewAccountChange(
                         name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = passRepeat
                     )
                 }
 
-                TextFieldEmail(email = email) {
+                TextFieldEmail(email = email, textSizes = textSizes.normalSize) {
                     viewModel.onLoginChange(
                         email = it.trim().lowercase(),
                         pass = pass,
@@ -109,27 +110,33 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                if (newAccount) TextFieldEmailRepeat(email = emailRepeat) {
+                if (newAccount) TextFieldEmailRepeat(
+                    email = emailRepeat, textSizes = textSizes.normalSize
+                ) {
                     viewModel.onNewAccountChange(
-                        name = name, email = email, emailRepeat = it.trim().lowercase(), pass = pass,
+                        name = name,
+                        email = email,
+                        emailRepeat = it.trim().lowercase(),
+                        pass = pass,
                         passRepeat = passRepeat
                     )
                 }
 
-                TextFieldPass(pass = pass, newAccount = newAccount, keyboardActions = KeyboardActions(
-                    onGo = {
-                        /**TODO Tengo que sacar esto de aquí, es código repetido*/
-                        coroutineScope.launch {
-                            if (viewModel.onLoginSelected()) navController.navigate(
-                                AppScreensRoutes.MainScreen.route
-                            ) {
-                                popUpTo(AppScreensRoutes.LoginScreen.route) {
-                                    inclusive = true
+                TextFieldPass(pass = pass, textSizes = textSizes.normalSize,
+                    newAccount = newAccount, keyboardActions = KeyboardActions(
+                        onGo = {
+                            /**TODO Tengo que sacar esto de aquí, es código repetido*/
+                            coroutineScope.launch {
+                                if (viewModel.onLoginSelected()) navController.navigate(
+                                    AppScreensRoutes.MainScreen.route
+                                ) {
+                                    popUpTo(AppScreensRoutes.LoginScreen.route) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         }
-                    }
-                )) {
+                    )) {
                     viewModel.onLoginChange(
                         email = email,
                         pass = it.trim(),
@@ -138,7 +145,8 @@ private fun LoginOrNewAccount(
                 }
 
                 if (newAccount) TextFieldPassRepeat(
-                    passRepeat = passRepeat, keyboardActions = KeyboardActions(
+                    passRepeat = passRepeat, textSizes = textSizes.normalSize,
+                    keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             coroutineScope.launch {
@@ -160,7 +168,7 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
+                if (!newAccount) CheckerRememberMe(rememberMe = rememberMe, textSizes = textSizes.normalSize ) {
                     viewModel.onLoginChange(
                         email = email, pass = pass, rememberMe = it
                     )
@@ -210,13 +218,18 @@ private fun LoginOrNewAccount(
 
 @ExperimentalMaterial3Api
 @Composable
-private fun CheckerRememberMe(rememberMe: Boolean, onCheckedChange: (Boolean) -> Unit) {
+private fun CheckerRememberMe(
+    rememberMe: Boolean,
+    textSizes: TextUnit,
+    onCheckedChange: (Boolean) -> Unit
+) {
     CheckCustom(
         checked = rememberMe,
         onCheckedChange = onCheckedChange,
         text = "Remember Me",
-        onClick = {},
-        horizontalArrangement = Arrangement.End
+        textSizes = textSizes,
+        horizontalArrangement = Arrangement.End,
+        onClick = {}
     )
 }
 
@@ -242,11 +255,12 @@ private fun SubTitleLogin(modifier: Modifier, textSizes: StandardizedSizes) {
 }*/
 
 @Composable
-private fun TextFieldName(name: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldName(name: String, textSizes: TextUnit, onTextFieldChanged: (String) -> Unit) {
     textFieldCustom(
         text = name,
         label = "Name",
         placeholder = "type your name",
+        textSizes = textSizes,
         icon = Icons.Rounded.Person,
         contentDescription = "type your name",
         singleLine = true,
@@ -256,16 +270,22 @@ private fun TextFieldName(name: String, onTextFieldChanged: (String) -> Unit) {
 }
 
 @Composable
-private fun TextFieldEmail(email: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldEmail(
+    email: String,
+    textSizes: TextUnit,
+    onTextFieldChanged: (String) -> Unit
+) {
     textFieldCustom(
         text = email,
         label = "Email",
         placeholder = "type your email",
+        textSizes = textSizes,
         icon = Icons.Rounded.Email,
         contentDescription = "type your email",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Email),
+            keyboardType = KeyboardType.Email
+        ),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
@@ -273,16 +293,22 @@ private fun TextFieldEmail(email: String, onTextFieldChanged: (String) -> Unit) 
 }
 
 @Composable
-private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldEmailRepeat(
+    email: String,
+    textSizes: TextUnit,
+    onTextFieldChanged: (String) -> Unit
+) {
     textFieldCustom(
         text = email,
         label = "Email",
+        textSizes = textSizes,
         placeholder = "repeat your email",
         icon = Icons.Rounded.Email,
         contentDescription = "repeat your email",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Email),
+            keyboardType = KeyboardType.Email
+        ),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         //isError = email.isEmpty() && pushCreate
@@ -291,13 +317,14 @@ private fun TextFieldEmailRepeat(email: String, onTextFieldChanged: (String) -> 
 
 @Composable
 private fun TextFieldPass(
-    pass: String, newAccount: Boolean, keyboardActions: KeyboardActions,
+    pass: String, textSizes: TextUnit, newAccount: Boolean, keyboardActions: KeyboardActions,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
         text = pass,
         label = "Password",
         placeholder = "type your password",
+        textSizes = textSizes,
         icon = Icons.Rounded.Key,
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             keyboardType = KeyboardType.Password,
@@ -314,12 +341,14 @@ private fun TextFieldPass(
 
 @Composable
 private fun TextFieldPassRepeat(
-    passRepeat: String, keyboardActions: KeyboardActions, onTextFieldChanged: (String) -> Unit
+    passRepeat: String, textSizes: TextUnit, keyboardActions: KeyboardActions,
+    onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
         text = passRepeat,
         label = "Password",
         placeholder = "repeat your password",
+        textSizes = textSizes,
         icon = Icons.Rounded.Key,
         contentDescription = "repeat your password",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(

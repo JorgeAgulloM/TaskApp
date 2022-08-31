@@ -76,7 +76,7 @@ private fun Content(
                     TextDescriptionDetails(task, textSizes)
                     Spacer(modifier = Modifier.padding(top = 16.dp))
                     RowInfoDetail(text = "Details", textSizes = textSizes)
-                    ShowTaskDetails(task)
+                    ShowTaskDetails(task = task, textSizes = textSizes)
 
                     Column(
                         modifier = Modifier
@@ -206,12 +206,13 @@ private fun TextDescriptionDetails(
 }
 
 @Composable
-private fun ShowTaskDetails(task: Task) {
+private fun ShowTaskDetails(task: Task, textSizes: StandardizedSizes) {
     ShowTask(
         author = task.author,
         date = task.entryDate.toStringFormatted(),
         completedDate = task.finishDate?.toStringFormatted()
             ?: "Unknown",
+        textSizes = textSizes,
         paddingStart = 0.dp
     )
 }

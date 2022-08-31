@@ -12,6 +12,7 @@ import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
+import com.softyorch.taskapp.utils.StandardizedSizes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,8 +27,8 @@ class UserDataViewModel @Inject constructor(
     private val _userDataActive = MutableLiveData<UserData>()
     //val userDataActive: LiveData<UserData> = _userDataActive
 
-    private val _image = MutableLiveData<Uri?>()
-    val image: LiveData<Uri?> = _image
+    private val _image = MutableLiveData<String>()
+    val image: LiveData<String> = _image
 
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
@@ -59,7 +60,7 @@ class UserDataViewModel @Inject constructor(
 
     fun loadData() {
         Log.d("DATALOAD", "Init.loadData -> ${_userDataActive.value}")
-        _image.value = _userDataActive.value?.userPicture?.toUri()
+        _image.value = _userDataActive.value?.userPicture ?: ""
         _name.value = _userDataActive.value?.username ?: ""
         _email.value = _userDataActive.value?.userEmail ?: ""
         _pass.value = _userDataActive.value?.userPass ?: ""
@@ -74,7 +75,7 @@ class UserDataViewModel @Inject constructor(
                 isValidPass(pass = pass)
     }
 
-    fun saveUserImage(image: Uri) {
+    fun saveUserImage(image: String) {
         _image.value = image
         _saveEnabled.value = true
     }
@@ -131,4 +132,6 @@ class UserDataViewModel @Inject constructor(
 
     private fun getUserActiveSharedPreferences(): UserData? =
         stateLogin.userDataActive
+
+    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

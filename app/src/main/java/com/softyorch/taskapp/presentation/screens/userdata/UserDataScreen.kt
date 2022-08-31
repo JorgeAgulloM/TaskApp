@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,13 +23,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.presentation.activities.newImageUser
+import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
@@ -72,20 +72,19 @@ private fun ContentUserDataScreen(
     getImage: () -> Unit
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
-    val image = viewModel.image.observeAsState().value
+    val textSizes = viewModel.sizeSelectedOfUser()
+    val image: String by viewModel.image.observeAsState(initial = "")
     val name: String by viewModel.name.observeAsState(initial = "")
     val email: String by viewModel.email.observeAsState(initial = "")
     val pass: String by viewModel.pass.observeAsState(initial = "")
     val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-    val newImage = newImageUser.observeAsState().value
+    val newImage = newImageGallery.observeAsState().value
 
     var confirmDialog by remember { mutableStateOf(false) }
     var cancelDialog by remember { mutableStateOf(false) }
     var logOutDialog by remember { mutableStateOf(false) }
-
-
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
@@ -93,10 +92,11 @@ private fun ContentUserDataScreen(
         verticalArrangement = Arrangement.Top
     ) {
         if (isLoading) CircularIndicatorCustom(text = "Working...")
+
         if (newImage != null) {
             viewModel.saveUserImage(newImage)
         }
-        AsyncImageDataScreen(image) { getImage() }
+        AsyncImageDataScreen(image = image) { getImage() }
         Spacer(modifier = Modifier.padding(top = 24.dp))
         Column(
             modifier = Modifier
@@ -106,7 +106,8 @@ private fun ContentUserDataScreen(
         ) {
 
             TextFieldCustomDataScreen(
-                text = name, label = "Name", icon = Icons.Rounded.Person
+                text = name, label = "Name", textSizes = textSizes.normalSize,
+                icon = Icons.Rounded.Person
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -117,7 +118,8 @@ private fun ContentUserDataScreen(
                 }
             }
             TextFieldCustomDataScreen(
-                text = email, label = "Email", icon = Icons.Rounded.Email,
+                text = email, label = "Email", textSizes = textSizes.normalSize,
+                icon = Icons.Rounded.Email,
                 capitalization = KeyboardCapitalization.None,
                 keyboardType = KeyboardType.Email
             ) {
@@ -130,7 +132,8 @@ private fun ContentUserDataScreen(
                 }
             }
             TextFieldCustomDataScreen(
-                text = pass, label = "Name", icon = Icons.Rounded.Key,
+                text = pass, label = "Name", textSizes = textSizes.normalSize,
+                icon = Icons.Rounded.Key,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Go, password = true,
                 keyboardActions = KeyboardActions(
@@ -204,27 +207,52 @@ private fun ContentUserDataScreen(
 }
 
 @Composable
-private fun AsyncImageDataScreen(image: Uri?, getImage: () -> Unit) {
-    var state by remember { mutableStateOf("") }
+private fun AsyncImageDataScreen(image: String, getImage: () -> Unit) {
+    var state by remember { mutableStateOf(value = "") }
+    var error by remember { mutableStateOf(value = false) }
+
     Text(text = state, style = TextStyle(color = Color.Red))
-    AsyncImage(
-        model = image.toString(),
-        contentDescription = "Image of user",
-        placeholder = painterResource(R.drawable.ic_person_24),
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(200.dp)
-            .clickable {
-                getImage()
-            }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.large
-            ),
-        onLoading = { state = "..loading" },
-        onSuccess = { state = "ok" },
-        onError = { state = "error" }
-    )
+    if (!error) {
+        AsyncImage(
+            model = image,
+            contentDescription = "Image of user",
+            placeholder = painterResource(R.drawable.ic_person_24),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(200.dp)
+                .clickable {
+                    getImage()
+                }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.large
+                ),
+            onLoading = {
+                state = "..loading"
+
+                        },
+            onSuccess = { state = "ok" },
+            onError = {
+                error = true
+                state = "error"
+            },
+        )
+    } else {
+        state = "Load Icon"
+        Icon(
+            imageVector = Icons.Rounded.Person,
+            contentDescription = "Image of user",
+            modifier = Modifier
+                .size(200.dp)
+                .clickable {
+                    getImage()
+                }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.large
+                )
+        )
+    }
 }
 
 @Composable
@@ -243,6 +271,7 @@ private fun ButtonCustomDataScreen(
 private fun TextFieldCustomDataScreen(
     text: String,
     label: String,
+    textSizes: TextUnit,
     icon: ImageVector,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -254,6 +283,7 @@ private fun TextFieldCustomDataScreen(
     textFieldCustom(
         text = text,
         label = label,
+        textSizes = textSizes,
         placeholder = "Write your ${label.lowercase()}",
         icon = icon,
         contentDescription = "$label of user",

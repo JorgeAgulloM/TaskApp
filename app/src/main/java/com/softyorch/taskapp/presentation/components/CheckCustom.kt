@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 @ExperimentalMaterial3Api
@@ -16,8 +17,9 @@ fun CheckCustom(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     text: String,
-    onClick: () -> Unit,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
+    textSizes: TextUnit,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    onClick: () -> Unit
 ) {
 
     Row(
@@ -38,14 +40,14 @@ fun CheckCustom(
             )
             Text(
                 text = text,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
                 color =
                 if (checked)
                     MaterialTheme.colorScheme.primary
                 else
                     MaterialTheme.colorScheme.onSurface,
-                style = TextStyle()
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                style = TextStyle(fontSize = textSizes)
             )
         }
     )

@@ -13,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -78,15 +79,16 @@ fun newTask(
 
                         ShowTaskNewTask(
                             userName = userName, dateFormatted = dateCreatedFormatted,
-                            dateCompletedFormatted = dateCompletedFormatted
+                            dateCompletedFormatted = dateCompletedFormatted, textSizes = textSizes
                         )
                         RowInfoNewTask(text = "Name of task: ", textSizes = textSizes)
-                        TextFieldCustomNewTaskName(text = title) {
+                        TextFieldCustomNewTaskName(text = title, textSizes = textSizes.normalSize) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
                         RowInfoNewTask(text = "Task description: ", textSizes = textSizes)
                         TextFieldCustomNewTaskDescription(
                             text = description,
+                            textSizes = textSizes.normalSize,
                             keyboardActions = KeyboardActions(
                                 onGo = {
                                     /**Revisar esto, duplica el código*/
@@ -163,12 +165,14 @@ private fun ButtonCustomNewTask(
 @Composable
 private fun TextFieldCustomNewTaskName(
     text: String,
+    textSizes: TextUnit,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
         text = text,
         label = "name",
         placeholder = "Escribe tu name",
+        textSizes = textSizes,
         icon = Icons.Rounded.Title,
         contentDescription = "name",
         singleLine = true,
@@ -180,6 +184,7 @@ private fun TextFieldCustomNewTaskName(
 @Composable
 private fun TextFieldCustomNewTaskDescription(
     text: String,
+    textSizes: TextUnit,
     keyboardActions: KeyboardActions,
     onCheckedChange: (String) -> Unit
 ) {
@@ -187,6 +192,7 @@ private fun TextFieldCustomNewTaskDescription(
         text = text,
         label = "description",
         placeholder = "Escribe una description",
+        textSizes = textSizes,
         icon = Icons.Rounded.Description,
         contentDescription = "description",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
@@ -211,11 +217,13 @@ private fun RowInfoNewTask(text: String, textSizes: StandardizedSizes) {
 private fun ShowTaskNewTask(
     userName: String,
     dateFormatted: String,
-    dateCompletedFormatted: String
+    dateCompletedFormatted: String,
+    textSizes: StandardizedSizes
 ) {
     ShowTask(
         author = userName,
         date = dateFormatted,
-        completedDate = dateCompletedFormatted
+        completedDate = dateCompletedFormatted,
+        textSizes = textSizes
     )
 }
