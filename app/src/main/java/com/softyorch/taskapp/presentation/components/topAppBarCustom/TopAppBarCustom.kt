@@ -73,7 +73,7 @@ fun TopAppBarCustom(
             if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.SupervisedUserCircle, text = "User data",
             ) {
-                navController.navigate(AppScreensRoutes.UserDataScreen.route + "/${"0"}")
+                navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
         }
     )
