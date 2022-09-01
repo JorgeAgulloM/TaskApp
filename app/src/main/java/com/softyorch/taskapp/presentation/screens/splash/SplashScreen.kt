@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import kotlinx.coroutines.delay
 
@@ -30,6 +31,7 @@ fun SplashScreen(
 ) {
 
     val goToAutoLogin = viewModel.goToAutologin.observeAsState()
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val scale = remember { Animatable(0f) }
 
     LaunchedEffect(key1 = true, block = {
@@ -53,6 +55,7 @@ fun SplashScreen(
         }
     })
 
+    if (isLoading) CircularIndicatorCustom(text = "..loading")
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.6f)
@@ -61,6 +64,7 @@ fun SplashScreen(
             .size(330.dp)
             .scale(scale.value)
     ) {
+
         Column(
             modifier = Modifier.padding(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

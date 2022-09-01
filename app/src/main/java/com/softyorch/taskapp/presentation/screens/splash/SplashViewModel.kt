@@ -24,10 +24,20 @@ class SplashViewModel @Inject constructor(
     private val _goToAutologin = MutableLiveData<Boolean>()
     val goToAutologin: LiveData<Boolean> = _goToAutologin
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     init {
-        viewModelScope.launch {
+        _isLoading.value = true
+        viewModelScope.launch { loadData() }
+    }
+
+    private suspend fun loadData() {
+        val result = viewModelScope.launch {
             _goToAutologin.value = userActivated()
         }
+        result.join()
+        _isLoading.postValue(false)
     }
 
     private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
