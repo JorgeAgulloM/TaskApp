@@ -1,9 +1,18 @@
 package com.softyorch.taskapp.presentation.activities
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager.*
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,13 +20,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.presentation.navigation.TaskAppNavigation
 import com.softyorch.taskapp.presentation.theme.TaskAppTheme
+import com.softyorch.taskapp.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import java.io.IOException
+import java.util.jar.Manifest
 
 
 private val _newImageGallery = MutableLiveData<String?>(null)
@@ -27,30 +42,104 @@ val newImageGallery: LiveData<String?> = _newImageGallery
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private var readPermissionGranted = false
+    private var writePermissionGranted = false
+    private lateinit var permissionsLauncher: ActivityResultLauncher<Array<String>>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        permissionsLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            readPermissionGranted = permissions[READ_EXTERNAL_STORAGE] ?: readPermissionGranted
+            writePermissionGranted = permissions[WRITE_EXTERNAL_STORAGE] ?: writePermissionGranted
+        }
+        updateOrRequestPermissions()
+
         setContent {
             val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
             val viewModel = hiltViewModel<MainActivityViewModel>()
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
             val settingList = viewModel.loadSettings()
             val reloadComposable: () -> Unit = { this.recreate() }
-
+            val coroutineScope = rememberCoroutineScope()
+            var imageResult: String? = newImageGallery.observeAsState().value
             val getImage: () -> Unit = {
-                getImageGallery.launch("image/*")
+                coroutineScope.launch {
+                    coroutineScope.launch {
+                        getImageGallery.launch("image/*")
+                    }.let {
+                        it.join()
+                        imageResult = newImageGallery.value
+                    }
+                }
             }
+
+            val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
 
             TaskApp(
                 settingList = settingList,
                 reloadComposable = reloadComposable,
-                getImage = getImage
+                getUserImage = getUserImage
             )
+        }
+    }
+
+    private fun updateOrRequestPermissions() {
+        val hasReadPermission = ContextCompat.checkSelfPermission(
+            this,
+            READ_EXTERNAL_STORAGE
+        ) == PERMISSION_GRANTED
+        val hasWritePermission = ContextCompat.checkSelfPermission(
+            this,
+            WRITE_EXTERNAL_STORAGE
+        ) == PERMISSION_GRANTED
+        val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+        readPermissionGranted = hasReadPermission
+        writePermissionGranted = hasWritePermission || minSdk29
+
+        val permissionsToRequest = mutableListOf<String>()
+
+        if (!writePermissionGranted) permissionsToRequest.add(WRITE_EXTERNAL_STORAGE)
+        if (!readPermissionGranted) permissionsToRequest.add(READ_EXTERNAL_STORAGE)
+
+        if (permissionsToRequest.isNotEmpty())
+            permissionsLauncher.launch(permissionsToRequest.toTypedArray())
+    }
+
+    private fun savePhotoToExternalStorage(displayName: String, bmp: Bitmap): Boolean {
+        val imageCollection = sdk29AndUp {
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        } ?: MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.WIDTH, bmp.width)
+            put(MediaStore.Images.Media.HEIGHT, bmp.height)
+        }
+
+        return try {
+            contentResolver.insert(imageCollection, contentValues)?.also { uri ->
+                contentResolver.openOutputStream(uri).use { outputStream ->
+                    if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)){
+                        throw  IOException("Couldn't save bitmap")
+                    }
+                }
+            } ?: throw IOException("Couldn't create MediaStore entry")
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
         }
     }
 
     private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
         _newImageGallery.value = uri.toString()
     }
+
+
 }
 
 /**
@@ -65,7 +154,11 @@ class MainActivity : ComponentActivity() {
  * */
 @ExperimentalMaterial3Api
 @Composable
-private fun TaskApp(settingList: List<Any>, reloadComposable: () -> Unit, getImage: () -> Unit) {
+private fun TaskApp(
+    settingList: List<Any>,
+    reloadComposable: () -> Unit,
+    getUserImage: Pair<() -> Unit, String?>
+) {
 
     val darkSystem by remember { mutableStateOf(settingList[2] as Boolean) }
     val light by remember { mutableStateOf(settingList[3] as Boolean) }
@@ -79,7 +172,7 @@ private fun TaskApp(settingList: List<Any>, reloadComposable: () -> Unit, getIma
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation(reloadComposable = reloadComposable, getImage = getImage)
+            TaskAppNavigation(reloadComposable = reloadComposable, getUserImage = getUserImage)
         }
     }
 }
