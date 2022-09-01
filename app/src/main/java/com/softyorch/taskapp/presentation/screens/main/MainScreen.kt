@@ -60,7 +60,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     ) {
 
         RowInfoMain(text = "My Tasks", textSizes = textSizes.normalSize)
-        Spacer(modifier = Modifier.padding(8.dp))
+        Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
+
         RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
         FillLazyColumn(
             tasks = tasks,
@@ -71,7 +72,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         ) {
             navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
         }
-        Spacer(modifier = Modifier.padding(8.dp))
+        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
+
         RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
         FillLazyColumn(
             tasks = tasks,
@@ -82,6 +84,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         ) {
             navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
         }
+        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
     }
 }
 
