@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
+import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,9 +16,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -29,8 +31,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
@@ -45,7 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserDataScreen(
     navController: NavHostController,
-    getImage: () -> Unit
+    getUserImage: Pair<() -> Unit, String?>
 ) {
     Scaffold(
         topBar = {
@@ -59,200 +61,189 @@ fun UserDataScreen(
         ContentUserDataScreen(
             it = it,
             navController = navController,
-            getImage = getImage
+            getUserImage = getUserImage
         )
     }
 }
 //}
 
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun ContentUserDataScreen(
     it: PaddingValues,
     navController: NavHostController,
-    getImage: () -> Unit
+    getUserImage: Pair<() -> Unit, String?>
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
     val textSizes = viewModel.sizeSelectedOfUser()
-    val image: String by viewModel.image.observeAsState(initial = "")
-    val name: String by viewModel.name.observeAsState(initial = "")
-    val email: String by viewModel.email.observeAsState(initial = "")
-    val pass: String by viewModel.pass.observeAsState(initial = "")
-    val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-    val newImage = newImageGallery.observeAsState().value
+    if (isLoading) {
+        CircularIndicatorCustom(text = "Working...")
+    } else {
 
-    var confirmDialog by remember { mutableStateOf(false) }
-    var cancelDialog by remember { mutableStateOf(false) }
-    var logOutDialog by remember { mutableStateOf(false) }
+        val image: String by viewModel.image.observeAsState(initial = "")
+        val name: String by viewModel.name.observeAsState(initial = "")
+        val email: String by viewModel.email.observeAsState(initial = "")
+        val pass: String by viewModel.pass.observeAsState(initial = "")
+        val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        if (isLoading) CircularIndicatorCustom(text = "Working...")
+        var confirmDialog by remember { mutableStateOf(value = false) }
+        var cancelDialog by remember { mutableStateOf(value = false) }
+        var logOutDialog by remember { mutableStateOf(value = false) }
 
-        if (newImage != null) {
-            viewModel.saveUserImage(newImage)
-        }
-        AsyncImageDataScreen(image = image) { getImage() }
-        Spacer(modifier = Modifier.padding(top = 24.dp))
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
 
-            TextFieldCustomDataScreen(
-                text = name, label = "Name", textSizes = textSizes.normalSize,
-                icon = Icons.Rounded.Person
+            if (!getUserImage.second.isNullOrEmpty())
+                if (getUserImage.second!!.compareTo(image) != 0 && !isLoading)
+                    viewModel.onImageChange(getUserImage.second!!)
+
+            AsyncImageDataScreen(image = image) { getUserImage.first() }
+            Spacer(modifier = Modifier.padding(top = 24.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
             ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = it,
-                        email = email,
-                        pass = pass
-                    )
-                }
-            }
-            TextFieldCustomDataScreen(
-                text = email, label = "Email", textSizes = textSizes.normalSize,
-                icon = Icons.Rounded.Email,
-                capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Email
-            ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = name,
-                        email = it,
-                        pass = pass
-                    )
-                }
-            }
-            TextFieldCustomDataScreen(
-                text = pass, label = "Name", textSizes = textSizes.normalSize,
-                icon = Icons.Rounded.Key,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Go, password = true,
-                keyboardActions = KeyboardActions(
-                    onGo = {
-                        confirmDialog = true
+
+                TextFieldCustomDataScreen(
+                    text = name, label = "Name", textSizes = textSizes.normalSize,
+                    icon = Icons.Rounded.Person
+                ) {
+                    viewModel.viewModelScope.launch {
+                        viewModel.onDataChange(
+                            name = it,
+                            email = email,
+                            pass = pass
+                        )
                     }
-                )
-            ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = name,
-                        email = email,
-                        pass = it
+                }
+                TextFieldCustomDataScreen(
+                    text = email, label = "Email", textSizes = textSizes.normalSize,
+                    icon = Icons.Rounded.Email,
+                    capitalization = KeyboardCapitalization.None,
+                    keyboardType = KeyboardType.Email
+                ) {
+                    viewModel.viewModelScope.launch {
+                        viewModel.onDataChange(
+                            name = name,
+                            email = it,
+                            pass = pass
+                        )
+                    }
+                }
+                TextFieldCustomDataScreen(
+                    text = pass, label = "Name", textSizes = textSizes.normalSize,
+                    icon = Icons.Rounded.Key,
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Go, password = true,
+                    keyboardActions = KeyboardActions(
+                        onGo = {
+                            confirmDialog = true
+                        }
                     )
+                ) {
+                    viewModel.viewModelScope.launch {
+                        viewModel.onDataChange(
+                            name = name,
+                            email = email,
+                            pass = it
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ButtonCustomDataScreen(text = "Logout", primary = true) {
+                    logOutDialog = true
+                } //viewModel
+                Spacer(modifier = Modifier.padding(bottom = 4.dp))
+                ButtonCustomDataScreen(text = "Save", enable = saveEnabled, primary = true) {
+                    confirmDialog = true
+                }
+                ButtonCustomDataScreen(text = "Cancel", enable = saveEnabled) {
+                    cancelDialog = true
                 }
             }
         }
-        Spacer(modifier = Modifier.padding(top = 16.dp))
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+
+        if (logOutDialog) UserDataDialog(
+            title = "LogOut",
+            text = "Are you sure you want to log out?",
+            confirmButtonText = "Yes, I sure",
+            onDismissRequest = { logOutDialog = false },
+            onDismissButtonClick = { logOutDialog = false }
         ) {
-            ButtonCustomDataScreen(text = "Logout", primary = true) {
-                logOutDialog = true
-            } //viewModel
-            Spacer(modifier = Modifier.padding(bottom = 4.dp))
-            ButtonCustomDataScreen(text = "Save", enable = saveEnabled, primary = true) {
-                confirmDialog = true
+            viewModel.logOut()
+            logOutDialog = false
+            navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                navController.backQueue.clear()
             }
-            ButtonCustomDataScreen(text = "Cancel", enable = saveEnabled) {
-                cancelDialog = true
-            }
-        }
-    }
 
-    if (logOutDialog) UserDataDialog(
-        title = "LogOut",
-        text = "Are you sure you want to log out?",
-        confirmButtonText = "Yes, I sure",
-        onDismissRequest = { logOutDialog = false },
-        onDismissButtonClick = { logOutDialog = false }
-    ) {
-        viewModel.logOut()
-        logOutDialog = false
-        navController.navigate(AppScreensRoutes.SplashScreen.route) {
-            navController.backQueue.clear()
         }
 
-    }
+        if (confirmDialog) UserDataDialog(
+            title = "Save user",
+            text = "Are you sure about making the changes?",
+            confirmButtonText = "Yes, modify it",
+            onDismissRequest = { confirmDialog = false },
+            onDismissButtonClick = { confirmDialog = false }
+        ) {
+            viewModel.viewModelScope.launch { viewModel.onUpdateData() }
+            confirmDialog = false
+        }
 
-    if (confirmDialog) UserDataDialog(
-        title = "Save user",
-        text = "Are you sure about making the changes?",
-        confirmButtonText = "Yes, modify it",
-        onDismissRequest = { confirmDialog = false },
-        onDismissButtonClick = { confirmDialog = false }
-    ) {
-        viewModel.viewModelScope.launch { viewModel.onUpdateData() }
-        confirmDialog = false
-    }
-
-    if (cancelDialog) UserDataDialog(
-        title = "Cancel change User",
-        text = "Are you sure not to make any changes?",
-        confirmButtonText = "yes, not make it",
-        onDismissRequest = { cancelDialog = false },
-        onDismissButtonClick = { cancelDialog = false }
-    ) {
-        navController.popBackStack()
+        if (cancelDialog) UserDataDialog(
+            title = "Cancel change User",
+            text = "Are you sure not to make any changes?",
+            confirmButtonText = "yes, not make it",
+            onDismissRequest = { cancelDialog = false },
+            onDismissButtonClick = { cancelDialog = false }
+        ) {
+            navController.popBackStack()
+        }
     }
 }
 
 @Composable
 private fun AsyncImageDataScreen(image: String, getImage: () -> Unit) {
-    var state by remember { mutableStateOf(value = "") }
-    var error by remember { mutableStateOf(value = false) }
 
-    Text(text = state, style = TextStyle(color = Color.Red))
-    if (!error) {
-        AsyncImage(
-            model = image,
-            contentDescription = "Image of user",
-            placeholder = painterResource(R.drawable.ic_person_24),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(200.dp)
-                .clickable {
-                    getImage()
-                }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = MaterialTheme.shapes.large
-                ),
-            onLoading = {
-                state = "..loading"
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(image)
+            .error(Drawable.createFromPath(image))
+            .crossfade(true)
+            .crossfade(1000)
+            .build(),
+        contentDescription = "Image of user",
+        placeholder = painterResource(R.drawable.ic_person_24),
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .size(200.dp)
+            .clickable {
+                getImage()
+            }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = MaterialTheme.shapes.large
+            ),
+        onLoading = {
+        },
+        onSuccess = {
+        },
+        onError = {
 
-                        },
-            onSuccess = { state = "ok" },
-            onError = {
-                error = true
-                state = "error"
-            },
-        )
-    } else {
-        state = "Load Icon"
-        Icon(
-            imageVector = Icons.Rounded.Person,
-            contentDescription = "Image of user",
-            modifier = Modifier
-                .size(200.dp)
-                .clickable {
-                    getImage()
-                }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-                .background(
-                    color = MaterialTheme.colorScheme.secondary,
-                    shape = MaterialTheme.shapes.large
-                )
-        )
-    }
+        },
+    )
 }
 
 @Composable

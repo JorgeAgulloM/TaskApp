@@ -17,11 +17,13 @@ import com.softyorch.taskapp.presentation.screens.settings.SettingsScreen
 import com.softyorch.taskapp.presentation.screens.splash.SplashScreen
 import com.softyorch.taskapp.presentation.screens.splash.SplashViewModel
 import com.softyorch.taskapp.presentation.screens.userdata.UserDataScreen
-import com.softyorch.taskapp.presentation.screens.userdata.UserDataViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(reloadComposable: () -> Unit, getImage: () -> Unit) {
+fun TaskAppNavigation(
+    reloadComposable: () -> Unit,
+    getUserImage: Pair<() -> Unit, String?>
+) {
     val navController = rememberNavController()
     val mainViewModel = hiltViewModel<MainViewModel>()
 
@@ -59,22 +61,7 @@ fun TaskAppNavigation(reloadComposable: () -> Unit, getImage: () -> Unit) {
             SettingsScreen(navController = navController, reloadComposable = reloadComposable)
         }
         composable(route = AppScreensRoutes.UserDataScreen.route) {
-            UserDataScreen(navController = navController, getImage = getImage)
+            UserDataScreen(navController = navController, getUserImage = getUserImage)
         }
-        /*composable(route = "${AppScreensRoutes.UserDataScreen.route}/{id}", arguments = listOf(
-            navArgument(name = "id") {
-                type = NavType.StringType
-            }
-        )
-        ) { navBack ->
-            navBack.arguments?.getString("id").let { id ->
-                UserDataScreen(
-                    navController = navController,
-                    viewModel = userDataViewModel,
-                    getImage = getImage,
-                    reloadComposable = reloadComposable
-                )
-            }
-        }*/
     }
 }

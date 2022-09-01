@@ -14,6 +14,7 @@ import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import com.softyorch.taskapp.utils.StandardizedSizes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
@@ -25,7 +26,7 @@ class UserDataViewModel @Inject constructor(
     private val stateLogin: StateLogin
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
-    //val userDataActive: LiveData<UserData> = _userDataActive
+    val userDataActive: LiveData<UserData> = _userDataActive
 
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
@@ -47,23 +48,26 @@ class UserDataViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        _userDataActive.value = getUserActiveSharedPreferences()
-        Log.d("DATALOAD", "Init._userDataActive -> ${_userDataActive.value}")
-
-        while (_userDataActive.value == null){
-            _isLoading.value = true
-        }
-
-        loadData()
-        _isLoading.value = false
+        viewModelScope.launch { loadData() }
     }
 
-    fun loadData() {
-        Log.d("DATALOAD", "Init.loadData -> ${_userDataActive.value}")
-        _image.value = _userDataActive.value?.userPicture ?: ""
-        _name.value = _userDataActive.value?.username ?: ""
-        _email.value = _userDataActive.value?.userEmail ?: ""
-        _pass.value = _userDataActive.value?.userPass ?: ""
+    private suspend fun loadData() {
+        getUserActiveSharedPreferences().let { data ->
+            viewModelScope.launch(Dispatchers.IO) {
+                data?.userEmail.let {email ->
+                    repository.getUserDataEmail(email = email!!).let { user ->
+                        _userDataActive.postValue(user.data)
+                        _image.postValue(user.data?.userPicture ?: "")
+                        _name.postValue(user.data?.username ?: "")
+                        _email.postValue(user.data?.userEmail ?: "")
+                        _pass.postValue(user.data?.userPass ?: "")
+                    }
+                }
+            }
+        }.let {
+            it.join()
+            _isLoading.postValue(false)
+        }
     }
 
     suspend fun onDataChange(name: String, email: String, pass: String) {
@@ -75,9 +79,14 @@ class UserDataViewModel @Inject constructor(
                 isValidPass(pass = pass)
     }
 
-    fun saveUserImage(image: String) {
-        _image.value = image
-        _saveEnabled.value = true
+    fun onImageChange(image: String) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            _image.value = image
+            _saveEnabled.value = true
+        }.let {
+            _isLoading.postValue(false)
+        }
     }
 
     private fun isValidName(name: String): Boolean = name.length >= 3
@@ -96,13 +105,16 @@ class UserDataViewModel @Inject constructor(
             data.userEmail = email.value!!
             data.userPass = pass.value!!
             data.userPicture = image.value!!.toString()
-            Log.d("DATALOAD", "Init.loadData.image -> ${image.value!!}")
-            Log.d("DATALOAD", "Init.loadData.imageToUri() -> ${image.value!!.toString()}")
-            updateUserData(userData = data)
-            delay(500)
-            _isLoading.value = false
-            return true
+            viewModelScope.launch {
+                updateUserData(userData = data)
+            }.let {
+                it.join()
+                _isLoading.value = false
+                _saveEnabled.postValue(false)
+                return true
+            }
         }
+
         return false
     }
 
@@ -114,9 +126,14 @@ class UserDataViewModel @Inject constructor(
     private suspend fun getUserDataEmail(email: String): Resource<UserData> =
         repository.getUserDataEmail(email = email)
 
-    private fun updateUserData(userData: UserData) = viewModelScope.launch {
-        repository.updateUserData(userData = userData)
-        stateLogin.refreshData(userData = userData)
+    private suspend fun updateUserData(userData: UserData) {
+        viewModelScope.launch {
+            repository.updateUserData(userData = userData)
+        }.let {
+            it.join()
+            stateLogin.refreshData(userData = userData)
+        }
+
     }
 
 /*    fun deleteUserData(userData: UserData) = viewModelScope.launch {
