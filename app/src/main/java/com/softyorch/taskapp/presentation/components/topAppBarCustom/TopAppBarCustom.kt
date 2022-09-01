@@ -1,23 +1,34 @@
 package com.softyorch.taskapp.presentation.components.topAppBarCustom
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.softyorch.taskapp.R
+import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.theme.LightMode90t
+import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +40,7 @@ fun TopAppBarCustom(
 ) {
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
-    val userPicture = viewModel.getUserPicture()
+    val userPicture: String by newImageGallery.observeAsState(initial = "")//viewModel.getUserPicture()
     val textSizes = viewModel.sizeSelectedOfUser()
 
     SmallTopAppBar(
@@ -70,8 +81,8 @@ fun TopAppBarCustom(
                 navController.navigate(AppScreensRoutes.SettingsScreen.route)
             }
 
-            if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABC(
-                imageVector = Icons.Rounded.SupervisedUserCircle, text = "User data",
+            if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABCUser(
+                image = userPicture, text = "User data",
             ) {
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
@@ -104,6 +115,41 @@ private fun IconButtonTABC(
             imageVector = imageVector,
             contentDescription = text,
             tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun IconButtonTABCUser(
+    image: String?,
+    text: String,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = { onClick() }) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(image)
+                .error(R.drawable.ic_error_outline_24)
+                .build(),
+            contentDescription = "Image of user",
+            placeholder = painterResource(R.drawable.ic_person_24),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.large
+                ),
+            onLoading = {
+            },
+            onSuccess = {
+            },
+            onError = {
+                /*coroutineScope.launch {
+                    delay(2000)
+                    reload(image)
+                }*/
+            },
         )
     }
 }
