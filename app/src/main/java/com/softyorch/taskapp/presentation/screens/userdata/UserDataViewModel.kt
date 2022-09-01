@@ -1,8 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,6 +43,13 @@ class UserDataViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val  _savingImage = MutableLiveData<Boolean>()
+    val savingImage: LiveData<Boolean> = _savingImage
+
+/*    private val _mainImage: MutableLiveData<String?> =
+        MutableLiveData<String?>(newImageGallery.value)
+    val mainImage: LiveData<String?> = _mainImage*/
+
     init {
         _isLoading.value = true
         viewModelScope.launch { loadData() }
@@ -66,6 +70,7 @@ class UserDataViewModel @Inject constructor(
             }
         }.let {
             it.join()
+            delay(3000)
             _isLoading.postValue(false)
         }
     }
@@ -80,6 +85,7 @@ class UserDataViewModel @Inject constructor(
     }
 
     fun onImageChange(image: String) {
+        _savingImage.value = true
         _isLoading.value = true
         viewModelScope.launch {
             _image.value = image
@@ -87,6 +93,20 @@ class UserDataViewModel @Inject constructor(
         }.let {
             _isLoading.postValue(false)
         }
+    }
+
+    fun reloadImage(image: String){
+        viewModelScope.launch{
+            _savingImage.value = true
+            _image.value = ""
+            delay(500)
+            _image.value = image
+            _savingImage.value = false
+        }
+    }
+
+    fun resetSavingImage() {
+        _savingImage.value = false
     }
 
     private fun isValidName(name: String): Boolean = name.length >= 3
@@ -104,7 +124,7 @@ class UserDataViewModel @Inject constructor(
             data.username = name.value!!
             data.userEmail = email.value!!
             data.userPass = pass.value!!
-            data.userPicture = image.value!!.toString()
+            data.userPicture = image.value!!
             viewModelScope.launch {
                 updateUserData(userData = data)
             }.let {

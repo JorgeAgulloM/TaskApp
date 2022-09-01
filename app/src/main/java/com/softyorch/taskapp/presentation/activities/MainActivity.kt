@@ -32,11 +32,9 @@ import com.softyorch.taskapp.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.util.jar.Manifest
 
-
-private val _newImageGallery = MutableLiveData<String?>(null)
-val newImageGallery: LiveData<String?> = _newImageGallery
+private val _newImageGallery = MutableLiveData<String>()
+val newImageGallery: LiveData<String> = _newImageGallery
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
@@ -83,6 +81,10 @@ class MainActivity : ComponentActivity() {
                 getUserImage = getUserImage
             )
         }
+    }
+
+    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
+        if (uri != null) _newImageGallery.value = uri.toString()
     }
 
     private fun updateOrRequestPermissions() {
@@ -133,10 +135,6 @@ class MainActivity : ComponentActivity() {
             e.printStackTrace()
             false
         }
-    }
-
-    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
-        _newImageGallery.value = uri.toString()
     }
 
 

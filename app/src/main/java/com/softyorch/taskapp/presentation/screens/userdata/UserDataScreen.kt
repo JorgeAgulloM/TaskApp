@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,6 +33,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
@@ -41,7 +42,9 @@ import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 @ExperimentalMaterial3Api
 @Composable
@@ -68,6 +71,7 @@ fun UserDataScreen(
 //}
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun ContentUserDataScreen(
@@ -79,11 +83,21 @@ private fun ContentUserDataScreen(
     val textSizes = viewModel.sizeSelectedOfUser()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-    if (isLoading) {
+    if (isLoading)
         CircularIndicatorCustom(text = "Working...")
-    } else {
+    //} else {
 
+        val mainImage: String by newImageGallery.observeAsState(initial = "")
+        val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
         val image: String by viewModel.image.observeAsState(initial = "")
+        mainImage.let { new ->
+            image.let {old ->
+                when (new != "" && old != new) {
+                    true -> if (!savingImage) viewModel.onImageChange(new)
+                    false -> if (savingImage) viewModel.resetSavingImage()
+                }
+            }
+        }
         val name: String by viewModel.name.observeAsState(initial = "")
         val email: String by viewModel.email.observeAsState(initial = "")
         val pass: String by viewModel.pass.observeAsState(initial = "")
@@ -99,11 +113,10 @@ private fun ContentUserDataScreen(
             verticalArrangement = Arrangement.Top
         ) {
 
-            if (!getUserImage.second.isNullOrEmpty())
-                if (getUserImage.second!!.compareTo(image) != 0 && !isLoading)
-                    viewModel.onImageChange(getUserImage.second!!)
-
-            AsyncImageDataScreen(image = image) { getUserImage.first() }
+            AsyncImageDataScreen(
+                image = image,
+                reload = viewModel::reloadImage
+            ) { getUserImage.first() }
             Spacer(modifier = Modifier.padding(top = 24.dp))
             Column(
                 modifier = Modifier
@@ -211,18 +224,22 @@ private fun ContentUserDataScreen(
         ) {
             navController.popBackStack()
         }
-    }
+
 }
 
 @Composable
-private fun AsyncImageDataScreen(image: String, getImage: () -> Unit) {
-
+private fun AsyncImageDataScreen(
+    image: String,
+    reload: KFunction1<String, Unit>,
+    getImage: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(image)
-            .error(Drawable.createFromPath(image))
+            .error(R.drawable.ic_error_outline_24)
             .crossfade(true)
-            .crossfade(1000)
+            .crossfade(500)
             .build(),
         contentDescription = "Image of user",
         placeholder = painterResource(R.drawable.ic_person_24),
@@ -241,7 +258,10 @@ private fun AsyncImageDataScreen(image: String, getImage: () -> Unit) {
         onSuccess = {
         },
         onError = {
-
+            /*coroutineScope.launch {
+                delay(2000)
+                reload(image)
+            }*/
         },
     )
 }
