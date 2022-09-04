@@ -23,7 +23,7 @@ fun CheckCustom(
 ) {
 
     Row(
-        modifier = Modifier.fillMaxWidth(1f).padding(end = 8.dp).height(30.dp).clickable {
+        modifier = Modifier.fillMaxWidth(1f).padding(end = 8.dp).height(35.dp).clickable {
             onClick.invoke()
         },
         verticalAlignment = Alignment.CenterVertically,
