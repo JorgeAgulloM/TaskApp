@@ -69,7 +69,6 @@ class UserDataViewModel @Inject constructor(
             }
         }.let {
             it.join()
-            delay(3000)
             _isLoading.postValue(false)
         }
     }
