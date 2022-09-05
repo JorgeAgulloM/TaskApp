@@ -50,29 +50,27 @@ class SplashViewModel @Inject constructor(
                 logInWithRememberMe(
                     email = userData.userEmail,
                     pass = userData.userPass
-                ).let { data ->
-                    data.data?.let { user ->
-                        if (user.rememberMe) {
-                            val timeWeekInMillis =
-                                timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
-                            user.lastLoginDate?.time?.let { timeDiff ->
-                                Date.from(Instant.now()).time.minus(timeDiff)
-                                timeDiff.compareTo(timeWeekInMillis).let {
-                                    when (it) {
-                                        -1 -> {
-                                            stateLogin.logIn(userData = user)
-                                            return true
-                                        }
-                                        1 -> {
-                                            return false
-                                        }
-                                        else -> {
-                                            return false
-                                        }
-                                    }
-                                }
-                            }
+                ).data?.let { user ->
+                    return isAutoLogin(user = user)
+                }
+            }
+        }
+        return false
+    }
+
+    private fun isAutoLogin(user: UserData): Boolean {
+        if (user.rememberMe) {
+            val timeWeekInMillis =
+                timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
+            user.lastLoginDate?.time?.let { autoLoginLimit ->
+                val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
+                timeWeekInMillis.compareTo(dif).let {
+                    when (it) {
+                        1 -> {
+                            stateLogin.logIn(userData = user)
+                            return true
                         }
+                        else -> return false
                     }
                 }
             }
