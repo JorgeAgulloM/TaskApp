@@ -40,7 +40,7 @@ fun TopAppBarCustom(
 ) {
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
-    val userPicture: String by newImageGallery.observeAsState(initial = "")//viewModel.getUserPicture()
+    val userPicture: String by viewModel.imageUser.observeAsState(initial = "")
     val textSizes = viewModel.sizeSelectedOfUser()
 
     SmallTopAppBar(
@@ -57,16 +57,20 @@ fun TopAppBarCustom(
         navigationIcon = {
             if (!isMainScreen) IconButtonTABC(
                 imageVector = Icons.Rounded.ArrowBack,
-                text = "Go Back",
+                text = "Go To Home",
             ) {
-                navController.navigate(AppScreensRoutes.MainScreen.route)
+                navController.navigate(AppScreensRoutes.MainScreen.route){
+                    navController.backQueue.clear()
+                }
             }
         },
         actions = {
             if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.Home, text = "Go Home"
             ) {
-                navController.navigate(AppScreensRoutes.MainScreen.route)
+                navController.navigate(AppScreensRoutes.MainScreen.route){
+                    navController.backQueue.clear()
+                }
             }
 
             if (nameScreen != AppScreens.HistoryScreen.name) IconButtonTABC(
