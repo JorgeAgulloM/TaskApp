@@ -62,8 +62,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     val textSizes = viewModel.sizeSelectedOfUser()
 
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(top = it.calculateTopPadding() + 8.dp, start = 8.dp, end = 8.dp),
+        modifier = Modifier.fillMaxSize(1f)
+            .padding(top = it.calculateTopPadding() + 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
         verticalArrangement = Arrangement.Top
     ) {
 
@@ -77,6 +77,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         ) {
             RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
             FillLazyColumn(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 280.dp),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = "Añade una nueva tarea...",
@@ -85,23 +86,27 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
+            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
-        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
 
-
-        RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
-        FillLazyColumn(
-            tasks = tasks,
-            updateTask = viewModel::updateTask,
-            textSizes = textSizes.normalSize,
-            text = "Aún no has terminado ninguna tarea",
-            initStateCheck = true,
-        ) {
-            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+        Column(
+            //modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ){
+            RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
+            FillLazyColumn(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f),
+                tasks = tasks,
+                updateTask = viewModel::updateTask,
+                textSizes = textSizes.normalSize,
+                text = "Aún no has terminado ninguna tarea",
+                initStateCheck = true,
+            ) {
+                navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+            }
+            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
-        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
-
-
     }
 }
 
@@ -113,6 +118,7 @@ private fun RowInfoMain(text: String, textSizes: TextUnit) {
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumn(
+    modifier: Modifier,
     tasks: List<Task>,
     updateTask: KSuspendFunction1<Task, Unit>,
     textSizes: TextUnit,
@@ -128,7 +134,7 @@ private fun FillLazyColumn(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(1f).heightIn(min = 20.dp, max = 280.dp),
+                modifier = modifier,
                 state = lazyState,
                 userScrollEnabled = true,
                 flingBehavior = ScrollableDefaults.flingBehavior()
