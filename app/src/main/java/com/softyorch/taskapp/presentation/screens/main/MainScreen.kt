@@ -1,12 +1,15 @@
 package com.softyorch.taskapp.presentation.screens.main
 
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.ScrollScope
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -68,7 +71,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
-            modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
+            //modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -118,29 +121,59 @@ private fun FillLazyColumn(
     onClick: (UUID) -> Unit
 ) {
 
-
+    val lazyState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     if (tasks.any { it.checkState == initStateCheck })
-        LazyColumn(
-            state = LazyListState(
-                firstVisibleItemIndex = 0,
-                firstVisibleItemScrollOffset = 7
-            ),
-            userScrollEnabled = true,
-            flingBehavior = ScrollableDefaults.flingBehavior()
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            items(tasks.filter { it.checkState == initStateCheck }) { task ->
-                CheckCustomMain(
-                    task = task, textSizes = textSizes, onCheckedChange = {
-                        task.checkState = it
-                        task.finishDate = if (it) Date.from(Instant.now()) else null
-                        coroutineScope.launch {
-                            updateTask(task)
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(1f).heightIn(min = 20.dp, max = 280.dp),
+                state = lazyState,
+                userScrollEnabled = true,
+                flingBehavior = ScrollableDefaults.flingBehavior()
+            ) {
+                items(tasks.filter { it.checkState == initStateCheck }) { task ->
+                    CheckCustomMain(
+                        task = task, textSizes = textSizes, onCheckedChange = {
+                            task.checkState = it
+                            task.finishDate = if (it) Date.from(Instant.now()) else null
+                            coroutineScope.launch {
+                                updateTask(task)
+                            }
+                        }
+                    ) {
+                        onClick(task.id)
+                    }
+                }
+            }
+
+            val showArrow by remember {
+                derivedStateOf {
+                    lazyState.layoutInfo.visibleItemsInfo.count() < tasks.filter {
+                        it.checkState == initStateCheck
+                    }.size
+                }
+            }
+
+            if (showArrow) {
+                val isLastItem by remember {
+                    derivedStateOf {
+                        lazyState.firstVisibleItemIndex ==
+                                lazyState.layoutInfo.totalItemsCount -
+                                lazyState.layoutInfo.visibleItemsInfo.count()
+                    }
+                }
+
+                Icon(
+                    imageVector = if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = "Go to Up",
+                    modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
+                        if (isLastItem) {
+                            coroutineScope.launch { lazyState.animateScrollToItem(0) }
                         }
                     }
-                ) {
-                    onClick(task.id)
-                }
+                )
             }
         } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
 }
