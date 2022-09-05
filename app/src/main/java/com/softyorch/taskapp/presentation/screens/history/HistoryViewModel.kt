@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.domain.repository.TaskRepository
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,5 +34,4 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -70,7 +69,5 @@ class SettingsViewModel @Inject constructor(
         repository.updateUserData(userData = userData)
 
     private fun stateLogIn(userData: UserData) = stateLogin.logIn(userData = userData)
-
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }
 

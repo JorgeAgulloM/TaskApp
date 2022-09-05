@@ -24,8 +24,6 @@ fun SwitchCustom(
     onCheckedChange: () -> Unit
 ) {
 
-    val viewModel = hiltViewModel<SwitchCustomViewModel>()
-    val textSizes = viewModel.sizeSelectedOfUser()
     var stateSwitch by rememberSaveable { mutableStateOf(checked) }
 
     Row(
@@ -60,8 +58,7 @@ fun SwitchCustom(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = text,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = textSizes.normalSize
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

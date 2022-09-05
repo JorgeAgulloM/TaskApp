@@ -13,14 +13,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TextCustom(
     text: String,
-    textSizes: TextUnit,
     description: Boolean = false
 ) {
     Text(
         modifier = Modifier.padding(4.dp),
         text = text,
         color = MaterialTheme.colorScheme.onSurface,
-        fontSize = textSizes,
+        style = MaterialTheme.typography.bodyLarge,
         fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
     )
 }

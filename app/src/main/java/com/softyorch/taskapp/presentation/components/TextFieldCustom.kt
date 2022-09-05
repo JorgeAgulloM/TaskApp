@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.TextUnit
@@ -28,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.theme.LightMode90t
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.StandardizedSizes
+
 
 //TextField V1
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +36,6 @@ fun textFieldCustom(
     text: String = "",
     label: String = "",
     placeholder: String = "",
-    textSizes: TextUnit,
     icon: ImageVector,
     contentDescription: String,
     keyboardOptions: KeyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
@@ -79,7 +77,7 @@ fun textFieldCustom(
                 elevation = ELEVATION_DP, shape = personalizedShape
             ),
         readOnly = readOnly,
-        textStyle = TextStyle(color = LightMode90t, fontSize = textSizes),
+        textStyle = MaterialTheme.typography.bodyLarge,
         label = { Text(text = label) },
         placeholder = { Text(text = placeholder) },
         leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },

@@ -22,7 +22,6 @@ import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
-import com.softyorch.taskapp.utils.StandardizedSizes
 import java.time.Instant
 import java.util.*
 
@@ -57,8 +56,6 @@ private fun Content(
     id: String
 ) {
 
-    val textSizes = viewModel.sizeSelectedOfUser()
-
     produceState<Resource<Task>>(initialValue = Resource.Loading()) {
         value = viewModel.getTaskId(id = id)
     }.value
@@ -72,11 +69,11 @@ private fun Content(
                             end = 16.dp
                         )
                 ) {
-                    RowInfoDetail(text = task.title, textSizes = textSizes)
-                    TextDescriptionDetails(task, textSizes)
+                    RowInfoDetail(text = task.title)
+                    TextDescriptionDetails(task = task)
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfoDetail(text = "Details", textSizes = textSizes)
-                    ShowTaskDetails(task = task, textSizes = textSizes)
+                    RowInfoDetail(text = "Details")
+                    ShowTaskDetails(task = task)
 
                     Column(
                         modifier = Modifier
@@ -105,7 +102,7 @@ private fun Content(
                         ButtonCustomDetails(text = "Delete") { openDeleteDialog = true }
 
                         if (openEditDialog) openEditDialog = newTaskDetails(
-                            viewModel = viewModel, task = task, textSizes = textSizes
+                            viewModel = viewModel, task = task
                         )
 
                         if (openCompleteDialog) AlertDialog(onDismissRequest = {
@@ -120,8 +117,7 @@ private fun Content(
                             },
                             text = {
                                 TextDetails(
-                                    text = "Great, one less task. On to the next one...",
-                                    fontSize = textSizes.normalSize
+                                    text = "Great, one less task. On to the next one..."
                                 )
                             }
                         )
@@ -144,8 +140,7 @@ private fun Content(
                             },
                             text = {
                                 TextDetails(
-                                    text = "Are you sure you want to eliminate the task?",
-                                    fontSize = textSizes.normalSize
+                                    text = "Are you sure you want to eliminate the task?"
                                 )
                             },
                         )
@@ -160,12 +155,10 @@ private fun Content(
 private fun newTaskDetails(
     viewModel: DetailScreenViewModel,
     task: Task,
-    textSizes: StandardizedSizes
 ): Boolean = newTask(
     addOrEditTaskFunc = viewModel::updateTask,
     userName = task.author,
-    taskToEdit = task,
-    textSizes = textSizes
+    taskToEdit = task
 )
 
 @Composable
@@ -183,45 +176,40 @@ private fun ButtonCustomDetails(
 
 @Composable
 private fun RowInfoDetail(
-    text: String,
-    textSizes: StandardizedSizes
+    text: String
 ) {
     RowInfo(
         text = text,
-        paddingStart = 24.dp,
-        textSizes = textSizes.normalSize
+        paddingStart = 24.dp
     )
 }
 
 @Composable
 private fun TextDescriptionDetails(
-    task: Task,
-    textSizes: StandardizedSizes
+    task: Task
 ) {
     Text(
         text = task.description,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontSize = textSizes.normalSize
+        color = MaterialTheme.colorScheme.onSurface
     )
 }
 
 @Composable
-private fun ShowTaskDetails(task: Task, textSizes: StandardizedSizes) {
+private fun ShowTaskDetails(task: Task) {
     ShowTask(
         author = task.author,
         date = task.entryDate.toStringFormatted(),
         completedDate = task.finishDate?.toStringFormatted()
             ?: "Unknown",
-        textSizes = textSizes,
         paddingStart = 0.dp
     )
 }
 
 @Composable
-private fun TextDetails(text: String, fontSize: TextUnit) {
+private fun TextDetails(text: String) {
     Text(
         text = text,
         textAlign = TextAlign.Center,
-        fontSize = fontSize
+        style = MaterialTheme.typography.bodyLarge
     )
 }

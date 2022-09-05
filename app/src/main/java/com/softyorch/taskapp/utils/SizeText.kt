@@ -1,5 +1,8 @@
 package com.softyorch.taskapp.utils
-
+/**
+ *
+ * DEPRECATED FOR USE MATERIAL 3
+ *
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.softyorch.taskapp.utils.SizeText.*
@@ -25,9 +28,9 @@ sealed class SizeText {
         val size: TextUnit = 20.sp, val sizeText: String = "Higher size"
     ) : SizeText()
 
-/*    data class ExtraHighSizeText(
+   data class ExtraHighSizeText(
         val size: TextUnit = 22.sp, val sizeText: String = "Extra high size"
-    ) : SizeText()*/
+    ) : SizeText()
 }
 
 class StandardizedSizes(selector: Int) {
@@ -46,7 +49,7 @@ fun sizeTextUnits(selector: Int): TextUnit =
         2 -> NormalSizeText().size
         3 -> HighSizeText().size
         4 -> HigherSizeText().size
-        //5 -> ExtraHighSizeText().size
+        5 -> ExtraHighSizeText().size
         else -> { MiddleSizeText().size}
     }
 
@@ -57,8 +60,8 @@ fun sizeTextName(selector: Int): String =
         2 -> NormalSizeText().sizeText
         3 -> HighSizeText().sizeText
         4 -> HigherSizeText().sizeText
-        //5 -> ExtraHighSizeText().sizeText
+        5 -> ExtraHighSizeText().sizeText
         else -> { MiddleSizeText().sizeText }
     }
 
-
+ */

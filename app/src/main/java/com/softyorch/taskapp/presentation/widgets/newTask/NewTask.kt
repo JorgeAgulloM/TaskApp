@@ -23,7 +23,6 @@ import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
 import java.time.Instant
@@ -34,8 +33,7 @@ import kotlin.reflect.KFunction1
 fun newTask(
     addOrEditTaskFunc: KFunction1<Task, Job>,
     userName: String,
-    taskToEdit: Task?,
-    textSizes: StandardizedSizes
+    taskToEdit: Task?
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
@@ -79,16 +77,15 @@ fun newTask(
 
                         ShowTaskNewTask(
                             userName = userName, dateFormatted = dateCreatedFormatted,
-                            dateCompletedFormatted = dateCompletedFormatted, textSizes = textSizes
+                            dateCompletedFormatted = dateCompletedFormatted
                         )
-                        RowInfoNewTask(text = "Name of task: ", textSizes = textSizes.normalSize)
-                        TextFieldCustomNewTaskName(text = title, textSizes = textSizes.normalSize) {
+                        RowInfoNewTask(text = "Name of task: ")
+                        TextFieldCustomNewTaskName(text = title) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
-                        RowInfoNewTask(text = "Task description: ", textSizes = textSizes.normalSize)
+                        RowInfoNewTask(text = "Task description: ")
                         TextFieldCustomNewTaskDescription(
                             text = description,
-                            textSizes = textSizes.normalSize,
                             keyboardActions = KeyboardActions(
                                 onGo = {
                                     /**Revisar esto, duplica el código*/
@@ -165,14 +162,12 @@ private fun ButtonCustomNewTask(
 @Composable
 private fun TextFieldCustomNewTaskName(
     text: String,
-    textSizes: TextUnit,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
         text = text,
         label = "name",
         placeholder = "Escribe tu name",
-        textSizes = textSizes,
         icon = Icons.Rounded.Title,
         contentDescription = "name",
         singleLine = true,
@@ -184,7 +179,6 @@ private fun TextFieldCustomNewTaskName(
 @Composable
 private fun TextFieldCustomNewTaskDescription(
     text: String,
-    textSizes: TextUnit,
     keyboardActions: KeyboardActions,
     onCheckedChange: (String) -> Unit
 ) {
@@ -192,7 +186,6 @@ private fun TextFieldCustomNewTaskDescription(
         text = text,
         label = "description",
         placeholder = "Escribe una description",
-        textSizes = textSizes,
         icon = Icons.Rounded.Description,
         contentDescription = "description",
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
@@ -205,11 +198,10 @@ private fun TextFieldCustomNewTaskDescription(
 }
 
 @Composable
-private fun RowInfoNewTask(text: String, textSizes: TextUnit) {
+private fun RowInfoNewTask(text: String) {
     RowInfo(
         text = text,
-        paddingStart = 32.dp,
-        textSizes = textSizes
+        paddingStart = 32.dp
     )
 }
 
@@ -217,13 +209,11 @@ private fun RowInfoNewTask(text: String, textSizes: TextUnit) {
 private fun ShowTaskNewTask(
     userName: String,
     dateFormatted: String,
-    dateCompletedFormatted: String,
-    textSizes: StandardizedSizes
+    dateCompletedFormatted: String
 ) {
     ShowTask(
         author = userName,
         date = dateFormatted,
-        completedDate = dateCompletedFormatted,
-        textSizes = textSizes
+        completedDate = dateCompletedFormatted
     )
 }

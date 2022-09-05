@@ -15,16 +15,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.theme.LightMode90t
@@ -41,7 +37,6 @@ fun TopAppBarCustom(
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
     val userPicture: String by viewModel.imageUser.observeAsState(initial = "")
-    val textSizes = viewModel.sizeSelectedOfUser()
 
     SmallTopAppBar(
         modifier = Modifier.shadow(
@@ -51,7 +46,7 @@ fun TopAppBarCustom(
             )
         ),
         title = {
-            TextTABC(title = title, textSize = textSizes.largeSize)
+            TextTABC(title = title)
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.secondary),
         navigationIcon = {
@@ -86,7 +81,7 @@ fun TopAppBarCustom(
             }
 
             if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABCUser(
-                image = userPicture, text = "User data",
+                image = userPicture
             ) {
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
@@ -96,16 +91,12 @@ fun TopAppBarCustom(
 
 @Composable
 private fun TextTABC(
-    title: String,
-    textSize: TextUnit
+    title: String
 ) {
     Text(
         text = title,
         color = LightMode90t,
-        style = TextStyle(
-            fontWeight = FontWeight.Medium,
-            fontSize = textSize
-        ),
+        style = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.padding(start = 4.dp)
     )
 }
@@ -126,7 +117,6 @@ private fun IconButtonTABC(
 @Composable
 private fun IconButtonTABCUser(
     image: String?,
-    text: String,
     onClick: () -> Unit
 ) {
     IconButton(onClick = { onClick() }) {

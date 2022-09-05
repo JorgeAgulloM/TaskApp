@@ -9,7 +9,6 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -157,6 +156,5 @@ class LoginViewModel @Inject constructor(
      * stateLogin
      */
 
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }
 

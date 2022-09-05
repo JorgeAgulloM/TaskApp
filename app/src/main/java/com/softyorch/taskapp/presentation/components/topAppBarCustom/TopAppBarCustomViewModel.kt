@@ -3,7 +3,6 @@ package com.softyorch.taskapp.presentation.components.topAppBarCustom
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,6 +19,4 @@ class TopAppBarCustomViewModel @Inject constructor(
     }
 
     private fun getUserPicture(): String? = stateLogin.userDataActive?.userPicture
-
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

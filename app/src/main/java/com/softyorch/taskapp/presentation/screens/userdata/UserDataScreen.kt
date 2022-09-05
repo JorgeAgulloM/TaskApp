@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,7 +24,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,7 +40,6 @@ import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
 
@@ -68,10 +65,8 @@ fun UserDataScreen(
         )
     }
 }
-//}
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun ContentUserDataScreen(
@@ -80,12 +75,10 @@ private fun ContentUserDataScreen(
     getUserImage: Pair<() -> Unit, String?>
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
-    val textSizes = viewModel.sizeSelectedOfUser()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
     if (isLoading)
         CircularIndicatorCustom(text = "Working...")
-    //} else {
 
         val mainImage: String by newImageGallery.observeAsState(initial = "")
         val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
@@ -113,10 +106,7 @@ private fun ContentUserDataScreen(
             verticalArrangement = Arrangement.Top
         ) {
 
-            AsyncImageDataScreen(
-                image = image,
-                reload = viewModel::reloadImage
-            ) { getUserImage.first() }
+            AsyncImageDataScreen( image = image ) { getUserImage.first() }
             Spacer(modifier = Modifier.padding(top = 24.dp))
             Column(
                 modifier = Modifier
@@ -126,7 +116,7 @@ private fun ContentUserDataScreen(
             ) {
 
                 TextFieldCustomDataScreen(
-                    text = name, label = "Name", textSizes = textSizes.normalSize,
+                    text = name, label = "Name",
                     icon = Icons.Rounded.Person
                 ) {
                     viewModel.viewModelScope.launch {
@@ -138,7 +128,7 @@ private fun ContentUserDataScreen(
                     }
                 }
                 TextFieldCustomDataScreen(
-                    text = email, label = "Email", textSizes = textSizes.normalSize,
+                    text = email, label = "Email",
                     icon = Icons.Rounded.Email,
                     capitalization = KeyboardCapitalization.None,
                     keyboardType = KeyboardType.Email
@@ -152,7 +142,7 @@ private fun ContentUserDataScreen(
                     }
                 }
                 TextFieldCustomDataScreen(
-                    text = pass, label = "Name", textSizes = textSizes.normalSize,
+                    text = pass, label = "Name",
                     icon = Icons.Rounded.Key,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Go, password = true,
@@ -230,10 +220,8 @@ private fun ContentUserDataScreen(
 @Composable
 private fun AsyncImageDataScreen(
     image: String,
-    reload: KFunction1<String, Unit>,
     getImage: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(image)
@@ -282,7 +270,6 @@ private fun ButtonCustomDataScreen(
 private fun TextFieldCustomDataScreen(
     text: String,
     label: String,
-    textSizes: TextUnit,
     icon: ImageVector,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -294,7 +281,6 @@ private fun TextFieldCustomDataScreen(
     textFieldCustom(
         text = text,
         label = label,
-        textSizes = textSizes,
         placeholder = "Write your ${label.lowercase()}",
         icon = icon,
         contentDescription = "$label of user",

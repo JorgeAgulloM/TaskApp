@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -59,15 +58,19 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
 
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
-    val textSizes = viewModel.sizeSelectedOfUser()
 
     Column(
         modifier = Modifier.fillMaxSize(1f)
-            .padding(top = it.calculateTopPadding() + 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
+            .padding(
+                top = it.calculateTopPadding() + 8.dp,
+                bottom = 8.dp,
+                start = 8.dp,
+                end = 8.dp
+            ),
         verticalArrangement = Arrangement.Top
     ) {
 
-        RowInfoMain(text = "My Tasks", textSizes = textSizes.normalSize)
+        RowInfoMain(text = "My Tasks")
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
@@ -75,13 +78,12 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
+            RowInfoMain(text = "To be made...")
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 280.dp),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = "Añade una nueva tarea...",
-                textSizes = textSizes.normalSize,
                 initStateCheck = false
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
@@ -93,13 +95,12 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             //modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
-        ){
-            RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
+        ) {
+            RowInfoMain(text = "Completed in the last 7 days")
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
-                textSizes = textSizes.normalSize,
                 text = "Aún no has terminado ninguna tarea",
                 initStateCheck = true,
             ) {
@@ -111,8 +112,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
 }
 
 @Composable
-private fun RowInfoMain(text: String, textSizes: TextUnit) {
-    RowInfo(text = text, paddingStart = 32.dp, textSizes = textSizes)
+private fun RowInfoMain(text: String) {
+    RowInfo(text = text, paddingStart = 32.dp)
 }
 
 @ExperimentalMaterial3Api
@@ -121,7 +122,6 @@ private fun FillLazyColumn(
     modifier: Modifier,
     tasks: List<Task>,
     updateTask: KSuspendFunction1<Task, Unit>,
-    textSizes: TextUnit,
     text: String,
     initStateCheck: Boolean,
     onClick: (UUID) -> Unit
@@ -141,7 +141,7 @@ private fun FillLazyColumn(
             ) {
                 items(tasks.filter { it.checkState == initStateCheck }) { task ->
                     CheckCustomMain(
-                        task = task, textSizes = textSizes, onCheckedChange = {
+                        task = task, onCheckedChange = {
                             task.checkState = it
                             task.finishDate = if (it) Date.from(Instant.now()) else null
                             coroutineScope.launch {
@@ -181,19 +181,18 @@ private fun FillLazyColumn(
                     }
                 )
             }
-        } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
+        } else RowInfo(text = text, paddingStart = 16.dp)
 }
 
 @ExperimentalMaterial3Api
 @Composable
 private fun CheckCustomMain(
-    task: Task, textSizes: TextUnit, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit
+    task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit
 ) {
     CheckCustom(
         checked = task.checkState,
         onCheckedChange = { onCheckedChange(it) },
         text = task.title,
-        textSizes = textSizes,
         onClick = { onClick() }
     )
 }

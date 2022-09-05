@@ -157,10 +157,4 @@ class StateLogin @Inject constructor(
         }
         return list
     }
-
-    /**
-     * Si no hay un usuario logeado, el tamaño estandard será el normal configurado como tamaño 2*/
-    fun getTextSizeSelectedOfUser(): StandardizedSizes =
-        StandardizedSizes(userDataActive?.textSize ?: 2)
-
 }

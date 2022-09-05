@@ -42,7 +42,8 @@ fun CircularIndicatorCustom(
             CircularProgressIndicator(
                 color = color
             )
-            Text(text = text, style = TextStyle(textAlign = TextAlign.Center))
+            //Text(text = text, style = TextStyle(textAlign = TextAlign.Center))
+            Text(text = text, style = MaterialTheme.typography.bodyMedium)
         }
 
     }

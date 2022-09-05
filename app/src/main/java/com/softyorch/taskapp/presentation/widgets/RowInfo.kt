@@ -6,19 +6,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.utils.ELEVATION_FLOAT
 
 @Composable
 fun RowInfo(
     text: String,
-    textSizes: TextUnit,
     paddingStart: Dp = 0.dp,
     heightSize: Dp = 30.dp,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
@@ -33,20 +26,7 @@ fun RowInfo(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-            fontSize = textSizes,
-            style = TextStyle(
-                shadow = Shadow(
-                    color = MaterialTheme.colorScheme.primary,
-                    offset = Offset(
-                        x = ELEVATION_FLOAT,
-                        y = ELEVATION_FLOAT
-                    ),
-                    blurRadius = ELEVATION_FLOAT
-                )
-            )
+            style = MaterialTheme.typography.titleMedium
         )
-
     }
 }

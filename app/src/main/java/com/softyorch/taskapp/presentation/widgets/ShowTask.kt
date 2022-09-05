@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.presentation.components.TextCustom
-import com.softyorch.taskapp.utils.StandardizedSizes
 
 
 @Composable
@@ -15,7 +14,6 @@ fun ShowTask(
     author: String,
     date: String,
     completedDate: String = "",
-    textSizes: StandardizedSizes,
     paddingStart: Dp = 24.dp
 ) {
     Row(
@@ -27,17 +25,17 @@ fun ShowTask(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            TextCustom("Created By:", textSizes = textSizes.highSize, description = true)
-            TextCustom("Created date:", textSizes = textSizes.highSize, description = true)
-            TextCustom("Completed date:", textSizes = textSizes.highSize, description = true)
+            TextCustom("Created By:", description = true)
+            TextCustom("Created date:", description = true)
+            TextCustom("Completed date:", description = true)
         }
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            TextCustom(author, textSizes = textSizes.littleSize)
-            TextCustom(date, textSizes = textSizes.littleSize)
-            TextCustom(completedDate, textSizes = textSizes.littleSize)
+            TextCustom(text = author)
+            TextCustom(text = date)
+            TextCustom(text = completedDate)
         }
     }
 }

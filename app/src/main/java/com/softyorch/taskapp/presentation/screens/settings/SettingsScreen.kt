@@ -43,7 +43,6 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val settings = viewModel.settings.observeAsState().value
     val reloading: Boolean by viewModel.reloading.observeAsState(initial = false)
-    val textSizes = viewModel.sizeSelectedOfUser()
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
@@ -111,8 +110,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                         text = "Last login manual: ${
                             settings.lastLoginDate?.toStringFormatted()
                         }",
-                        paddingStart = 8.dp,
-                        textSizes = textSizes.normalSize
+                        paddingStart = 8.dp
                     )
                 }
             )

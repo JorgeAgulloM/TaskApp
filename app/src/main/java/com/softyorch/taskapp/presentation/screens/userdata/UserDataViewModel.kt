@@ -9,7 +9,6 @@ import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
-import com.softyorch.taskapp.utils.StandardizedSizes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -169,6 +168,4 @@ class UserDataViewModel @Inject constructor(
 
     private fun getUserActiveSharedPreferences(): UserData? =
         stateLogin.userDataActive
-
-    fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
 }

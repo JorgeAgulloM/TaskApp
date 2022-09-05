@@ -20,7 +20,6 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
-import com.softyorch.taskapp.utils.StandardizedSizes
 import com.softyorch.taskapp.utils.toStringFormatDate
 
 
@@ -51,7 +50,6 @@ private fun Content(
 ) {
 
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
-    val textSizes = viewModel.sizeSelectedOfUser()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -67,8 +65,8 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextHeadHistry(task, textSizes)
-                TextContentHistory(task, textSizes)
+                TextHeadHistry(task = task)
+                TextContentHistory(task = task)
             }
         }
     }
@@ -76,14 +74,13 @@ private fun Content(
 
 @Composable
 private fun TextHeadHistry(
-    task: Task,
-    textSizes: StandardizedSizes
+    task: Task
 ) {
     Text(
         modifier = Modifier.padding(end = 8.dp),
         text = task.entryDate.toStringFormatDate(),
         color = MaterialTheme.colorScheme.onSurface,
-        fontSize = textSizes.minimumSize,
+        style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1
     )
@@ -91,13 +88,12 @@ private fun TextHeadHistry(
 
 @Composable
 private fun TextContentHistory(
-    task: Task,
-    textSizes: StandardizedSizes
+    task: Task
 ) {
     Text(
         text = task.title,
         color = MaterialTheme.colorScheme.onSurface,
-        fontSize = textSizes.normalSize,
+        style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1
     )
