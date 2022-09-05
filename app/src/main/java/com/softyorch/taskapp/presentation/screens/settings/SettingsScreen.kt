@@ -121,12 +121,6 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 ) {
                     coroutineScope.launch { viewModel.applyChanges() }
                 }
-
-            settings.textSize = sliderCustomSettingsText(
-                initValue = settings.textSize, needReloadDialog = reloading
-            ) {
-                coroutineScope.launch { viewModel.applyChanges() }
-            }
         }
     }
 }
@@ -142,22 +136,6 @@ private fun SwitchCustomSettings(
     enable = true,
     onCheckedChange = { onCheckedChange() }
 )
-
-@Composable
-private fun sliderCustomSettingsText(
-    initValue: Int,
-    needReloadDialog: Boolean,
-    onValueChangeFinished: () -> Unit
-): Int {
-    return sliderCustom(
-        initValue = initValue,
-        enable = !needReloadDialog,
-        valueRange = 0f..4f,
-        steps = 3,
-        onValueChangeFinished = { onValueChangeFinished() },
-        text = "Text base size: ${sizeTextName(initValue)}"
-    )
-}
 
 @Composable
 private fun sliderCustomSettingsAutoLoading(
