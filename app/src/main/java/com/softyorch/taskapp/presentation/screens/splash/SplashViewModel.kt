@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.splash
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -57,8 +58,18 @@ class SplashViewModel @Inject constructor(
                             user.lastLoginDate?.time?.let { timeDiff ->
                                 Date.from(Instant.now()).time.minus(timeDiff)
                                 timeDiff.compareTo(timeWeekInMillis).let {
-                                    stateLogin.logIn(userData = user)
-                                    return true
+                                    when (it) {
+                                        -1 -> {
+                                            stateLogin.logIn(userData = user)
+                                            return true
+                                        }
+                                        1 -> {
+                                            return false
+                                        }
+                                        else -> {
+                                            return false
+                                        }
+                                    }
                                 }
                             }
                         }

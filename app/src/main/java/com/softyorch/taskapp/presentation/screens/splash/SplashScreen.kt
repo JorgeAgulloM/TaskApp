@@ -30,7 +30,7 @@ fun SplashScreen(
     viewModel: SplashViewModel
 ) {
 
-    val goToAutoLogin = viewModel.goToAutologin.observeAsState()
+    val goToAutoLogin by viewModel.goToAutologin.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val scale = remember { Animatable(0f) }
 
@@ -44,7 +44,7 @@ fun SplashScreen(
 
         delay(1500L) //2000
 
-        val route = if (goToAutoLogin.value == true)
+        val route = if (goToAutoLogin)
             AppScreensRoutes.MainScreen.route
         else AppScreensRoutes.LoginScreen.route
 
