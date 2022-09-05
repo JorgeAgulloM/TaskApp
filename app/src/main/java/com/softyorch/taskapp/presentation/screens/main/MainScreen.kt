@@ -68,7 +68,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
-            modifier = Modifier.heightIn(max = 290.dp),
+            modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -82,8 +82,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
-            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
+        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
 
 
         RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
