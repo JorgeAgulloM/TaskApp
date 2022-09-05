@@ -23,7 +23,6 @@ fun sliderCustom(
 ): Int {
 
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
-    var size by rememberSaveable { mutableStateOf(selection) }
 
     Column(
         modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 8.dp),
@@ -38,10 +37,7 @@ fun sliderCustom(
                 enabled = enable,
                 valueRange = valueRange,
                 steps = steps,
-                onValueChangeFinished = {
-                    size = selection
-                    onValueChangeFinished.invoke()
-                },
+                onValueChangeFinished = { onValueChangeFinished.invoke() },
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.tertiary,
                     disabledThumbColor = MaterialTheme.colorScheme.tertiary.copy(0.5f),
@@ -50,12 +46,9 @@ fun sliderCustom(
                     activeTickColor = MaterialTheme.colorScheme.secondary,
                     inactiveTickColor = MaterialTheme.colorScheme.secondary.copy(0.5f),
                 )
-            ).let {
-                size
-            }
+            )
         }
     )
-
-    return size.toInt()
+    return selection.toInt()
 }
 
