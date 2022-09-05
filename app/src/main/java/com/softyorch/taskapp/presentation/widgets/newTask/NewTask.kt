@@ -79,24 +79,24 @@ fun newTask(
                             userName = userName, dateFormatted = dateCreatedFormatted,
                             dateCompletedFormatted = dateCompletedFormatted
                         )
-                        RowInfoNewTask(text = "Name of task: ")
                         TextFieldCustomNewTaskName(text = title) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
-                        RowInfoNewTask(text = "Task description: ")
                         TextFieldCustomNewTaskDescription(
                             text = description,
                             keyboardActions = KeyboardActions(
                                 onGo = {
                                     /**Revisar esto, duplica el código*/
-                                    addOrEditTaskFunc(
-                                        taskToEditOrNewTask(
-                                            taskToEdit = taskToEdit, title = title,
-                                            description = description, userName = userName
+                                    if (saveTaskEnable) {
+                                        addOrEditTaskFunc(
+                                            taskToEditOrNewTask(
+                                                taskToEdit = taskToEdit, title = title,
+                                                description = description, userName = userName
+                                            )
                                         )
-                                    )
-                                    viewModel.onResetValues()
-                                    openDialog = false
+                                        viewModel.onResetValues()
+                                        openDialog = false
+                                    }
                                 }
                             )
                         ) {
@@ -166,7 +166,7 @@ private fun TextFieldCustomNewTaskName(
 ) {
     textFieldCustom(
         text = text,
-        label = "name",
+        label = "Name of task",
         placeholder = "Escribe tu name",
         icon = Icons.Rounded.Title,
         contentDescription = "name",
@@ -184,7 +184,7 @@ private fun TextFieldCustomNewTaskDescription(
 ) {
     textFieldCustom(
         text = text,
-        label = "description",
+        label = "Task description",
         placeholder = "Escribe una description",
         icon = Icons.Rounded.Description,
         contentDescription = "description",
@@ -194,14 +194,6 @@ private fun TextFieldCustomNewTaskDescription(
         keyboardActions = keyboardActions,
         newTask = true,
         onTextFieldChanged = onCheckedChange
-    )
-}
-
-@Composable
-private fun RowInfoNewTask(text: String) {
-    RowInfo(
-        text = text,
-        paddingStart = 32.dp
     )
 }
 
