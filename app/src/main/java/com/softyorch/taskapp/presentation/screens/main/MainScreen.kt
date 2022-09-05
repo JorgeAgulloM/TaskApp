@@ -1,11 +1,16 @@
 package com.softyorch.taskapp.presentation.screens.main
 
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -51,28 +56,35 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
 
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
-    val coroutineScope = rememberCoroutineScope()
     val textSizes = viewModel.sizeSelectedOfUser()
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .padding(top = it.calculateTopPadding() * 1.5f, start = 8.dp, end = 8.dp)
+            .padding(top = it.calculateTopPadding() + 8.dp, start = 8.dp, end = 8.dp),
+        verticalArrangement = Arrangement.Top
     ) {
 
         RowInfoMain(text = "My Tasks", textSizes = textSizes.normalSize)
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
-        RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
-        FillLazyColumn(
-            tasks = tasks,
-            updateTask = viewModel::updateTask,
-            text = "Añade una nueva tarea...",
-            textSizes = textSizes.normalSize,
-            initStateCheck = false
+        Column(
+            modifier = Modifier.heightIn(max = 290.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
         ) {
-            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+            RowInfoMain(text = "To be made...", textSizes = textSizes.normalSize)
+            FillLazyColumn(
+                tasks = tasks,
+                updateTask = viewModel::updateTask,
+                text = "Añade una nueva tarea...",
+                textSizes = textSizes.normalSize,
+                initStateCheck = false
+            ) {
+                navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
+            }
+            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
-        Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
+
 
         RowInfoMain(text = "Completed in the last 7 days", textSizes = textSizes.normalSize)
         FillLazyColumn(
@@ -85,6 +97,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
         }
         Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
+
+
     }
 }
 
@@ -103,22 +117,32 @@ private fun FillLazyColumn(
     initStateCheck: Boolean,
     onClick: (UUID) -> Unit
 ) {
+
+
     val coroutineScope = rememberCoroutineScope()
-    if (tasks.any { it.checkState == initStateCheck }) LazyColumn {
-        items(tasks.filter { it.checkState == initStateCheck }) { task ->
-            CheckCustomMain(
-                task = task, textSizes = textSizes, onCheckedChange = {
-                    task.checkState = it
-                    task.finishDate = if (it) Date.from(Instant.now()) else null
-                    coroutineScope.launch {
-                        updateTask(task)
+    if (tasks.any { it.checkState == initStateCheck })
+        LazyColumn(
+            state = LazyListState(
+                firstVisibleItemIndex = 0,
+                firstVisibleItemScrollOffset = 7
+            ),
+            userScrollEnabled = true,
+            flingBehavior = ScrollableDefaults.flingBehavior()
+        ) {
+            items(tasks.filter { it.checkState == initStateCheck }) { task ->
+                CheckCustomMain(
+                    task = task, textSizes = textSizes, onCheckedChange = {
+                        task.checkState = it
+                        task.finishDate = if (it) Date.from(Instant.now()) else null
+                        coroutineScope.launch {
+                            updateTask(task)
+                        }
                     }
+                ) {
+                    onClick(task.id)
                 }
-            ) {
-                onClick(task.id)
             }
-        }
-    } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
+        } else RowInfo(text = text, paddingStart = 16.dp, textSizes = textSizes)
 }
 
 @ExperimentalMaterial3Api

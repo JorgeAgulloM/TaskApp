@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,15 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _taskToDo = MutableLiveData<Int>(0)
+    private val _taskDone = MutableLiveData<Int>(0)
+
+    private val _showArrowToDO = MutableLiveData<Boolean>()
+    val showArrowToDO: LiveData<Boolean> = _showArrowToDO
+
+    private val _showArrowDone = MutableLiveData<Boolean>()
+    val showArrowDone: LiveData<Boolean> = _showArrowDone
+
     init {
         _isLoading.value = true
         loadData()
@@ -38,7 +48,10 @@ class MainViewModel @Inject constructor(
                         //TODO meter la barra de carga para mostrar al usuario
                         _isLoading.postValue(false)
                     } else {
-                        _taskList.postValue(listOfTasks)
+                        listOfTasks.let { list ->
+                            _taskList.postValue(list)
+                            updateLists(list)
+                        }
                         _isLoading.postValue(false)
                     }
                 }
@@ -51,8 +64,24 @@ class MainViewModel @Inject constructor(
             repository.updateTask(task = task)
         }
         state.join()
+        updateLists()
 
         loadData()
+    }
+
+    private fun showOrNotArrows() {
+        _taskToDo.let { _showArrowToDO.value = it.value!! > 7 }
+        _taskDone.let { _showArrowDone.value = it.value!! > 7 }
+    }
+
+    private fun updateLists(listOfTasks: List<Task>? = _taskList.value) {
+        Log.d("LISTS", "listOfTasks -> ${listOfTasks?.size}")
+        listOfTasks?.let { list ->
+            val listToDo = list.filter { task -> !task.checkState }.size
+            val listDone = list.filter { task -> task.checkState }.size
+            _taskToDo.postValue(listToDo)
+            _taskDone.postValue(listDone)
+        }
     }
 
     fun sizeSelectedOfUser(): StandardizedSizes = stateLogin.getTextSizeSelectedOfUser()
