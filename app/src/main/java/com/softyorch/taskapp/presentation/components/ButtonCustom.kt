@@ -14,9 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.presentation.theme.DarkMode90t
 import com.softyorch.taskapp.utils.ELEVATION_FLOAT
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
@@ -34,10 +32,10 @@ fun ButtonCustom(
         },
         modifier = Modifier.width(144.dp).height(40.dp).padding(4.dp),
         enabled = enable,
-        /*colors = ButtonDefaults.buttonColors(
-            containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
-            contentColor = if (primary) DarkMode90t else MaterialTheme.colorScheme.onSurface
-        ),*/
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (primary) MaterialTheme.colorScheme.primary else Color.Transparent,
+            contentColor = if (primary) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
+        ),
         content = {
             Text(
                 text = text,
@@ -51,7 +49,6 @@ fun ButtonCustom(
                         blurRadius = if (primary) 0f else ELEVATION_FLOAT
                     )
                 ),
-                textDecoration = if (!primary) TextDecoration.Underline else null
             )
         },
         contentPadding = PaddingValues(2.dp),
