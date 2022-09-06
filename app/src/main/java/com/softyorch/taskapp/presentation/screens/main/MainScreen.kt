@@ -16,6 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -73,11 +74,10 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         verticalArrangement = Arrangement.Top
     ) {
 
-        RowInfoMain(text = stringResource(my_tasks))
+        RowInfoMain(text = stringResource(my_tasks), style = MaterialTheme.typography.titleLarge)
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
-            //modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -95,13 +95,12 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         }
 
         Column(
-            //modifier = Modifier.heightIn(min = 20.dp, max = 290.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             RowInfoMain(text = stringResource(tasks_completed_last_days))
             FillLazyColumn(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f),
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = stringResource(not_yet_complet_any_task),
@@ -115,8 +114,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
 }
 
 @Composable
-private fun RowInfoMain(text: String) {
-    RowInfo(text = text, paddingStart = 32.dp)
+private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typography.titleMedium) {
+    RowInfo(text = text, paddingStart = 32.dp, style = style)
 }
 
 @ExperimentalMaterial3Api
