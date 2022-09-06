@@ -56,16 +56,15 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rOrmNMeZgoU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://www.youtube.com/embed/rOrmNMeZgoU
 <br>
 <br>
 
 ## Settings.
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ZUFTF1OtWs0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://www.youtube.com/embed/ZUFTF1OtWs0
 
 <br>
 <br>
 
 ## Navigation.
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tdLMn0rjapo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+https://www.youtube.com/embed/tdLMn0rjapo
