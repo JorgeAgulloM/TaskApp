@@ -17,13 +17,13 @@
     <string name="completed">Completed</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
-    <string name="great_next_one">Great, one less task. On to the next one...</string>
+    <string name="great_next_one">Great, one less task. On to the next one…</string>
     <string name="delete_it">Delete it</string>
     <string name="cancel">Cancel</string>
     <string name="you_sure_eliminate_task">Are you sure you want to eliminate the task?</string>
     <string name="unknown">Unknown</string>
-    <string name="loading_login">...login</string>
-    <string name="loading_loading">...loading</string>
+    <string name="loading_login">…login</string>
+    <string name="loading_loading">…loading</string>
     <string name="error_email_already_exists">Error, an account already exists with the entered email address.</string>
     <string name="login">Login</string>
     <string name="create_acount">Create Account</string>
@@ -41,8 +41,8 @@
     <string name="repeat_your_password">repeat your password</string>
     <string name="main">Main</string>
     <string name="my_tasks">My Tasks</string>
-    <string name="to_be_made">To be made...</string>
-    <string name="add_new_task">Add new task...</string>
+    <string name="to_be_made">To be made…</string>
+    <string name="add_new_task">Add new task…</string>
     <string name="tasks_completed_last_days">Completed in the last 7 days</string>
     <string name="not_yet_complet_any_task">You have not yet completed any task</string>
     <string name="go_to_up">Go to Up</string>
