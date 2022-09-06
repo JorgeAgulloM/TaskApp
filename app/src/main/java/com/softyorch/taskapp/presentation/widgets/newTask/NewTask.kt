@@ -23,7 +23,7 @@ import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.toStringFormatted
+import com.softyorch.taskapp.utils.toStringFormatDate
 import kotlinx.coroutines.Job
 import java.time.Instant
 import java.util.*
@@ -45,9 +45,9 @@ fun newTask(
 
     var openDialog by remember { mutableStateOf(true) }
     val dateCreatedFormatted =
-        taskToEdit?.entryDate?.toStringFormatted() ?: Date.from(Instant.now()).toStringFormatted()
+        taskToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now()).toStringFormatDate()
     val dateCompletedFormatted =
-        taskToEdit?.finishDate?.toStringFormatted() ?: stringResource(unknown)
+        taskToEdit?.finishDate?.toStringFormatDate() ?: stringResource(unknown)
 
     Dialog(
         onDismissRequest = {
@@ -57,7 +57,7 @@ fun newTask(
             Column(
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .fillMaxWidth(1.1f)
+                    .fillMaxWidth(1f)
                     .fillMaxHeight(0.72f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
