@@ -87,5 +87,6 @@
     <string name="one_month">Un mes</string>
     <string name="six_months">Seis meses</string>
     <string name="one_year">Un año</string>
+    <string name="func_not_active">Lo siento, esa función aún no está disponible</string>
 
 </resources>

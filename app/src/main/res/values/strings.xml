@@ -85,4 +85,6 @@
     <string name="one_month">One month</string>
     <string name="six_months">Six months</string>
     <string name="one_year">One year</string>
+    <string name="func_not_active">Sorry, this function is not yet available</string>
+
 </resources>
