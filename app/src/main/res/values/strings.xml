@@ -51,8 +51,8 @@
     <string name="automatic_language">Automatic language</string>
     <string name="automatic_colors">Automatic colors</string>
     <string name="content_last_time_login">Last time to manual login</string>
-    <string name="last_login_manual">\"Last login manual: \"</string>
-    <string name="time_automatic_login">\"Time to automatic login: \"</string>
+    <string name="last_login_manual">Last login manual:</string>
+    <string name="time_automatic_login">Time to automatic login:</string>
     <string name="content_splash_image">Splash image</string>
     <string name="user_data">User Data</string>
     <string name="logout">Logout</string>
@@ -66,8 +66,8 @@
     <string name="sure_not_make_changes">Are you sure not to make any changes?</string>
     <string name="yes_not_make_it">yes, not make it</string>
     <string name="content_image_user">Image of user</string>
-    <string name="write_your_label">\"Write your \"</string>
-    <string name="label_of_user">\" of user\"</string>
+    <string name="write_your_label">Write your</string>
+    <string name="label_of_user">of user</string>
     <string name="create">Create</string>
     <string name="edit_text">Edit Task</string>
     <string name="name_task">Name of task</string>
@@ -76,9 +76,9 @@
     <string name="task_description">Task description</string>
     <string name="write_description">write a description</string>
     <string name="content_description">description</string>
-    <string name="created_by">\"Created By: \"</string>
-    <string name="created_date">\"Created date: \"</string>
-    <string name="completed_date">\"Completed date: \"</string>
+    <string name="created_by">Created By:</string>
+    <string name="created_date">Created date:</string>
+    <string name="completed_date">Completed date:</string>
     <string name="one_day">One day</string>
     <string name="one_week">One week</string>
     <string name="two_weeks">Two week</string>
@@ -86,5 +86,6 @@
     <string name="six_months">Six months</string>
     <string name="one_year">One year</string>
     <string name="func_not_active">Sorry, this function is not yet available</string>
+    <string name="sure_restart_task">Are you sure to restart the task?</string>
 
 </resources>

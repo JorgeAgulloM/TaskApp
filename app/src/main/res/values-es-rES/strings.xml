@@ -53,7 +53,7 @@
     <string name="automatic_language">Idioma automático</string>
     <string name="automatic_colors">Colores automáticos</string>
     <string name="content_last_time_login">Última vez que se inicia la sesión manualmente</string>
-    <string name="last_login_manual">\"Último acceso manual: \"</string>
+    <string name="last_login_manual">Último acceso manual:</string>
     <string name="time_automatic_login">Tiempo de inicio de sesión automático: </string>
     <string name="content_splash_image">Imagen de splash</string>
     <string name="user_data">Datos de usuario</string>
@@ -68,8 +68,8 @@
     <string name="sure_not_make_changes">¿Está seguro de no hacer ningún cambio?</string>
     <string name="yes_not_make_it">Si, no hacelos</string>
     <string name="content_image_user">Imagen de usuario</string>
-    <string name="write_your_label">\"Escribe tu \"</string>
-    <string name="label_of_user">\" de usuario\"</string>
+    <string name="write_your_label">Escribe tu</string>
+    <string name="label_of_user">de usuario</string>
     <string name="create">Crear</string>
     <string name="edit_text">Editar tarea</string>
     <string name="name_task">Nombre de tarea</string>
@@ -78,9 +78,9 @@
     <string name="task_description">Descripción de la tarea</string>
     <string name="write_description">escribe una descripción</string>
     <string name="content_description">description</string>
-    <string name="created_by">\"Creada por: \"</string>
-    <string name="created_date">\"Creada el: \"</string>
-    <string name="completed_date">\"Completada el: \"</string>
+    <string name="created_by">Creada por:</string>
+    <string name="created_date">Creada el:</string>
+    <string name="completed_date">Completada el:</string>
     <string name="one_day">Un día</string>
     <string name="one_week">Una semana</string>
     <string name="two_weeks">Dos semanas</string>
@@ -88,5 +88,6 @@
     <string name="six_months">Seis meses</string>
     <string name="one_year">Un año</string>
     <string name="func_not_active">Lo siento, esa función aún no está disponible</string>
+    <string name="sure_restart_task">¿Estás seguro de reiniciar la tarea?</string>
 
 </resources>
