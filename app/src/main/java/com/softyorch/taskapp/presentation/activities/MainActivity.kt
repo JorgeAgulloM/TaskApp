@@ -22,12 +22,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.TaskAppNavigation
+import com.softyorch.taskapp.presentation.screens.DevelopScreen
 import com.softyorch.taskapp.presentation.theme.TaskAppTheme
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.sdk29AndUp
@@ -84,6 +86,7 @@ class MainActivity : ComponentActivity() {
                 getUserImage = getUserImage
             )
         }
+
     }
 
     private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
@@ -174,6 +177,18 @@ private fun TaskApp(
             modifier = Modifier.fillMaxSize()
         ) {
             TaskAppNavigation(reloadComposable = reloadComposable, getUserImage = getUserImage)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Develop() {
+    TaskAppTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            DevelopScreen()
         }
     }
 }

@@ -34,16 +34,16 @@ fun ButtonCustom(
         },
         modifier = Modifier.width(144.dp).height(40.dp).padding(4.dp),
         enabled = enable,
-        colors = ButtonDefaults.buttonColors(
+        /*colors = ButtonDefaults.buttonColors(
             containerColor = if (primary) MaterialTheme.colorScheme.tertiary else Color.Transparent,
             contentColor = if (primary) DarkMode90t else MaterialTheme.colorScheme.onSurface
-        ),
+        ),*/
         content = {
             Text(
                 text = text,
                 style = TextStyle(
                     shadow = Shadow(
-                        color = MaterialTheme.colorScheme.primary,
+                        //color = MaterialTheme.colorScheme.primary,
                         offset = if (primary) Offset(x = 0f, y = 0f) else Offset(
                             x = ELEVATION_FLOAT,
                             y = ELEVATION_FLOAT

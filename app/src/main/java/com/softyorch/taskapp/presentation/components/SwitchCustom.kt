@@ -46,14 +46,14 @@ fun SwitchCustom(
                     )
             },
             enabled = enable,
-            colors = SwitchDefaults.colors(
+            /*colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.tertiary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,
                 checkedIconColor = MaterialTheme.colorScheme.primary,
                 uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
                 uncheckedTrackColor = MaterialTheme.colorScheme.primary,
                 uncheckedBorderColor = MaterialTheme.colorScheme.secondary
-            )
+            )*/
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),

@@ -38,14 +38,14 @@ fun sliderCustom(
                 valueRange = valueRange,
                 steps = steps,
                 onValueChangeFinished = { onValueChangeFinished.invoke() },
-                colors = SliderDefaults.colors(
+               /* colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.tertiary,
                     disabledThumbColor = MaterialTheme.colorScheme.tertiary.copy(0.5f),
                     activeTrackColor = MaterialTheme.colorScheme.primary,
                     inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
                     activeTickColor = MaterialTheme.colorScheme.secondary,
                     inactiveTickColor = MaterialTheme.colorScheme.secondary.copy(0.5f),
-                )
+                )*/
             )
         }
     )

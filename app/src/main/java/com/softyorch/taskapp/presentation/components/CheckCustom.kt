@@ -29,19 +29,19 @@ fun CheckCustom(
             Checkbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                colors = CheckboxDefaults.colors(
+                /*colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.tertiary,
                     uncheckedColor = MaterialTheme.colorScheme.secondary,
                     checkmarkColor = MaterialTheme.colorScheme.secondary
-                )
+                )*/
             )
             Text(
                 text = text,
-                color =
+                /*color =
                 if (checked)
                     MaterialTheme.colorScheme.primary
                 else
-                    MaterialTheme.colorScheme.onSurface,
+                    MaterialTheme.colorScheme.onSurface,*/
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyMedium

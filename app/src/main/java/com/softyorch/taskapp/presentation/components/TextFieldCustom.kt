@@ -116,7 +116,7 @@ fun textFieldCustom(
         singleLine = singleLine,
         maxLines = 5,
         shape = personalizedShape,
-        colors = TextFieldDefaults.textFieldColors(
+        /*colors = TextFieldDefaults.textFieldColors(
             textColor = LightMode90t,
             placeholderColor = LightMode90t.copy(alpha = 0.4f),
             focusedLabelColor = unfocusedColor,
@@ -127,7 +127,7 @@ fun textFieldCustom(
             focusedIndicatorColor = focusedColor,
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = focusedColor
-        )
+        )*/
     )
 
     return textChange.value

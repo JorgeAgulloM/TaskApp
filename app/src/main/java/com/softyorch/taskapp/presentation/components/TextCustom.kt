@@ -18,7 +18,7 @@ fun TextCustom(
     Text(
         modifier = Modifier.padding(4.dp),
         text = text,
-        color = MaterialTheme.colorScheme.onSurface,
+        //color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.bodyLarge,
         fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
     )

@@ -27,8 +27,8 @@ fun FABCustom() {
             openDialog = true
         },
         modifier = Modifier.size(50.dp),
-        contentColor = MaterialTheme.colorScheme.secondary,
-        containerColor = MaterialTheme.colorScheme.tertiary,
+        //contentColor = MaterialTheme.colorScheme.secondary,
+        //containerColor = MaterialTheme.colorScheme.tertiary,
         content = {
             Icon(
                 modifier = Modifier.size(32.dp),
