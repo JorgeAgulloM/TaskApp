@@ -51,3 +51,22 @@ Target SDK 32
  
 ```
 
+```text
+Demo 
+```
+### Version 1.0.0-Alpha01
+## Create Task.
+![Create Task](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Creacion_tarea.mp4)
+
+<br>
+<br>
+
+## Settings.
+![Settings](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Settings.mp4)
+
+<br>
+<br>
+
+## Navigation.
+![Navigation](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Navegacion.mp4)
+
