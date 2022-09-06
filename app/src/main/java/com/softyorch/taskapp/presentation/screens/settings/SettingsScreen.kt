@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.components.switchCustom.SwitchCustom
@@ -114,7 +113,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                         tint = MaterialTheme.colorScheme.outline
                     )
                     RowInfo(
-                        text = stringResource(last_login_manual) +
+                        text = stringResource(last_login_manual) + " " +
                                 settings.lastLoginDate?.toStringFormatted(),
                         paddingStart = 8.dp,
                         style = MaterialTheme.typography.labelSmall
@@ -153,7 +152,7 @@ private fun sliderCustomSettingsAutoLoading(
     return sliderCustom(
         initValue = initValue,
         enable = !needReloadDialog,
-        text = stringResource(time_automatic_login) + timeLimitAutoLoginSelectText(initValue),
+        text = stringResource(time_automatic_login) + " " + timeLimitAutoLoginSelectText(initValue),
         onValueChangeFinished = { onValueChangeFinished() }
     )
 }
