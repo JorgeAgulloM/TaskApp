@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -14,7 +15,8 @@ fun RowInfo(
     text: String,
     paddingStart: Dp = 0.dp,
     heightSize: Dp = 30.dp,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    style: TextStyle = MaterialTheme.typography.titleMedium
 ) {
     Row(
         modifier = Modifier
@@ -26,7 +28,7 @@ fun RowInfo(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium
+            style = style
         )
     }
 }
