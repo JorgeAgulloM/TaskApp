@@ -56,37 +56,16 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-````html
-<div>
-<p style = 'text-align:center;'>
-<iframe width="600" height = "420" src="https://youtu.be/rOrmNMeZgoU">
-</iframe>
-</div>
-````
-
-
-
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rOrmNMeZgoU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <br>
 <br>
 
 ## Settings.
-````html
-<div>
-<p style = 'text-align:center;'>
-<iframe width="600" height = "420" src="https://youtu.be/ZUFTF1OtWs0">
-</iframe>
-</div>
-````
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZUFTF1OtWs0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <br>
 <br>
 
 ## Navigation.
-````html
-<div>
-<p style = 'text-align:center;'>
-<iframe width="600" height = "420" src="https://youtu.be/tdLMn0rjapo">
-</iframe>
-</div>
-````
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tdLMn0rjapo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
