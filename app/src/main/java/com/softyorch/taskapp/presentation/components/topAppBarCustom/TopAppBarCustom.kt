@@ -97,7 +97,7 @@ private fun TextTABC(
 ) {
     Text(
         text = title,
-        //color = LightMode90t,
+        color = MaterialTheme.colorScheme.primaryContainer,
         style = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.padding(start = 4.dp)
     )
@@ -111,7 +111,7 @@ private fun IconButtonTABC(
         Icon(
             imageVector = imageVector,
             contentDescription = text,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.primaryContainer
         )
     }
 }
