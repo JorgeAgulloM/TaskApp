@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">TaskApp</string>
     <string name="hello_word">Hello World!</string>
-    <string name="io_exception_save_bitmap">Couldn\'t save bitmap</string>
-    <string name="io_exception_create_media_store_entry">Couldn\'t create MediaStore entry</string>
+    <string name="io_exception_save_bitmap">Could\'t save bitmap</string>
+    <string name="io_exception_create_media_store_entry">Could\'t create MediaStore entry</string>
     <string name="add_task">Add task</string>
     <string name="go_to_home">Go To Home</string>
     <string name="go_home">Go Home</string>
@@ -26,7 +26,7 @@
     <string name="loading_loading">…loading</string>
     <string name="error_email_already_exists">Error, an account already exists with the entered email address.</string>
     <string name="login">Login</string>
-    <string name="create_acount">Create Account</string>
+    <string name="create_account">Create Account</string>
     <string name="new_account">New Account</string>
     <string name="go_to_login">Go to Login</string>
     <string name="remember_me">Remember Me</string>

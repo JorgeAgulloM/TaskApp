@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -179,7 +178,7 @@ private fun LoginOrNewAccount(
             Spacer(modifier = modifier.padding(vertical = 16.dp))
 
             ButtonLogin(
-                text = if (!newAccount) stringResource(login) else stringResource(create_acount),
+                text = if (!newAccount) stringResource(login) else stringResource(create_account),
                 enable = if (!newAccount) loginEnable else newAccountEnable,
                 primary = true
             ) {
