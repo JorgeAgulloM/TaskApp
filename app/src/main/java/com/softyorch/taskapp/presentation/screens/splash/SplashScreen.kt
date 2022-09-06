@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import kotlinx.coroutines.delay
@@ -55,7 +57,7 @@ fun SplashScreen(
         }
     })
 
-    if (isLoading) CircularIndicatorCustom(text = "..loading")
+    if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.6f)
@@ -79,7 +81,7 @@ fun SplashScreen(
 @Composable
 private fun TextSplash() {
     Text(
-        text = "Task App",
+        text = stringResource(app_name),
         style = MaterialTheme.typography.displayLarge,
         color = MaterialTheme.colorScheme.tertiary
     )
@@ -89,7 +91,7 @@ private fun TextSplash() {
 private fun ImageSplash() {
     Image(
         painter = painterResource(id = R.drawable.notes_512x512),
-        contentDescription = "Splash image",
+        contentDescription = stringResource(content_splash_image),
         contentScale = ContentScale.Crop,
         modifier = Modifier.size(95.dp)
     )

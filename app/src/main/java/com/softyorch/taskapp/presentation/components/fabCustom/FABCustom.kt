@@ -9,8 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
 
 @Composable
@@ -31,7 +33,7 @@ fun FABCustom() {
             Icon(
                 modifier = Modifier.size(32.dp),
                 imageVector = Icons.Rounded.Add,
-                contentDescription = "Add task"
+                contentDescription = stringResource(add_task)
             )
         }
     )

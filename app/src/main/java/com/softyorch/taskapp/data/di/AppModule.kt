@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.softyorch.taskapp.data.data.tasks.TaskDatabase
 import com.softyorch.taskapp.data.data.tasks.TaskDatabaseDao
+import com.softyorch.taskapp.utils.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,7 @@ object AppModule {
         Room.databaseBuilder(
             context,
             TaskDatabase::class.java,
-            "tasks_tbl")
+            TASK_TBL)
             .fallbackToDestructiveMigration()
             .build()
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -31,6 +32,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
@@ -40,6 +42,7 @@ import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
 
@@ -52,7 +55,7 @@ fun UserDataScreen(
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = "User Data",
+                title = stringResource(user_data),
                 nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
             )
@@ -78,142 +81,146 @@ private fun ContentUserDataScreen(
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
     if (isLoading)
-        CircularIndicatorCustom(text = "Working...")
+        CircularIndicatorCustom(text = stringResource(loading_loading))
 
-        val mainImage: String by newImageGallery.observeAsState(initial = "")
-        val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
-        val image: String by viewModel.image.observeAsState(initial = "")
-        mainImage.let { new ->
-            image.let {old ->
-                when (new != "" && old != new) {
-                    true -> if (!savingImage) viewModel.onImageChange(new)
-                    false -> if (savingImage) viewModel.resetSavingImage()
-                }
+    val mainImage: String by newImageGallery.observeAsState(initial = emptyString)
+    val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
+    val image: String by viewModel.image.observeAsState(initial = emptyString)
+    mainImage.let { new ->
+        image.let { old ->
+            when (new != emptyString && old != new) {
+                true -> if (!savingImage) viewModel.onImageChange(new)
+                false -> if (savingImage) viewModel.resetSavingImage()
             }
         }
-        val name: String by viewModel.name.observeAsState(initial = "")
-        val email: String by viewModel.email.observeAsState(initial = "")
-        val pass: String by viewModel.pass.observeAsState(initial = "")
-        val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
+    }
+    val name: String by viewModel.name.observeAsState(initial = emptyString)
+    val email: String by viewModel.email.observeAsState(initial = emptyString)
+    val pass: String by viewModel.pass.observeAsState(initial = emptyString)
+    val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
 
-        var confirmDialog by remember { mutableStateOf(value = false) }
-        var cancelDialog by remember { mutableStateOf(value = false) }
-        var logOutDialog by remember { mutableStateOf(value = false) }
+    var confirmDialog by remember { mutableStateOf(value = false) }
+    var cancelDialog by remember { mutableStateOf(value = false) }
+    var logOutDialog by remember { mutableStateOf(value = false) }
 
+    Column(
+        modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+
+        AsyncImageDataScreen(image = image) { getUserImage.first() }
+        Spacer(modifier = Modifier.padding(top = 24.dp))
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            AsyncImageDataScreen( image = image ) { getUserImage.first() }
-            Spacer(modifier = Modifier.padding(top = 24.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
+            TextFieldCustomDataScreen(
+                text = name, label = stringResource(R.string.name),
+                icon = Icons.Rounded.Person
             ) {
-
-                TextFieldCustomDataScreen(
-                    text = name, label = "Name",
-                    icon = Icons.Rounded.Person
-                ) {
-                    viewModel.viewModelScope.launch {
-                        viewModel.onDataChange(
-                            name = it,
-                            email = email,
-                            pass = pass
-                        )
-                    }
-                }
-                TextFieldCustomDataScreen(
-                    text = email, label = "Email",
-                    icon = Icons.Rounded.Email,
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Email
-                ) {
-                    viewModel.viewModelScope.launch {
-                        viewModel.onDataChange(
-                            name = name,
-                            email = it,
-                            pass = pass
-                        )
-                    }
-                }
-                TextFieldCustomDataScreen(
-                    text = pass, label = "Name",
-                    icon = Icons.Rounded.Key,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Go, password = true,
-                    keyboardActions = KeyboardActions(
-                        onGo = {
-                            confirmDialog = true
-                        }
+                viewModel.viewModelScope.launch {
+                    viewModel.onDataChange(
+                        name = it,
+                        email = email,
+                        pass = pass
                     )
-                ) {
-                    viewModel.viewModelScope.launch {
-                        viewModel.onDataChange(
-                            name = name,
-                            email = email,
-                            pass = it
-                        )
-                    }
                 }
             }
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
+            TextFieldCustomDataScreen(
+                text = email, label = stringResource(R.string.email),
+                icon = Icons.Rounded.Email,
+                capitalization = KeyboardCapitalization.None,
+                keyboardType = KeyboardType.Email
             ) {
-                ButtonCustomDataScreen(text = "Logout", primary = true) {
-                    logOutDialog = true
-                } //viewModel
-                Spacer(modifier = Modifier.padding(bottom = 4.dp))
-                ButtonCustomDataScreen(text = "Save", enable = saveEnabled, primary = true) {
-                    confirmDialog = true
+                viewModel.viewModelScope.launch {
+                    viewModel.onDataChange(
+                        name = name,
+                        email = it,
+                        pass = pass
+                    )
                 }
-                ButtonCustomDataScreen(text = "Cancel", enable = saveEnabled) {
-                    cancelDialog = true
+            }
+            TextFieldCustomDataScreen(
+                text = pass, label = stringResource(password),
+                icon = Icons.Rounded.Key,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Go, password = true,
+                keyboardActions = KeyboardActions(
+                    onGo = {
+                        confirmDialog = true
+                    }
+                )
+            ) {
+                viewModel.viewModelScope.launch {
+                    viewModel.onDataChange(
+                        name = name,
+                        email = email,
+                        pass = it
+                    )
                 }
             }
         }
-
-        if (logOutDialog) UserDataDialog(
-            title = "LogOut",
-            text = "Are you sure you want to log out?",
-            confirmButtonText = "Yes, I sure",
-            onDismissRequest = { logOutDialog = false },
-            onDismissButtonClick = { logOutDialog = false }
+        Spacer(modifier = Modifier.padding(top = 16.dp))
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            viewModel.logOut()
-            logOutDialog = false
-            navController.navigate(AppScreensRoutes.SplashScreen.route) {
-                navController.backQueue.clear()
+            ButtonCustomDataScreen(text = stringResource(logout), primary = true) {
+                logOutDialog = true
+            } //viewModel
+            Spacer(modifier = Modifier.padding(bottom = 4.dp))
+            ButtonCustomDataScreen(
+                text = stringResource(save),
+                enable = saveEnabled,
+                primary = true
+            ) {
+                confirmDialog = true
             }
+            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled) {
+                cancelDialog = true
+            }
+        }
+    }
 
+    if (logOutDialog) UserDataDialog(
+        title = stringResource(logout),
+        text = stringResource(sure_you_want_logout),
+        confirmButtonText = stringResource(yes_sure),
+        onDismissRequest = { logOutDialog = false },
+        onDismissButtonClick = { logOutDialog = false }
+    ) {
+        viewModel.logOut()
+        logOutDialog = false
+        navController.navigate(AppScreensRoutes.SplashScreen.route) {
+            navController.backQueue.clear()
         }
 
-        if (confirmDialog) UserDataDialog(
-            title = "Save user",
-            text = "Are you sure about making the changes?",
-            confirmButtonText = "Yes, modify it",
-            onDismissRequest = { confirmDialog = false },
-            onDismissButtonClick = { confirmDialog = false }
-        ) {
-            viewModel.viewModelScope.launch { viewModel.onUpdateData() }
-            confirmDialog = false
-        }
+    }
 
-        if (cancelDialog) UserDataDialog(
-            title = "Cancel change User",
-            text = "Are you sure not to make any changes?",
-            confirmButtonText = "yes, not make it",
-            onDismissRequest = { cancelDialog = false },
-            onDismissButtonClick = { cancelDialog = false }
-        ) {
-            navController.popBackStack()
-        }
+    if (confirmDialog) UserDataDialog(
+        title = stringResource(save_user),
+        text = stringResource(sure_about_making_changes),
+        confirmButtonText = stringResource(yes_modify_it),
+        onDismissRequest = { confirmDialog = false },
+        onDismissButtonClick = { confirmDialog = false }
+    ) {
+        viewModel.viewModelScope.launch { viewModel.onUpdateData() }
+        confirmDialog = false
+    }
+
+    if (cancelDialog) UserDataDialog(
+        title = stringResource(cancel_change_user),
+        text = stringResource(sure_not_make_changes),
+        confirmButtonText = stringResource(yes_not_make_it),
+        onDismissRequest = { cancelDialog = false },
+        onDismissButtonClick = { cancelDialog = false }
+    ) {
+        navController.popBackStack()
+    }
 
 }
 
@@ -229,7 +236,7 @@ private fun AsyncImageDataScreen(
             .crossfade(true)
             .crossfade(500)
             .build(),
-        contentDescription = "Image of user",
+        contentDescription = stringResource(content_image_user),
         placeholder = painterResource(R.drawable.ic_person_24),
         contentScale = ContentScale.Crop,
         modifier = Modifier
@@ -281,9 +288,9 @@ private fun TextFieldCustomDataScreen(
     textFieldCustom(
         text = text,
         label = label,
-        placeholder = "Write your ${label.lowercase()}",
+        placeholder = stringResource(write_your_label) + label.lowercase(),
         icon = icon,
-        contentDescription = "$label of user",
+        contentDescription = label + stringResource(label_of_user),
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = capitalization,
             keyboardType = keyboardType,
@@ -308,7 +315,7 @@ private fun UserDataDialog(
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         dismissButton = {
-            ButtonCustomDataScreen(text = "Cancel") { onDismissButtonClick() }
+            ButtonCustomDataScreen(text = stringResource(cancel)) { onDismissButtonClick() }
         },
         confirmButton = {
             ButtonCustomDataScreen(text = confirmButtonText, primary = true) {

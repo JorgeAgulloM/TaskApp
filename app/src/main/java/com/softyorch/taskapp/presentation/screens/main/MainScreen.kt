@@ -15,9 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.fabCustom.FABCustom
 import com.softyorch.taskapp.presentation.components.CheckCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
@@ -38,7 +41,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = "Main",
+                title = stringResource(main),
                 isMainScreen = true,
                 nameScreen = AppScreens.MainScreen.name,
                 navController = navController,
@@ -48,7 +51,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
             FABCustom()
         },
     ) {
-        if (isLoading) CircularIndicatorCustom(text = "..loading")
+        if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
         Content(it = it, viewModel = mainViewModel, navController = navController)
     }
 }
@@ -70,7 +73,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         verticalArrangement = Arrangement.Top
     ) {
 
-        RowInfoMain(text = "My Tasks")
+        RowInfoMain(text = stringResource(my_tasks))
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
@@ -78,12 +81,12 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            RowInfoMain(text = "To be made...")
+            RowInfoMain(text = stringResource(to_be_made))
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 280.dp),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
-                text = "Añade una nueva tarea...",
+                text = stringResource(add_new_task),
                 initStateCheck = false
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
@@ -96,12 +99,12 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            RowInfoMain(text = "Completed in the last 7 days")
+            RowInfoMain(text = stringResource(tasks_completed_last_days))
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
-                text = "Aún no has terminado ninguna tarea",
+                text = stringResource(not_yet_complet_any_task),
                 initStateCheck = true,
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
@@ -173,7 +176,7 @@ private fun FillLazyColumn(
 
                 Icon(
                     imageVector = if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = "Go to Up",
+                    contentDescription = stringResource(go_to_up),
                     modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
                         if (isLastItem) {
                             coroutineScope.launch { lazyState.animateScrollToItem(0) }

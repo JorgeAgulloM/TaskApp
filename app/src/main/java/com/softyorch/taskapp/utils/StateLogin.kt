@@ -40,7 +40,7 @@ class StateLogin @Inject constructor(
             name = userData.username,
             email = userData.userEmail,
             pass = userData.userPass,
-            picture = userData.userPicture ?: "",
+            picture = userData.userPicture ?: emptyString,
             lastLoginDate = userData.lastLoginDate,
             activate = true,
             rememberMe = userData.rememberMe,
@@ -54,10 +54,10 @@ class StateLogin @Inject constructor(
     }
 
     private fun sharedPreferencesSetUser(
-        name: String = "",
-        email: String = "",
-        pass: String = "",
-        picture: String = "",
+        name: String = emptyString,
+        email: String = emptyString,
+        pass: String = emptyString,
+        picture: String = emptyString,
         activate: Boolean = false,
         lastLoginDate: Date? = null,
         rememberMe: Boolean = false,
@@ -85,19 +85,15 @@ class StateLogin @Inject constructor(
 
             sp?.apply()
         }
-        /**
-        TODO(reason = "Me falta eliminar al usuario activo")
-        //userDataActive = null
-         */
     }
 
     fun userActive(): UserData {
         _sharedPreferences!!.let { sp ->
             return UserData(
-                username = sp.getString(Name.name, "").toString(),
-                userEmail = sp.getString(Email.name, "").toString(),
-                userPass = sp.getString(Pass.name, "").toString(),
-                userPicture = sp.getString(Picture.name, "").toString(),
+                username = sp.getString(Name.name, emptyString).toString(),
+                userEmail = sp.getString(Email.name, emptyString).toString(),
+                userPass = sp.getString(Pass.name, emptyString).toString(),
+                userPicture = sp.getString(Picture.name, emptyString).toString(),
                 rememberMe = sp.getBoolean(RememberMe.name, false)
             )
         }
@@ -111,7 +107,7 @@ class StateLogin @Inject constructor(
 
     fun loadSettings(): List<Any> {
         val list: MutableList<Any> = mutableListOf()
-        if (!_sharedPreferences?.getString(Name.name, "").isNullOrEmpty()) {
+        if (!_sharedPreferences?.getString(Name.name, emptyString).isNullOrEmpty()) {
             list.addAll(getSharedPreferences())
         } else {
             list.addAll(setSharedPreferencesFirst())

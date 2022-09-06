@@ -3,24 +3,25 @@ package com.softyorch.taskapp.domain.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.softyorch.taskapp.utils.*
 import java.util.*
 
 @Entity(tableName = "userdata_tbl")
 data class UserData(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
-    @ColumnInfo(name = "user_name") var username: String,
-    @ColumnInfo(name = "user_email") var userEmail: String,
-    @ColumnInfo(name = "user_pass") var userPass: String,
-    @ColumnInfo(name = "user_picture") var userPicture: String? = null,
+    @ColumnInfo(name = USER_NAME) var username: String,
+    @ColumnInfo(name = USER_EMAIL) var userEmail: String,
+    @ColumnInfo(name = USER_PASS) var userPass: String,
+    @ColumnInfo(name = USER_PICTURE) var userPicture: String? = null,
     /**
      * User Settings
      */
-    @ColumnInfo(name = "last_login_date") var lastLoginDate: Date? = null,
-    @ColumnInfo(name = "remember_me") var rememberMe: Boolean = false,
-    @ColumnInfo(name = "light_dark_automatic_theme") var lightDarkAutomaticTheme: Boolean = true,
-    @ColumnInfo(name = "light_or_dark_theme") var lightOrDarkTheme: Boolean = false,
-    @ColumnInfo(name = "automatic_language") var automaticLanguage: Boolean = true,
-    @ColumnInfo(name = "automatic_colors") var automaticColors: Boolean = false,
-    @ColumnInfo(name = "time_limit_auto_loading") var timeLimitAutoLoading: Int = 1, //One week
-    @ColumnInfo(name = "text_size") var textSize: Int = 0
+    @ColumnInfo(name = LAST_LOGIN) var lastLoginDate: Date? = null,
+    @ColumnInfo(name = REMEMBER_ME) var rememberMe: Boolean = false,
+    @ColumnInfo(name = LIGHT_DARK_AUTOMATIC) var lightDarkAutomaticTheme: Boolean = true,
+    @ColumnInfo(name = LIGHT_DARK) var lightOrDarkTheme: Boolean = false,
+    @ColumnInfo(name = AUTOMATIC_LANGUAGE) var automaticLanguage: Boolean = true,
+    @ColumnInfo(name = AUTOMATIC_COLORS) var automaticColors: Boolean = false,
+    @ColumnInfo(name = TIME_LIMIT_AUTOLOGIN) var timeLimitAutoLoading: Int = 1, //One week
+    @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
 )

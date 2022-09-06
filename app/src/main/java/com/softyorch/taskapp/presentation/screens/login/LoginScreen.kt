@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,12 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.CheckCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -58,11 +61,11 @@ private fun LoginOrNewAccount(
     navController: NavHostController
 ) {
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
-    val name: String by viewModel.name.observeAsState(initial = "")
-    val email: String by viewModel.email.observeAsState(initial = "")
-    val emailRepeat: String by viewModel.emailRepeat.observeAsState(initial = "")
-    val pass: String by viewModel.pass.observeAsState(initial = "")
-    val passRepeat: String by viewModel.passRepeat.observeAsState(initial = "")
+    val name: String by viewModel.name.observeAsState(initial = emptyString)
+    val email: String by viewModel.email.observeAsState(initial = emptyString)
+    val emailRepeat: String by viewModel.emailRepeat.observeAsState(initial = emptyString)
+    val pass: String by viewModel.pass.observeAsState(initial = emptyString)
+    val passRepeat: String by viewModel.passRepeat.observeAsState(initial = emptyString)
     val rememberMe: Boolean by viewModel.rememberMe.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
@@ -71,7 +74,10 @@ private fun LoginOrNewAccount(
     val coroutineScope = rememberCoroutineScope()
 
     if (isLoading) {
-        CircularIndicatorCustom(text = if (!newAccount) "...login" else "...loading")
+        CircularIndicatorCustom(text = if (!newAccount) stringResource(loading_login) else stringResource(
+                    loading_loading
+        )
+                )
 
     } else {
         Column(
@@ -147,7 +153,7 @@ private fun LoginOrNewAccount(
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "Error, ya existe una cuenta con el correo introducido",
+                                        stringResource(error_email_already_exists),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -164,8 +170,6 @@ private fun LoginOrNewAccount(
                     viewModel.onLoginChange(
                         email = email, pass = pass, rememberMe = it
                     )
-                    Log.d("LOGIN", "RememberMe -> $rememberMe")
-                    Log.d("LOGIN", "it -> $it")
                 }
 
                 Spacer(modifier = modifier.padding(vertical = 8.dp))
@@ -173,7 +177,7 @@ private fun LoginOrNewAccount(
             Spacer(modifier = modifier.padding(vertical = 16.dp))
 
             ButtonLogin(
-                text = if (!newAccount) "Login" else "Create Account",
+                text = if (!newAccount) stringResource(login) else stringResource(create_acount),
                 enable = if (!newAccount) loginEnable else newAccountEnable,
                 primary = true
             ) {
@@ -192,7 +196,7 @@ private fun LoginOrNewAccount(
                         } else {
                             Toast.makeText(
                                 context,
-                                "Error, ya existe una cuenta con el correo introducido",
+                                stringResource(error_email_already_exists),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -200,7 +204,7 @@ private fun LoginOrNewAccount(
                 }
             }
             ButtonLogin(
-                text = if (!newAccount) "New Account" else "Go to Login"
+                text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
             ) {
                 newAccount = !newAccount
             }
@@ -217,7 +221,7 @@ private fun CheckerRememberMe(
     CheckCustom(
         checked = rememberMe,
         onCheckedChange = onCheckedChange,
-        text = "Remember Me",
+        text = stringResource(remember_me),
         horizontalArrangement = Arrangement.End,
         onClick = {}
     )
@@ -229,7 +233,7 @@ private fun TitleLogin(modifier: Modifier) {
     Spacer(modifier = modifier.padding(vertical = 16.dp))
     Image(
         painter = painterResource(id = R.drawable.notes_512x512),
-        contentDescription = "app image",
+        contentDescription = stringResource(app_image),
         contentScale = ContentScale.Crop,
         modifier = Modifier.size(150.dp)
     )
@@ -248,10 +252,10 @@ private fun SubTitleLogin(modifier: Modifier, textSizes: StandardizedSizes) {
 private fun TextFieldName(name: String, onTextFieldChanged: (String) -> Unit) {
     textFieldCustom(
         text = name,
-        label = "Name",
-        placeholder = "type your name",
+        label = stringResource(R.string.name),
+        placeholder = stringResource(type_your_name),
         icon = Icons.Rounded.Person,
-        contentDescription = "type your name",
+        contentDescription = stringResource(type_your_name),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged
         //isError = email.isEmpty() && pushCreate
@@ -265,10 +269,10 @@ private fun TextFieldEmail(
 ) {
     textFieldCustom(
         text = email,
-        label = "Email",
-        placeholder = "type your email",
+        label = stringResource(R.string.email),
+        placeholder = stringResource(type_your_email),
         icon = Icons.Rounded.Email,
-        contentDescription = "type your email",
+        contentDescription = stringResource(type_your_email),
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Email
@@ -286,10 +290,10 @@ private fun TextFieldEmailRepeat(
 ) {
     textFieldCustom(
         text = email,
-        label = "Email",
-        placeholder = "repeat your email",
+        label = stringResource(R.string.email),
+        placeholder = stringResource(repeat_your_email),
         icon = Icons.Rounded.Email,
-        contentDescription = "repeat your email",
+        contentDescription = stringResource(repeat_your_email),
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Email
@@ -307,15 +311,15 @@ private fun TextFieldPass(
 ) {
     textFieldCustom(
         text = pass,
-        label = "Password",
-        placeholder = "type your password",
+        label = stringResource(password),
+        placeholder = stringResource(type_your_password),
         icon = Icons.Rounded.Key,
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             keyboardType = KeyboardType.Password,
             imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
         ),
         keyboardActions = keyboardActions,
-        contentDescription = "type your password",
+        contentDescription = stringResource(type_your_password),
         singleLine = true,
         onTextFieldChanged = onTextFieldChanged,
         password = true
@@ -330,10 +334,10 @@ private fun TextFieldPassRepeat(
 ) {
     textFieldCustom(
         text = passRepeat,
-        label = "Password",
-        placeholder = "repeat your password",
+        label = stringResource(password),
+        placeholder = stringResource(repeat_your_password),
         icon = Icons.Rounded.Key,
-        contentDescription = "repeat your password",
+        contentDescription = stringResource(repeat_your_password),
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             keyboardType = KeyboardType.Password, imeAction = ImeAction.Go
         ),

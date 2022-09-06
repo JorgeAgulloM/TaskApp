@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,6 +22,7 @@ import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.utils.toStringFormatDate
+import com.softyorch.taskapp.R.string.history
 
 
 @ExperimentalMaterial3Api
@@ -32,7 +34,7 @@ fun HistoryScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = "History",
+                title = stringResource(history),
                 nameScreen = AppScreens.HistoryScreen.name,
                 navController = navController,
             )

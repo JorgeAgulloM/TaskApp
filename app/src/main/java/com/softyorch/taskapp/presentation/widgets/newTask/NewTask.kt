@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.widgets.newTask
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,17 +11,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.domain.model.Task
-import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import com.softyorch.taskapp.utils.emptyString
 import com.softyorch.taskapp.utils.toStringFormatted
 import kotlinx.coroutines.Job
 import java.time.Instant
@@ -37,9 +37,9 @@ fun newTask(
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
-    val title: String by viewModel.title.observeAsState(initial = taskToEdit?.title ?: "")
+    val title: String by viewModel.title.observeAsState(initial = taskToEdit?.title ?: emptyString)
     val description: String by viewModel.description.observeAsState(
-        initial = taskToEdit?.description ?: ""
+        initial = taskToEdit?.description ?: emptyString
     )
     val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = taskToEdit != null)
 
@@ -47,10 +47,7 @@ fun newTask(
     val dateCreatedFormatted =
         taskToEdit?.entryDate?.toStringFormatted() ?: Date.from(Instant.now()).toStringFormatted()
     val dateCompletedFormatted =
-        taskToEdit?.finishDate?.toStringFormatted() ?: "Unknown"
-
-    Log.d("VALUES", "Tittle init -> $title")
-    Log.d("VALUES", "Tittle description -> $description")
+        taskToEdit?.finishDate?.toStringFormatted() ?: stringResource(unknown)
 
     Dialog(
         onDismissRequest = {
@@ -121,7 +118,9 @@ fun newTask(
                                 viewModel.onResetValues()
                                 openDialog = false
                             }
-                            ButtonCustom(onClick = { openDialog = false }, text = "Cancel")
+                            ButtonCustom(onClick = { openDialog = false }, text = stringResource(
+                                cancel
+                            ))
                         }
                     }
                 }
@@ -153,7 +152,7 @@ private fun ButtonCustomNewTask(
 ) {
     ButtonCustom(
         onClick = onClick,
-        text = if (taskToEdit == null) "Create" else "Edit Task",
+        text = if (taskToEdit == null) stringResource(create) else stringResource(edit_text),
         primary = true,
         enable = enable
     )
@@ -166,10 +165,10 @@ private fun TextFieldCustomNewTaskName(
 ) {
     textFieldCustom(
         text = text,
-        label = "Name of task",
-        placeholder = "Escribe tu name",
+        label = stringResource(name_task),
+        placeholder = stringResource(write_name),
         icon = Icons.Rounded.Title,
-        contentDescription = "name",
+        contentDescription = stringResource(content_name),
         singleLine = true,
         newTask = true,
         onTextFieldChanged = onCheckedChange
@@ -184,10 +183,10 @@ private fun TextFieldCustomNewTaskDescription(
 ) {
     textFieldCustom(
         text = text,
-        label = "Task description",
-        placeholder = "Escribe una description",
+        label = stringResource(task_description),
+        placeholder = stringResource(write_description),
         icon = Icons.Rounded.Description,
-        contentDescription = "description",
+        contentDescription = stringResource(content_description),
         keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
             imeAction = ImeAction.Go
         ),

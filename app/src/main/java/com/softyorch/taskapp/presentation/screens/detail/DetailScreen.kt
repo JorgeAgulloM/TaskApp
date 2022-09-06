@@ -6,12 +6,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.data.Resource
@@ -38,7 +38,7 @@ fun DetailScreen(
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = "Details",
+                title = stringResource(details),
                 nameScreen = AppScreens.DetailsScreen.name,
                 navController = navController,
             )
@@ -72,7 +72,7 @@ private fun Content(
                     RowInfoDetail(text = task.title)
                     TextDescriptionDetails(task = task)
                     Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfoDetail(text = "Details")
+                    RowInfoDetail(text = stringResource(details))
                     ShowTaskDetails(task = task)
 
                     Column(
@@ -87,11 +87,13 @@ private fun Content(
                         var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
                         var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-                        ButtonCustomDetails(text = "Edit task", primary = true) {
+                        ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
                             openEditDialog = true
                         }
                         ButtonCustomDetails(
-                            text = if (!task.checkState) "Complete?" else "Completed",
+                            text = if (!task.checkState) stringResource(complete) else stringResource(
+                                                            completed
+                            ),
                             primary = true
                         ) {
                             task.checkState = !task.checkState
@@ -99,7 +101,7 @@ private fun Content(
                             viewModel.updateTask(task = task)
                             openCompleteDialog = true
                         }
-                        ButtonCustomDetails(text = "Delete") { openDeleteDialog = true }
+                        ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
 
                         if (openEditDialog) openEditDialog = newTaskDetails(
                             viewModel = viewModel, task = task
@@ -109,7 +111,7 @@ private fun Content(
                             openCompleteDialog = false
                         },
                             confirmButton = {
-                                ButtonCustomDetails(text = "OK", primary = true) {
+                                ButtonCustomDetails(text = stringResource(ok), primary = true) {
                                     navController.popBackStack()
                                     navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
                                     openCompleteDialog = false
@@ -117,7 +119,7 @@ private fun Content(
                             },
                             text = {
                                 TextDetails(
-                                    text = "Great, one less task. On to the next one..."
+                                    text = stringResource(great_next_one)
                                 )
                             }
                         )
@@ -127,20 +129,20 @@ private fun Content(
                                 openDeleteDialog = false
                             },
                             confirmButton = {
-                                ButtonCustomDetails(text = "Delete it", primary = true) {
+                                ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
                                     openDeleteDialog = false
                                     viewModel.removeTask(task = task)
                                     navController.navigate(AppScreens.MainScreen.name)
                                 }
                             },
                             dismissButton = {
-                                ButtonCustomDetails(text = "Cancel") {
+                                ButtonCustomDetails(text = stringResource(cancel)) {
                                     openDeleteDialog = false
                                 }
                             },
                             text = {
                                 TextDetails(
-                                    text = "Are you sure you want to eliminate the task?"
+                                    text = stringResource(you_sure_eliminate_task)
                                 )
                             },
                         )
@@ -200,7 +202,7 @@ private fun ShowTaskDetails(task: Task) {
         author = task.author,
         date = task.entryDate.toStringFormatted(),
         completedDate = task.finishDate?.toStringFormatted()
-            ?: "Unknown",
+            ?: stringResource(unknown),
         paddingStart = 0.dp
     )
 }

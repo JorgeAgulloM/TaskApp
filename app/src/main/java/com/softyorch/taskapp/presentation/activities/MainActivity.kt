@@ -26,8 +26,10 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.TaskAppNavigation
 import com.softyorch.taskapp.presentation.theme.TaskAppTheme
+import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -49,13 +51,14 @@ class MainActivity : ComponentActivity() {
 
         permissionsLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            readPermissionGranted = permissions[READ_EXTERNAL_STORAGE] ?: readPermissionGranted
-            writePermissionGranted = permissions[WRITE_EXTERNAL_STORAGE] ?: writePermissionGranted
-        }
+                readPermissionGranted = permissions[READ_EXTERNAL_STORAGE] ?: readPermissionGranted
+                writePermissionGranted =
+                    permissions[WRITE_EXTERNAL_STORAGE] ?: writePermissionGranted
+            }
         updateOrRequestPermissions()
 
         setContent {
-            val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            val sharedPreferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE)
             val viewModel = hiltViewModel<MainActivityViewModel>()
             viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
             val settingList = viewModel.loadSettings()
@@ -65,7 +68,7 @@ class MainActivity : ComponentActivity() {
             val getImage: () -> Unit = {
                 coroutineScope.launch {
                     coroutineScope.launch {
-                        getImageGallery.launch("image/*")
+                        getImageGallery.launch(GALLERY_IMAGES)
                     }.let {
                         it.join()
                         imageResult = newImageGallery.value
@@ -125,11 +128,11 @@ class MainActivity : ComponentActivity() {
         return try {
             contentResolver.insert(imageCollection, contentValues)?.also { uri ->
                 contentResolver.openOutputStream(uri).use { outputStream ->
-                    if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)){
-                        throw  IOException("Couldn't save bitmap")
+                    if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)) {
+                        throw IOException(getString(io_exception_save_bitmap))
                     }
                 }
-            } ?: throw IOException("Couldn't create MediaStore entry")
+            } ?: throw IOException(getString(io_exception_create_media_store_entry))
             true
         } catch (e: IOException) {
             e.printStackTrace()

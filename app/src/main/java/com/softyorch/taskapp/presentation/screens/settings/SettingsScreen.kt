@@ -8,9 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.components.switchCustom.SwitchCustom
 import com.softyorch.taskapp.presentation.components.sliderCustom.sliderCustom
@@ -26,7 +29,7 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = "Settings",
+                title = stringResource(settings),
                 nameScreen = AppScreens.SettingsScreen.name,
                 navController = navController,
             )
@@ -46,11 +49,11 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
-        if (isLoading) CircularIndicatorCustom(text = "...loading")
+        if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
         if (settings != null) {
 
             SwitchCustomSettings(
-                text = "Light/Dark Automatic Theme",
+                text = stringResource(light_dark_automatic_theme),
                 checked = settings.lightDarkAutomaticTheme
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
@@ -61,7 +64,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             }
 
             if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
-                text = "Manual light/dark theme",
+                text = stringResource(manual_light_dark),
                 checked = settings.lightOrDarkTheme
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
@@ -72,7 +75,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             }
 
             SwitchCustomSettings(
-                text = "Automatic language",
+                text = stringResource(automatic_language),
                 checked = settings.automaticLanguage
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
@@ -83,7 +86,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             }
 
             SwitchCustomSettings(
-                text = "Automatic colors",
+                text = stringResource(automatic_colors),
                 checked = settings.automaticColors
             ) {
                 settings.automaticColors = !settings.automaticColors
@@ -94,7 +97,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             }
 
             SwitchCustomSettings(
-                text = "Remember Me",
+                text = stringResource(remember_me),
                 checked = settings.rememberMe
             ) {
                 settings.rememberMe = !settings.rememberMe
@@ -105,11 +108,13 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
                 content = {
-                    Icon(Icons.Rounded.Info, contentDescription = "Last time to manual login")
+                    Icon(
+                        Icons.Rounded.Info,
+                        contentDescription = stringResource(content_last_time_login)
+                    )
                     RowInfo(
-                        text = "Last login manual: ${
-                            settings.lastLoginDate?.toStringFormatted()
-                        }",
+                        text = stringResource(last_login_manual) +
+                                settings.lastLoginDate?.toStringFormatted(),
                         paddingStart = 8.dp
                     )
                 }
@@ -147,7 +152,7 @@ private fun sliderCustomSettingsAutoLoading(
         initValue = initValue,
         enable = !needReloadDialog,
         onValueChangeFinished = { onValueChangeFinished() },
-        text = "Time to automatic login: ${timeLimitAutoLoginSelectText(initValue)}"
+        text = stringResource(time_automatic_login) + timeLimitAutoLoginSelectText(initValue)
     )
 }
 

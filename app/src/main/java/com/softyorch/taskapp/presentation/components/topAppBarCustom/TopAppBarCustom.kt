@@ -15,12 +15,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.theme.LightMode90t
@@ -52,7 +54,7 @@ fun TopAppBarCustom(
         navigationIcon = {
             if (!isMainScreen) IconButtonTABC(
                 imageVector = Icons.Rounded.ArrowBack,
-                text = "Go To Home",
+                text = stringResource(go_to_home),
             ) {
                 navController.navigate(AppScreensRoutes.MainScreen.route){
                     navController.backQueue.clear()
@@ -61,7 +63,7 @@ fun TopAppBarCustom(
         },
         actions = {
             if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
-                imageVector = Icons.Rounded.Home, text = "Go Home"
+                imageVector = Icons.Rounded.Home, text = stringResource(go_home)
             ) {
                 navController.navigate(AppScreensRoutes.MainScreen.route){
                     navController.backQueue.clear()
@@ -69,13 +71,13 @@ fun TopAppBarCustom(
             }
 
             if (nameScreen != AppScreens.HistoryScreen.name) IconButtonTABC(
-                imageVector = Icons.Rounded.History, text = "History"
+                imageVector = Icons.Rounded.History, text = stringResource(history)
             ) {
                 navController.navigate(AppScreensRoutes.HistoryScreen.route)
             }
 
             if (nameScreen != AppScreens.SettingsScreen.name) IconButtonTABC(
-                imageVector = Icons.Rounded.Settings, text = "Settings"
+                imageVector = Icons.Rounded.Settings, text = stringResource(settings)
             ) {
                 navController.navigate(AppScreensRoutes.SettingsScreen.route)
             }
@@ -125,7 +127,7 @@ private fun IconButtonTABCUser(
                 .data(image)
                 .error(R.drawable.ic_error_outline_24)
                 .build(),
-            contentDescription = "Image of user",
+            contentDescription = stringResource(image_of_user),
             placeholder = painterResource(R.drawable.ic_person_24),
             contentScale = ContentScale.Crop,
             modifier = Modifier

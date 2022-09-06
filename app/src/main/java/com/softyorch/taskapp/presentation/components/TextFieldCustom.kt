@@ -20,10 +20,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.theme.LightMode90t
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.ELEVATION_DP
@@ -89,9 +90,9 @@ fun textFieldCustom(
                     Icons.Rounded.VisibilityOff
 
                 val description = if (passVisible)
-                    "Hide Password"
+                    stringResource(hide_password)
                 else
-                    "Show Password"
+                    stringResource(show_password)
 
                 IconButton(
                     onClick = {
