@@ -73,6 +73,8 @@ private fun LoginOrNewAccount(
 
     val coroutineScope = rememberCoroutineScope()
 
+    val errorEmail = stringResource(error_email_already_exists)
+
     if (isLoading) {
         CircularIndicatorCustom(text = if (!newAccount) stringResource(loading_login) else stringResource(
                     loading_loading
@@ -153,7 +155,7 @@ private fun LoginOrNewAccount(
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        stringResource(error_email_already_exists),
+                                        errorEmail,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -196,7 +198,7 @@ private fun LoginOrNewAccount(
                         } else {
                             Toast.makeText(
                                 context,
-                                stringResource(error_email_already_exists),
+                                errorEmail,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
