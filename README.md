@@ -56,17 +56,31 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-![Task.mp4](https://youtu.be/rOrmNMeZgoU)
+<div>
+<p style = 'text-align:center;'>
+<iframe width="600" height = "420" src="https://youtu.be/rOrmNMeZgoU">
+</iframe>
+</div>
+
+
 
 <br>
 <br>
 
 ## Settings.
-![Settings.mp4](https://youtu.be/ZUFTF1OtWs0)
+<div>
+<p style = 'text-align:center;'>
+<iframe width="600" height = "420" src="https://youtu.be/ZUFTF1OtWs0">
+</iframe>
+</div>
 
 <br>
 <br>
 
 ## Navigation.
-![Navigation.mp4](https://youtu.be/tdLMn0rjapo)
+<div>
+<p style = 'text-align:center;'>
+<iframe width="600" height = "420" src="https://youtu.be/tdLMn0rjapo">
+</iframe>
+</div>
 
