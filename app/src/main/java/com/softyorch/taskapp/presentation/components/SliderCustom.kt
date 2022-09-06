@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.presentation.widgets.RowInfo
@@ -18,18 +19,19 @@ fun sliderCustom(
     enable: Boolean = true,
     valueRange: ClosedFloatingPointRange<Float> = 0f..5f,
     steps: Int = 4,
-    onValueChangeFinished: () -> Unit,
-    text: String
+    text: String,
+    style: TextStyle = MaterialTheme.typography.labelSmall,
+    onValueChangeFinished: () -> Unit
 ): Int {
 
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
 
     Column(
-        modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 8.dp),
+        modifier = Modifier.padding(start = 34.dp, end = 32.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            RowInfo(text = text, paddingStart = 8.dp)
+            RowInfo(text = text, paddingStart = 32.dp, style = style)
             Slider(
                 value = selection,
                 onValueChange = { selection = it },

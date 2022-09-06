@@ -104,18 +104,20 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 coroutineScope.launch { viewModel.applyChanges() }
             }
 
-            if (settings.rememberMe) Row(modifier = Modifier.padding(start = 40.dp, top = 16.dp),
+            if (settings.rememberMe) Row(modifier = Modifier.padding(start = 32.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
                 content = {
                     Icon(
                         Icons.Rounded.Info,
-                        contentDescription = stringResource(content_last_time_login)
+                        contentDescription = stringResource(content_last_time_login),
+                        tint = MaterialTheme.colorScheme.outline
                     )
                     RowInfo(
                         text = stringResource(last_login_manual) +
                                 settings.lastLoginDate?.toStringFormatted(),
-                        paddingStart = 8.dp
+                        paddingStart = 8.dp,
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             )
@@ -151,8 +153,8 @@ private fun sliderCustomSettingsAutoLoading(
     return sliderCustom(
         initValue = initValue,
         enable = !needReloadDialog,
-        onValueChangeFinished = { onValueChangeFinished() },
-        text = stringResource(time_automatic_login) + timeLimitAutoLoginSelectText(initValue)
+        text = stringResource(time_automatic_login) + timeLimitAutoLoginSelectText(initValue),
+        onValueChangeFinished = { onValueChangeFinished() }
     )
 }
 
