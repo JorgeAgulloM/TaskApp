@@ -56,17 +56,17 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-![Task.mp4](https://youtu.be/rOrmNMeZgoU)
+https://youtu.be/rOrmNMeZgoU
 
 <br>
 <br>
 
 ## Settings.
-![Settings.mp4](https://youtu.be/ZUFTF1OtWs0)
+https://youtu.be/ZUFTF1OtWs0
 
 <br>
 <br>
 
 ## Navigation.
-![Navigation.mp4](https://youtu.be/tdLMn0rjapo)
+https://youtu.be/tdLMn0rjapo
 
