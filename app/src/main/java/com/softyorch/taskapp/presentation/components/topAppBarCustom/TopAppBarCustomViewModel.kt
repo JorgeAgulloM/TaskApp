@@ -14,9 +14,14 @@ class TopAppBarCustomViewModel @Inject constructor(
     private val _imageUser = MutableLiveData<String>()
     val imageUser: LiveData<String> = _imageUser
 
+    private val _userName = MutableLiveData<String>()
+    val userName: LiveData<String> = _userName
+
     init {
         _imageUser.value = getUserPicture()
+        _userName.value = getUserName()
     }
 
     private fun getUserPicture(): String? = stateLogin.userDataActive?.userPicture
+    private fun getUserName(): String? = stateLogin.userDataActive?.username
 }

@@ -6,9 +6,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,8 +25,9 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.presentation.theme.LightMode90t
+import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.emptyString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,11 +39,12 @@ fun TopAppBarCustom(
 ) {
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
-    val userPicture: String by viewModel.imageUser.observeAsState(initial = "")
+    val userPicture: String by viewModel.imageUser.observeAsState(initial = emptyString)
+    val userName: String by viewModel.userName.observeAsState(initial = emptyString)
 
     SmallTopAppBar(
         modifier = Modifier.shadow(
-            elevation = 4.dp, shape = MaterialTheme.shapes.large.copy(
+            elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large.copy(
                 topStart = CornerSize(0.dp),
                 topEnd = CornerSize(0.dp)
             )
@@ -56,7 +58,7 @@ fun TopAppBarCustom(
                 imageVector = Icons.Rounded.ArrowBack,
                 text = stringResource(go_to_home),
             ) {
-                navController.navigate(AppScreensRoutes.MainScreen.route){
+                navController.navigate(AppScreensRoutes.MainScreen.route) {
                     navController.backQueue.clear()
                 }
             }
@@ -65,7 +67,7 @@ fun TopAppBarCustom(
             if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.Home, text = stringResource(go_home)
             ) {
-                navController.navigate(AppScreensRoutes.MainScreen.route){
+                navController.navigate(AppScreensRoutes.MainScreen.route) {
                     navController.backQueue.clear()
                 }
             }
@@ -83,7 +85,7 @@ fun TopAppBarCustom(
             }
 
             if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABCUser(
-                image = userPicture
+                image = userPicture, userName = userName
             ) {
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
@@ -119,9 +121,12 @@ private fun IconButtonTABC(
 @Composable
 private fun IconButtonTABCUser(
     image: String?,
+    userName: String,
     onClick: () -> Unit
 ) {
-    IconButton(onClick = { onClick() }) {
+    var onError by rememberSaveable { mutableStateOf(value = false) }
+
+    if (!onError) IconButton(onClick = { onClick() }) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(image)
@@ -139,13 +144,18 @@ private fun IconButtonTABCUser(
             onLoading = {
             },
             onSuccess = {
+                onError = false
             },
             onError = {
+                onError = true
                 /*coroutineScope.launch {
                     delay(2000)
                     reload(image)
                 }*/
             },
         )
+    }
+    else LogoUserCapitalLetter(capitalLetter = userName[0].toString().uppercase()){
+        onError = false
     }
 }
