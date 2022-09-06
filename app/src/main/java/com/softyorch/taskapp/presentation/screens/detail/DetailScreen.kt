@@ -16,7 +16,6 @@ import androidx.navigation.NavController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
@@ -84,7 +83,7 @@ private fun Content(
     ) {
         RowInfoDetail(text = task.title)
         TextDescriptionDetails(task = task)
-        Spacer(modifier = Modifier.padding(top = 16.dp))
+        Divider(modifier = Modifier.padding(top = 8.dp ,bottom = 32.dp))
         RowInfoDetail(text = stringResource(details))
         ShowTaskDetails(task = task)
 
@@ -98,6 +97,7 @@ private fun Content(
 
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
             var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
+            var openResetDialog by rememberSaveable { mutableStateOf(false) }
             var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
             ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
@@ -109,22 +109,25 @@ private fun Content(
                 ),
                 primary = true
             ) {
-                task.checkState = !task.checkState
-                task.finishDate = Date.from(Instant.now())
-                viewModel.updateTask(task = task)
-                openCompleteDialog = true
+                if (!task.checkState) openCompleteDialog = true
+                if (task.checkState) openResetDialog = true
             }
             ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
 
+            /** Edit Dialog */
             if (openEditDialog) openEditDialog = newTaskDetails(
                 viewModel = viewModel, task = task
             )
 
+            /** Complete Dialog */
             if (openCompleteDialog) AlertDialog(onDismissRequest = {
                 openCompleteDialog = false
             },
                 confirmButton = {
-                    ButtonCustomDetails(text = stringResource(ok), primary = true) {
+                    ButtonCustomDetails(text = stringResource(complete), primary = true) {
+                        task.checkState = !task.checkState
+                        task.finishDate = Date.from(Instant.now())
+                        viewModel.updateTask(task = task)
                         navController.popBackStack()
                         navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
                         openCompleteDialog = false
@@ -137,6 +140,34 @@ private fun Content(
                 }
             )
 
+            /** Reset Dialog */
+            if (openResetDialog) AlertDialog(onDismissRequest = {
+                openResetDialog = false
+            },
+                confirmButton = {
+                    ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
+                        /** OJO, se repite el código */
+                        task.checkState = !task.checkState
+                        task.finishDate = Date.from(Instant.now())
+                        viewModel.updateTask(task = task)
+                        navController.popBackStack()
+                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                        openResetDialog = false
+                    }
+                },
+                dismissButton = {
+                    ButtonCustomDetails(text = stringResource(cancel)) {
+                        openResetDialog = false
+                    }
+                },
+                text = {
+                    TextDetails(
+                        text = stringResource(sure_restart_task)
+                    )
+                }
+            )
+
+            /** Delete Dialog */
             if (openDeleteDialog) AlertDialog(
                 onDismissRequest = {
                     openDeleteDialog = false
