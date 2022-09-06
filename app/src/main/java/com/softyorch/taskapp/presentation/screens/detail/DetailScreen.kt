@@ -1,8 +1,10 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,16 +18,20 @@ import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
+import com.softyorch.taskapp.utils.emptyString
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun DetailScreen(
@@ -34,6 +40,7 @@ fun DetailScreen(
 ) {
 
     val viewModel = hiltViewModel<DetailScreenViewModel>()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -44,6 +51,7 @@ fun DetailScreen(
             )
         }
     ) {
+        coroutineScope.launch{viewModel.getTask(id = id)}
         Content(it = it, viewModel = viewModel, navController = navController, id = id)
     }
 }
@@ -55,110 +63,114 @@ private fun Content(
     navController: NavController,
     id: String
 ) {
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val task: Task by viewModel.taskDetail.observeAsState(
+        initial = Task(
+            title = emptyString,
+            description = emptyString,
+            author = emptyString
+        )
+    )
 
-    produceState<Resource<Task>>(initialValue = Resource.Loading()) {
-        value = viewModel.getTaskId(id = id)
-    }.value
-        .let { data ->
-            data.data?.let { task ->
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(
-                            top = it.calculateTopPadding() + 16.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        )
-                ) {
-                    RowInfoDetail(text = task.title)
-                    TextDescriptionDetails(task = task)
-                    Spacer(modifier = Modifier.padding(top = 16.dp))
-                    RowInfoDetail(text = stringResource(details))
-                    ShowTaskDetails(task = task)
+    if (isLoading) CircularIndicatorCustom(stringResource(loading_loading))
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
-                    ) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(
+                top = it.calculateTopPadding() + 16.dp,
+                start = 16.dp,
+                end = 16.dp
+            )
+    ) {
+        RowInfoDetail(text = task.title)
+        TextDescriptionDetails(task = task)
+        Spacer(modifier = Modifier.padding(top = 16.dp))
+        RowInfoDetail(text = stringResource(details))
+        ShowTaskDetails(task = task)
 
-                        var openEditDialog by rememberSaveable { mutableStateOf(false) }
-                        var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
-                        var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
 
-                        ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
-                            openEditDialog = true
-                        }
-                        ButtonCustomDetails(
-                            text = if (!task.checkState) stringResource(complete) else stringResource(
-                                                            completed
-                            ),
-                            primary = true
-                        ) {
-                            task.checkState = !task.checkState
-                            task.finishDate = Date.from(Instant.now())
-                            viewModel.updateTask(task = task)
-                            openCompleteDialog = true
-                        }
-                        ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
+            var openEditDialog by rememberSaveable { mutableStateOf(false) }
+            var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
+            var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-                        if (openEditDialog) openEditDialog = newTaskDetails(
-                            viewModel = viewModel, task = task
-                        )
-
-                        if (openCompleteDialog) AlertDialog(onDismissRequest = {
-                            openCompleteDialog = false
-                        },
-                            confirmButton = {
-                                ButtonCustomDetails(text = stringResource(ok), primary = true) {
-                                    navController.popBackStack()
-                                    navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                                    openCompleteDialog = false
-                                }
-                            },
-                            text = {
-                                TextDetails(
-                                    text = stringResource(great_next_one)
-                                )
-                            }
-                        )
-
-                        if (openDeleteDialog) AlertDialog(
-                            onDismissRequest = {
-                                openDeleteDialog = false
-                            },
-                            confirmButton = {
-                                ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
-                                    openDeleteDialog = false
-                                    viewModel.removeTask(task = task)
-                                    navController.navigate(AppScreens.MainScreen.name)
-                                }
-                            },
-                            dismissButton = {
-                                ButtonCustomDetails(text = stringResource(cancel)) {
-                                    openDeleteDialog = false
-                                }
-                            },
-                            text = {
-                                TextDetails(
-                                    text = stringResource(you_sure_eliminate_task)
-                                )
-                            },
-                        )
-
-                    }
-                }
+            ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
+                openEditDialog = true
             }
+            ButtonCustomDetails(
+                text = if (!task.checkState) stringResource(complete) else stringResource(
+                    completed
+                ),
+                primary = true
+            ) {
+                task.checkState = !task.checkState
+                task.finishDate = Date.from(Instant.now())
+                viewModel.updateTask(task = task)
+                openCompleteDialog = true
+            }
+            ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
+
+            if (openEditDialog) openEditDialog = newTaskDetails(
+                viewModel = viewModel, task = task
+            )
+
+            if (openCompleteDialog) AlertDialog(onDismissRequest = {
+                openCompleteDialog = false
+            },
+                confirmButton = {
+                    ButtonCustomDetails(text = stringResource(ok), primary = true) {
+                        navController.popBackStack()
+                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                        openCompleteDialog = false
+                    }
+                },
+                text = {
+                    TextDetails(
+                        text = stringResource(great_next_one)
+                    )
+                }
+            )
+
+            if (openDeleteDialog) AlertDialog(
+                onDismissRequest = {
+                    openDeleteDialog = false
+                },
+                confirmButton = {
+                    ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
+                        openDeleteDialog = false
+                        viewModel.removeTask(task = task)
+                        navController.navigate(AppScreens.MainScreen.name)
+                    }
+                },
+                dismissButton = {
+                    ButtonCustomDetails(text = stringResource(cancel)) {
+                        openDeleteDialog = false
+                    }
+                },
+                text = {
+                    TextDetails(
+                        text = stringResource(you_sure_eliminate_task)
+                    )
+                },
+            )
+
         }
+    }
 }
+
 
 @Composable
 private fun newTaskDetails(
     viewModel: DetailScreenViewModel,
     task: Task,
 ): Boolean = newTask(
-    addOrEditTaskFunc = viewModel::updateTask,
+    addOrEditTaskFunc = viewModel::updateAndRefreshTask,
     userName = task.author,
     taskToEdit = task
 )
