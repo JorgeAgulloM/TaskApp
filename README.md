@@ -56,7 +56,7 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-![Create Task](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Creacion_tarea.mp4)
+![Create Task](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Task.mp4)
 
 <br>
 <br>
@@ -68,5 +68,5 @@ Demo
 <br>
 
 ## Navigation.
-![Navigation](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Navegacion.mp4)
+![Navigation](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Navigation.mp4)
 
