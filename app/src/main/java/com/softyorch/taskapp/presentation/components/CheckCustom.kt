@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -29,11 +30,12 @@ fun CheckCustom(
             Checkbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                /*colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.tertiary,
-                    uncheckedColor = MaterialTheme.colorScheme.secondary,
-                    checkmarkColor = MaterialTheme.colorScheme.secondary
-                )*/
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.secondary,
+                )
+                /* uncheckedColor = MaterialTheme.colorScheme.secondary,
+                 checkmarkColor = MaterialTheme.colorScheme.secondary
+             )*/
             )
             Text(
                 text = text,
@@ -44,7 +46,10 @@ fun CheckCustom(
                     MaterialTheme.colorScheme.onSurface,*/
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodyMedium
+                style = if (checked) MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.outline,
+                    textDecoration = TextDecoration.LineThrough
+                ) else MaterialTheme.typography.bodyMedium
             )
         }
     )

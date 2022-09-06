@@ -180,7 +180,8 @@ private fun FillLazyColumn(
                         if (isLastItem) {
                             coroutineScope.launch { lazyState.animateScrollToItem(0) }
                         }
-                    }
+                    },
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         } else RowInfo(text = text, paddingStart = 16.dp)
