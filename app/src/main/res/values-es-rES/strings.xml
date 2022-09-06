@@ -78,8 +78,14 @@
     <string name="task_description">Descripción de la tarea</string>
     <string name="write_description">escribe una descripción</string>
     <string name="content_description">description</string>
-    <string name="created_by">Creada por:</string>
-    <string name="created_date">Creada el:</string>
-    <string name="completed_date">Completada el:</string>
+    <string name="created_by">\"Creada por: \"</string>
+    <string name="created_date">\"Creada el: \"</string>
+    <string name="completed_date">\"Completada el: \"</string>
+    <string name="one_day">Un día</string>
+    <string name="one_week">Una semana</string>
+    <string name="two_weeks">Dos semanas</string>
+    <string name="one_month">Un mes</string>
+    <string name="six_months">Seis meses</string>
+    <string name="one_year">Un año</string>
 
 </resources>
