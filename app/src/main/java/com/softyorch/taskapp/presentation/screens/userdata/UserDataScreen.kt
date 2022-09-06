@@ -1,8 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -14,11 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -29,8 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.activities.newImageGallery
@@ -40,11 +34,10 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction1
 
 @ExperimentalMaterial3Api
 @Composable
@@ -109,7 +102,7 @@ private fun ContentUserDataScreen(
         verticalArrangement = Arrangement.Top
     ) {
 
-        AsyncImageDataScreen(image = image) { getUserImage.first() }
+        AsyncImageDataScreen(image = image, userName = name) { getUserImage.first() }
         Spacer(modifier = Modifier.padding(top = 24.dp))
         Column(
             modifier = Modifier
@@ -227,9 +220,12 @@ private fun ContentUserDataScreen(
 @Composable
 private fun AsyncImageDataScreen(
     image: String,
+    userName: String,
     getImage: () -> Unit
 ) {
-    AsyncImage(
+
+/*    var onError by rememberSaveable { mutableStateOf(value = false) }
+    if (onError) AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(image)
             .error(R.drawable.ic_error_outline_24)
@@ -249,16 +245,34 @@ private fun AsyncImageDataScreen(
                 shape = MaterialTheme.shapes.large
             ),
         onLoading = {
+            onError = false
         },
         onSuccess = {
         },
         onError = {
-            /*coroutineScope.launch {
+            onError = true
+            *//*coroutineScope.launch {
                 delay(2000)
                 reload(image)
-            }*/
+            }*//*
         },
     )
+    else*/
+    val context = LocalContext.current
+    val text = stringResource(func_not_active)
+
+    LogoUserCapitalLetter(
+        capitalLetter = (
+                if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
+        size = 200.dp
+    ) {
+        //getImage()
+        Toast.makeText(
+            context,
+            text,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }
 
 @Composable

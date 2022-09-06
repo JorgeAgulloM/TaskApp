@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.presentation.components.topAppBarCustom
 
-import androidx.compose.foundation.background
+import android.util.Size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -8,20 +8,13 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
@@ -124,9 +117,9 @@ private fun IconButtonTABCUser(
     userName: String,
     onClick: () -> Unit
 ) {
-    var onError by rememberSaveable { mutableStateOf(value = false) }
+    //var onError by rememberSaveable { mutableStateOf(value = false) }
 
-    if (!onError) IconButton(onClick = { onClick() }) {
+    /*if (!onError) IconButton(onClick = { onClick() }) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(image)
@@ -148,14 +141,20 @@ private fun IconButtonTABCUser(
             },
             onError = {
                 onError = true
-                /*coroutineScope.launch {
+                *//*coroutineScope.launch {
                     delay(2000)
                     reload(image)
-                }*/
+                }*//*
             },
         )
     }
-    else LogoUserCapitalLetter(capitalLetter = userName[0].toString().uppercase()){
-        onError = false
+    else*/
+
+    LogoUserCapitalLetter(
+        capitalLetter = (
+        if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
+        size = 30.dp
+    ) {
+        onClick()
     }
 }
