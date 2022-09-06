@@ -56,17 +56,17 @@ Demo
 ```
 ### Version 1.0.0-Alpha01
 ## Create Task.
-![Create Task](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Task.mp4)
+![Task.mp4](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Task.mp4)
 
 <br>
 <br>
 
 ## Settings.
-![Settings](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Settings.mp4)
+![Settings.mp4](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Settings.mp4)
 
 <br>
 <br>
 
 ## Navigation.
-![Navigation](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Navigation.mp4)
+![Navigation.mp4](https://github.com/JorgeAgulloM/TaskApp/blob/main/Design/Version_1.0.0_Alpha01/videos/Navigation.mp4)
 
