@@ -9,6 +9,7 @@ import com.softyorch.taskapp.domain.model.Settings
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.toDate
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,17 +53,21 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
     }
 
     fun getData() = context.datastore.data.map { setting ->
-        setting[stringPreferencesKey(Name.name)]
-        setting[stringPreferencesKey(Email.name)]
-        setting[stringPreferencesKey(Pass.name)]
-        setting[stringPreferencesKey(Picture.name)]
-        setting[stringPreferencesKey(LastLoginDate.name)]
-        setting[booleanPreferencesKey(RememberMe.name)]
-        setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
-        setting[booleanPreferencesKey(LightOrDarkTheme.name)]
-        setting[booleanPreferencesKey(AutomaticLanguage.name)]
-        setting[booleanPreferencesKey(AutomaticColors.name)]
-        setting[intPreferencesKey(TimeLimitAutoLoading.name)]
-        setting[intPreferencesKey(TextSize.name)]
+        Settings(
+            username = setting[stringPreferencesKey(Name.name)].orEmpty(),
+            userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
+            userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),
+            userPicture = setting[stringPreferencesKey(Picture.name)].orEmpty(),
+            lastLoginDate = setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
+                ?: emptyString.toDate(),
+            rememberMe = setting[booleanPreferencesKey(RememberMe.name)] ?: false,
+            lightDarkAutomaticTheme = setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
+                ?: false,
+            lightOrDarkTheme = setting[booleanPreferencesKey(LightOrDarkTheme.name)] ?: false,
+            automaticLanguage = setting[booleanPreferencesKey(AutomaticLanguage.name)] ?: false,
+            automaticColors = setting[booleanPreferencesKey(AutomaticColors.name)] ?: false,
+            timeLimitAutoLoading = setting[intPreferencesKey(TimeLimitAutoLoading.name)] ?: 0,
+            textSize = setting[intPreferencesKey(TextSize.name)] ?: 0
+        )
     }
 }
