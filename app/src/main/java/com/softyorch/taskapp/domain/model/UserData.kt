@@ -12,7 +12,7 @@ data class UserData(
     @ColumnInfo(name = USER_NAME) var username: String,
     @ColumnInfo(name = USER_EMAIL) var userEmail: String,
     @ColumnInfo(name = USER_PASS) var userPass: String,
-    @ColumnInfo(name = USER_PICTURE) var userPicture: String? = null,
+    @ColumnInfo(name = USER_PICTURE) var userPicture: String = emptyString,
     /**
      * User Settings
      */
