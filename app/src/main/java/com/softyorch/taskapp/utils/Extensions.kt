@@ -24,9 +24,9 @@ fun Date.toStringFormatHour(): String =
 
 @SuppressLint("SimpleDateFormat")
 fun String.toDate(): Date? {
-    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val formatter = SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
     val text = this
-    return Date.from(Instant.parse("2022-09-07T10:30:00Z"))
+    return formatter.parse(text)
 }
 
 val Context.datastore by preferencesDataStore(name = USER_DATA)
