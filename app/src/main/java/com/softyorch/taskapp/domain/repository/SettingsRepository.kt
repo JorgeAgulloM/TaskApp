@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.domain.repository
 
 import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
-import com.softyorch.taskapp.domain.model.Settings
+import com.softyorch.taskapp.domain.model.UserData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -9,7 +9,7 @@ import javax.inject.Singleton
 class SettingsRepository @Inject constructor(
     private val repository: DatastoreDataBase
 ) {
-    suspend fun saveData(settings: Settings) = repository.savaData(settings = settings)
+    suspend fun saveData(userData: UserData) = repository.savaData(userData = userData)
     suspend fun deleteData() = repository.deleteData()
     fun getData() = repository.getData()
 }

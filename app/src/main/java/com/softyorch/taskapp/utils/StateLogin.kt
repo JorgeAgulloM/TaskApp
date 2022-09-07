@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.content.SharedPreferences
+import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import java.time.Instant
@@ -10,6 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class StateLogin @Inject constructor(
+    private val datastore: DatastoreDataBase
 ) {
 
     private var _sharedPreferences: SharedPreferences? = null

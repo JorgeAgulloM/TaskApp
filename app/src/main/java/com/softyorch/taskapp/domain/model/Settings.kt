@@ -3,6 +3,7 @@ package com.softyorch.taskapp.domain.model
 import com.softyorch.taskapp.utils.emptyString
 import java.util.*
 
+/*
 data class Settings(
     var username: String,
     var userEmail: String,
@@ -17,3 +18,4 @@ data class Settings(
     var timeLimitAutoLoading: Int = 1, //One week
     var textSize: Int = 0
 )
+*/
