@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
@@ -25,7 +26,7 @@ fun Date.toStringFormatHour(): String =
 fun String.toDate(): Date? {
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     val text = this
-    return formatter.parse(text)
+    return Date.from(Instant.parse("2022-09-07T10:30:00Z"))
 }
 
 val Context.datastore by preferencesDataStore(name = USER_DATA)

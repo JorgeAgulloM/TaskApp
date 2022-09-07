@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
 import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val stateLogin: StateLogin,
-    private val datastore: DatastoreDataBase
+    private val datastore: DatastoreRepository
 ) : ViewModel() {
 
     private val _goToAutologin = MutableLiveData<Boolean>()
@@ -42,37 +43,63 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun pruebaDatastore() {
         val prueba = try {
-          viewModelScope.launch(Dispatchers.IO) {
-              datastore.getData().collect(){
+            viewModelScope.launch(Dispatchers.IO) {
+                datastore.getData().collect() {
 
-                  withContext(Dispatchers.Main){
-                      /** Aquí se puede añadir un set a los datos de vista de UI*/
-                  }
-                  Log.d("DATASTORE", "it -> $it")
-              }
-          }
+                    withContext(Dispatchers.Main) {
+                        /** Aquí se puede añadir un set a los datos de vista de UI*/
+                    }
+                    Log.d("DATASTORE", "it -> $it")
+                }
+            }
 
-        } catch ( e: Exception) {
+        } catch (e: Exception) {
 
         }
         Log.d("DATASTORE", "prueba -> $prueba")
     }
 
+    /** Datastore */
 
+    private fun getUser() = datastore.getData()
+
+    /***/
 
 
     private suspend fun loadData() {
         val result = viewModelScope.launch {
-            _goToAutologin.value = userActivated()
+            //_goToAutologin.value = userActivated()
+            _goToAutologin.value = userActivated2()
         }
         result.join()
         _isLoading.postValue(false)
     }
 
+    private suspend fun userActivated2(): Boolean {
+        var active = false
+        getUser().collect() { user ->
+            if (user.rememberMe) {
+                logInWithRememberMe(
+                    email = user.userEmail,
+                    pass = user.userPass
+                ).data.let { userLogin ->
+                    active = if (userLogin != null){
+                        isAutoLogin(user = userLogin)
+                    } else {
+                        false
+                    }
+                }
+            } else {
+                active = false
+            }
+        }
+        return active
+    }
+
     private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
         repository.signInSharePreferences(email = email, password = pass)
 
-    private suspend fun userActivated(): Boolean {
+    /*private suspend fun userActivated(): Boolean {
         if (stateLogin.isTheUserActive()) {
             stateLogin.userActive().let { userData ->
                 logInWithRememberMe(
@@ -84,7 +111,7 @@ class SplashViewModel @Inject constructor(
             }
         }
         return false
-    }
+    }*/
 
     private fun isAutoLogin(user: UserData): Boolean {
         if (user.rememberMe) {

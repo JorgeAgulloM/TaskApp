@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class DatastoreDataBase @Inject constructor(private val context: Context) {
 
-    suspend fun savaData(userData: UserData) {
+    suspend fun saveData(userData: UserData) {
         context.datastore.edit { setting ->
             setting[stringPreferencesKey(Name.name)] = userData.username
             setting[stringPreferencesKey(Email.name)] = userData.userEmail

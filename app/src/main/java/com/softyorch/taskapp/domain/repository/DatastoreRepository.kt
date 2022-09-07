@@ -6,10 +6,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SettingsRepository @Inject constructor(
+class DatastoreRepository @Inject constructor(
     private val repository: DatastoreDataBase
 ) {
-    suspend fun saveData(userData: UserData) = repository.savaData(userData = userData)
-    suspend fun deleteData() = repository.deleteData()
     fun getData() = repository.getData()
+    suspend fun saveData(userData: UserData) = repository.saveData(userData = userData)
+    suspend fun deleteData() = repository.deleteData()
 }

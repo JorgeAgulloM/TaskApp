@@ -6,12 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
+import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -19,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val stateLogin: StateLogin
+    private val stateLogin: StateLogin,
+    private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
     val userDataActive: LiveData<UserData> = _userDataActive
@@ -42,7 +46,7 @@ class UserDataViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val  _savingImage = MutableLiveData<Boolean>()
+    private val _savingImage = MutableLiveData<Boolean>()
     val savingImage: LiveData<Boolean> = _savingImage
 
 /*    private val _mainImage: MutableLiveData<String?> =
@@ -55,9 +59,20 @@ class UserDataViewModel @Inject constructor(
     }
 
     private suspend fun loadData() {
-        getUserActiveSharedPreferences().let { data ->
+        val result = getUserData()
+        userDataActive.value.let { user ->
+            _image.postValue(user?.userPicture ?: emptyString)
+            _name.postValue(user?.username ?: emptyString)
+            _email.postValue(user?.userEmail ?: emptyString)
+            _pass.postValue(user?.userPass ?: emptyString)
+        }
+
+        result.join()
+        _isLoading.postValue(false)
+
+        /*getUserActiveSharedPreferences().let { data ->
             viewModelScope.launch(Dispatchers.IO) {
-                data?.userEmail.let {email ->
+                data?.userEmail.let { email ->
                     repository.getUserDataEmail(email = email!!).let { user ->
                         _userDataActive.postValue(user.data)
                         _image.postValue(user.data?.userPicture ?: "")
@@ -70,7 +85,7 @@ class UserDataViewModel @Inject constructor(
         }.let {
             it.join()
             _isLoading.postValue(false)
-        }
+        }*/
     }
 
     suspend fun onDataChange(name: String, email: String, pass: String) {
@@ -93,8 +108,8 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
-    fun reloadImage(image: String){
-        viewModelScope.launch{
+    fun reloadImage(image: String) {
+        viewModelScope.launch {
             _savingImage.value = true
             _image.value = ""
             delay(500)
@@ -149,7 +164,8 @@ class UserDataViewModel @Inject constructor(
             repository.updateUserData(userData = userData)
         }.let {
             it.join()
-            stateLogin.refreshData(userData = userData)
+            datastore.saveData(userData = userData)
+            //stateLogin.refreshData(userData = userData)
         }
 
     }
@@ -163,8 +179,14 @@ class UserDataViewModel @Inject constructor(
      * stateLogin
      */
 
-    fun logOut() = stateLogin.logOut()
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }//stateLogin.logOut()
 
-    private fun getUserActiveSharedPreferences(): UserData? =
-        stateLogin.userDataActive
+    private suspend fun getUserData() = viewModelScope.launch(Dispatchers.IO) {
+        datastore.getData().collect { userData ->
+            _userDataActive.postValue(userData)
+        }
+    }
+
+    /*private fun getUserActiveSharedPreferences(): UserData? =
+        stateLogin.userDataActive*/
 }
