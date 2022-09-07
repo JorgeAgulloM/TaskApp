@@ -21,4 +21,11 @@ fun Date.toStringFormatDate(): String =
 fun Date.toStringFormatHour(): String =
     SimpleDateFormat("HH:mm:ss").format(this)
 
+@SuppressLint("SimpleDateFormat")
+fun String.toDate(): Date? {
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val text = this
+    return formatter.parse(text)
+}
+
 val Context.datastore by preferencesDataStore(name = USER_DATA)
