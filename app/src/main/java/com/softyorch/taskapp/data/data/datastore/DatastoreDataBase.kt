@@ -58,7 +58,11 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
             userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
             userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),
             userPicture = setting[stringPreferencesKey(Picture.name)].orEmpty(),
-            lastLoginDate = setting[stringPreferencesKey(LastLoginDate.name)]?.toDate(),
+            lastLoginDate = if (setting[stringPreferencesKey(LastLoginDate.name)].isNullOrEmpty()) {
+                null
+            } else {
+                setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
+            },
             rememberMe = setting[booleanPreferencesKey(RememberMe.name)] ?: false,
             lightDarkAutomaticTheme = setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
                 ?: false,
