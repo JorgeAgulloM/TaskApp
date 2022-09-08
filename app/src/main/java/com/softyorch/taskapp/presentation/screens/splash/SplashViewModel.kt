@@ -1,12 +1,10 @@
 package com.softyorch.taskapp.presentation.screens.splash
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.data.Resource
-import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
@@ -14,8 +12,8 @@ import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.util.*
 import javax.inject.Inject
@@ -35,101 +33,59 @@ class SplashViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        viewModelScope.launch {
-            loadData()
-            pruebaDatastore()
-        }
+        loadData()
     }
-
-    private suspend fun pruebaDatastore() {
-        val prueba = try {
-            viewModelScope.launch(Dispatchers.IO) {
-                datastore.getData().collect() {
-
-                    withContext(Dispatchers.Main) {
-                        /** Aquí se puede añadir un set a los datos de vista de UI*/
-                    }
-                    Log.d("DATASTORE", "it -> $it")
-                }
-            }
-
-        } catch (e: Exception) {
-
-        }
-        Log.d("DATASTORE", "prueba -> $prueba")
-    }
-
-    /** Datastore */
 
     private fun getUser() = datastore.getData()
 
-    /***/
+    private fun loadData() = userActivated()
 
-
-    private suspend fun loadData() {
-        val result = viewModelScope.launch {
-            //_goToAutologin.value = userActivated()
-            _goToAutologin.value = userActivated2()
-        }
-        result.join()
-        _isLoading.postValue(false)
-    }
-
-    private suspend fun userActivated2(): Boolean {
-        var active = false
-        getUser().collect() { user ->
-            if (user.rememberMe) {
-                logInWithRememberMe(
-                    email = user.userEmail,
-                    pass = user.userPass
-                ).data.let { userLogin ->
-                    active = if (userLogin != null){
-                        isAutoLogin(user = userLogin)
-                    } else {
-                        false
+    private fun userActivated() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getUser().collect() { user ->
+                if (user.rememberMe) {
+                    logInWithRememberMe(
+                        email = user.userEmail,
+                        pass = user.userPass
+                    ).data.let { userLogin ->
+                        if (userLogin != null) {
+                            isAutoLoginTime(user = userLogin)
+                        } else {
+                            _goToAutologin.postValue(false)
+                            _isLoading.postValue(false)
+                        }
                     }
+                } else {
+                    _goToAutologin.postValue(false)
+                    _isLoading.postValue(false)
                 }
-            } else {
-                active = false
             }
         }
-        return active
     }
 
     private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
         repository.signInSharePreferences(email = email, password = pass)
 
-    /*private suspend fun userActivated(): Boolean {
-        if (stateLogin.isTheUserActive()) {
-            stateLogin.userActive().let { userData ->
-                logInWithRememberMe(
-                    email = userData.userEmail,
-                    pass = userData.userPass
-                ).data?.let { user ->
-                    return isAutoLogin(user = user)
-                }
-            }
-        }
-        return false
-    }*/
-
-    private fun isAutoLogin(user: UserData): Boolean {
-        if (user.rememberMe) {
-            val timeWeekInMillis =
-                timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
-            user.lastLoginDate?.time?.let { autoLoginLimit ->
-                val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
-                timeWeekInMillis.compareTo(dif).let {
-                    when (it) {
-                        1 -> {
-                            stateLogin.logIn(userData = user)
-                            return true
+    private fun isAutoLoginTime(user: UserData) {
+        val timeWeekInMillis =
+            timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
+        user.lastLoginDate?.time?.let { autoLoginLimit ->
+            val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
+            timeWeekInMillis.compareTo(dif).let {
+                when (it) {
+                    1 -> {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            datastore.saveData(userData = user)
                         }
-                        else -> return false
+                        _goToAutologin.postValue(true)
+                        _isLoading.postValue(false)
+                    }
+                    else -> {
+                        _goToAutologin.postValue(false)
+                        _isLoading.postValue(false)
                     }
                 }
             }
         }
-        return false
     }
 }

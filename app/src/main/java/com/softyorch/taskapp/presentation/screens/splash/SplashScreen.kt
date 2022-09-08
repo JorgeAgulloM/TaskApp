@@ -44,7 +44,7 @@ fun SplashScreen(
             })
         )
 
-        delay(1500L) //2000
+        delay(2000L)
 
         val route = if (goToAutoLogin)
             AppScreensRoutes.MainScreen.route
