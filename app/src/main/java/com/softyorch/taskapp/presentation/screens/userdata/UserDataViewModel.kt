@@ -106,10 +106,11 @@ class UserDataViewModel @Inject constructor(
 
         if (_saveEnabled.value == true) {
             _userDataActive.value?.let { data ->
+                Log.d("USERID","onUpdateData.data -> ${data.id}")
                 data.username = name
                 data.userEmail = email
                 data.userPass = pass
-                data.userPicture = emptyString
+                data.userPicture = image
                 viewModelScope.launch(Dispatchers.IO) {
                     datastore.saveData(userData = data)
 
@@ -139,12 +140,12 @@ class UserDataViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().collect { userData ->
-            _userDataActive.postValue(userData)
-            userData.let { user ->
-                _image.postValue(user.userPicture)
+            getUserDataEmail(email = userData.userEmail).data?.let { user ->
+                _userDataActive.postValue(user)
                 _name.postValue(user.username)
                 _email.postValue(user.userEmail)
                 _pass.postValue(user.userPass)
+                _image.postValue(user.userPicture)
                 _isLoading.postValue(false)
             }
         }
