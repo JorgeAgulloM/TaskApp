@@ -47,6 +47,9 @@ class UserDataViewModel @Inject constructor(
     private val _savingImage = MutableLiveData<Boolean>()
     val savingImage: LiveData<Boolean> = _savingImage
 
+    private val _errors = MutableLiveData<ErrorInputTextRequest>()
+    val errors: LiveData<ErrorInputTextRequest> = _errors
+
 /*    private val _mainImage: MutableLiveData<String?> =
         MutableLiveData<String?>(newImageGallery.value)
     val mainImage: LiveData<String?> = _mainImage*/
@@ -96,15 +99,25 @@ class UserDataViewModel @Inject constructor(
     private fun isValidPass(pass: String): Boolean =
         Pattern.matches(REGEX_PASSWORD, pass)
 
-    private suspend fun isValidEmail(email: String): Boolean =
-        getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
+    private fun isValidEmail(email: String): Boolean {
+        var result = false
+        viewModelScope.launch {
+            getUserDataEmail(email = email).data?.userEmail.let {
+                result = !it.isNullOrEmpty()
+            }
+        }
+        return result
+    }
 
     fun onUpdateData(
-        name: String, email: String, pass: String, image: String, errors: ErrorInputText
-    ): ErrorInputText {
+        name: String, email: String, pass: String, image: String
+    ) {
         _isLoading.value = true
 
-        if (_saveEnabled.value == true) {
+        if (_saveEnabled.value == true && !withOutErrors(
+                name, email, pass, image
+            )
+        ) {
             _userDataActive.value?.let { data ->
                 data.username = name
                 data.userEmail = email
@@ -123,19 +136,30 @@ class UserDataViewModel @Inject constructor(
             _isLoading.value = false
         }
 
-        return ErrorInputText(
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
-        )
-
     }
 
-    private fun withOutErrors(name: String, email: String, pass: String, image: String) {
+    private fun withOutErrors(name: String, email: String, pass: String, image: String): Boolean {
 
+        _errors.value = ErrorInputTextRequest(
+            errorName = !isValidName(name = name),
+            errorEmail = !isValidEmail(email = email),
+            errorPass = !isValidPass(pass = pass)
+        )
+
+        _errors.value.let {
+            //it?.errorName =
+            //it?.errorEmail = !isValidEmail(email = email)
+            //_errors.value?.errorRepeatEmail = isValidName(name = name)
+            //it?.errorPass = !isValidPass(pass = pass)
+            //_errors.value?.errorRepeatPass = isValidName(name = name)
+            Log.d("ERRORS", "Sentencia -> ${it?.errorName == true || it?.errorEmail == true || it?.errorPass == true}")
+            Log.d("ERRORS", "errorName -> ${it?.errorName == true}")
+            Log.d("ERRORS", "errorEmail -> ${it?.errorEmail == true}")
+            Log.d("ERRORS", "errorPass -> ${it?.errorPass == true}")
+            errors.value.let { error ->
+                return (error?.errorName == true || error?.errorEmail == true || error?.errorPass == true)
+            }
+        }
     }
 
     /**

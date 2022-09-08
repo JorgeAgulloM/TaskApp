@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,6 +36,7 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
+import com.softyorch.taskapp.presentation.screens.userdata.UserDataInputError.*
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
@@ -97,7 +99,10 @@ private fun ContentUserDataScreen(
     var cancelDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
 
-    val errors by rememberSaveable { mutableStateOf(UserDataInputError.ErrorInputText())}
+    //val errors by rememberSaveable { mutableStateOf(ErrorInputTextRequest()) }
+    val errors: ErrorInputTextRequest by viewModel.errors
+        .observeAsState(initial = ErrorInputTextRequest())
+    Log.d("ERRORS", "errors -> $errors")
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
@@ -116,7 +121,7 @@ private fun ContentUserDataScreen(
 
             TextFieldCustomDataScreen(
                 text = name, label = stringResource(R.string.name),
-                icon = Icons.Rounded.Person
+                icon = Icons.Rounded.Person, error = errors.errorName
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -130,7 +135,7 @@ private fun ContentUserDataScreen(
                 text = email, label = stringResource(R.string.email),
                 icon = Icons.Rounded.Email,
                 capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email, error = errors.errorEmail
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -149,7 +154,8 @@ private fun ContentUserDataScreen(
                     onGo = {
                         confirmDialog = true
                     }
-                )
+                ),
+                error = errors.errorPass
             ) {
                 viewModel.viewModelScope.launch {
                     viewModel.onDataChange(
@@ -204,7 +210,12 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.onUpdateData(name = name, email = email, pass = pass, image = image, errors = errors)
+        viewModel.onUpdateData(
+            name = name.trim(),
+            email = email.trim(),
+            pass = pass.trim(),
+            image = image
+        )
         confirmDialog = false
     }
 
@@ -286,8 +297,8 @@ private fun ButtonCustomDataScreen(
         text = text,
         enable = enable,
         primary = primary,
-        error = true
-    ){
+        error = false
+    ) {
         onclick()
     }
 }
@@ -302,6 +313,7 @@ private fun TextFieldCustomDataScreen(
     imeAction: ImeAction = ImeAction.Next,
     keyboardActions: KeyboardActions = KeyboardActions(),
     password: Boolean = false,
+    error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
@@ -317,6 +329,7 @@ private fun TextFieldCustomDataScreen(
         ),
         keyboardActions = keyboardActions,
         singleLine = true,
+        isError = error,
         password = password,
         onTextFieldChanged = { onTextFieldChanged(it) }
     )
