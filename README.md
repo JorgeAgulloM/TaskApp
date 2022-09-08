@@ -39,6 +39,7 @@ This app is developed with:
 - JetPack Compose 1.3.0-beta01
 - Dagger Hilt 2.42
 - Room 2.4.3
+- Datastore 1.0.0
 - Coroutines 1.6.4
 - LiveData 1.2.1
 - MVVM
@@ -68,3 +69,12 @@ https://www.youtube.com/embed/ZUFTF1OtWs0
 
 ## Navigation.
 https://www.youtube.com/embed/tdLMn0rjapo
+
+<br>
+<br>
+
+### Version 1.1.0-Alpha01
+Version 1.1.0_Alpha01 - 08/09/2022
+
+Datastore has been added to replace SharePreferences, since google has deprecated them.
+
