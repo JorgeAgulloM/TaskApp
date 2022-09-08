@@ -10,12 +10,12 @@ import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TopAppBarCustomViewModel @Inject constructor(
-    private val stateLogin: StateLogin,
     private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userData = MutableLiveData<UserData>()
@@ -28,20 +28,17 @@ class TopAppBarCustomViewModel @Inject constructor(
     val userName: LiveData<String> = _userName
 
     init {
-
-        viewModelScope.launch {
-            getUserData().join()
-            _imageUser.postValue(userData.value?.userPicture ?: emptyString)
-            _userName.postValue(userData.value?.username?: emptyString)
-        }
+        getUserData()
     }
 
-    private fun getUserData() = viewModelScope.launch(Dispatchers.IO) {
-        datastore.getData().collect { userData ->
-            _userData.postValue(userData)
+    private fun getUserData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            datastore.getData().collect { userData ->
+                _userData.postValue(userData).let {
+                    _imageUser.postValue(userData.userPicture)
+                    _userName.postValue(userData.username)
+                }
+            }
         }
     }
-
-    //private fun getUserPicture(): String? = stateLogin.userDataActive?.userPicture
-    //private fun getUserName(): String? = stateLogin.userDataActive?.username
 }
