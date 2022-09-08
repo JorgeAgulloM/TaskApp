@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.splash
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -33,7 +34,7 @@ fun SplashScreen(
 ) {
 
     val goToAutoLogin by viewModel.goToAutologin.observeAsState(initial = false)
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
     val scale = remember { Animatable(0f) }
 
     LaunchedEffect(key1 = true, block = {
@@ -44,20 +45,21 @@ fun SplashScreen(
             })
         )
 
-        delay(2000L)
+        delay(1500L)
 
-        val route = if (goToAutoLogin)
-            AppScreensRoutes.MainScreen.route
-        else AppScreensRoutes.LoginScreen.route
+        if (!isLoading) {
+            val route = if (goToAutoLogin)
+                AppScreensRoutes.MainScreen.route
+            else AppScreensRoutes.LoginScreen.route
 
-        navController.navigate(route) {
-            popUpTo(AppScreensRoutes.SplashScreen.route) {
-                inclusive = true
+            navController.navigate(route) {
+                popUpTo(AppScreensRoutes.SplashScreen.route) {
+                    inclusive = true
+                }
             }
         }
     })
 
-    if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.6f)
