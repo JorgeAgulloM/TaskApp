@@ -11,6 +11,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -95,6 +96,8 @@ private fun ContentUserDataScreen(
     var confirmDialog by remember { mutableStateOf(value = false) }
     var cancelDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
+
+    val errors by rememberSaveable { mutableStateOf(UserDataInputError.ErrorInputText())}
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
@@ -201,7 +204,7 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.onUpdateData(name = name, email = email, pass = pass, image = image)
+        viewModel.onUpdateData(name = name, email = email, pass = pass, image = image, errors = errors)
         confirmDialog = false
     }
 
@@ -280,11 +283,13 @@ private fun ButtonCustomDataScreen(
     text: String, enable: Boolean = true, primary: Boolean = false, onclick: () -> Unit
 ) {
     ButtonCustom(
-        onClick = { onclick() },
         text = text,
         enable = enable,
-        primary = primary
-    )
+        primary = primary,
+        error = true
+    ){
+        onclick()
+    }
 }
 
 @Composable

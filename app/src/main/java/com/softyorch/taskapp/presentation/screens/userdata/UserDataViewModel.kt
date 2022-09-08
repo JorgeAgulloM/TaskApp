@@ -9,6 +9,7 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
+import com.softyorch.taskapp.presentation.screens.userdata.UserDataInputError.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -59,9 +60,10 @@ class UserDataViewModel @Inject constructor(
         _name.value = name
         _email.value = email
         _pass.value = pass
-        _saveEnabled.value = isValidName(name = name) &&
-                isValidEmail(email = email) &&
-                isValidPass(pass = pass)
+        _saveEnabled.value = true
+        /*isValidName(name = name) &&
+                    isValidEmail(email = email) &&
+                    isValidPass(pass = pass)*/
     }
 
     fun onImageChange(image: String) {
@@ -97,12 +99,13 @@ class UserDataViewModel @Inject constructor(
     private suspend fun isValidEmail(email: String): Boolean =
         getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
 
-    fun onUpdateData(name: String, email: String, pass: String, image: String) {
+    fun onUpdateData(
+        name: String, email: String, pass: String, image: String, errors: ErrorInputText
+    ): ErrorInputText {
         _isLoading.value = true
 
         if (_saveEnabled.value == true) {
             _userDataActive.value?.let { data ->
-                Log.d("USERID","onUpdateData.data -> ${data.id}")
                 data.username = name
                 data.userEmail = email
                 data.userPass = pass
@@ -119,6 +122,20 @@ class UserDataViewModel @Inject constructor(
         } else {
             _isLoading.value = false
         }
+
+        return ErrorInputText(
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        )
+
+    }
+
+    private fun withOutErrors(name: String, email: String, pass: String, image: String) {
+
     }
 
     /**
