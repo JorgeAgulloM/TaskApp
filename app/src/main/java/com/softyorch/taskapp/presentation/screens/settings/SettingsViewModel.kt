@@ -43,8 +43,10 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().collect { userData ->
-            _settings.postValue(userData)
-            _isLoading.postValue(false)
+            repository.getUserDataEmail(email = userData.userEmail).data.let { user ->
+                _settings.postValue(user)
+                _isLoading.postValue(false)
+            }
         }
     }
 
