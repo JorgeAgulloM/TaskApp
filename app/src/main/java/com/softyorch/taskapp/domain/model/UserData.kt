@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
-@Entity(tableName = "userdata_tbl")
+@Entity(tableName = USERDATA_TBL)
 data class UserData(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = USER_NAME) var username: String,
