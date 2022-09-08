@@ -6,29 +6,32 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.TaskRepository
-import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
     private val repository: TaskRepository,
-    private val stateLogin: StateLogin
+    private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _user = MutableLiveData<String>()
     val user: LiveData<String> = _user
 
     init {
-        _user.postValue(getUserName())
+        getUserName()
     }
 
-    private fun getUserName(): String {
-        val user = stateLogin.userDataActive?.username.toString()
-        Log.d("FABVM", "user of autologin -> $user")
-        Log.d("AUTOLOGINLOAD", "autologin FAB -> $stateLogin")
-        return user
+    private fun getUserName() {
+        viewModelScope.launch(Dispatchers.IO) {
+            datastore.getData().collect{
+                _user.postValue(it.username)
+            }
+        }
     }
 
     fun addTask(task: Task) = viewModelScope.launch { repository.addTask(task = task) }

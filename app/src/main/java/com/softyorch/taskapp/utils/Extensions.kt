@@ -1,7 +1,10 @@
 package com.softyorch.taskapp.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
+import androidx.datastore.preferences.preferencesDataStore
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
@@ -19,3 +22,8 @@ fun Date.toStringFormatDate(): String =
 fun Date.toStringFormatHour(): String =
     SimpleDateFormat("HH:mm:ss").format(this)
 
+@SuppressLint("SimpleDateFormat")
+fun String.toDate(): Date? =
+    SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH).parse(this)
+
+val Context.datastore by preferencesDataStore(name = USER_DATA)

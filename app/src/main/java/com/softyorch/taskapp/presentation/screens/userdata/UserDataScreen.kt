@@ -201,7 +201,7 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.viewModelScope.launch { viewModel.onUpdateData() }
+        viewModel.onUpdateData(name = name, email = email, pass = pass, image = image)
         confirmDialog = false
     }
 

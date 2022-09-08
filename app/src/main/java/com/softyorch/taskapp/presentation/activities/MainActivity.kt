@@ -22,14 +22,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.navigation.TaskAppNavigation
-import com.softyorch.taskapp.presentation.screens.DevelopScreen
 import com.softyorch.taskapp.presentation.theme.TaskAppTheme
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.sdk29AndUp
@@ -60,11 +59,11 @@ class MainActivity : ComponentActivity() {
         updateOrRequestPermissions()
 
         setContent {
-            val sharedPreferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE)
             val viewModel = hiltViewModel<MainActivityViewModel>()
-            viewModel.loadSharePreferences(sharedPreferences = sharedPreferences)
-            val settingList = viewModel.loadSettings()
-            val reloadComposable: () -> Unit = { this.recreate() }
+            val reloadComposable: () -> Unit = {
+                viewModel.reloadSettings()
+                this.recreate()
+            }
             val coroutineScope = rememberCoroutineScope()
             var imageResult: String? = newImageGallery.observeAsState().value
             val getImage: () -> Unit = {
@@ -81,12 +80,11 @@ class MainActivity : ComponentActivity() {
             val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
 
             TaskApp(
-                settingList = settingList,
+                viewModel = viewModel,
                 reloadComposable = reloadComposable,
                 getUserImage = getUserImage
             )
         }
-
     }
 
     private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
@@ -116,34 +114,6 @@ class MainActivity : ComponentActivity() {
             permissionsLauncher.launch(permissionsToRequest.toTypedArray())
     }
 
-    private fun savePhotoToExternalStorage(displayName: String, bmp: Bitmap): Boolean {
-        val imageCollection = sdk29AndUp {
-            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        } ?: MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.jpg")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.WIDTH, bmp.width)
-            put(MediaStore.Images.Media.HEIGHT, bmp.height)
-        }
-
-        return try {
-            contentResolver.insert(imageCollection, contentValues)?.also { uri ->
-                contentResolver.openOutputStream(uri).use { outputStream ->
-                    if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)) {
-                        throw IOException(getString(io_exception_save_bitmap))
-                    }
-                }
-            } ?: throw IOException(getString(io_exception_create_media_store_entry))
-            true
-        } catch (e: IOException) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-
 }
 
 /**
@@ -159,18 +129,19 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 @Composable
 private fun TaskApp(
-    settingList: List<Any>,
+    viewModel: MainActivityViewModel,
     reloadComposable: () -> Unit,
     getUserImage: Pair<() -> Unit, String?>
 ) {
 
-    val darkSystem by remember { mutableStateOf(settingList[2] as Boolean) }
-    val light by remember { mutableStateOf(settingList[3] as Boolean) }
-    val colorSystem by remember { mutableStateOf(settingList[5] as Boolean) }
+    val darkSystem: Boolean by viewModel.darkSystem.observeAsState(initial = false)
+    val lightOrDark: Boolean by viewModel.lightOrDark.observeAsState(initial = false)
+    val colorSystem: Boolean by viewModel.colorSystem.observeAsState(initial = false)
+    val languageAuto: Boolean by viewModel.language.observeAsState(initial = false)
 
     TaskAppTheme(
         darkTheme = if (darkSystem) isSystemInDarkTheme()
-        else light,
+        else lightOrDark,
         dynamicColor = colorSystem
     ) {
         Surface(
@@ -181,15 +152,32 @@ private fun TaskApp(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun Develop() {
-    TaskAppTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            DevelopScreen()
-        }
-    }
-}
 
+/*
+//Esto debería ir en onCreate
+private fun savePhotoToExternalStorage(displayName: String, bmp: Bitmap): Boolean {
+     val imageCollection = sdk29AndUp {
+         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+     } ?: MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+     val contentValues = ContentValues().apply {
+         put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.jpg")
+         put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+         put(MediaStore.Images.Media.WIDTH, bmp.width)
+         put(MediaStore.Images.Media.HEIGHT, bmp.height)
+     }
+
+     return try {
+         contentResolver.insert(imageCollection, contentValues)?.also { uri ->
+             contentResolver.openOutputStream(uri).use { outputStream ->
+                 if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)) {
+                     throw IOException(getString(io_exception_save_bitmap))
+                 }
+             }
+         } ?: throw IOException(getString(io_exception_create_media_store_entry))
+         true
+     } catch (e: IOException) {
+         e.printStackTrace()
+         false
+     }
+ }*/

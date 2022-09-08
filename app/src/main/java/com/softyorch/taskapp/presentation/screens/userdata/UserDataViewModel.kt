@@ -1,13 +1,14 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val stateLogin: StateLogin
+    private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
     val userDataActive: LiveData<UserData> = _userDataActive
@@ -42,7 +43,7 @@ class UserDataViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val  _savingImage = MutableLiveData<Boolean>()
+    private val _savingImage = MutableLiveData<Boolean>()
     val savingImage: LiveData<Boolean> = _savingImage
 
 /*    private val _mainImage: MutableLiveData<String?> =
@@ -51,26 +52,7 @@ class UserDataViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        viewModelScope.launch { loadData() }
-    }
-
-    private suspend fun loadData() {
-        getUserActiveSharedPreferences().let { data ->
-            viewModelScope.launch(Dispatchers.IO) {
-                data?.userEmail.let {email ->
-                    repository.getUserDataEmail(email = email!!).let { user ->
-                        _userDataActive.postValue(user.data)
-                        _image.postValue(user.data?.userPicture ?: "")
-                        _name.postValue(user.data?.username ?: "")
-                        _email.postValue(user.data?.userEmail ?: "")
-                        _pass.postValue(user.data?.userPass ?: "")
-                    }
-                }
-            }
-        }.let {
-            it.join()
-            _isLoading.postValue(false)
-        }
+        loadUserData()
     }
 
     suspend fun onDataChange(name: String, email: String, pass: String) {
@@ -93,8 +75,8 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
-    fun reloadImage(image: String){
-        viewModelScope.launch{
+    fun reloadImage(image: String) {
+        viewModelScope.launch {
             _savingImage.value = true
             _image.value = ""
             delay(500)
@@ -115,27 +97,29 @@ class UserDataViewModel @Inject constructor(
     private suspend fun isValidEmail(email: String): Boolean =
         getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
 
-    suspend fun onUpdateData(): Boolean {
+    fun onUpdateData(name: String, email: String, pass: String, image: String) {
         _isLoading.value = true
 
-        if (_saveEnabled.value == true) _userDataActive.value?.let { data ->
-            data.username = name.value!!
-            data.userEmail = email.value!!
-            data.userPass = pass.value!!
-            data.userPicture = image.value!!
-            viewModelScope.launch {
-                updateUserData(userData = data)
-            }.let {
-                it.join()
-                _isLoading.value = false
-                _saveEnabled.postValue(false)
-                return true
+        if (_saveEnabled.value == true) {
+            _userDataActive.value?.let { data ->
+                Log.d("USERID","onUpdateData.data -> ${data.id}")
+                data.username = name
+                data.userEmail = email
+                data.userPass = pass
+                data.userPicture = image
+                viewModelScope.launch(Dispatchers.IO) {
+                    datastore.saveData(userData = data)
+
+                    repository.updateUserData(userData = data)
+
+                    _isLoading.postValue(false)
+                    _saveEnabled.postValue(false)
+                }
             }
+        } else {
+            _isLoading.value = false
         }
-
-        return false
     }
-
 
     /**
      * data
@@ -144,27 +128,23 @@ class UserDataViewModel @Inject constructor(
     private suspend fun getUserDataEmail(email: String): Resource<UserData> =
         repository.getUserDataEmail(email = email)
 
-    private suspend fun updateUserData(userData: UserData) {
-        viewModelScope.launch {
-            repository.updateUserData(userData = userData)
-        }.let {
-            it.join()
-            stateLogin.refreshData(userData = userData)
-        }
-
-    }
-
-/*    fun deleteUserData(userData: UserData) = viewModelScope.launch {
-        repository.deleteUserData(userData = userData)
-    }*/
-
-
     /**
-     * stateLogin
+     * datastore
      */
 
-    fun logOut() = stateLogin.logOut()
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
 
-    private fun getUserActiveSharedPreferences(): UserData? =
-        stateLogin.userDataActive
+    private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
+        datastore.getData().collect { userData ->
+            getUserDataEmail(email = userData.userEmail).data?.let { user ->
+                _userDataActive.postValue(user)
+                _name.postValue(user.username)
+                _email.postValue(user.userEmail)
+                _pass.postValue(user.userPass)
+                _image.postValue(user.userPicture)
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
 }
