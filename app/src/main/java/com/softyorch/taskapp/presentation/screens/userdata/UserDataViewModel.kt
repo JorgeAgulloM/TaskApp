@@ -9,21 +9,17 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.utils.StateLogin
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
-import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val stateLogin: StateLogin,
     private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
