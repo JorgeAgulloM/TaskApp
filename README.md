@@ -76,5 +76,5 @@ https://www.youtube.com/embed/tdLMn0rjapo
 ### Version 1.1.0-Alpha01
 Version 1.1.0_Alpha01 - 08/09/2022
 
-Datastore has been added to replace SharePreferences, since google has deprecated them.
+Datastore has been added to replace SharePreferences, since google has deprecated them. 
 
