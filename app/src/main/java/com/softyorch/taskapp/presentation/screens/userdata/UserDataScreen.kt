@@ -178,12 +178,12 @@ private fun ContentUserDataScreen(
         onDismissRequest = { logOutDialog = false },
         onDismissButtonClick = { logOutDialog = false }
     ) {
-        viewModel.logOut()
         logOutDialog = false
-        navController.navigate(AppScreensRoutes.SplashScreen.route) {
-            navController.backQueue.clear()
+        viewModel.logOut().also {
+            navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                navController.backQueue.clear()
+            }
         }
-
     }
 
     if (confirmDialog) UserDataDialog(
