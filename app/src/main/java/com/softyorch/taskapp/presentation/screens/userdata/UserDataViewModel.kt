@@ -76,8 +76,8 @@ class UserDataViewModel @Inject constructor(
         _saveEnabled.value = true
         if (_foundError.value == true) {
             isValidEmail(email = email)
-            _error.value =
-                (!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
+            _error.value = withOutErrors(name = name, email = email, pass = pass)
+                //(!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
         }
     }
 
