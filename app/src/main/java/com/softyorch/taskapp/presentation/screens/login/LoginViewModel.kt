@@ -52,11 +52,36 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _errorName = MutableLiveData<Boolean>()
+    val errorName: LiveData<Boolean> = _errorName
+
+    private val _errorEmail = MutableLiveData<Boolean>()
+    val errorEmail: LiveData<Boolean> = _errorEmail
+
+    private val _errorRepeatEmail = MutableLiveData<Boolean>()
+    val errorRepeatEmail: LiveData<Boolean> = _errorRepeatEmail
+
+    private val _errorPass = MutableLiveData<Boolean>()
+    val errorPass: LiveData<Boolean> = _errorPass
+
+    private val _errorRepeatPass = MutableLiveData<Boolean>()
+    val errorRepeatPass: LiveData<Boolean> = _errorRepeatPass
+
+    private val _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean> = _error
+
+    private val _foundError = MutableLiveData<Boolean>()
+
     fun onLoginChange(email: String, pass: String, rememberMe: Boolean) {
         _email.value = email
         _pass.value = pass
         _rememberMe.value = rememberMe
-        _loginEnable.value = isValidEmail(email = email) && isValidPass(pass = pass)
+        _loginEnable.value = true
+        if (_foundError.value == true) {
+            isValidEmail(email = email)
+            _error.value = withOutErrors(email = email, pass = pass)
+                //(errorEmail.value == true || !isValidPass(pass = pass))
+        }
     }
 
     fun onNewAccountChange(
@@ -73,60 +98,64 @@ class LoginViewModel @Inject constructor(
         _pass.value = pass
         _passRepeat.value = passRepeat
         _image.value = image
-        _newAccountEnable.value = isNameValid(name = name) &&
-                isValidEmail(email = email, emailRepeat = emailRepeat) &&
-                isValidPass(pass = pass, passRepeat = passRepeat)
-    }
-
-    suspend fun onLoginSelected() : Boolean {
-        _isLoading.value = true
-        loginAndUpdateData(
-            email = email.value!!, password = pass.value!!, rememberMe = rememberMe.value!!
-        ).let {
-            //delay(3000)
-            _isLoading.value = false
-            return it
+        _newAccountEnable.value = true
+        if (_foundError.value == true) {
+            isValidEmail(email = email)
+            _error.value = withOutErrors(
+                name = name,
+                email = email,
+                emailRepeat = emailRepeat,
+                pass = pass,
+                passRepeat = passRepeat
+            )
+                /*(!isValidName(name = name) ||
+                        errorEmail.value == true ||
+                        !isValidEmail(email = email, emailRepeat = emailRepeat) ||
+                        !isValidPass(pass = pass) ||
+                        !isValidPass(pass = pass, passRepeat = passRepeat)
+                        )*/
         }
     }
 
-    suspend fun onNewAccountSelected(): Boolean {
+    suspend fun onLoginSelected(email: String, pass: String): Boolean {
         _isLoading.value = true
-        addNewUser(
-            UserData(username = name.value!!, userEmail = email.value!!, userPass = pass.value!!)
-        ).let {
-            //delay(1000)
-            _isLoading.value = false
-            return it
+        withOutErrors(email = email, pass = pass).let { error ->
+            if (_foundError.value != true) _foundError.postValue(error)
+            _error.postValue(error)
+            loginAndUpdateData(
+                email = email, password = pass, rememberMe = rememberMe.value!!
+            ).let {
+                _isLoading.value = false
+                return it
+            }
         }
     }
 
-    private fun isNameValid(name: String): Boolean = name.length >= 3
-
-    private fun isValidEmail(email: String): Boolean =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    private fun isValidEmail(email: String, emailRepeat: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-                Patterns.EMAIL_ADDRESS.matcher(emailRepeat).matches()
+    suspend fun onNewAccountSelected(
+        name: String,
+        email: String,
+        emailRepeat: String,
+        pass: String,
+        passRepeat: String
+    ): Boolean {
+        _isLoading.value = true
+        withOutErrors(
+            name = name,
+            email = email,
+            emailRepeat = emailRepeat,
+            pass = pass,
+            passRepeat = passRepeat
+        ).let { error ->
+            if (_foundError.value != true) _foundError.postValue(error)
+            _error.postValue(error)
+            addNewUser(
+                UserData(username = name, userEmail = email, userPass = pass)
+            ).let {
+                _isLoading.value = false
+                return it
+            }
+        }
     }
-
-    private fun isValidPass(pass: String): Boolean = pass.length >= 8
-
-    private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        Pattern.matches(REGEX_PASSWORD, pass) &&
-        pass == passRepeat
-
-
-    /**
-     * data
-     */
-
-    private suspend fun addNewUser(userData: UserData): Boolean {
-        return repository.addUserData(userData = userData)
-    }
-
-    private fun updateLastLoginUser(userData: UserData) =
-        viewModelScope.launch { repository.updateUserData(userData = userData) }
 
     private suspend fun loginAndUpdateData(
         email: String,
@@ -139,23 +168,74 @@ class LoginViewModel @Inject constructor(
                 user.rememberMe = rememberMe
                 updateLastLoginUser(userData = user)
                 datastore.saveData(userData = user)
-                //stateLogin.logIn(userData = user)
+
                 return true
             }
         }
         return false
     }
 
+    fun resetErrorChangeLoginToNewAccountVis() {
+        _errorName.value = false
+        _errorEmail.value = false
+        _errorRepeatEmail.value =false
+        _errorPass.value = false
+        _errorRepeatPass.value = false
+        _error.value = false
+        _foundError.value = false
+    }
+
+    /**
+     * Errors Control
+     */
+
+    private fun withOutErrors(email: String, pass: String): Boolean {
+        isValidEmail(email = email)
+        return (errorEmail.value == true || !isValidPass(pass = pass))
+    }
+
+    private fun withOutErrors(
+        name: String, email: String, emailRepeat: String, pass: String, passRepeat: String
+    ): Boolean {
+        isValidEmail(email = email)
+        return (!isValidName(name = name) ||
+                errorEmail.value == true ||
+                !isValidEmail(email = email, emailRepeat = emailRepeat) ||
+                !isValidPass(pass = pass) ||
+                !isValidPass(pass = pass, passRepeat = passRepeat))
+    }
+
+    private fun isValidName(name: String): Boolean =
+        (name.length >= 3).also { _errorName.value = !it }
+
+    private fun isValidEmail(email: String): Boolean =
+        Patterns.EMAIL_ADDRESS.matcher(email).matches().also { _errorEmail.value = !it }
+
+    private fun isValidEmail(email: String, emailRepeat: String): Boolean =
+        (email == emailRepeat).also { _errorRepeatEmail.value = !it }
+
+    private fun isValidPass(pass: String): Boolean =
+        Pattern.matches(REGEX_PASSWORD, pass).also { _errorPass.value = !it }
+
+    private fun isValidPass(pass: String, passRepeat: String): Boolean =
+        (pass == passRepeat).also { _errorRepeatPass.value = !it }
+
+    /**
+     * data
+     */
+
+    private suspend fun addNewUser(userData: UserData): Boolean {
+        return repository.addUserData(userData = userData)
+    }
+
+    private fun updateLastLoginUser(userData: UserData) =
+        viewModelScope.launch { repository.updateUserData(userData = userData) }
+
     private suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
     ): Resource<UserData> =
         repository.signInUserWithEmailAndPassword(email = email, password = password)
-
-
-    /**
-     * stateLogin
-     */
 
 }
 

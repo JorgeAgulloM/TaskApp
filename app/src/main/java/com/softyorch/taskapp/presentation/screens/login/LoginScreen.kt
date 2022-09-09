@@ -70,15 +70,24 @@ private fun LoginOrNewAccount(
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
     val newAccountEnable: Boolean by viewModel.newAccountEnable.observeAsState(initial = false)
 
+    /** Error states */
+    val errorName: Boolean by viewModel.errorName.observeAsState(initial = false)
+    val errorEmail: Boolean by viewModel.errorEmail.observeAsState(initial = false)
+    val errorRepeatEmail: Boolean by viewModel.errorRepeatEmail.observeAsState(initial = false)
+    val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
+    val errorRepeatPass: Boolean by viewModel.errorRepeatPass.observeAsState(initial = false)
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+
     val coroutineScope = rememberCoroutineScope()
 
-    val errorEmail = stringResource(error_email_already_exists)
+    val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
 
     if (isLoading) {
-        CircularIndicatorCustom(text = if (!newAccount) stringResource(loading_login) else stringResource(
-                    loading_loading
+        CircularIndicatorCustom(
+            text = if (!newAccount) stringResource(loading_login) else stringResource(
+                loading_loading
+            )
         )
-                )
 
     } else {
         Column(
@@ -97,14 +106,14 @@ private fun LoginOrNewAccount(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.End
             ) {
-                if (newAccount) TextFieldName(name = name) {
+                if (newAccount) TextFieldName(name = name, error = errorName) {
                     viewModel.onNewAccountChange(
                         name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = passRepeat
                     )
                 }
 
-                TextFieldEmail(email = email) {
+                TextFieldEmail(email = email, error = errorEmail) {
                     viewModel.onLoginChange(
                         email = it.trim().lowercase(),
                         pass = pass,
@@ -112,7 +121,10 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                if (newAccount) TextFieldEmailRepeat(email = emailRepeat) {
+                if (newAccount) TextFieldEmailRepeat(
+                    email = emailRepeat,
+                    error = errorRepeatEmail
+                ) {
                     viewModel.onNewAccountChange(
                         name = name,
                         email = email,
@@ -122,12 +134,17 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                TextFieldPass(pass = pass, newAccount = newAccount,
+                TextFieldPass(pass = pass,
+                    newAccount = newAccount,
                     keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             coroutineScope.launch {
-                                if (viewModel.onLoginSelected()) navController.navigate(
+                                if (viewModel.onLoginSelected(
+                                        email = email,
+                                        pass = pass
+                                    )
+                                ) navController.navigate(
                                     AppScreensRoutes.MainScreen.route
                                 ) {
                                     popUpTo(AppScreensRoutes.LoginScreen.route) {
@@ -136,7 +153,8 @@ private fun LoginOrNewAccount(
                                 }
                             }
                         }
-                    )) {
+                    ),
+                    error = errorPass) {
                     viewModel.onLoginChange(
                         email = email,
                         pass = it.trim(),
@@ -145,22 +163,31 @@ private fun LoginOrNewAccount(
                 }
 
                 if (newAccount) TextFieldPassRepeat(
-                    passRepeat = passRepeat, keyboardActions = KeyboardActions(
+                    passRepeat = passRepeat,
+                    keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             coroutineScope.launch {
-                                if (viewModel.onNewAccountSelected()) {
+                                if (viewModel.onNewAccountSelected(
+                                        name = name,
+                                        email = email,
+                                        emailRepeat = emailRepeat,
+                                        pass = pass,
+                                        passRepeat = passRepeat
+                                    )
+                                ) {
                                     newAccount = false
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        errorEmail,
+                                        errorEmailAlreadyUsed,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
                         }
-                    )) {
+                    ),
+                    error = errorRepeatPass) {
                     viewModel.onNewAccountChange(
                         name = name, email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = it.trim()
@@ -180,11 +207,16 @@ private fun LoginOrNewAccount(
             ButtonLogin(
                 text = if (!newAccount) stringResource(login) else stringResource(create_account),
                 enable = if (!newAccount) loginEnable else newAccountEnable,
-                primary = true
+                primary = true,
+                error = error
             ) {
                 coroutineScope.launch {
                     if (!newAccount) {
-                        if (viewModel.onLoginSelected()) navController.navigate(
+                        if (viewModel.onLoginSelected(
+                                email = email,
+                                pass = pass
+                            )
+                        ) navController.navigate(
                             AppScreensRoutes.MainScreen.route
                         ) {
                             popUpTo(AppScreensRoutes.LoginScreen.route) {
@@ -192,12 +224,19 @@ private fun LoginOrNewAccount(
                             }
                         }
                     } else {
-                        if (viewModel.onNewAccountSelected()) {
+                        if (viewModel.onNewAccountSelected(
+                                name = name,
+                                email = email,
+                                emailRepeat = emailRepeat,
+                                pass = pass,
+                                passRepeat = passRepeat
+                            )
+                        ) {
                             newAccount = false
                         } else {
                             Toast.makeText(
                                 context,
-                                errorEmail,
+                                errorEmailAlreadyUsed,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -208,6 +247,7 @@ private fun LoginOrNewAccount(
                 text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
             ) {
                 newAccount = !newAccount
+                viewModel.resetErrorChangeLoginToNewAccountVis()
             }
         }
     }
@@ -250,7 +290,7 @@ private fun SubTitleLogin(modifier: Modifier, textSizes: StandardizedSizes) {
 }*/
 
 @Composable
-private fun TextFieldName(name: String, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (String) -> Unit) {
     textFieldCustom(
         text = name,
         label = stringResource(R.string.name),
@@ -258,14 +298,15 @@ private fun TextFieldName(name: String, onTextFieldChanged: (String) -> Unit) {
         icon = Icons.Rounded.Person,
         contentDescription = stringResource(type_your_name),
         singleLine = true,
+        isError = error,
         onTextFieldChanged = onTextFieldChanged
-        //isError = email.isEmpty() && pushCreate
     )
 }
 
 @Composable
 private fun TextFieldEmail(
     email: String,
+    error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
@@ -279,14 +320,15 @@ private fun TextFieldEmail(
             keyboardType = KeyboardType.Email
         ),
         singleLine = true,
-        onTextFieldChanged = onTextFieldChanged,
-        //isError = email.isEmpty() && pushCreate
+        isError = error,
+        onTextFieldChanged = onTextFieldChanged
     )
 }
 
 @Composable
 private fun TextFieldEmailRepeat(
     email: String,
+    error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
@@ -300,14 +342,14 @@ private fun TextFieldEmailRepeat(
             keyboardType = KeyboardType.Email
         ),
         singleLine = true,
-        onTextFieldChanged = onTextFieldChanged,
-        //isError = email.isEmpty() && pushCreate
+        isError = error,
+        onTextFieldChanged = onTextFieldChanged
     )
 }
 
 @Composable
 private fun TextFieldPass(
-    pass: String, newAccount: Boolean, keyboardActions: KeyboardActions,
+    pass: String, newAccount: Boolean, keyboardActions: KeyboardActions, error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
@@ -322,15 +364,15 @@ private fun TextFieldPass(
         keyboardActions = keyboardActions,
         contentDescription = stringResource(type_your_password),
         singleLine = true,
-        onTextFieldChanged = onTextFieldChanged,
-        password = true
-        //isError = email.isEmpty() && pushCreate
+        isError = error,
+        password = true,
+        onTextFieldChanged = onTextFieldChanged
     )
 }
 
 @Composable
 private fun TextFieldPassRepeat(
-    passRepeat: String, keyboardActions: KeyboardActions,
+    passRepeat: String, keyboardActions: KeyboardActions, error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     textFieldCustom(
@@ -344,20 +386,25 @@ private fun TextFieldPassRepeat(
         ),
         keyboardActions = keyboardActions,
         singleLine = true,
-        onTextFieldChanged = onTextFieldChanged,
-        password = true
-        //isError = email.isEmpty() && pushCreate
+        isError = error,
+        password = true,
+        onTextFieldChanged = onTextFieldChanged
     )
 }
 
 @Composable
 private fun ButtonLogin(
-    text: String, enable: Boolean = true, primary: Boolean = false, onClickSelect: () -> Unit
+    text: String,
+    primary: Boolean = false,
+    enable: Boolean = true,
+    error: Boolean = false,
+    onClickSelect: () -> Unit
 ) {
     ButtonCustom(
-        onClick = { onClickSelect() },
         text = text,
         primary = primary,
-        enable = enable
+        enable = enable,
+        error = error,
+        onClick = { onClickSelect() }
     )
 }

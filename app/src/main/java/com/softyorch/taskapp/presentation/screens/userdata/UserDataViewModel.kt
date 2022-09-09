@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,7 +23,7 @@ class UserDataViewModel @Inject constructor(
     private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
-    val userDataActive: LiveData<UserData> = _userDataActive
+    //val userDataActive: LiveData<UserData> = _userDataActive
 
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
@@ -46,6 +46,20 @@ class UserDataViewModel @Inject constructor(
     private val _savingImage = MutableLiveData<Boolean>()
     val savingImage: LiveData<Boolean> = _savingImage
 
+    private val _errorName = MutableLiveData<Boolean>()
+    val errorName: LiveData<Boolean> = _errorName
+
+    private val _errorEmail = MutableLiveData<Boolean>()
+    val errorEmail: LiveData<Boolean> = _errorEmail
+
+    private val _errorPass = MutableLiveData<Boolean>()
+    val errorPass: LiveData<Boolean> = _errorPass
+
+    private val _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean> = _error
+
+    private val _foundError = MutableLiveData<Boolean>()
+
 /*    private val _mainImage: MutableLiveData<String?> =
         MutableLiveData<String?>(newImageGallery.value)
     val mainImage: LiveData<String?> = _mainImage*/
@@ -55,13 +69,16 @@ class UserDataViewModel @Inject constructor(
         loadUserData()
     }
 
-    suspend fun onDataChange(name: String, email: String, pass: String) {
+    fun onDataChange(name: String, email: String, pass: String) {
         _name.value = name
         _email.value = email
         _pass.value = pass
-        _saveEnabled.value = isValidName(name = name) &&
-                isValidEmail(email = email) &&
-                isValidPass(pass = pass)
+        _saveEnabled.value = true
+        if (_foundError.value == true) {
+            isValidEmail(email = email)
+            _error.value = withOutErrors(name = name, email = email, pass = pass)
+                //(!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
+        }
     }
 
     fun onImageChange(image: String) {
@@ -75,7 +92,7 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
-    fun reloadImage(image: String) {
+    /*fun reloadImage(image: String) {
         viewModelScope.launch {
             _savingImage.value = true
             _image.value = ""
@@ -83,42 +100,71 @@ class UserDataViewModel @Inject constructor(
             _image.value = image
             _savingImage.value = false
         }
-    }
+    }*/
 
     fun resetSavingImage() {
         _savingImage.value = false
     }
 
-    private fun isValidName(name: String): Boolean = name.length >= 3
-
-    private fun isValidPass(pass: String): Boolean =
-        Pattern.matches(REGEX_PASSWORD, pass)
-
-    private suspend fun isValidEmail(email: String): Boolean =
-        getUserDataEmail(email = email).data?.userEmail.let { !it.isNullOrEmpty() }
-
-    fun onUpdateData(name: String, email: String, pass: String, image: String) {
+    fun onUpdateData(
+        name: String, email: String, pass: String, image: String
+    ) {
         _isLoading.value = true
 
-        if (_saveEnabled.value == true) {
-            _userDataActive.value?.let { data ->
-                Log.d("USERID","onUpdateData.data -> ${data.id}")
-                data.username = name
-                data.userEmail = email
-                data.userPass = pass
-                data.userPicture = image
-                viewModelScope.launch(Dispatchers.IO) {
-                    datastore.saveData(userData = data)
+        viewModelScope.launch {
+            withOutErrors(name = name, email = email, pass = pass).let { error ->
+                if (_foundError.value != true) _foundError.postValue(error)
+                _error.postValue(error)
+                if (!error && _saveEnabled.value == true) {
+                    _userDataActive.value?.let { data ->
+                        data.username = name
+                        data.userEmail = email
+                        data.userPass = pass
+                        data.userPicture = image
+                        viewModelScope.launch(Dispatchers.IO) {
+                            datastore.saveData(userData = data)
+                            repository.updateUserData(userData = data)
 
-                    repository.updateUserData(userData = data)
-
+                            _isLoading.postValue(false)
+                            _saveEnabled.postValue(false)
+                        }
+                    }
+                } else {
                     _isLoading.postValue(false)
-                    _saveEnabled.postValue(false)
                 }
             }
-        } else {
-            _isLoading.value = false
         }
+    }
+
+    /**
+     * Errors control
+     */
+
+    private fun withOutErrors(name: String, email: String, pass: String): Boolean {
+        isValidEmail(email = email)
+        return (!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
+    }
+
+    private fun isValidName(name: String): Boolean =
+        (name.length >= 3).also { _errorName.value = !it }
+
+    private fun isValidPass(pass: String): Boolean =
+        Pattern.matches(REGEX_PASSWORD, pass).also { _errorPass.value = !it }
+
+    private fun isValidEmail(email: String) {
+        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                datastore.getData().collect { datastore ->
+                    if (email != datastore.userEmail) {
+                        getUserDataEmail(email = email).data?.userEmail.let { email ->
+                            _errorEmail.postValue(!email.isNullOrEmpty())
+                        }
+                    } else {
+                        _errorEmail.postValue(false)
+                    }
+                }
+            }
+        } else _errorEmail.value = true
     }
 
     /**

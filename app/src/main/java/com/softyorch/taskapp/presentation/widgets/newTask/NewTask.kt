@@ -49,6 +49,11 @@ fun newTask(
     val dateCompletedFormatted =
         taskToEdit?.finishDate?.toStringFormatDate() ?: stringResource(unknown)
 
+    /** Error states */
+    val errorTittle: Boolean by viewModel.errorTittle.observeAsState(initial = false)
+    val errorDescription: Boolean by viewModel.errorDescription.observeAsState(initial = false)
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+
     Dialog(
         onDismissRequest = {
             openDialog = false
@@ -76,7 +81,7 @@ fun newTask(
                             userName = userName, dateFormatted = dateCreatedFormatted,
                             dateCompletedFormatted = dateCompletedFormatted
                         )
-                        TextFieldCustomNewTaskName(text = title) {
+                        TextFieldCustomNewTaskName(text = title, error = errorTittle) {
                             viewModel.onTextFieldChanged(title = it, description = description)
                         }
                         TextFieldCustomNewTaskDescription(
@@ -95,7 +100,8 @@ fun newTask(
                                         openDialog = false
                                     }
                                 }
-                            )
+                            ),
+                            error = errorDescription
                         ) {
                             viewModel.onTextFieldChanged(title = title, description = it)
                         }
@@ -107,20 +113,30 @@ fun newTask(
                         ) {
 
                             ButtonCustomNewTask(
-                                taskToEdit = taskToEdit, enable = saveTaskEnable
+                                taskToEdit = taskToEdit, enable = saveTaskEnable, error = error
                             ) {
-                                addOrEditTaskFunc(
-                                    taskToEditOrNewTask(
-                                        taskToEdit = taskToEdit, title = title,
-                                        description = description, userName = userName
-                                    )
-                                )
-                                viewModel.onResetValues()
-                                openDialog = false
+                                viewModel.withOutErrors(title = title, description = description)
+                                    .also { error ->
+                                        if (!error) {
+                                            addOrEditTaskFunc(
+                                                taskToEditOrNewTask(
+                                                    taskToEdit = taskToEdit, title = title,
+                                                    description = description, userName = userName
+                                                )
+                                            )
+                                            viewModel.onResetValues()
+                                            openDialog = false
+                                        }
+                                    }
                             }
-                            ButtonCustom(onClick = { openDialog = false }, text = stringResource(
-                                cancel
-                            ))
+                            ButtonCustom(
+                                onClick = {
+                                    openDialog = false
+                                    viewModel.onResetValues()
+                                }, text = stringResource(
+                                    cancel
+                                )
+                            )
                         }
                     }
                 }
@@ -148,19 +164,22 @@ private fun taskToEditOrNewTask(
 private fun ButtonCustomNewTask(
     taskToEdit: Task?,
     enable: Boolean,
+    error: Boolean = false,
     onClick: () -> Unit
 ) {
     ButtonCustom(
-        onClick = onClick,
         text = if (taskToEdit == null) stringResource(create) else stringResource(edit_text),
+        enable = enable,
         primary = true,
-        enable = enable
+        error = error,
+        onClick = onClick
     )
 }
 
 @Composable
 private fun TextFieldCustomNewTaskName(
     text: String,
+    error: Boolean,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
@@ -171,6 +190,7 @@ private fun TextFieldCustomNewTaskName(
         contentDescription = stringResource(content_name),
         singleLine = true,
         newTask = true,
+        isError = error,
         onTextFieldChanged = onCheckedChange
     )
 }
@@ -179,6 +199,7 @@ private fun TextFieldCustomNewTaskName(
 private fun TextFieldCustomNewTaskDescription(
     text: String,
     keyboardActions: KeyboardActions,
+    error: Boolean,
     onCheckedChange: (String) -> Unit
 ) {
     textFieldCustom(
@@ -192,6 +213,7 @@ private fun TextFieldCustomNewTaskDescription(
         ),
         keyboardActions = keyboardActions,
         newTask = true,
+        isError = error,
         onTextFieldChanged = onCheckedChange
     )
 }
