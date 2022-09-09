@@ -85,6 +85,30 @@ class LoginViewModel @Inject constructor(
         //isValidEmail(email = email) && isValidPass(pass = pass)
     }
 
+    fun resetErrorChangeLoginToNewAccountVis() {
+        _errorName.value = false
+        _errorEmail.value = false
+        _errorRepeatEmail.value =false
+        _errorPass.value = false
+        _errorRepeatPass.value = false
+        _error.value = false
+        _foundError.value = false
+    }
+
+    suspend fun onLoginSelected(email: String, pass: String): Boolean {
+        _isLoading.value = true
+        withOutErrors(email = email, pass = pass).let { error ->
+            if (_foundError.value != true) _foundError.postValue(error)
+            _error.postValue(error)
+            loginAndUpdateData(
+                email = email, password = pass, rememberMe = rememberMe.value!!
+            ).let {
+                _isLoading.value = false
+                return it
+            }
+        }
+    }
+
     fun onNewAccountChange(
         name: String,
         email: String,
@@ -111,20 +135,6 @@ class LoginViewModel @Inject constructor(
                         !isValidPass(pass = pass) ||
                         !isValidPass(pass = pass, passRepeat = passRepeat)
                         )
-        }
-    }
-
-    suspend fun onLoginSelected(email: String, pass: String): Boolean {
-        _isLoading.value = true
-        withOutErrors(email = email, pass = pass).let { error ->
-            if (_foundError.value != true) _foundError.postValue(error)
-            _error.postValue(error)
-            loginAndUpdateData(
-                email = email, password = pass, rememberMe = rememberMe.value!!
-            ).let {
-                _isLoading.value = false
-                return it
-            }
         }
     }
 

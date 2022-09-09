@@ -247,6 +247,7 @@ private fun LoginOrNewAccount(
                 text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
             ) {
                 newAccount = !newAccount
+                viewModel.resetErrorChangeLoginToNewAccountVis()
             }
         }
     }
