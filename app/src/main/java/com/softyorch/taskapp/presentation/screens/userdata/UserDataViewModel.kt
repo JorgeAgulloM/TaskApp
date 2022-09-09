@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +9,6 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.presentation.screens.userdata.UserDataInputError.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +23,7 @@ class UserDataViewModel @Inject constructor(
     private val datastore: DatastoreRepository
 ) : ViewModel() {
     private val _userDataActive = MutableLiveData<UserData>()
-    val userDataActive: LiveData<UserData> = _userDataActive
+    //val userDataActive: LiveData<UserData> = _userDataActive
 
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
@@ -47,8 +46,19 @@ class UserDataViewModel @Inject constructor(
     private val _savingImage = MutableLiveData<Boolean>()
     val savingImage: LiveData<Boolean> = _savingImage
 
-    private val _errors = MutableLiveData<ErrorInputTextRequest>()
-    val errors: LiveData<ErrorInputTextRequest> = _errors
+    private val _errorName = MutableLiveData<Boolean>()
+    val errorName: LiveData<Boolean> = _errorName
+
+    private val _errorEmail = MutableLiveData<Boolean>()
+    val errorEmail: LiveData<Boolean> = _errorEmail
+
+    private val _errorPass = MutableLiveData<Boolean>()
+    val errorPass: LiveData<Boolean> = _errorPass
+
+    private val _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean> = _error
+
+    private val _foundError = MutableLiveData<Boolean>()
 
 /*    private val _mainImage: MutableLiveData<String?> =
         MutableLiveData<String?>(newImageGallery.value)
@@ -59,14 +69,16 @@ class UserDataViewModel @Inject constructor(
         loadUserData()
     }
 
-    suspend fun onDataChange(name: String, email: String, pass: String) {
+    fun onDataChange(name: String, email: String, pass: String) {
         _name.value = name
         _email.value = email
         _pass.value = pass
         _saveEnabled.value = true
-        /*isValidName(name = name) &&
-                    isValidEmail(email = email) &&
-                    isValidPass(pass = pass)*/
+        if (_foundError.value == true) {
+            isValidEmail(email = email)
+            _error.value =
+                (!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
+        }
     }
 
     fun onImageChange(image: String) {
@@ -80,7 +92,7 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
-    fun reloadImage(image: String) {
+    /*fun reloadImage(image: String) {
         viewModelScope.launch {
             _savingImage.value = true
             _image.value = ""
@@ -88,25 +100,10 @@ class UserDataViewModel @Inject constructor(
             _image.value = image
             _savingImage.value = false
         }
-    }
+    }*/
 
     fun resetSavingImage() {
         _savingImage.value = false
-    }
-
-    private fun isValidName(name: String): Boolean = name.length >= 3
-
-    private fun isValidPass(pass: String): Boolean =
-        Pattern.matches(REGEX_PASSWORD, pass)
-
-    private fun isValidEmail(email: String): Boolean {
-        var result = false
-        viewModelScope.launch {
-            getUserDataEmail(email = email).data?.userEmail.let {
-                result = !it.isNullOrEmpty()
-            }
-        }
-        return result
     }
 
     fun onUpdateData(
@@ -114,52 +111,60 @@ class UserDataViewModel @Inject constructor(
     ) {
         _isLoading.value = true
 
-        if (_saveEnabled.value == true && !withOutErrors(
-                name, email, pass, image
-            )
-        ) {
-            _userDataActive.value?.let { data ->
-                data.username = name
-                data.userEmail = email
-                data.userPass = pass
-                data.userPicture = image
-                viewModelScope.launch(Dispatchers.IO) {
-                    datastore.saveData(userData = data)
+        viewModelScope.launch {
+            withOutErrors(name = name, email = email, pass = pass).let { error ->
+                if (_foundError.value != true) _foundError.postValue(error)
+                _error.postValue(error)
+                if (!error && _saveEnabled.value == true) {
+                    _userDataActive.value?.let { data ->
+                        data.username = name
+                        data.userEmail = email
+                        data.userPass = pass
+                        data.userPicture = image
+                        viewModelScope.launch(Dispatchers.IO) {
+                            datastore.saveData(userData = data)
+                            repository.updateUserData(userData = data)
 
-                    repository.updateUserData(userData = data)
-
+                            _isLoading.postValue(false)
+                            _saveEnabled.postValue(false)
+                        }
+                    }
+                } else {
                     _isLoading.postValue(false)
-                    _saveEnabled.postValue(false)
                 }
             }
-        } else {
-            _isLoading.value = false
         }
-
     }
 
-    private fun withOutErrors(name: String, email: String, pass: String, image: String): Boolean {
+    /**
+     * Errors control
+     */
 
-        _errors.value = ErrorInputTextRequest(
-            errorName = !isValidName(name = name),
-            errorEmail = !isValidEmail(email = email),
-            errorPass = !isValidPass(pass = pass)
-        )
+    private fun withOutErrors(name: String, email: String, pass: String): Boolean {
+        isValidEmail(email = email)
+        return (!isValidName(name = name) || errorEmail.value == true || !isValidPass(pass = pass))
+    }
 
-        _errors.value.let {
-            //it?.errorName =
-            //it?.errorEmail = !isValidEmail(email = email)
-            //_errors.value?.errorRepeatEmail = isValidName(name = name)
-            //it?.errorPass = !isValidPass(pass = pass)
-            //_errors.value?.errorRepeatPass = isValidName(name = name)
-            Log.d("ERRORS", "Sentencia -> ${it?.errorName == true || it?.errorEmail == true || it?.errorPass == true}")
-            Log.d("ERRORS", "errorName -> ${it?.errorName == true}")
-            Log.d("ERRORS", "errorEmail -> ${it?.errorEmail == true}")
-            Log.d("ERRORS", "errorPass -> ${it?.errorPass == true}")
-            errors.value.let { error ->
-                return (error?.errorName == true || error?.errorEmail == true || error?.errorPass == true)
+    private fun isValidName(name: String): Boolean =
+        (name.length >= 3).also { _errorName.value = !it }
+
+    private fun isValidPass(pass: String): Boolean =
+        Pattern.matches(REGEX_PASSWORD, pass).also { _errorPass.value = !it }
+
+    private fun isValidEmail(email: String) {
+        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                datastore.getData().collect { datastore ->
+                    if (email != datastore.userEmail) {
+                        getUserDataEmail(email = email).data?.userEmail.let { email ->
+                            _errorEmail.postValue(!email.isNullOrEmpty())
+                        }
+                    } else {
+                        _errorEmail.postValue(false)
+                    }
+                }
             }
-        }
+        } else _errorEmail.value = true
     }
 
     /**
