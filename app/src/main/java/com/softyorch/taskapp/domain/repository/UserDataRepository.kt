@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.domain.repository
 
-import android.util.Log
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.data.data.userdata.UserDataBaseDao
 import com.softyorch.taskapp.domain.model.UserData
