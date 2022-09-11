@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.presentation.activities.newImageGallery
@@ -35,6 +36,7 @@ import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
+import kotlinx.coroutines.launch
 
 
 @ExperimentalMaterial3Api
@@ -180,8 +182,11 @@ private fun ContentUserDataScreen(
     ) {
         logOutDialog = false
         viewModel.logOut().also {
-            navController.navigate(AppScreensRoutes.SplashScreen.route) {
-                navController.backQueue.clear()
+            viewModel.viewModelScope.launch {
+                it.join()
+                navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                    navController.backQueue.clear()
+                }
             }
         }
     }

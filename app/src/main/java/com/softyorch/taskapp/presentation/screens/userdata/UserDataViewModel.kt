@@ -178,7 +178,12 @@ class UserDataViewModel @Inject constructor(
      * datastore
      */
 
-    fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) {
+        //_isLoading.postValue(false)
+        datastore.deleteData()
+        //delay(200)
+        //_isLoading.postValue(true)
+    }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().collect { userData ->
