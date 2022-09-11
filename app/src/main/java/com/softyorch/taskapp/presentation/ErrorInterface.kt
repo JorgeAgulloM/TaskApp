@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation
 
 import android.util.Patterns
+import com.softyorch.taskapp.presentation.ErrorUserInput.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import java.util.regex.Pattern
 
@@ -24,8 +25,24 @@ interface ErrorInterface {
 
     fun withOutErrors(
         name: String, email: String, emailRepeat: String, pass: String, passRepeat: String
-    ): Boolean = (!isValidName(name = name) || !isValidEmail(email = email) ||
-            !isValidEmail(email = email, emailRepeat = emailRepeat) ||
-            !isValidPass(pass = pass) || !isValidPass(pass = pass, passRepeat = passRepeat))
+    ): Boolean = (
+            !isValidName(
+                name = name
+            ).also { Error(name = !it) } ||
+            !isValidEmail(
+                email = email
+            ).also { Error(email = it) } ||
+            !isValidEmail(
+                email = email, emailRepeat = emailRepeat
+            ).also { Error(emailRepeat = it) } ||
+            !isValidPass(
+                pass = pass
+            ).also { Error(pass = it) } ||
+            !isValidPass(
+                pass = pass, passRepeat = passRepeat
+            ).also { Error(passRepeat = it) }
+            ).also {
+            Error(error = it)
+        }
 
 }
