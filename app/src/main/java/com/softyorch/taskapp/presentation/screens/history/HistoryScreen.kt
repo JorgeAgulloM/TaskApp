@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,8 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.utils.toStringFormatDate
 import com.softyorch.taskapp.R.string.history
+import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.toastError
 
 
 @ExperimentalMaterial3Api
@@ -50,9 +53,12 @@ private fun Content(
     navController: NavHostController,
     viewModel: HistoryViewModel
 ) {
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+    val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
 
+    if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
             .padding(top = it.calculateTopPadding() * 1.5f, start = 16.dp, end = 16.dp)
