@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -168,7 +169,7 @@ private fun LoginOrNewAccount(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             coroutineScope.launch {
-                                if (viewModel.onNewAccountSelected(
+                                if (!viewModel.onNewAccountSelected(
                                         name = name,
                                         email = email,
                                         emailRepeat = emailRepeat,
@@ -176,13 +177,13 @@ private fun LoginOrNewAccount(
                                         passRepeat = passRepeat
                                     )
                                 ) {
-                                    newAccount = false
-                                } else {
                                     Toast.makeText(
                                         context,
                                         errorEmailAlreadyUsed,
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                } else {
+                                    newAccount = false
                                 }
                             }
                         }
@@ -232,13 +233,13 @@ private fun LoginOrNewAccount(
                                 passRepeat = passRepeat
                             )
                         ) {
-                            newAccount = false
-                        } else {
                             Toast.makeText(
                                 context,
                                 errorEmailAlreadyUsed,
                                 Toast.LENGTH_SHORT
                             ).show()
+                        } else {
+                            newAccount = false
                         }
                     }
                 }

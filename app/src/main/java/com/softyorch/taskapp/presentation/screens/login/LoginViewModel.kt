@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +10,10 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
+import com.softyorch.taskapp.presentation.ErrorInterface
+import com.softyorch.taskapp.presentation.ErrorUserInput
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
+import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -21,7 +25,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val datastore: DatastoreRepository
-) : ViewModel() {
+) : ViewModel(), ErrorInterface {
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
 
@@ -78,9 +82,9 @@ class LoginViewModel @Inject constructor(
         _rememberMe.value = rememberMe
         _loginEnable.value = true
         if (_foundError.value == true) {
-            isValidEmail(email = email)
+            //isValidEmail(email = email)
             _error.value = withOutErrors(email = email, pass = pass)
-                //(errorEmail.value == true || !isValidPass(pass = pass))
+            //(errorEmail.value == true || !isValidPass(pass = pass))
         }
     }
 
@@ -90,7 +94,7 @@ class LoginViewModel @Inject constructor(
         emailRepeat: String,
         pass: String,
         passRepeat: String,
-        image: String = ""
+        image: String = emptyString
     ) {
         _name.value = name
         _email.value = email
@@ -100,20 +104,27 @@ class LoginViewModel @Inject constructor(
         _image.value = image
         _newAccountEnable.value = true
         if (_foundError.value == true) {
-            isValidEmail(email = email)
-            _error.value = withOutErrors(
+            withOutErrors(
                 name = name,
                 email = email,
                 emailRepeat = emailRepeat,
                 pass = pass,
                 passRepeat = passRepeat
-            )
-                /*(!isValidName(name = name) ||
-                        errorEmail.value == true ||
-                        !isValidEmail(email = email, emailRepeat = emailRepeat) ||
-                        !isValidPass(pass = pass) ||
-                        !isValidPass(pass = pass, passRepeat = passRepeat)
-                        )*/
+            ).let { error ->
+                //if (error.error) {
+                    if (_foundError.value != true) _foundError.postValue(true)
+                    _errorName.value = error.name
+                    _errorEmail.value = error.email
+                    _errorRepeatEmail.value = error.emailRepeat
+                    _errorPass.value = error.pass
+                    _errorRepeatPass.value = error.passRepeat
+                    _error.value = error.error
+                //} else {
+                    //addNewUser(UserData(username = name, userEmail = email, userPass = pass))
+                //}
+                //_isLoading.value = false
+                //return error.error
+            }
         }
     }
 
@@ -146,13 +157,19 @@ class LoginViewModel @Inject constructor(
             pass = pass,
             passRepeat = passRepeat
         ).let { error ->
-            if (_foundError.value != true) _foundError.postValue(error)
-            _error.postValue(error)
-            addNewUser(UserData(username = name, userEmail = email, userPass = pass)
-            ).let {
-                _isLoading.value = false
-                return it
+            if (error.error) {
+                if (_foundError.value != true) _foundError.postValue(true)
+                _errorName.value = error.name
+                _errorEmail.value = error.email
+                _errorRepeatEmail.value = error.emailRepeat
+                _errorPass.value = error.pass
+                _errorRepeatPass.value = error.passRepeat
+                _error.value = error.error
+            } else {
+                addNewUser(UserData(username = name, userEmail = email, userPass = pass))
             }
+            _isLoading.value = false
+            return error.error
         }
     }
 
@@ -177,7 +194,7 @@ class LoginViewModel @Inject constructor(
     fun resetErrorChangeLoginToNewAccountVis() {
         _errorName.value = false
         _errorEmail.value = false
-        _errorRepeatEmail.value =false
+        _errorRepeatEmail.value = false
         _errorPass.value = false
         _errorRepeatPass.value = false
         _error.value = false
@@ -188,7 +205,7 @@ class LoginViewModel @Inject constructor(
      * Errors Control
      */
 
-    private fun withOutErrors(email: String, pass: String): Boolean {
+/*    private fun withOutErrors(email: String, pass: String): Boolean {
         isValidEmail(email = email)
         return (errorEmail.value == true || !isValidPass(pass = pass))
     }
@@ -202,9 +219,9 @@ class LoginViewModel @Inject constructor(
                 !isValidEmail(email = email, emailRepeat = emailRepeat) ||
                 !isValidPass(pass = pass) ||
                 !isValidPass(pass = pass, passRepeat = passRepeat))
-    }
+    }*/
 
-    private fun isValidName(name: String): Boolean =
+/*    private fun isValidName(name: String): Boolean =
         (name.length >= 3).also { _errorName.value = !it }
 
     private fun isValidEmail(email: String): Boolean =
@@ -217,7 +234,7 @@ class LoginViewModel @Inject constructor(
         Pattern.matches(REGEX_PASSWORD, pass).also { _errorPass.value = !it }
 
     private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        (pass == passRepeat).also { _errorRepeatPass.value = !it }
+        (pass == passRepeat).also { _errorRepeatPass.value = !it }*/
 
     /**
      * data

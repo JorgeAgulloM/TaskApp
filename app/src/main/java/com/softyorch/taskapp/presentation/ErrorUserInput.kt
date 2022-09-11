@@ -2,11 +2,11 @@ package com.softyorch.taskapp.presentation
 
 sealed class ErrorUserInput{
     data class Error(
-        val name: Boolean = false,
-        val email: Boolean = false,
-        val emailRepeat: Boolean = false,
-        val pass: Boolean = false,
-        val passRepeat: Boolean = false,
-        val error: Boolean = false,
+        var name: Boolean = false,
+        var email: Boolean = false,
+        var emailRepeat: Boolean = false,
+        var pass: Boolean = false,
+        var passRepeat: Boolean = false,
+        var error: Boolean = false,
     ): ErrorUserInput()
 }
