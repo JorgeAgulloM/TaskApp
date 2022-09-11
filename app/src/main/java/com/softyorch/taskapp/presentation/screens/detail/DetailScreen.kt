@@ -8,6 +8,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
 import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.toastError
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -50,8 +52,8 @@ fun DetailScreen(
             )
         }
     ) {
-        coroutineScope.launch{viewModel.getTask(id = id)}
-        Content(it = it, viewModel = viewModel, navController = navController, id = id)
+        coroutineScope.launch { viewModel.getTask(id = id) }
+        Content(it = it, viewModel = viewModel, navController = navController)
     }
 }
 
@@ -59,9 +61,11 @@ fun DetailScreen(
 private fun Content(
     it: PaddingValues,
     viewModel: DetailScreenViewModel,
-    navController: NavController,
-    id: String
+    navController: NavController
 ) {
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+    val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
+
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val task: Task by viewModel.taskDetail.observeAsState(
         initial = Task(
@@ -72,6 +76,7 @@ private fun Content(
     )
 
     if (isLoading) CircularIndicatorCustom(stringResource(loading_loading))
+    if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -83,7 +88,7 @@ private fun Content(
     ) {
         RowInfoDetail(text = task.title)
         TextDescriptionDetails(task = task)
-        Divider(modifier = Modifier.padding(top = 8.dp ,bottom = 32.dp))
+        Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
         RowInfoDetail(text = stringResource(details))
         ShowTaskDetails(task = task)
 
@@ -176,7 +181,9 @@ private fun Content(
                     ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
                         openDeleteDialog = false
                         viewModel.removeTask(task = task)
-                        navController.navigate(AppScreens.MainScreen.name)
+                        navController.navigate(AppScreensRoutes.MainScreen.route) {
+                            navController.backQueue.clear()
+                        }
                     }
                 },
                 dismissButton = {

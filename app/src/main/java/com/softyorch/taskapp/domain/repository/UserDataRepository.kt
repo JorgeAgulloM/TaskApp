@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.domain.repository
 
-import android.util.Log
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.data.data.userdata.UserDataBaseDao
 import com.softyorch.taskapp.domain.model.UserData
@@ -67,8 +66,8 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun addUserData(userData: UserData): Boolean {
-        return getUserDataEmail(email = userData.userEmail).let {
+    suspend fun addUserData(userData: UserData): Boolean =
+        getUserDataEmail(email = userData.userEmail).let {
             if (it.data?.userEmail.isNullOrEmpty()) {
                 userDataBaseDao.insert(userData = userData)
                 true
@@ -76,7 +75,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
                 false
             }
         }
-    }
+
 
     suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()

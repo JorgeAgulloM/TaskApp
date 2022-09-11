@@ -148,8 +148,7 @@ class LoginViewModel @Inject constructor(
         ).let { error ->
             if (_foundError.value != true) _foundError.postValue(error)
             _error.postValue(error)
-            addNewUser(
-                UserData(username = name, userEmail = email, userPass = pass)
+            addNewUser(UserData(username = name, userEmail = email, userPass = pass)
             ).let {
                 _isLoading.value = false
                 return it
