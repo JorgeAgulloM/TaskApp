@@ -198,7 +198,7 @@ private fun LoginOrNewAccount(
 
             if (goOrErrorLogin) {
                 coroutineScope.launch {
-                    val errors = !viewModel.onLoginDataSend(
+                    val errors = viewModel.onLoginDataSend(
                         email = email,
                         pass = pass
                     )
