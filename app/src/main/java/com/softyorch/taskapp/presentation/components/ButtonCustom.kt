@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -27,10 +26,10 @@ import com.softyorch.taskapp.utils.ELEVATION_DP
 fun ButtonCustom(
     text: String,
     primary: Boolean = false,
+    tertiary: Boolean = false,
     enable: Boolean = true,
     error: Boolean = false,
     onClick: () -> Unit
-
 ) {
     Button(
         onClick = {
@@ -41,6 +40,7 @@ fun ButtonCustom(
         colors = ButtonDefaults.buttonColors(
             containerColor =
             if (error) MaterialTheme.colorScheme.error
+            else if (tertiary) MaterialTheme.colorScheme.tertiary
             else if (primary) MaterialTheme.colorScheme.primary
             else Color.Transparent,
             contentColor =
