@@ -35,6 +35,7 @@ import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -84,6 +85,7 @@ private fun LoginOrNewAccount(
 
     val coroutineScope = rememberCoroutineScope()
     var goOrErrorNewAccount by remember { mutableStateOf(value = false) }
+    var goOrErrorLogin by remember { mutableStateOf(value = false) }
 
     val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
 
@@ -138,19 +140,7 @@ private fun LoginOrNewAccount(
                     keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
-                            if (!newAccount) coroutineScope.launch {
-                                if (!viewModel.onLoginDataSend(
-                                        email = email,
-                                        pass = pass
-                                    )
-                                ) navController.navigate(
-                                    AppScreensRoutes.MainScreen.route
-                                ) {
-                                    popUpTo(AppScreensRoutes.LoginScreen.route) {
-                                        inclusive = true
-                                    }
-                                }
-                            }
+                            if (!newAccount) goOrErrorLogin = true
                         }
                     ),
                     error = errorPass) {
@@ -190,23 +180,12 @@ private fun LoginOrNewAccount(
                 primary = true,
                 error = error
             ) {
-                coroutineScope.launch {
-                    if (!newAccount) {
-                        if (!viewModel.onLoginDataSend(
-                                email = email,
-                                pass = pass
-                            )
-                        ) navController.navigate(
-                            AppScreensRoutes.MainScreen.route
-                        ) {
-                            popUpTo(AppScreensRoutes.LoginScreen.route) {
-                                inclusive = true
-                            }
-                        }
-                    } else {
-                        goOrErrorNewAccount = true
-                    }
+                if (!newAccount) {
+                    goOrErrorLogin = true
+                } else {
+                    goOrErrorNewAccount = true
                 }
+
             }
             ButtonLogin(
                 text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
@@ -236,14 +215,38 @@ private fun LoginOrNewAccount(
             if (showSnackBarErrors) SnackBarMessageLoginOrNewAccount {
                 showSnackBarErrors = false
             }
+            if (!error) showSnackBarErrors = false
+
+            if (goOrErrorLogin) {
+                coroutineScope.launch {
+                    if (!viewModel.onLoginDataSend(
+                            email = email,
+                            pass = pass
+                        )
+                    ) navController.navigate(
+                        AppScreensRoutes.MainScreen.route
+                    ) {
+                        popUpTo(AppScreensRoutes.LoginScreen.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+                goOrErrorLogin = false
+            }
         }
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun SnackBarMessageLoginOrNewAccount(
     onDismiss: () -> Unit
 ) {
+
+    rememberCoroutineScope().launch{
+        delay(5000)
+        onDismiss()
+    }
 
     Snackbar(
         modifier = Modifier.padding(8.dp).safeContentPadding(),
@@ -254,11 +257,11 @@ private fun SnackBarMessageLoginOrNewAccount(
                     onDismiss()
                 },
             ) {
-                Icon(imageVector = Icons.Rounded.Close, contentDescription = "close")
+                Icon(imageVector = Icons.Rounded.Close, contentDescription = stringResource(content_close_snack))
             }
         }
     ) {
-        IconError("Error. Revisa los datos introducidos.")
+        IconError(stringResource(snack_input_error))
     }
 }
 
@@ -269,7 +272,7 @@ private fun IconError(
     Row {
         Icon(
             imageVector = Icons.Rounded.Error,
-            contentDescription = "Errors",
+            contentDescription = stringResource(error),
             tint = MaterialTheme.colorScheme.error
         )
         Spacer(modifier = Modifier.padding(2.dp))
@@ -317,7 +320,7 @@ private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (Str
             isError = error,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = "nombre con al menos 3 caracteres")
+        if (error) IconError(errorText = stringResource(input_error_name))
     }
 }
 
@@ -342,7 +345,7 @@ private fun TextFieldEmail(
             isError = error,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = "El formato de email no es correcto")
+        if (error) IconError(errorText = stringResource(input_error_email))
     }
 }
 
@@ -367,7 +370,7 @@ private fun TextFieldEmailRepeat(
             isError = error,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = "Los campos Email no coinciden")
+        if (error) IconError(errorText = stringResource(input_error_repeat_email))
     }
 }
 
@@ -393,7 +396,7 @@ private fun TextFieldPass(
             password = true,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = "Mínimo 8 caracteres, una letra minúscula \n y otra mayúscula")
+        if (error) IconError(errorText = stringResource(input_error_pass))
     }
 }
 
@@ -418,7 +421,7 @@ private fun TextFieldPassRepeat(
             password = true,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = "Los campos Contraseña no coinciden")
+        if (error) IconError(errorText = stringResource(input_error_repeat_pass))
     }
 }
 
