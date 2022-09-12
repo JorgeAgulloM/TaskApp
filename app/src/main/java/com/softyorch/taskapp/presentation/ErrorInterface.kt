@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation
 
-import android.util.Log
 import android.util.Patterns
 import com.softyorch.taskapp.presentation.ErrorUserInput.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
@@ -8,7 +7,11 @@ import java.util.regex.Pattern
 
 interface ErrorInterface {
 
-    fun compareStrings(string1: String, string2: String): Boolean = string1 == string2
+    //fun compareStrings(string1: String, string2: String): Boolean = string1 == string2
+
+    private fun isTittleValid(title: String): Boolean = (title.length >= 3)
+
+    private fun isDescriptionValid(description: String): Boolean = (description.length >= 3)
 
     private fun isValidName(name: String): Boolean = (name.length >= 3)
 
@@ -20,6 +23,17 @@ interface ErrorInterface {
     private fun isValidPass(pass: String): Boolean = Pattern.matches(REGEX_PASSWORD, pass)
 
     private fun isValidPass(pass: String, passRepeat: String): Boolean = (pass == passRepeat)
+
+    fun withOutErrorsNewTask(title: String, description: String): Error {
+        val errors = Error()
+
+        !isTittleValid(title = title).also { errors.title = !it }
+        !isDescriptionValid(description = description).also { errors.description = !it }
+
+        errors.let { it.error = (it.title || it.description) }
+
+        return errors
+    }
 
     fun withOutErrors(email: String, pass: String): Error {
         val errors = Error()
