@@ -141,7 +141,7 @@ class LoginViewModel @Inject constructor(
         emailRepeat: String,
         pass: String,
         passRepeat: String
-    ): Boolean {
+    ): ErrorUserInput.Error {
         _isLoading.value = true
         withOutErrors(
             name = name,
@@ -155,7 +155,7 @@ class LoginViewModel @Inject constructor(
                 addNewUser(UserData(username = name, userEmail = email, userPass = pass))
 
             _isLoading.value = false
-            return error.error
+            return error
         }
     }
 

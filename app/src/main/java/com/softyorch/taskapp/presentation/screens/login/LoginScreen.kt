@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -8,7 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
+import com.softyorch.taskapp.presentation.ErrorUserInput
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.components.ButtonCustom
 import com.softyorch.taskapp.presentation.components.CheckCustom
@@ -52,6 +54,7 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 private fun LoginOrNewAccount(
@@ -80,6 +83,7 @@ private fun LoginOrNewAccount(
     val error: Boolean by viewModel.error.observeAsState(initial = false)
 
     val coroutineScope = rememberCoroutineScope()
+    var goOrErrorNewAccount by remember { mutableStateOf(value = false) }
 
     val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
 
@@ -161,27 +165,7 @@ private fun LoginOrNewAccount(
                 if (newAccount) TextFieldPassRepeat(
                     passRepeat = passRepeat,
                     keyboardActions = KeyboardActions(
-                        onGo = {
-                            /**TODO Tengo que sacar esto de aquí, es código repetido*/
-                            coroutineScope.launch {
-                                if (viewModel.onNewAccountDataSend(
-                                        name = name,
-                                        email = email,
-                                        emailRepeat = emailRepeat,
-                                        pass = pass,
-                                        passRepeat = passRepeat
-                                    )
-                                ) {
-                                    Toast.makeText(
-                                        context,
-                                        errorEmailAlreadyUsed,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    newAccount = false
-                                }
-                            }
-                        }
+                        onGo = { goOrErrorNewAccount = true }
                     ),
                     error = errorRepeatPass) {
                     viewModel.onNewAccountInputChange(
@@ -220,22 +204,7 @@ private fun LoginOrNewAccount(
                             }
                         }
                     } else {
-                        if (viewModel.onNewAccountDataSend(
-                                name = name,
-                                email = email,
-                                emailRepeat = emailRepeat,
-                                pass = pass,
-                                passRepeat = passRepeat
-                            )
-                        ) {
-                            Toast.makeText(
-                                context,
-                                errorEmailAlreadyUsed,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            newAccount = false
-                        }
+                        goOrErrorNewAccount = true
                     }
                 }
             }
@@ -245,8 +214,68 @@ private fun LoginOrNewAccount(
                 newAccount = !newAccount
                 viewModel.resetErrorChangeLoginToNewAccountVis()
             }
+
+            var showSnackBarErrors by remember { mutableStateOf(value = false) }
+            if (goOrErrorNewAccount) {
+                coroutineScope.launch {
+                    val errors = viewModel.onNewAccountDataSend(
+                        name = name,
+                        email = email,
+                        emailRepeat = emailRepeat,
+                        pass = pass,
+                        passRepeat = passRepeat
+                    )
+                    if (errors.error) {
+                        showSnackBarErrors = true
+                    } else {
+                        newAccount = false
+                    }
+                    goOrErrorNewAccount = false
+                }
+            }
+            if (showSnackBarErrors) SnackBarMessageLoginOrNewAccount {
+                showSnackBarErrors = false
+            }
         }
     }
+}
+
+@Composable
+private fun SnackBarMessageLoginOrNewAccount(
+    onDismiss: () -> Unit
+) {
+
+    Snackbar(
+        modifier = Modifier.padding(8.dp).safeContentPadding(),
+        shape = MaterialTheme.shapes.large,
+        dismissAction = {
+            IconButton(
+                onClick = {
+                    onDismiss()
+                },
+            ) {
+                Icon(imageVector = Icons.Rounded.Close, contentDescription = "close")
+            }
+        }
+    ) {
+        IconError("Error. Revisa los datos introducidos.")
+    }
+}
+
+@Composable
+private fun IconError(
+    errorText: String
+) {
+    Row {
+        Icon(
+            imageVector = Icons.Rounded.Error,
+            contentDescription = "Errors",
+            tint = MaterialTheme.colorScheme.error
+        )
+        Spacer(modifier = Modifier.padding(2.dp))
+        Text(text = errorText, style = MaterialTheme.typography.labelSmall)
+    }
+    Spacer(modifier = Modifier.padding(2.dp))
 }
 
 @ExperimentalMaterial3Api
@@ -264,7 +293,6 @@ private fun CheckerRememberMe(
     )
 }
 
-
 @Composable
 private fun TitleLogin(modifier: Modifier) {
     Spacer(modifier = modifier.padding(vertical = 16.dp))
@@ -276,27 +304,21 @@ private fun TitleLogin(modifier: Modifier) {
     )
 }
 
-/*@Composable
-private fun SubTitleLogin(modifier: Modifier, textSizes: StandardizedSizes) {
-    RowInfo(
-        text = "Please, enter the following data",
-        horizontalArrangement = Arrangement.Center,
-        textSizes = textSizes
-    )
-}*/
-
 @Composable
 private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (String) -> Unit) {
-    textFieldCustom(
-        text = name,
-        label = stringResource(R.string.name),
-        placeholder = stringResource(type_your_name),
-        icon = Icons.Rounded.Person,
-        contentDescription = stringResource(type_your_name),
-        singleLine = true,
-        isError = error,
-        onTextFieldChanged = onTextFieldChanged
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = name,
+            label = stringResource(R.string.name),
+            placeholder = stringResource(type_your_name),
+            icon = Icons.Rounded.Person,
+            contentDescription = stringResource(type_your_name),
+            singleLine = true,
+            isError = error,
+            onTextFieldChanged = onTextFieldChanged
+        )
+        if (error) IconError(errorText = "nombre con al menos 3 caracteres")
+    }
 }
 
 @Composable
@@ -305,20 +327,23 @@ private fun TextFieldEmail(
     error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = email,
-        label = stringResource(R.string.email),
-        placeholder = stringResource(type_your_email),
-        icon = Icons.Rounded.Email,
-        contentDescription = stringResource(type_your_email),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Email
-        ),
-        singleLine = true,
-        isError = error,
-        onTextFieldChanged = onTextFieldChanged
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = email,
+            label = stringResource(R.string.email),
+            placeholder = stringResource(type_your_email),
+            icon = Icons.Rounded.Email,
+            contentDescription = stringResource(type_your_email),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                capitalization = KeyboardCapitalization.None,
+                keyboardType = KeyboardType.Email
+            ),
+            singleLine = true,
+            isError = error,
+            onTextFieldChanged = onTextFieldChanged
+        )
+        if (error) IconError(errorText = "El formato de email no es correcto")
+    }
 }
 
 @Composable
@@ -327,20 +352,23 @@ private fun TextFieldEmailRepeat(
     error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = email,
-        label = stringResource(R.string.email),
-        placeholder = stringResource(repeat_your_email),
-        icon = Icons.Rounded.Email,
-        contentDescription = stringResource(repeat_your_email),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Email
-        ),
-        singleLine = true,
-        isError = error,
-        onTextFieldChanged = onTextFieldChanged
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = email,
+            label = stringResource(R.string.email),
+            placeholder = stringResource(repeat_your_email),
+            icon = Icons.Rounded.Email,
+            contentDescription = stringResource(repeat_your_email),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                capitalization = KeyboardCapitalization.None,
+                keyboardType = KeyboardType.Email
+            ),
+            singleLine = true,
+            isError = error,
+            onTextFieldChanged = onTextFieldChanged
+        )
+        if (error) IconError(errorText = "Los campos Email no coinciden")
+    }
 }
 
 @Composable
@@ -348,22 +376,25 @@ private fun TextFieldPass(
     pass: String, newAccount: Boolean, keyboardActions: KeyboardActions, error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = pass,
-        label = stringResource(password),
-        placeholder = stringResource(type_your_password),
-        icon = Icons.Rounded.Key,
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            keyboardType = KeyboardType.Password,
-            imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
-        ),
-        keyboardActions = keyboardActions,
-        contentDescription = stringResource(type_your_password),
-        singleLine = true,
-        isError = error,
-        password = true,
-        onTextFieldChanged = onTextFieldChanged
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = pass,
+            label = stringResource(password),
+            placeholder = stringResource(type_your_password),
+            icon = Icons.Rounded.Key,
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                keyboardType = KeyboardType.Password,
+                imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+            ),
+            keyboardActions = keyboardActions,
+            contentDescription = stringResource(type_your_password),
+            singleLine = true,
+            isError = error,
+            password = true,
+            onTextFieldChanged = onTextFieldChanged
+        )
+        if (error) IconError(errorText = "Mínimo 8 caracteres, una letra minúscula \n y otra mayúscula")
+    }
 }
 
 @Composable
@@ -371,21 +402,24 @@ private fun TextFieldPassRepeat(
     passRepeat: String, keyboardActions: KeyboardActions, error: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = passRepeat,
-        label = stringResource(password),
-        placeholder = stringResource(repeat_your_password),
-        icon = Icons.Rounded.Key,
-        contentDescription = stringResource(repeat_your_password),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            keyboardType = KeyboardType.Password, imeAction = ImeAction.Go
-        ),
-        keyboardActions = keyboardActions,
-        singleLine = true,
-        isError = error,
-        password = true,
-        onTextFieldChanged = onTextFieldChanged
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = passRepeat,
+            label = stringResource(password),
+            placeholder = stringResource(repeat_your_password),
+            icon = Icons.Rounded.Key,
+            contentDescription = stringResource(repeat_your_password),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                keyboardType = KeyboardType.Password, imeAction = ImeAction.Go
+            ),
+            keyboardActions = keyboardActions,
+            singleLine = true,
+            isError = error,
+            password = true,
+            onTextFieldChanged = onTextFieldChanged
+        )
+        if (error) IconError(errorText = "Los campos Contraseña no coinciden")
+    }
 }
 
 @Composable
