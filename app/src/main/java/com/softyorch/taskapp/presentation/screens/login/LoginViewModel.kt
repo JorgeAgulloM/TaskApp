@@ -150,7 +150,7 @@ class LoginViewModel @Inject constructor(
             pass = pass,
             passRepeat = passRepeat
         ).let { error ->
-            setErrorsNewAccount(error)
+            setErrorsNewAccount(error = error)
             if (!error.error)
                 addNewUser(UserData(username = name, userEmail = email, userPass = pass))
 

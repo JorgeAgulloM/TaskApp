@@ -1,9 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -16,7 +13,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -27,29 +23,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.presentation.ErrorUserInput
+import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.presentation.components.ButtonCustom
-import com.softyorch.taskapp.presentation.components.CheckCustom
-import com.softyorch.taskapp.presentation.components.textFieldCustom
-import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
-    val context = LocalContext.current
     val viewModel = hiltViewModel<LoginViewModel>()
 
     Box {
         LoginOrNewAccount(
             modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
             viewModel = viewModel,
-            context = context,
             navController = navController
         )
     }
@@ -61,7 +50,6 @@ fun LoginScreen(navController: NavHostController) {
 private fun LoginOrNewAccount(
     modifier: Modifier,
     viewModel: LoginViewModel,
-    context: Context,
     navController: NavHostController
 ) {
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
@@ -87,7 +75,7 @@ private fun LoginOrNewAccount(
     var goOrErrorNewAccount by remember { mutableStateOf(value = false) }
     var goOrErrorLogin by remember { mutableStateOf(value = false) }
 
-    val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
+    //val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
 
     if (isLoading) {
         CircularIndicatorCustom(
@@ -122,9 +110,7 @@ private fun LoginOrNewAccount(
 
                 TextFieldEmail(email = email, error = errorEmail) {
                     viewModel.onLoginInputChange(
-                        email = it.trim().lowercase(),
-                        pass = pass,
-                        rememberMe = rememberMe
+                        email = it.trim().lowercase(), pass = pass, rememberMe = rememberMe
                     )
                 }
 
@@ -139,16 +125,12 @@ private fun LoginOrNewAccount(
                 TextFieldPass(pass = pass, newAccount = newAccount,
                     keyboardActions = KeyboardActions(
                         onGo = {
-                            /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             if (!newAccount) goOrErrorLogin = true
                         }
                     ),
                     error = errorPass) {
-                    Log.d("ERRORS", "pass.it -> $it")
                     viewModel.onLoginInputChange(
-                        email = email,
-                        pass = it.trim(),
-                        rememberMe = rememberMe
+                        email = email, pass = it.trim(), rememberMe = rememberMe
                     )
                 }
 
@@ -212,73 +194,34 @@ private fun LoginOrNewAccount(
                     goOrErrorNewAccount = false
                 }
             }
-            if (showSnackBarErrors) SnackBarMessageLoginOrNewAccount {
-                showSnackBarErrors = false
-            }
             if (!error) showSnackBarErrors = false
 
             if (goOrErrorLogin) {
                 coroutineScope.launch {
-                    if (!viewModel.onLoginDataSend(
-                            email = email,
-                            pass = pass
-                        )
-                    ) navController.navigate(
-                        AppScreensRoutes.MainScreen.route
-                    ) {
-                        popUpTo(AppScreensRoutes.LoginScreen.route) {
-                            inclusive = true
+                    val errors = !viewModel.onLoginDataSend(
+                        email = email,
+                        pass = pass
+                    )
+                    if (errors) {
+                        showSnackBarErrors = true
+                    } else {
+                        navController.navigate(
+                            AppScreensRoutes.MainScreen.route
+                        ) {
+                            popUpTo(AppScreensRoutes.LoginScreen.route) {
+                                inclusive = true
+                            }
                         }
                     }
                 }
                 goOrErrorLogin = false
             }
-        }
-    }
-}
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-private fun SnackBarMessageLoginOrNewAccount(
-    onDismiss: () -> Unit
-) {
-
-    rememberCoroutineScope().launch{
-        delay(5000)
-        onDismiss()
-    }
-
-    Snackbar(
-        modifier = Modifier.padding(8.dp).safeContentPadding(),
-        shape = MaterialTheme.shapes.large,
-        dismissAction = {
-            IconButton(
-                onClick = {
-                    onDismiss()
-                },
-            ) {
-                Icon(imageVector = Icons.Rounded.Close, contentDescription = stringResource(content_close_snack))
+            if (showSnackBarErrors) SnackBarError {
+                showSnackBarErrors = false
             }
         }
-    ) {
-        IconError(stringResource(snack_input_error))
     }
-}
-
-@Composable
-private fun IconError(
-    errorText: String
-) {
-    Row {
-        Icon(
-            imageVector = Icons.Rounded.Error,
-            contentDescription = stringResource(error),
-            tint = MaterialTheme.colorScheme.error
-        )
-        Spacer(modifier = Modifier.padding(2.dp))
-        Text(text = errorText, style = MaterialTheme.typography.labelSmall)
-    }
-    Spacer(modifier = Modifier.padding(2.dp))
 }
 
 @ExperimentalMaterial3Api

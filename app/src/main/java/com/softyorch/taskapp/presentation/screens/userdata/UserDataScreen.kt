@@ -27,10 +27,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.presentation.activities.newImageGallery
-import com.softyorch.taskapp.presentation.components.ButtonCustom
+import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.presentation.components.textFieldCustom
-import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
@@ -81,7 +79,7 @@ private fun ContentUserDataScreen(
     mainImage.let { new ->
         image.let { old ->
             when (new != emptyString && old != new) {
-                true -> if (!savingImage) viewModel.onImageChange(new)
+                true -> if (!savingImage) viewModel.onImageInputChange(new)
                 false -> if (savingImage) viewModel.resetSavingImage()
             }
         }
@@ -100,7 +98,6 @@ private fun ContentUserDataScreen(
     var confirmDialog by remember { mutableStateOf(value = false) }
     var cancelDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
-
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
@@ -121,22 +118,27 @@ private fun ContentUserDataScreen(
                 text = name,
                 label = stringResource(R.string.name),
                 icon = Icons.Rounded.Person,
-                error = errorName
+                error = errorName,
+                errorText = stringResource(R.string.input_error_name)
             ) {
-                viewModel.onDataChange(name = it, email = email, pass = pass)
+                viewModel.onDataInputChange(name = it.trim(), email = email, pass = pass)
             }
+
             TextFieldCustomDataScreen(
                 text = email,
                 label = stringResource(R.string.email),
                 icon = Icons.Rounded.Email,
                 capitalization = KeyboardCapitalization.None,
                 keyboardType = KeyboardType.Email,
-                error = errorEmail
+                error = errorEmail,
+                errorText = stringResource(R.string.input_error_email)
             ) {
-                viewModel.onDataChange(name = name, email = it, pass = pass)
+                viewModel.onDataInputChange(name = name, email = it.trim(), pass = pass)
             }
+
             TextFieldCustomDataScreen(
-                text = pass, label = stringResource(R.string.password),
+                text = pass,
+                label = stringResource(R.string.password),
                 icon = Icons.Rounded.Key,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Go, password = true,
@@ -145,9 +147,10 @@ private fun ContentUserDataScreen(
                         confirmDialog = true
                     }
                 ),
-                error = errorPass
+                error = errorPass,
+                errorText = stringResource(R.string.input_error_pass)
             ) {
-                viewModel.onDataChange(name = name, email = email, pass = it)
+                viewModel.onDataInputChange(name = name, email = email, pass = it.trim())
             }
         }
         Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -155,10 +158,6 @@ private fun ContentUserDataScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ButtonCustomDataScreen(text = stringResource(R.string.logout), primary = true) {
-                logOutDialog = true
-            } //viewModel
-            Spacer(modifier = Modifier.padding(bottom = 4.dp))
             ButtonCustomDataScreen(
                 text = stringResource(R.string.save),
                 enable = saveEnabled,
@@ -169,6 +168,10 @@ private fun ContentUserDataScreen(
             }
             ButtonCustomDataScreen(text = stringResource(R.string.cancel), enable = saveEnabled) {
                 cancelDialog = true
+            }
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            ButtonCustomDataScreen(text = stringResource(R.string.logout), tertiary = true) {
+                logOutDialog = true
             }
         }
     }
@@ -191,6 +194,8 @@ private fun ContentUserDataScreen(
         }
     }
 
+    var showSnackBarErrors by remember { mutableStateOf(value = false) }
+
     if (confirmDialog) UserDataDialog(
         title = stringResource(R.string.save_user),
         text = stringResource(R.string.sure_about_making_changes),
@@ -198,13 +203,9 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.onUpdateData(
-            name = name.trim(),
-            email = email.trim(),
-            pass = pass.trim(),
-            image = image
-        )
+        viewModel.onUpdateDataSend( name = name, email = email, pass = pass, image = image)
         confirmDialog = false
+        if(error) showSnackBarErrors = true
     }
 
     if (cancelDialog) UserDataDialog(
@@ -215,6 +216,12 @@ private fun ContentUserDataScreen(
         onDismissButtonClick = { cancelDialog = false }
     ) {
         navController.popBackStack()
+    }
+
+
+    if(!error) showSnackBarErrors = false
+    if (showSnackBarErrors) SnackBarError {
+        showSnackBarErrors = false
     }
 
 }
@@ -282,12 +289,14 @@ private fun ButtonCustomDataScreen(
     text: String,
     enable: Boolean = true,
     primary: Boolean = false,
+    tertiary: Boolean = false,
     error: Boolean = false,
     onclick: () -> Unit
 ) {
     ButtonCustom(
         text = text,
         enable = enable,
+        tertiary = tertiary,
         primary = primary,
         error = error
     ) {
@@ -306,25 +315,29 @@ private fun TextFieldCustomDataScreen(
     keyboardActions: KeyboardActions = KeyboardActions(),
     password: Boolean = false,
     error: Boolean,
+    errorText: String,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = text,
-        label = label,
-        placeholder = stringResource(R.string.write_your_label) + label.lowercase(),
-        icon = icon,
-        contentDescription = label + stringResource(R.string.label_of_user),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            capitalization = capitalization,
-            keyboardType = keyboardType,
-            imeAction = imeAction
-        ),
-        keyboardActions = keyboardActions,
-        singleLine = true,
-        isError = error,
-        password = password,
-        onTextFieldChanged = { onTextFieldChanged(it) }
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = text,
+            label = label,
+            placeholder = stringResource(R.string.write_your_label) + label.lowercase(),
+            icon = icon,
+            contentDescription = label + stringResource(R.string.label_of_user),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                capitalization = capitalization,
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = keyboardActions,
+            singleLine = true,
+            isError = error,
+            password = password,
+            onTextFieldChanged = { onTextFieldChanged(it) }
+        )
+        if (error) IconError(errorText = errorText)
+    }
 }
 
 @Composable
