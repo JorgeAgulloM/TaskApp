@@ -40,12 +40,13 @@ fun ButtonCustom(
         colors = ButtonDefaults.buttonColors(
             containerColor =
             if (error) MaterialTheme.colorScheme.error
-            else if (tertiary) MaterialTheme.colorScheme.tertiary
             else if (primary) MaterialTheme.colorScheme.primary
+            else if (tertiary) MaterialTheme.colorScheme.tertiary
             else Color.Transparent,
             contentColor =
             if (error) MaterialTheme.colorScheme.onError
             else if (primary) MaterialTheme.colorScheme.background
+            else if (tertiary) MaterialTheme.colorScheme.onTertiary
             else MaterialTheme.colorScheme.onBackground
         ),
         content = {
@@ -54,17 +55,17 @@ fun ButtonCustom(
                 style = TextStyle(
                     shadow = Shadow(
                         //color = MaterialTheme.colorScheme.primary,
-                        offset = if (primary) Offset(x = 0f, y = 0f) else Offset(
+                        offset = if (primary || tertiary) Offset(x = 0f, y = 0f) else Offset(
                             x = ELEVATION_FLOAT,
                             y = ELEVATION_FLOAT
                         ),
-                        blurRadius = if (primary) 0f else ELEVATION_FLOAT
+                        blurRadius = if (primary || tertiary) 0f else ELEVATION_FLOAT
                     )
                 ),
             )
         },
         contentPadding = PaddingValues(2.dp),
-        elevation = ButtonDefaults.buttonElevation(if (primary) ELEVATION_DP else 0.dp)
+        elevation = ButtonDefaults.buttonElevation(if (primary || tertiary) ELEVATION_DP else 0.dp)
     )
 }
 
