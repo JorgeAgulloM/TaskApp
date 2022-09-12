@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SnackBarError(
+    errorText: String = stringResource(R.string.snack_input_error),
     onDismiss: () -> Unit
 ) {
     rememberCoroutineScope().launch {
@@ -42,7 +43,7 @@ fun SnackBarError(
             }
         }
     ) {
-        IconError(stringResource(R.string.snack_input_error))
+        IconError(errorText = errorText)
     }
 
 }

@@ -98,5 +98,7 @@
     <string name="input_error_pass">Mínimo 8 caracteres, una letra minúscula \n y otra mayúscula</string>
     <string name="input_error_repeat_pass">Los campos Contraseña no coinciden</string>
     <string name="text_input_min_little">Mínimo 3 caracteres.</string>
+    <string name="error_email_exist">El email introducido ya esxite.</string>
+    <string name="error_email_or_pass">Email o contraseña incorrectos.</string>
 
 </resources>

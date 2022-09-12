@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.softyorch.taskapp.presentation.ErrorInterface
 import com.softyorch.taskapp.presentation.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -61,11 +63,17 @@ class LoginViewModel @Inject constructor(
     private val _errorRepeatEmail = MutableLiveData<Boolean>()
     val errorRepeatEmail: LiveData<Boolean> = _errorRepeatEmail
 
+    private val _errorEmailExists = MutableLiveData<Boolean>()
+    val errorEmailExists: LiveData<Boolean> = _errorEmailExists
+
     private val _errorPass = MutableLiveData<Boolean>()
     val errorPass: LiveData<Boolean> = _errorPass
 
     private val _errorRepeatPass = MutableLiveData<Boolean>()
     val errorRepeatPass: LiveData<Boolean> = _errorRepeatPass
+
+    private val _errorEmailOrPassIncorrect = MutableLiveData<Boolean>()
+    val errorEmailOrPassIncorrect: LiveData<Boolean> = _errorEmailOrPassIncorrect
 
     private val _error = MutableLiveData<Boolean>()
     val error: LiveData<Boolean> = _error
@@ -91,12 +99,23 @@ class LoginViewModel @Inject constructor(
             email = email,
             pass = pass
         ).let { error ->
-            setErrorsLogin(error = error)
-            if (!error.error)
-                loginAndUpdateData(email = email, password = pass, rememberMe = rememberMe.value!!)
+            if (!error.error) {
+                loginAndUpdateData(
+                    email = email, password = pass, rememberMe = rememberMe.value!!
+                ).also {
+                    error.emailOrPassIncorrect = !it
+                    error.error = !it
+                    setErrorsLogin(error = error)
+                    Log.d("LOGIN", "loginAndUpdateData -> ${error}")
+                    _isLoading.value = false
+                    return error.error
+                }
+            } else {
+                setErrorsLogin(error = error)
 
-            _isLoading.value = false
-            return error.error
+                _isLoading.value = false
+                return error.error
+            }
         }
     }
 
@@ -104,6 +123,7 @@ class LoginViewModel @Inject constructor(
         if (_foundError.value != true) _foundError.postValue(true)
         _errorEmail.value = error.email
         _errorPass.value = error.pass
+        _errorEmailOrPassIncorrect.value = error.emailOrPassIncorrect
         _error.value = error.error
     }
 
@@ -150,9 +170,9 @@ class LoginViewModel @Inject constructor(
             pass = pass,
             passRepeat = passRepeat
         ).let { error ->
-            setErrorsNewAccount(error = error)
             if (!error.error)
-                addNewUser(UserData(username = name, userEmail = email, userPass = pass))
+                error.emailExists = !addNewUser(UserData(username = name, userEmail = email, userPass = pass))
+            setErrorsNewAccount(error = error)
 
             _isLoading.value = false
             return error
@@ -166,6 +186,7 @@ class LoginViewModel @Inject constructor(
         _errorRepeatEmail.value = error.emailRepeat
         _errorPass.value = error.pass
         _errorRepeatPass.value = error.passRepeat
+        _errorEmailExists.value = error.emailExists
         _error.value = error.error
     }
 
@@ -194,6 +215,8 @@ class LoginViewModel @Inject constructor(
         _errorPass.value = false
         _errorRepeatPass.value = false
         _error.value = false
+        _errorEmailExists.value = false
+        _errorEmailOrPassIncorrect.value = false
         _foundError.value = false
     }
 

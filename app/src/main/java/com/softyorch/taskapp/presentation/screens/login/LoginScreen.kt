@@ -69,160 +69,164 @@ private fun LoginOrNewAccount(
     val errorRepeatEmail: Boolean by viewModel.errorRepeatEmail.observeAsState(initial = false)
     val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
     val errorRepeatPass: Boolean by viewModel.errorRepeatPass.observeAsState(initial = false)
+    val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
+    val errorEmailOrPassIncorrect: Boolean by viewModel.errorEmailOrPassIncorrect.observeAsState(
+        initial = false
+    )
     val error: Boolean by viewModel.error.observeAsState(initial = false)
 
     val coroutineScope = rememberCoroutineScope()
     var goOrErrorNewAccount by remember { mutableStateOf(value = false) }
     var goOrErrorLogin by remember { mutableStateOf(value = false) }
 
-    //val errorEmailAlreadyUsed = stringResource(error_email_already_exists)
-
-    if (isLoading) {
-        CircularIndicatorCustom(
-            text = if (!newAccount) stringResource(loading_login) else stringResource(
-                loading_loading
-            )
+    if (isLoading) CircularIndicatorCustom(
+        text = if (!newAccount) stringResource(loading_login) else stringResource(
+            loading_loading
         )
+    )
 
-    } else {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        TitleLogin(modifier = modifier)
+        Spacer(modifier = modifier.padding(vertical = 16.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.End
         ) {
-
-            TitleLogin(modifier = modifier)
-            Spacer(modifier = modifier.padding(vertical = 16.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
-            ) {
-                if (newAccount) TextFieldName(name = name, error = errorName) {
-                    viewModel.onNewAccountInputChange(
-                        name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
-                        passRepeat = passRepeat
-                    )
-                }
-
-                TextFieldEmail(email = email, error = errorEmail) {
-                    viewModel.onLoginInputChange(
-                        email = it.trim().lowercase(), pass = pass, rememberMe = rememberMe
-                    )
-                }
-
-                if (newAccount)
-                    TextFieldEmailRepeat(email = emailRepeat, error = errorRepeatEmail) {
-                        viewModel.onNewAccountInputChange(
-                            name = name, email = email, emailRepeat = it.trim().lowercase(),
-                            pass = pass, passRepeat = passRepeat
-                        )
-                    }
-
-                TextFieldPass(pass = pass, newAccount = newAccount,
-                    keyboardActions = KeyboardActions(
-                        onGo = {
-                            if (!newAccount) goOrErrorLogin = true
-                        }
-                    ),
-                    error = errorPass) {
-                    viewModel.onLoginInputChange(
-                        email = email, pass = it.trim(), rememberMe = rememberMe
-                    )
-                }
-
-                if (newAccount) TextFieldPassRepeat(
-                    passRepeat = passRepeat,
-                    keyboardActions = KeyboardActions(
-                        onGo = { goOrErrorNewAccount = true }
-                    ),
-                    error = errorRepeatPass) {
-                    viewModel.onNewAccountInputChange(
-                        name = name, email = email, emailRepeat = emailRepeat, pass = pass,
-                        passRepeat = it.trim()
-                    )
-                }
-
-                if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
-                    viewModel.onLoginInputChange(
-                        email = email, pass = pass, rememberMe = it
-                    )
-                }
-
-                Spacer(modifier = modifier.padding(vertical = 8.dp))
+            if (newAccount) TextFieldName(name = name, error = errorName) {
+                viewModel.onNewAccountInputChange(
+                    name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
+                    passRepeat = passRepeat
+                )
             }
-            Spacer(modifier = modifier.padding(vertical = 16.dp))
 
-            ButtonLogin(
-                text = if (!newAccount) stringResource(login) else stringResource(create_account),
-                enable = if (!newAccount) loginEnable else newAccountEnable,
-                primary = true,
-                error = error
-            ) {
-                if (!newAccount) {
-                    goOrErrorLogin = true
+            TextFieldEmail(email = email, error = errorEmail) {
+                viewModel.onLoginInputChange(
+                    email = it.trim().lowercase(), pass = pass, rememberMe = rememberMe
+                )
+            }
+
+            if (newAccount)
+                TextFieldEmailRepeat(email = emailRepeat, error = errorRepeatEmail) {
+                    viewModel.onNewAccountInputChange(
+                        name = name, email = email, emailRepeat = it.trim().lowercase(),
+                        pass = pass, passRepeat = passRepeat
+                    )
+                }
+
+            TextFieldPass(pass = pass, newAccount = newAccount,
+                keyboardActions = KeyboardActions(
+                    onGo = {
+                        if (!newAccount) goOrErrorLogin = true
+                    }
+                ),
+                error = errorPass) {
+                viewModel.onLoginInputChange(
+                    email = email, pass = it.trim(), rememberMe = rememberMe
+                )
+            }
+
+            if (newAccount) TextFieldPassRepeat(
+                passRepeat = passRepeat,
+                keyboardActions = KeyboardActions(
+                    onGo = { goOrErrorNewAccount = true }
+                ),
+                error = errorRepeatPass) {
+                viewModel.onNewAccountInputChange(
+                    name = name, email = email, emailRepeat = emailRepeat, pass = pass,
+                    passRepeat = it.trim()
+                )
+            }
+
+            if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
+                viewModel.onLoginInputChange(
+                    email = email, pass = pass, rememberMe = it
+                )
+            }
+
+            Spacer(modifier = modifier.padding(vertical = 8.dp))
+        }
+        Spacer(modifier = modifier.padding(vertical = 16.dp))
+
+        ButtonLogin(
+            text = if (!newAccount) stringResource(login) else stringResource(create_account),
+            enable = if (!newAccount) loginEnable else newAccountEnable,
+            primary = true,
+            error = error
+        ) {
+            if (!newAccount) {
+                goOrErrorLogin = true
+            } else {
+                goOrErrorNewAccount = true
+            }
+
+        }
+        ButtonLogin(
+            text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
+        ) {
+            newAccount = !newAccount
+            viewModel.resetErrorChangeLoginToNewAccountVis()
+        }
+
+        var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
+        if (goOrErrorNewAccount) {
+            coroutineScope.launch {
+                val errors = viewModel.onNewAccountDataSend(
+                    name = name,
+                    email = email,
+                    emailRepeat = emailRepeat,
+                    pass = pass,
+                    passRepeat = passRepeat
+                )
+                if (errors.error) {
+                    showSnackBarErrors = true
                 } else {
-                    goOrErrorNewAccount = true
+                    newAccount = false
                 }
-
+                goOrErrorNewAccount = false
             }
-            ButtonLogin(
-                text = if (!newAccount) stringResource(new_account) else stringResource(go_to_login)
-            ) {
-                newAccount = !newAccount
-                viewModel.resetErrorChangeLoginToNewAccountVis()
-            }
+        }
+        if (!error) showSnackBarErrors = false
 
-            var showSnackBarErrors by remember { mutableStateOf(value = false) }
-            if (goOrErrorNewAccount) {
-                coroutineScope.launch {
-                    val errors = viewModel.onNewAccountDataSend(
-                        name = name,
-                        email = email,
-                        emailRepeat = emailRepeat,
-                        pass = pass,
-                        passRepeat = passRepeat
-                    )
-                    if (errors.error) {
-                        showSnackBarErrors = true
-                    } else {
-                        newAccount = false
-                    }
-                    goOrErrorNewAccount = false
-                }
-            }
-            if (!error) showSnackBarErrors = false
-
-            if (goOrErrorLogin) {
-                coroutineScope.launch {
-                    val errors = viewModel.onLoginDataSend(
-                        email = email,
-                        pass = pass
-                    )
-                    if (errors) {
-                        showSnackBarErrors = true
-                    } else {
-                        navController.navigate(
-                            AppScreensRoutes.MainScreen.route
-                        ) {
-                            popUpTo(AppScreensRoutes.LoginScreen.route) {
-                                inclusive = true
-                            }
+        if (goOrErrorLogin) {
+            coroutineScope.launch {
+                val errors = viewModel.onLoginDataSend(
+                    email = email,
+                    pass = pass
+                )
+                if (errors) {
+                    showSnackBarErrors = true
+                } else {
+                    navController.navigate(
+                        AppScreensRoutes.MainScreen.route
+                    ) {
+                        popUpTo(AppScreensRoutes.LoginScreen.route) {
+                            inclusive = true
                         }
                     }
                 }
-                goOrErrorLogin = false
             }
+            goOrErrorLogin = false
+        }
 
-            if (showSnackBarErrors) SnackBarError {
-                showSnackBarErrors = false
-            }
+        if (showSnackBarErrors) SnackBarError(
+            errorText = if (errorEmailExists) stringResource(error_email_exist)
+            else if (errorEmailOrPassIncorrect) stringResource(error_email_or_pass)
+            else stringResource(R.string.snack_input_error)
+        ) {
+            showSnackBarErrors = false
         }
     }
 }
+
 
 @ExperimentalMaterial3Api
 @Composable
