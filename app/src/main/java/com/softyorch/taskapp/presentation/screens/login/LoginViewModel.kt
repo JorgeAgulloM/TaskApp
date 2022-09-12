@@ -1,7 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.login
 
-import android.util.Log
-import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,13 +10,11 @@ import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.presentation.ErrorInterface
 import com.softyorch.taskapp.presentation.ErrorUserInput
-import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,19 +72,45 @@ class LoginViewModel @Inject constructor(
 
     private val _foundError = MutableLiveData<Boolean>()
 
-    fun onLoginChange(email: String, pass: String, rememberMe: Boolean) {
+    fun onLoginInputChange(email: String, pass: String, rememberMe: Boolean) {
         _email.value = email
         _pass.value = pass
         _rememberMe.value = rememberMe
         _loginEnable.value = true
         if (_foundError.value == true) {
-            //isValidEmail(email = email)
-            _error.value = withOutErrors(email = email, pass = pass)
-            //(errorEmail.value == true || !isValidPass(pass = pass))
+            withOutErrors(email = email, pass = pass).let { error ->
+                if (error.error) setErrorsLogin(error = error)
+            }
         }
     }
 
-    fun onNewAccountChange(
+    suspend fun onLoginDataSend(
+        email: String,
+        pass: String
+    ): Boolean {
+        _isLoading.value = true
+        withOutErrors(
+            email = email,
+            pass = pass
+        ).let { error ->
+            if (error.error) {
+                setErrorsLogin(error = error)
+            } else {
+                loginAndUpdateData(email = email, password = pass, rememberMe = rememberMe.value!!)
+            }
+            _isLoading.value = false
+            return error.error
+        }
+    }
+
+    private fun setErrorsLogin(error: ErrorUserInput.Error) {
+        if (_foundError.value != true) _foundError.postValue(true)
+        _errorEmail.value = error.email
+        _errorPass.value = error.pass
+        _error.value = error.error
+    }
+
+    fun onNewAccountInputChange(
         name: String,
         email: String,
         emailRepeat: String,
@@ -111,38 +133,12 @@ class LoginViewModel @Inject constructor(
                 pass = pass,
                 passRepeat = passRepeat
             ).let { error ->
-                //if (error.error) {
-                    if (_foundError.value != true) _foundError.postValue(true)
-                    _errorName.value = error.name
-                    _errorEmail.value = error.email
-                    _errorRepeatEmail.value = error.emailRepeat
-                    _errorPass.value = error.pass
-                    _errorRepeatPass.value = error.passRepeat
-                    _error.value = error.error
-                //} else {
-                    //addNewUser(UserData(username = name, userEmail = email, userPass = pass))
-                //}
-                //_isLoading.value = false
-                //return error.error
+                if (error.error) setErrorsNewAccount(error = error)
             }
         }
     }
 
-    suspend fun onLoginSelected(email: String, pass: String): Boolean {
-        _isLoading.value = true
-        withOutErrors(email = email, pass = pass).let { error ->
-            if (_foundError.value != true) _foundError.postValue(error)
-            _error.postValue(error)
-            loginAndUpdateData(
-                email = email, password = pass, rememberMe = rememberMe.value!!
-            ).let {
-                _isLoading.value = false
-                return it
-            }
-        }
-    }
-
-    suspend fun onNewAccountSelected(
+    suspend fun onNewAccountDataSend(
         name: String,
         email: String,
         emailRepeat: String,
@@ -158,19 +154,23 @@ class LoginViewModel @Inject constructor(
             passRepeat = passRepeat
         ).let { error ->
             if (error.error) {
-                if (_foundError.value != true) _foundError.postValue(true)
-                _errorName.value = error.name
-                _errorEmail.value = error.email
-                _errorRepeatEmail.value = error.emailRepeat
-                _errorPass.value = error.pass
-                _errorRepeatPass.value = error.passRepeat
-                _error.value = error.error
+                setErrorsNewAccount(error)
             } else {
                 addNewUser(UserData(username = name, userEmail = email, userPass = pass))
             }
             _isLoading.value = false
             return error.error
         }
+    }
+
+    private fun setErrorsNewAccount(error: ErrorUserInput.Error) {
+        if (_foundError.value != true) _foundError.postValue(true)
+        _errorName.value = error.name
+        _errorEmail.value = error.email
+        _errorRepeatEmail.value = error.emailRepeat
+        _errorPass.value = error.pass
+        _errorRepeatPass.value = error.passRepeat
+        _error.value = error.error
     }
 
     private suspend fun loginAndUpdateData(

@@ -21,11 +21,26 @@ interface ErrorInterface {
 
     private fun isValidPass(pass: String, passRepeat: String): Boolean = (pass == passRepeat)
 
-    fun withOutErrors(email: String, pass: String): Boolean =
-        (!isValidEmail(email = email) || !isValidPass(pass = pass))
+    fun withOutErrors(email: String, pass: String): Error {
+        val errors = Error()
+        !isValidEmail(email = email).also { errors.email = !it }
+        !isValidPass(pass = pass).also { errors.pass = !it }
 
-    fun withOutErrors(name: String, email: String, pass: String): Boolean =
-        (!isValidName(name = name) || !isValidEmail(email = email) || !isValidPass(pass = pass))
+        errors.let { it.error = (it.email || it.pass) }
+
+        return errors
+    }
+
+    fun withOutErrors(name: String, email: String, pass: String): Error {
+        val errors = Error()
+        !isValidName(name = name).also { errors.name = !it }
+        !isValidEmail(email = email).also { errors.email = !it }
+        !isValidPass(pass = pass).also { errors.pass = !it }
+
+        errors.let { it.error = (it.name || it.email || it.pass) }
+
+        return errors
+    }
 
     fun withOutErrors(
         name: String, email: String, emailRepeat: String, pass: String, passRepeat: String
@@ -38,7 +53,7 @@ interface ErrorInterface {
         !isValidPass(pass = pass, passRepeat = passRepeat).also { errors.passRepeat = !it }
 
         errors.let {
-            errors.error = (it.name || it.email || it.emailRepeat || it.pass || it.passRepeat)
+            it.error = (it.name || it.email || it.emailRepeat || it.pass || it.passRepeat)
         }
 
         return errors

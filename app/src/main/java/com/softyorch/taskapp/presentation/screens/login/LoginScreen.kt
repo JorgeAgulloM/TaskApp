@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -108,14 +107,14 @@ private fun LoginOrNewAccount(
                 horizontalAlignment = Alignment.End
             ) {
                 if (newAccount) TextFieldName(name = name, error = errorName) {
-                    viewModel.onNewAccountChange(
+                    viewModel.onNewAccountInputChange(
                         name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = passRepeat
                     )
                 }
 
                 TextFieldEmail(email = email, error = errorEmail) {
-                    viewModel.onLoginChange(
+                    viewModel.onLoginInputChange(
                         email = it.trim().lowercase(),
                         pass = pass,
                         rememberMe = rememberMe
@@ -126,7 +125,7 @@ private fun LoginOrNewAccount(
                     email = emailRepeat,
                     error = errorRepeatEmail
                 ) {
-                    viewModel.onNewAccountChange(
+                    viewModel.onNewAccountInputChange(
                         name = name,
                         email = email,
                         emailRepeat = it.trim().lowercase(),
@@ -140,8 +139,8 @@ private fun LoginOrNewAccount(
                     keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
-                            coroutineScope.launch {
-                                if (viewModel.onLoginSelected(
+                            if (!newAccount) coroutineScope.launch {
+                                if (!viewModel.onLoginDataSend(
                                         email = email,
                                         pass = pass
                                     )
@@ -156,7 +155,7 @@ private fun LoginOrNewAccount(
                         }
                     ),
                     error = errorPass) {
-                    viewModel.onLoginChange(
+                    viewModel.onLoginInputChange(
                         email = email,
                         pass = it.trim(),
                         rememberMe = rememberMe
@@ -169,7 +168,7 @@ private fun LoginOrNewAccount(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
                             coroutineScope.launch {
-                                if (!viewModel.onNewAccountSelected(
+                                if (viewModel.onNewAccountDataSend(
                                         name = name,
                                         email = email,
                                         emailRepeat = emailRepeat,
@@ -189,14 +188,14 @@ private fun LoginOrNewAccount(
                         }
                     ),
                     error = errorRepeatPass) {
-                    viewModel.onNewAccountChange(
+                    viewModel.onNewAccountInputChange(
                         name = name, email = email, emailRepeat = emailRepeat, pass = pass,
                         passRepeat = it.trim()
                     )
                 }
 
                 if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
-                    viewModel.onLoginChange(
+                    viewModel.onLoginInputChange(
                         email = email, pass = pass, rememberMe = it
                     )
                 }
@@ -213,7 +212,7 @@ private fun LoginOrNewAccount(
             ) {
                 coroutineScope.launch {
                     if (!newAccount) {
-                        if (viewModel.onLoginSelected(
+                        if (!viewModel.onLoginDataSend(
                                 email = email,
                                 pass = pass
                             )
@@ -225,7 +224,7 @@ private fun LoginOrNewAccount(
                             }
                         }
                     } else {
-                        if (viewModel.onNewAccountSelected(
+                        if (viewModel.onNewAccountDataSend(
                                 name = name,
                                 email = email,
                                 emailRepeat = emailRepeat,
