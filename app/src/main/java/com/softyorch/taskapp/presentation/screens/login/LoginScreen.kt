@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -121,21 +122,15 @@ private fun LoginOrNewAccount(
                     )
                 }
 
-                if (newAccount) TextFieldEmailRepeat(
-                    email = emailRepeat,
-                    error = errorRepeatEmail
-                ) {
-                    viewModel.onNewAccountInputChange(
-                        name = name,
-                        email = email,
-                        emailRepeat = it.trim().lowercase(),
-                        pass = pass,
-                        passRepeat = passRepeat
-                    )
-                }
+                if (newAccount)
+                    TextFieldEmailRepeat(email = emailRepeat, error = errorRepeatEmail) {
+                        viewModel.onNewAccountInputChange(
+                            name = name, email = email, emailRepeat = it.trim().lowercase(),
+                            pass = pass, passRepeat = passRepeat
+                        )
+                    }
 
-                TextFieldPass(pass = pass,
-                    newAccount = newAccount,
+                TextFieldPass(pass = pass, newAccount = newAccount,
                     keyboardActions = KeyboardActions(
                         onGo = {
                             /**TODO Tengo que sacar esto de aquí, es código repetido*/
@@ -155,6 +150,7 @@ private fun LoginOrNewAccount(
                         }
                     ),
                     error = errorPass) {
+                    Log.d("ERRORS", "pass.it -> $it")
                     viewModel.onLoginInputChange(
                         email = email,
                         pass = it.trim(),

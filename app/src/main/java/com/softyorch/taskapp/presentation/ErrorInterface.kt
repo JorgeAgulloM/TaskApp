@@ -25,7 +25,8 @@ interface ErrorInterface {
         val errors = Error()
         !isValidEmail(email = email).also { errors.email = !it }
         !isValidPass(pass = pass).also { errors.pass = !it }
-
+        Log.d("ERRORS", "withOutErrors.errors.email -> ${errors.email}")
+        Log.d("ERRORS", "withOutErrors.errors.pass -> ${errors.pass}")
         errors.let { it.error = (it.email || it.pass) }
 
         return errors

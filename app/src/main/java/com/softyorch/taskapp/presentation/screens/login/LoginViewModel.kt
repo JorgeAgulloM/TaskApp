@@ -78,9 +78,7 @@ class LoginViewModel @Inject constructor(
         _rememberMe.value = rememberMe
         _loginEnable.value = true
         if (_foundError.value == true) {
-            withOutErrors(email = email, pass = pass).let { error ->
-                if (error.error) setErrorsLogin(error = error)
-            }
+            setErrorsLogin(error = withOutErrors(email = email, pass = pass))
         }
     }
 
@@ -93,11 +91,10 @@ class LoginViewModel @Inject constructor(
             email = email,
             pass = pass
         ).let { error ->
-            if (error.error) {
-                setErrorsLogin(error = error)
-            } else {
+            setErrorsLogin(error = error)
+            if (!error.error)
                 loginAndUpdateData(email = email, password = pass, rememberMe = rememberMe.value!!)
-            }
+
             _isLoading.value = false
             return error.error
         }
@@ -126,15 +123,15 @@ class LoginViewModel @Inject constructor(
         _image.value = image
         _newAccountEnable.value = true
         if (_foundError.value == true) {
-            withOutErrors(
-                name = name,
-                email = email,
-                emailRepeat = emailRepeat,
-                pass = pass,
-                passRepeat = passRepeat
-            ).let { error ->
-                if (error.error) setErrorsNewAccount(error = error)
-            }
+            setErrorsNewAccount(
+                error = withOutErrors(
+                    name = name,
+                    email = email,
+                    emailRepeat = emailRepeat,
+                    pass = pass,
+                    passRepeat = passRepeat
+                )
+            )
         }
     }
 
@@ -153,11 +150,10 @@ class LoginViewModel @Inject constructor(
             pass = pass,
             passRepeat = passRepeat
         ).let { error ->
-            if (error.error) {
-                setErrorsNewAccount(error)
-            } else {
+            setErrorsNewAccount(error)
+            if (!error.error)
                 addNewUser(UserData(username = name, userEmail = email, userPass = pass))
-            }
+
             _isLoading.value = false
             return error.error
         }
