@@ -77,7 +77,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
 
     suspend fun updateUserData(userData: UserData): Boolean =
         getUserDataEmail(email = userData.userEmail).let {
-            if (it.data?.userEmail.isNullOrEmpty()){
+            if (!it.data?.userEmail.isNullOrEmpty()){
                 userDataBaseDao.update(userData = userData)
                 true
             } else false

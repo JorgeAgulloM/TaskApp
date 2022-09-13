@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -86,18 +87,20 @@ private fun Content(
                 end = 16.dp
             )
     ) {
-        RowInfoDetail(text = task.title)
-        TextDescriptionDetails(task = task)
-        Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
         RowInfoDetail(text = stringResource(details))
         ShowTaskDetails(task = task)
+        Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
+        RowInfoDetail(text = task.title, style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.padding(top = 8.dp))
+        TextDescriptionDetails(task = task)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .fillMaxHeight(1f)
+                .padding(vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Bottom
         ) {
 
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
@@ -228,11 +231,13 @@ private fun ButtonCustomDetails(
 
 @Composable
 private fun RowInfoDetail(
-    text: String
+    text: String,
+    style: TextStyle = MaterialTheme.typography.titleMedium
 ) {
     RowInfo(
         text = text,
-        paddingStart = 24.dp
+        paddingStart = 24.dp,
+        style = style
     )
 }
 
