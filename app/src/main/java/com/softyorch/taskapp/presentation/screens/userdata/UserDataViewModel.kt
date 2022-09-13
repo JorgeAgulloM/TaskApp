@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,14 +8,11 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.presentation.ErrorInterface
-import com.softyorch.taskapp.presentation.ErrorUserInput
-import com.softyorch.taskapp.utils.REGEX_PASSWORD
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel

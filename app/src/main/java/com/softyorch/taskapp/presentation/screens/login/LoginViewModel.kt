@@ -8,8 +8,8 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.presentation.ErrorInterface
-import com.softyorch.taskapp.presentation.ErrorUserInput
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.presentation
+package com.softyorch.taskapp.presentation.errors
 
 sealed class ErrorUserInput{
     data class Error(

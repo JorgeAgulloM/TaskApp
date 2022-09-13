@@ -1,7 +1,7 @@
-package com.softyorch.taskapp.presentation
+package com.softyorch.taskapp.presentation.errors
 
 import android.util.Patterns
-import com.softyorch.taskapp.presentation.ErrorUserInput.*
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import java.util.regex.Pattern
 
