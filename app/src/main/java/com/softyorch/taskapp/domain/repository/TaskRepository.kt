@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
     fun getAllTasks(): Flow<List<Task>> =
         taskDatabaseDao.getTasks().flowOn(Dispatchers.IO).conflate()
-    //suspend fun getTaskId(id: String) = taskDatabaseDao.getTaskById(id = id)
+
     suspend fun getTaskId(id: String): Resource<Task> {
         val response = try {
             Resource.Loading(data = true)

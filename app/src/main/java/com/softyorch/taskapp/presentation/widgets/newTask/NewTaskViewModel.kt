@@ -3,18 +3,25 @@ package com.softyorch.taskapp.presentation.widgets.newTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class NewTaskViewModel @Inject constructor() : ViewModel() {
+class NewTaskViewModel @Inject constructor() : ViewModel(), ErrorInterface {
     private val _title = MutableLiveData<String>()
     val title: LiveData<String> = _title
+
     private val _description = MutableLiveData<String>()
     val description: LiveData<String> = _description
+
     private val _saveTaskEnabled = MutableLiveData<Boolean>()
     val saveTaskEnable: LiveData<Boolean> = _saveTaskEnabled
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorTittle = MutableLiveData<Boolean>()
     val errorTittle: LiveData<Boolean> = _errorTittle
@@ -27,26 +34,33 @@ class NewTaskViewModel @Inject constructor() : ViewModel() {
 
     private val _foundError = MutableLiveData<Boolean>()
 
-    fun onTextFieldChanged(title: String, description: String) {
+    fun onTextFieldInputChanged(title: String, description: String): Boolean {
         _title.value = title
         _description.value = description
         _saveTaskEnabled.value = true
         if (_foundError.value == true) {
-            _error.value = withOutErrors(title = title, description = description)
+            withOutErrorsNewTask(title = title, description = description).let { error ->
+                setErrors(error = error)
+                return error.error
+            }
+        } else return false
+    }
+
+    fun onTextInputSend(title: String, description: String): Boolean {
+        _isLoading.value = true
+        withOutErrorsNewTask(title = title, description = description).let { error ->
+            setErrors(error = error)
+            _isLoading.value = false
+            return error.error
         }
     }
 
-    fun withOutErrors(title: String, description: String): Boolean =
-        (!isTittleValid(title = title) || !isDescriptionValid(description = description)).also { error ->
-            if (_foundError.value != true) _foundError.postValue(error)
-            _error.postValue(error)
-        }
-
-    private fun isTittleValid(title: String): Boolean =
-        (title.length >= 3).also { _errorTittle.value = !it }
-
-    private fun isDescriptionValid(description: String): Boolean =
-        (description.length >= 3).also { _errorDescription.value = !it }
+    private fun setErrors(error: ErrorUserInput.Error) {
+        if (_foundError.value != true) _foundError.value = true
+        _errorTittle.value = error.title
+        _errorDescription.value = error.description
+        _error.value = error.error
+    }
 
     fun onResetValues() {
         _title.value = emptyString

@@ -23,14 +23,8 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _taskToDo = MutableLiveData<Int>(0)
-    private val _taskDone = MutableLiveData<Int>(0)
-
-    private val _showArrowToDO = MutableLiveData<Boolean>()
-    val showArrowToDO: LiveData<Boolean> = _showArrowToDO
-
-    private val _showArrowDone = MutableLiveData<Boolean>()
-    val showArrowDone: LiveData<Boolean> = _showArrowDone
+    private val _taskToDo = MutableLiveData(0)
+    private val _taskDone = MutableLiveData(0)
 
     init {
         _isLoading.value = true
@@ -66,13 +60,7 @@ class MainViewModel @Inject constructor(
         loadData()
     }
 
-    private fun showOrNotArrows() {
-        _taskToDo.let { _showArrowToDO.value = it.value!! > 7 }
-        _taskDone.let { _showArrowDone.value = it.value!! > 7 }
-    }
-
     private fun updateLists(listOfTasks: List<Task>? = _taskList.value) {
-        Log.d("LISTS", "listOfTasks -> ${listOfTasks?.size}")
         listOfTasks?.let { list ->
             val listToDo = list.filter { task -> !task.checkState }.size
             val listDone = list.filter { task -> task.checkState }.size
