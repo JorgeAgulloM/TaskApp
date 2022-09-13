@@ -20,7 +20,6 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.presentation.widgets.RowInfo
-import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
@@ -44,8 +43,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val settings = viewModel.settings.observeAsState().value
-    val reloading: Boolean by viewModel.reloading.observeAsState(initial = false)
-    val coroutineScope = rememberCoroutineScope()
+    val needReload: Boolean by viewModel.needReload.observeAsState(initial = false)
 
     Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
         if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
@@ -56,10 +54,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 checked = settings.lightDarkAutomaticTheme
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
-                coroutineScope.launch {
-                    viewModel.applyChanges()
-                    reloadComposable()
-                }
+                viewModel.applyChanges()
+                //reloadComposable()
             }
 
             if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
@@ -67,10 +63,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 checked = settings.lightOrDarkTheme
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
-                coroutineScope.launch {
-                    viewModel.applyChanges()
-                    reloadComposable()
-                }
+                viewModel.applyChanges()
+                //reloadComposable()
             }
 
             SwitchCustomSettings(
@@ -78,10 +72,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 checked = settings.automaticLanguage
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
-                coroutineScope.launch {
-                    viewModel.applyChanges()
-                    reloadComposable()
-                }
+                viewModel.applyChanges()
+                //reloadComposable()
             }
 
             SwitchCustomSettings(
@@ -89,10 +81,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 checked = settings.automaticColors
             ) {
                 settings.automaticColors = !settings.automaticColors
-                coroutineScope.launch {
-                    viewModel.applyChanges()
-                    reloadComposable()
-                }
+                viewModel.applyChanges()
+                //reloadComposable()
             }
 
             SwitchCustomSettings(
@@ -100,7 +90,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 checked = settings.rememberMe
             ) {
                 settings.rememberMe = !settings.rememberMe
-                coroutineScope.launch { viewModel.applyChanges() }
+                viewModel.applyChanges()
             }
 
             if (settings.rememberMe) Row(modifier = Modifier.padding(start = 32.dp, top = 16.dp),
@@ -123,10 +113,15 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 
             if (settings.rememberMe) settings.timeLimitAutoLoading =
                 sliderCustomSettingsAutoLoading(
-                    initValue = settings.timeLimitAutoLoading, needReloadDialog = reloading
+                    initValue = settings.timeLimitAutoLoading
                 ) {
-                    coroutineScope.launch { viewModel.applyChanges() }
+                    viewModel.applyChanges()
                 }
+
+            if (needReload){
+                reloadComposable()
+                viewModel.reloaded()
+            }
         }
     }
 }
@@ -146,12 +141,12 @@ private fun SwitchCustomSettings(
 @Composable
 private fun sliderCustomSettingsAutoLoading(
     initValue: Int,
-    needReloadDialog: Boolean,
+    //needReloadDialog: Boolean,
     onValueChangeFinished: () -> Unit
 ): Int {
     return sliderCustom(
         initValue = initValue,
-        enable = !needReloadDialog,
+        enable = true,
         text = stringResource(time_automatic_login) + " " + timeLimitAutoLoginSelectText(initValue),
         onValueChangeFinished = { onValueChangeFinished() }
     )
