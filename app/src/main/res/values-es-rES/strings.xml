@@ -89,5 +89,16 @@
     <string name="one_year">Un año</string>
     <string name="func_not_active">Lo siento, esa función aún no está disponible</string>
     <string name="sure_restart_task">¿Estás seguro de reiniciar la tarea?</string>
+    <string name="content_close_snack">Cerrar</string>
+    <string name="snack_input_error">Error. Revisa los datos introducidos.</string>
+    <string name="error">Error</string>
+    <string name="input_error_name">Nombre con al menos 3 caracteres</string>
+    <string name="input_error_email">El formato de email no es correcto</string>
+    <string name="input_error_repeat_email">Los campos Email no coinciden</string>
+    <string name="input_error_pass">Mínimo 8 caracteres, una letra minúscula \n y otra mayúscula</string>
+    <string name="input_error_repeat_pass">Los campos Contraseña no coinciden</string>
+    <string name="text_input_min_little">Mínimo 3 caracteres.</string>
+    <string name="error_email_exist">El email introducido ya esxite.</string>
+    <string name="error_email_or_pass">Email o contraseña incorrectos.</string>
 
 </resources>

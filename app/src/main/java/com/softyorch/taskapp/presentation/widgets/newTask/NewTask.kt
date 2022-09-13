@@ -16,10 +16,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.presentation.components.ButtonCustom
-import com.softyorch.taskapp.presentation.components.textFieldCustom
 import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
@@ -37,6 +37,7 @@ fun newTask(
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val title: String by viewModel.title.observeAsState(initial = taskToEdit?.title ?: emptyString)
     val description: String by viewModel.description.observeAsState(
         initial = taskToEdit?.description ?: emptyString
@@ -53,6 +54,8 @@ fun newTask(
     val errorTittle: Boolean by viewModel.errorTittle.observeAsState(initial = false)
     val errorDescription: Boolean by viewModel.errorDescription.observeAsState(initial = false)
     val error: Boolean by viewModel.error.observeAsState(initial = false)
+
+    if (isLoading) CircularIndicatorCustom(stringResource(loading_loading))
 
     Dialog(
         onDismissRequest = {
@@ -82,7 +85,7 @@ fun newTask(
                             dateCompletedFormatted = dateCompletedFormatted
                         )
                         TextFieldCustomNewTaskName(text = title, error = errorTittle) {
-                            viewModel.onTextFieldChanged(title = it, description = description)
+                            viewModel.onTextFieldInputChanged(title = it, description = description)
                         }
                         TextFieldCustomNewTaskDescription(
                             text = description,
@@ -103,9 +106,10 @@ fun newTask(
                             ),
                             error = errorDescription
                         ) {
-                            viewModel.onTextFieldChanged(title = title, description = it)
+                            viewModel.onTextFieldInputChanged(title = title, description = it)
                         }
 
+                        var showSnackBarErrors by remember { mutableStateOf(value = false) }
                         Column(
                             modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
@@ -115,9 +119,13 @@ fun newTask(
                             ButtonCustomNewTask(
                                 taskToEdit = taskToEdit, enable = saveTaskEnable, error = error
                             ) {
-                                viewModel.withOutErrors(title = title, description = description)
-                                    .also { error ->
-                                        if (!error) {
+                                viewModel.onTextInputSend(
+                                    title = title,
+                                    description = description
+                                ).also { error ->
+                                        if (error) {
+                                            showSnackBarErrors = true
+                                        } else {
                                             addOrEditTaskFunc(
                                                 taskToEditOrNewTask(
                                                     taskToEdit = taskToEdit, title = title,
@@ -137,6 +145,11 @@ fun newTask(
                                     cancel
                                 )
                             )
+                        }
+
+                        if (!error) showSnackBarErrors = false
+                        if (showSnackBarErrors) SnackBarError {
+                            showSnackBarErrors = false
                         }
                     }
                 }
@@ -182,17 +195,20 @@ private fun TextFieldCustomNewTaskName(
     error: Boolean,
     onCheckedChange: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = text,
-        label = stringResource(name_task),
-        placeholder = stringResource(write_name),
-        icon = Icons.Rounded.Title,
-        contentDescription = stringResource(content_name),
-        singleLine = true,
-        newTask = true,
-        isError = error,
-        onTextFieldChanged = onCheckedChange
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = text,
+            label = stringResource(name_task),
+            placeholder = stringResource(write_name),
+            icon = Icons.Rounded.Title,
+            contentDescription = stringResource(content_name),
+            singleLine = true,
+            newTask = true,
+            isError = error,
+            onTextFieldChanged = onCheckedChange
+        )
+        if (error) IconError(errorText = stringResource(text_input_min_little))
+    }
 }
 
 @Composable
@@ -202,20 +218,23 @@ private fun TextFieldCustomNewTaskDescription(
     error: Boolean,
     onCheckedChange: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = text,
-        label = stringResource(task_description),
-        placeholder = stringResource(write_description),
-        icon = Icons.Rounded.Description,
-        contentDescription = stringResource(content_description),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            imeAction = ImeAction.Go
-        ),
-        keyboardActions = keyboardActions,
-        newTask = true,
-        isError = error,
-        onTextFieldChanged = onCheckedChange
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = text,
+            label = stringResource(task_description),
+            placeholder = stringResource(write_description),
+            icon = Icons.Rounded.Description,
+            contentDescription = stringResource(content_description),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = keyboardActions,
+            newTask = true,
+            isError = error,
+            onTextFieldChanged = onCheckedChange
+        )
+        if (error) IconError(errorText = stringResource(text_input_min_little))
+    }
 }
 
 @Composable
