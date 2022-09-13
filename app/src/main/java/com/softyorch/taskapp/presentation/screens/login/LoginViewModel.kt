@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +12,6 @@ import com.softyorch.taskapp.presentation.ErrorInterface
 import com.softyorch.taskapp.presentation.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -104,9 +102,11 @@ class LoginViewModel @Inject constructor(
                     email = email, password = pass, rememberMe = rememberMe.value!!
                 ).also {
                     error.emailOrPassIncorrect = !it
+                    error.email = !it
+                    error.pass = !it
                     error.error = !it
                     setErrorsLogin(error = error)
-                    Log.d("LOGIN", "loginAndUpdateData -> ${error}")
+
                     _isLoading.value = false
                     return error.error
                 }
@@ -161,7 +161,7 @@ class LoginViewModel @Inject constructor(
         emailRepeat: String,
         pass: String,
         passRepeat: String
-    ): ErrorUserInput.Error {
+    ): Boolean {
         _isLoading.value = true
         withOutErrors(
             name = name,
@@ -170,12 +170,22 @@ class LoginViewModel @Inject constructor(
             pass = pass,
             passRepeat = passRepeat
         ).let { error ->
-            if (!error.error)
-                error.emailExists = !addNewUser(UserData(username = name, userEmail = email, userPass = pass))
-            setErrorsNewAccount(error = error)
+            if (!error.error) {
+                addNewUser(UserData(username = name, userEmail = email, userPass = pass)).also {
+                    error.emailExists = !it
+                    error.email = !it
+                    error.error = !it
+                    setErrorsNewAccount(error = error)
 
-            _isLoading.value = false
-            return error
+                    _isLoading.value = false
+                    return error.error
+                }
+            } else {
+                setErrorsNewAccount(error = error)
+
+                _isLoading.value = false
+                return error.error
+            }
         }
     }
 

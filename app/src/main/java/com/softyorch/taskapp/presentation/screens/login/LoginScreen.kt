@@ -108,7 +108,10 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            TextFieldEmail(email = email, error = errorEmail) {
+            TextFieldEmail(
+                email = email, error = errorEmail, errorEmailExist = errorEmailExists,
+                errorAccount = errorEmailOrPassIncorrect
+            ) {
                 viewModel.onLoginInputChange(
                     email = it.trim().lowercase(), pass = pass, rememberMe = rememberMe
                 )
@@ -128,7 +131,8 @@ private fun LoginOrNewAccount(
                         if (!newAccount) goOrErrorLogin = true
                     }
                 ),
-                error = errorPass) {
+                error = errorPass,
+                errorAccount = errorEmailOrPassIncorrect) {
                 viewModel.onLoginInputChange(
                     email = email, pass = it.trim(), rememberMe = rememberMe
                 )
@@ -179,14 +183,14 @@ private fun LoginOrNewAccount(
         var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
         if (goOrErrorNewAccount) {
             coroutineScope.launch {
-                val errors = viewModel.onNewAccountDataSend(
-                    name = name,
-                    email = email,
-                    emailRepeat = emailRepeat,
-                    pass = pass,
-                    passRepeat = passRepeat
-                )
-                if (errors.error) {
+                if (viewModel.onNewAccountDataSend(
+                        name = name,
+                        email = email,
+                        emailRepeat = emailRepeat,
+                        pass = pass,
+                        passRepeat = passRepeat
+                    )
+                ) {
                     showSnackBarErrors = true
                 } else {
                     newAccount = false
@@ -198,11 +202,11 @@ private fun LoginOrNewAccount(
 
         if (goOrErrorLogin) {
             coroutineScope.launch {
-                val errors = viewModel.onLoginDataSend(
-                    email = email,
-                    pass = pass
-                )
-                if (errors) {
+                if (viewModel.onLoginDataSend(
+                        email = email,
+                        pass = pass
+                    )
+                ) {
                     showSnackBarErrors = true
                 } else {
                     navController.navigate(
@@ -220,7 +224,7 @@ private fun LoginOrNewAccount(
         if (showSnackBarErrors) SnackBarError(
             errorText = if (errorEmailExists) stringResource(error_email_exist)
             else if (errorEmailOrPassIncorrect) stringResource(error_email_or_pass)
-            else stringResource(R.string.snack_input_error)
+            else stringResource(snack_input_error)
         ) {
             showSnackBarErrors = false
         }
@@ -275,6 +279,8 @@ private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (Str
 private fun TextFieldEmail(
     email: String,
     error: Boolean,
+    errorAccount: Boolean,
+    errorEmailExist: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -289,10 +295,13 @@ private fun TextFieldEmail(
                 keyboardType = KeyboardType.Email
             ),
             singleLine = true,
-            isError = error,
+            isError = error || errorAccount || errorEmailExist,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = stringResource(input_error_email))
+        if (error && !errorAccount) IconError(
+            errorText = if (errorEmailExist) stringResource(error_email_exist)
+            else stringResource(input_error_email)
+        )
     }
 }
 
@@ -323,7 +332,11 @@ private fun TextFieldEmailRepeat(
 
 @Composable
 private fun TextFieldPass(
-    pass: String, newAccount: Boolean, keyboardActions: KeyboardActions, error: Boolean,
+    pass: String,
+    newAccount: Boolean,
+    keyboardActions: KeyboardActions,
+    error: Boolean,
+    errorAccount: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -339,11 +352,14 @@ private fun TextFieldPass(
             keyboardActions = keyboardActions,
             contentDescription = stringResource(type_your_password),
             singleLine = true,
-            isError = error,
+            isError = error || errorAccount,
             password = true,
             onTextFieldChanged = onTextFieldChanged
         )
-        if (error) IconError(errorText = stringResource(input_error_pass))
+        if (error) IconError(
+            errorText = if (errorAccount) stringResource(error_email_or_pass)
+            else stringResource(input_error_pass)
+        )
     }
 }
 
