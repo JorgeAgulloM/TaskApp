@@ -64,9 +64,9 @@ fun newTask(
         content = {
             Column(
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth(1f)
-                    .fillMaxHeight(0.72f)
+                    .fillMaxHeight(0.78f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = MaterialTheme.shapes.large
@@ -76,7 +76,7 @@ fun newTask(
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxSize(),
-                        verticalArrangement = Arrangement.Top,
+                        verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
@@ -112,7 +112,7 @@ fun newTask(
                         var showSnackBarErrors by remember { mutableStateOf(value = false) }
                         Column(
                             modifier = Modifier.width(width = 300.dp).padding(top = 16.dp),
-                            verticalArrangement = Arrangement.SpaceBetween,
+                            verticalArrangement = Arrangement.Bottom,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
