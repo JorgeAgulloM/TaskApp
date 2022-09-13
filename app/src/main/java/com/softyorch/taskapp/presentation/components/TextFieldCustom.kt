@@ -65,7 +65,7 @@ fun textFieldCustom(
                 bottom = 4.dp,
                 end = if (newTask) 8.dp else 0.dp
             )
-            .width(width = if (newTask) 370.dp else 270.dp)
+            .width(width = if (newTask) 370.dp else 350.dp)
             .height(
                 height =
                 if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2

@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.softyorch.taskapp.presentation.errors.ErrorInterface
 import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -164,22 +166,32 @@ class UserDataViewModel @Inject constructor(
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        datastore.getData().collect { userData ->
-            getUserDataEmail(email = userData.userEmail).let { data ->
-                when (data) {
-                    is Resource.Error -> {
-                        _errorLoadData.postValue(true)
-                        _isLoading.postValue(false)
-                    }
-                    is Resource.Loading -> TODO()
-                    is Resource.Success -> {
-                        data.data?.let {user ->
-                            _userDataActive.postValue(user)
-                            _name.postValue(user.username)
-                            _email.postValue(user.userEmail)
-                            _pass.postValue(user.userPass)
-                            _image.postValue(user.userPicture)
-                            _isLoading.postValue(false)
+        datastore.getData().let { resource ->
+            when (resource) {
+                is Resource.Error -> {
+                    TODO()
+                }
+                is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
+                is Resource.Success -> {
+                    resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
+                        getUserDataEmail(email = data.userEmail).let { userData ->
+                            when (userData) {
+                                is Resource.Error -> {
+                                    _errorLoadData.postValue(true)
+                                    _isLoading.postValue(false)
+                                }
+                                is Resource.Loading -> TODO()
+                                is Resource.Success -> {
+                                    userData.data?.let {user ->
+                                        _userDataActive.postValue(user)
+                                        _name.postValue(user.username)
+                                        _email.postValue(user.userEmail)
+                                        _pass.postValue(user.userPass)
+                                        _image.postValue(user.userPicture)
+                                        _isLoading.postValue(false)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
