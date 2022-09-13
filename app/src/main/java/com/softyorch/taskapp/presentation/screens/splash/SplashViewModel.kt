@@ -35,8 +35,6 @@ class SplashViewModel @Inject constructor(
         loadData()
     }
 
-    private fun getUser() = datastore.getData()
-
     private fun loadData() = userActivated()
 
     private fun userActivated() {
@@ -59,6 +57,9 @@ class SplashViewModel @Inject constructor(
                                 ).data.let { userLogin ->
                                     if (userLogin != null) {
                                         isAutoLoginTime(user = userLogin)
+
+                                        _goToAutologin.postValue(false)
+                                        _isLoading.postValue(false)
                                     } else {
                                         _goToAutologin.postValue(false)
                                         _isLoading.postValue(false)
