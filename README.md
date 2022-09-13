@@ -84,3 +84,4 @@ Version 1.1.0_Alpha01 - 08/09/2022
 Version 1.2.0_Alpha01 - 13/09/2022
 - Error checking has been added for both user input data and database load data, along with the 
 logic necessary to display such errors to the user via the UI.
+
