@@ -32,43 +32,42 @@ class SplashViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        loadData()
+        viewModelScope.launch { loadData() }
     }
 
-    private fun loadData() = userActivated()
+    private suspend fun loadData() = userActivated()
 
-    private fun userActivated() {
-        viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData().let { resource ->
-                when (resource) {
-                    is Resource.Error -> {
-                        TODO()
-                    }
-                    is Resource.Loading -> Log.d(
+    private suspend fun userActivated() {
+        datastore.getData().let { resource ->
+            when (resource) {
+                is Resource.Error -> {
+                    Log.d(
                         "Resource",
-                        "Resource.userActivated() -> loading..."
+                        "Resource.userActivated() -> error"
                     )
-                    is Resource.Success -> {
-                        resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
-                            if (user.rememberMe) {
-                                logInWithRememberMe(
-                                    email = user.userEmail,
-                                    pass = user.userPass
-                                ).data.let { userLogin ->
-                                    if (userLogin != null) {
-                                        isAutoLoginTime(user = userLogin)
+                }
+                is Resource.Loading -> Log.d(
+                    "Resource",
+                    "Resource.userActivated() -> loading..."
+                )
+                is Resource.Success -> {
+                    resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                        if (user.rememberMe) {
+                            logInWithRememberMe(
+                                email = user.userEmail,
+                                pass = user.userPass
+                            ).data.let { userLogin ->
+                                if (userLogin != null) {
+                                    isAutoLoginTime(user = userLogin)
 
-                                        _goToAutologin.postValue(false)
-                                        _isLoading.postValue(false)
-                                    } else {
-                                        _goToAutologin.postValue(false)
-                                        _isLoading.postValue(false)
-                                    }
+                                } else {
+                                    _goToAutologin.postValue(false)
+                                    _isLoading.postValue(false)
                                 }
-                            } else {
-                                _goToAutologin.postValue(false)
-                                _isLoading.postValue(false)
                             }
+                        } else {
+                            _goToAutologin.postValue(false)
+                            _isLoading.postValue(false)
                         }
                     }
                 }
@@ -79,24 +78,20 @@ class SplashViewModel @Inject constructor(
     private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
         repository.signInSharePreferences(email = email, password = pass)
 
-    private fun isAutoLoginTime(user: UserData) {
+    private suspend fun isAutoLoginTime(user: UserData) {
         val timeWeekInMillis =
             timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
         user.lastLoginDate?.time?.let { autoLoginLimit ->
             val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
             timeWeekInMillis.compareTo(dif).let {
-                when (it) {
-                    1 -> {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            datastore.saveData(userData = user)
-                        }
-                        _goToAutologin.postValue(true)
-                        _isLoading.postValue(false)
-                    }
-                    else -> {
-                        _goToAutologin.postValue(false)
-                        _isLoading.postValue(false)
-                    }
+                if (it == 1) {
+                    datastore.saveData(userData = user)
+
+                    _goToAutologin.value = true
+                    _isLoading.value = false
+                } else {
+                    _goToAutologin.value = false
+                    _isLoading.value = false
                 }
             }
         }

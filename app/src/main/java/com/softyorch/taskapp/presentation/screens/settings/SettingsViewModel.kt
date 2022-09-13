@@ -26,7 +26,7 @@ class SettingsViewModel @Inject constructor(
     val settings: LiveData<UserData> = _settings
 
     private val _reloading = MutableLiveData<Boolean>()
-    val reloading: LiveData<Boolean> = _reloading
+    val needReload: LiveData<Boolean> = _reloading
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -34,14 +34,6 @@ class SettingsViewModel @Inject constructor(
     init {
         _isLoading.value = true
         loadUserData()
-    }
-
-    fun applyChanges() {
-        _isLoading.value = true
-        _settings.value?.let {
-            updatePreferences(userData = it)
-            _isLoading.postValue(false)
-        }
     }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
@@ -63,14 +55,32 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun updatePreferences(userData: UserData) = viewModelScope.launch(Dispatchers.IO) {
-        updateUser(userData = userData)
-        updateData(userData = userData)
+    fun reloaded() {
+        _reloading.value = false
+        _isLoading.value = false
+    }
+
+    fun applyChanges() {
+        _isLoading.value = true
+        _settings.value?.let {
+            updatePreferences(userData = it)
+        }
+    }
+
+    private fun updatePreferences(userData: UserData) {
+        viewModelScope.launch {
+            this.launch(Dispatchers.IO) {
+                updateUser(userData = userData)
+            }.join()
+            this.launch(Dispatchers.IO) {
+                updateData(userData = userData)
+            }.join()
+            _reloading.value = true
+        }
     }
 
     private suspend fun updateUser(userData: UserData) =
         repository.updateUserData(userData = userData)
-
     private suspend fun updateData(userData: UserData) = datastore.saveData(userData = userData)
 
 }
