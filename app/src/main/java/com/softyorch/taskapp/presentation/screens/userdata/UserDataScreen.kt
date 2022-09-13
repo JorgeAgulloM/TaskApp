@@ -96,6 +96,7 @@ private fun ContentUserDataScreen(
     val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
     val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
     val error: Boolean by viewModel.error.observeAsState(initial = false)
+    val errorLoadData: Boolean by viewModel.errorLoadData.observeAsState(initial = false)
 
     var confirmDialog by remember { mutableStateOf(value = false) }
     var cancelDialog by remember { mutableStateOf(value = false) }
@@ -206,9 +207,9 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.onUpdateDataSend( name = name, email = email, pass = pass, image = image)
+        viewModel.onUpdateDataSend(name = name, email = email, pass = pass, image = image)
         confirmDialog = false
-        if(error) showSnackBarErrors = true
+        if (error) showSnackBarErrors = true
     }
 
     if (cancelDialog) UserDataDialog(
@@ -222,9 +223,17 @@ private fun ContentUserDataScreen(
     }
 
 
-    if(!error) showSnackBarErrors = false
+    if (!error) showSnackBarErrors = false
     if (showSnackBarErrors) SnackBarError {
         showSnackBarErrors = false
+    }
+
+    if (errorLoadData) Toast.makeText(
+        LocalContext.current,
+        "Error al cargar los datos de usuario",
+        Toast.LENGTH_SHORT
+    ).show().let {
+        viewModel.resetErrorLoadData()
     }
 
 }
@@ -340,9 +349,11 @@ private fun TextFieldCustomDataScreen(
             password = password,
             onTextFieldChanged = { onTextFieldChanged(it) }
         )
-        if (error || errorEmailExist) IconError(errorText =
-        if (errorEmailExist) stringResource(error_email_exist)
-        else errorText)
+        if (error || errorEmailExist) IconError(
+            errorText =
+            if (errorEmailExist) stringResource(error_email_exist)
+            else errorText
+        )
     }
 }
 

@@ -59,6 +59,9 @@ class UserDataViewModel @Inject constructor(
     private val _error = MutableLiveData<Boolean>()
     val error: LiveData<Boolean> = _error
 
+    private val _errorLoadData = MutableLiveData<Boolean>()
+    val errorLoadData: LiveData<Boolean> = _errorLoadData
+
     private val _foundError = MutableLiveData<Boolean>()
 
 /*    private val _mainImage: MutableLiveData<String?> =
@@ -140,6 +143,10 @@ class UserDataViewModel @Inject constructor(
         _error.postValue(error.error)
     }
 
+    fun resetErrorLoadData() {
+        _errorLoadData.value = false
+    }
+
     /**
      * data
      */
@@ -158,13 +165,24 @@ class UserDataViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().collect { userData ->
-            getUserDataEmail(email = userData.userEmail).data?.let { user ->
-                _userDataActive.postValue(user)
-                _name.postValue(user.username)
-                _email.postValue(user.userEmail)
-                _pass.postValue(user.userPass)
-                _image.postValue(user.userPicture)
-                _isLoading.postValue(false)
+            getUserDataEmail(email = userData.userEmail).let { data ->
+                when (data) {
+                    is Resource.Error -> {
+                        _errorLoadData.postValue(true)
+                        _isLoading.postValue(false)
+                    }
+                    is Resource.Loading -> TODO()
+                    is Resource.Success -> {
+                        data.data?.let {user ->
+                            _userDataActive.postValue(user)
+                            _name.postValue(user.username)
+                            _email.postValue(user.userEmail)
+                            _pass.postValue(user.userPass)
+                            _image.postValue(user.userPicture)
+                            _isLoading.postValue(false)
+                        }
+                    }
+                }
             }
         }
     }
