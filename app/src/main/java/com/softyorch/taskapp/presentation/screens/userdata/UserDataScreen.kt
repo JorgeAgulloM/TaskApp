@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.activities.newImageGallery
 import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
@@ -46,7 +47,7 @@ fun UserDataScreen(
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = stringResource(R.string.user_data),
+                title = stringResource(user_data),
                 nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
             )
@@ -71,7 +72,7 @@ private fun ContentUserDataScreen(
     val viewModel = hiltViewModel<UserDataViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-    if (isLoading) CircularIndicatorCustom(text = stringResource(R.string.loading_loading))
+    if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
 
     val mainImage: String by newImageGallery.observeAsState(initial = emptyString)
     val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
@@ -92,6 +93,7 @@ private fun ContentUserDataScreen(
     /** Error states */
     val errorName: Boolean by viewModel.errorName.observeAsState(initial = false)
     val errorEmail: Boolean by viewModel.errorEmail.observeAsState(initial = false)
+    val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
     val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
     val error: Boolean by viewModel.error.observeAsState(initial = false)
 
@@ -119,7 +121,7 @@ private fun ContentUserDataScreen(
                 label = stringResource(R.string.name),
                 icon = Icons.Rounded.Person,
                 error = errorName,
-                errorText = stringResource(R.string.input_error_name)
+                errorText = stringResource(input_error_name)
             ) {
                 viewModel.onDataInputChange(name = it.trim(), email = email, pass = pass)
             }
@@ -131,14 +133,15 @@ private fun ContentUserDataScreen(
                 capitalization = KeyboardCapitalization.None,
                 keyboardType = KeyboardType.Email,
                 error = errorEmail,
-                errorText = stringResource(R.string.input_error_email)
+                errorEmailExist = errorEmailExists,
+                errorText = stringResource(input_error_email)
             ) {
                 viewModel.onDataInputChange(name = name, email = it.trim(), pass = pass)
             }
 
             TextFieldCustomDataScreen(
                 text = pass,
-                label = stringResource(R.string.password),
+                label = stringResource(password),
                 icon = Icons.Rounded.Key,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Go, password = true,
@@ -148,7 +151,7 @@ private fun ContentUserDataScreen(
                     }
                 ),
                 error = errorPass,
-                errorText = stringResource(R.string.input_error_pass)
+                errorText = stringResource(input_error_pass)
             ) {
                 viewModel.onDataInputChange(name = name, email = email, pass = it.trim())
             }
@@ -159,27 +162,27 @@ private fun ContentUserDataScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ButtonCustomDataScreen(
-                text = stringResource(R.string.save),
+                text = stringResource(save),
                 enable = saveEnabled,
                 primary = true,
                 error = error
             ) {
                 confirmDialog = true
             }
-            ButtonCustomDataScreen(text = stringResource(R.string.cancel), enable = saveEnabled) {
+            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled) {
                 cancelDialog = true
             }
             Spacer(modifier = Modifier.padding(top = 16.dp))
-            ButtonCustomDataScreen(text = stringResource(R.string.logout), tertiary = true) {
+            ButtonCustomDataScreen(text = stringResource(logout), tertiary = true) {
                 logOutDialog = true
             }
         }
     }
 
     if (logOutDialog) UserDataDialog(
-        title = stringResource(R.string.logout),
-        text = stringResource(R.string.sure_you_want_logout),
-        confirmButtonText = stringResource(R.string.yes_sure),
+        title = stringResource(logout),
+        text = stringResource(sure_you_want_logout),
+        confirmButtonText = stringResource(yes_sure),
         onDismissRequest = { logOutDialog = false },
         onDismissButtonClick = { logOutDialog = false }
     ) {
@@ -197,9 +200,9 @@ private fun ContentUserDataScreen(
     var showSnackBarErrors by remember { mutableStateOf(value = false) }
 
     if (confirmDialog) UserDataDialog(
-        title = stringResource(R.string.save_user),
-        text = stringResource(R.string.sure_about_making_changes),
-        confirmButtonText = stringResource(R.string.yes_modify_it),
+        title = stringResource(save_user),
+        text = stringResource(sure_about_making_changes),
+        confirmButtonText = stringResource(yes_modify_it),
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
@@ -209,9 +212,9 @@ private fun ContentUserDataScreen(
     }
 
     if (cancelDialog) UserDataDialog(
-        title = stringResource(R.string.cancel_change_user),
-        text = stringResource(R.string.sure_not_make_changes),
-        confirmButtonText = stringResource(R.string.yes_not_make_it),
+        title = stringResource(cancel_change_user),
+        text = stringResource(sure_not_make_changes),
+        confirmButtonText = stringResource(yes_not_make_it),
         onDismissRequest = { cancelDialog = false },
         onDismissButtonClick = { cancelDialog = false }
     ) {
@@ -268,7 +271,7 @@ private fun AsyncImageDataScreen(
     )
     else*/
     val context = LocalContext.current
-    val text = stringResource(R.string.func_not_active)
+    val text = stringResource(func_not_active)
 
     LogoUserCapitalLetter(
         capitalLetter = (
@@ -315,6 +318,7 @@ private fun TextFieldCustomDataScreen(
     keyboardActions: KeyboardActions = KeyboardActions(),
     password: Boolean = false,
     error: Boolean,
+    errorEmailExist: Boolean = false,
     errorText: String,
     onTextFieldChanged: (String) -> Unit
 ) {
@@ -322,9 +326,9 @@ private fun TextFieldCustomDataScreen(
         textFieldCustom(
             text = text,
             label = label,
-            placeholder = stringResource(R.string.write_your_label) + label.lowercase(),
+            placeholder = stringResource(write_your_label) + label.lowercase(),
             icon = icon,
-            contentDescription = label + stringResource(R.string.label_of_user),
+            contentDescription = label + stringResource(label_of_user),
             keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                 capitalization = capitalization,
                 keyboardType = keyboardType,
@@ -332,11 +336,13 @@ private fun TextFieldCustomDataScreen(
             ),
             keyboardActions = keyboardActions,
             singleLine = true,
-            isError = error,
+            isError = error || errorEmailExist,
             password = password,
             onTextFieldChanged = { onTextFieldChanged(it) }
         )
-        if (error) IconError(errorText = errorText)
+        if (error || errorEmailExist) IconError(errorText =
+        if (errorEmailExist) stringResource(error_email_exist)
+        else errorText)
     }
 }
 
@@ -352,7 +358,7 @@ private fun UserDataDialog(
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         dismissButton = {
-            ButtonCustomDataScreen(text = stringResource(R.string.cancel)) { onDismissButtonClick() }
+            ButtonCustomDataScreen(text = stringResource(cancel)) { onDismissButtonClick() }
         },
         confirmButton = {
             ButtonCustomDataScreen(text = confirmButtonText, primary = true) {

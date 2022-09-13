@@ -54,6 +54,9 @@ class UserDataViewModel @Inject constructor(
     private val _errorEmail = MutableLiveData<Boolean>()
     val errorEmail: LiveData<Boolean> = _errorEmail
 
+    private val _errorEmailExists = MutableLiveData<Boolean>()
+    val errorEmailExists: LiveData<Boolean> = _errorEmailExists
+
     private val _errorPass = MutableLiveData<Boolean>()
     val errorPass: LiveData<Boolean> = _errorPass
 
@@ -98,7 +101,7 @@ class UserDataViewModel @Inject constructor(
 
     fun onUpdateDataSend(
         name: String, email: String, pass: String, image: String
-    ): Boolean {
+    ) {
         _isLoading.value = true
         withOutErrors(name = name, email = email, pass = pass).let { error ->
             setErrorsData(error = error)
@@ -110,25 +113,35 @@ class UserDataViewModel @Inject constructor(
                     user.userPicture = image
                 }
                 viewModelScope.launch(Dispatchers.IO) {
-                    userDataActive.value?.let { updateUserDataDatastore(userData = it) }
-                    userDataActive.value?.let { updateUserData(userData = it) }
-                    loadUserData()
-
-                    _isLoading.postValue(false)
-                    _saveEnabled.postValue(false)
+                    userDataActive.value?.let { userData ->
+                        updateUserData(userData = userData).also { userNotExist ->
+                            if (!userNotExist){
+                                error.emailExists = true
+                                error.email = true
+                                error.error = true
+                                setErrorsData(error = error)
+                                _isLoading.postValue(false)
+                                _saveEnabled.postValue(false)
+                            } else {
+                                userDataActive.value?.let { updateUserDataDatastore(userData = userData) }
+                                loadUserData()
+                                _isLoading.postValue(false)
+                                _saveEnabled.postValue(false)
+                            }
+                        }
+                    }
                 }
             }
-            _isLoading.postValue(false)
-            return error.error
         }
     }
 
     private fun setErrorsData(error: ErrorUserInput.Error) {
         if (_foundError.value != true) _foundError.postValue(true)
-        _errorName.value = error.name
-        _errorEmail.value = error.email
-        _errorPass.value = error.pass
-        _error.value = error.error
+        _errorName.postValue(error.name)
+        _errorEmail.postValue(error.email)
+        _errorEmailExists.postValue(error.emailExists)
+        _errorPass.postValue(error.pass)
+        _error.postValue(error.error)
     }
 
     /**
@@ -138,7 +151,7 @@ class UserDataViewModel @Inject constructor(
     private suspend fun getUserDataEmail(email: String): Resource<UserData> =
         repository.getUserDataEmail(email = email)
 
-    private suspend fun updateUserData(userData: UserData) =
+    private suspend fun updateUserData(userData: UserData): Boolean =
         repository.updateUserData(userData = userData)
 
     /**

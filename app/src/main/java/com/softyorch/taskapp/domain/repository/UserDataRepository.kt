@@ -71,13 +71,20 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
             if (it.data?.userEmail.isNullOrEmpty()) {
                 userDataBaseDao.insert(userData = userData)
                 true
-            } else {
-                false
-            }
+            } else false
         }
 
 
-    suspend fun updateUserData(userData: UserData) = userDataBaseDao.update(userData = userData)
+    suspend fun updateUserData(userData: UserData): Boolean =
+        getUserDataEmail(email = userData.userEmail).let {
+            if (it.data?.userEmail.isNullOrEmpty()){
+                userDataBaseDao.update(userData = userData)
+                true
+            } else false
+        }
+
+
+
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()
     suspend fun deleteUserData(userData: UserData) = userDataBaseDao.delete(userData = userData)
 }
