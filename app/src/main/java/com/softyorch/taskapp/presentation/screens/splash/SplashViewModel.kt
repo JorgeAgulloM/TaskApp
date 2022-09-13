@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.splash
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import com.softyorch.taskapp.domain.repository.UserDataRepository
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -39,22 +41,35 @@ class SplashViewModel @Inject constructor(
 
     private fun userActivated() {
         viewModelScope.launch(Dispatchers.IO) {
-            getUser().collect() { user ->
-                if (user.rememberMe) {
-                    logInWithRememberMe(
-                        email = user.userEmail,
-                        pass = user.userPass
-                    ).data.let { userLogin ->
-                        if (userLogin != null) {
-                            isAutoLoginTime(user = userLogin)
-                        } else {
-                            _goToAutologin.postValue(false)
-                            _isLoading.postValue(false)
+            datastore.getData().let { resource ->
+                when (resource) {
+                    is Resource.Error -> {
+                        TODO()
+                    }
+                    is Resource.Loading -> Log.d(
+                        "Resource",
+                        "Resource.userActivated() -> loading..."
+                    )
+                    is Resource.Success -> {
+                        resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                            if (user.rememberMe) {
+                                logInWithRememberMe(
+                                    email = user.userEmail,
+                                    pass = user.userPass
+                                ).data.let { userLogin ->
+                                    if (userLogin != null) {
+                                        isAutoLoginTime(user = userLogin)
+                                    } else {
+                                        _goToAutologin.postValue(false)
+                                        _isLoading.postValue(false)
+                                    }
+                                }
+                            } else {
+                                _goToAutologin.postValue(false)
+                                _isLoading.postValue(false)
+                            }
                         }
                     }
-                } else {
-                    _goToAutologin.postValue(false)
-                    _isLoading.postValue(false)
                 }
             }
         }
