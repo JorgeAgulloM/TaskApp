@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.userdata
 
-import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,14 +8,11 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.presentation.ErrorInterface
-import com.softyorch.taskapp.presentation.ErrorUserInput
-import com.softyorch.taskapp.utils.REGEX_PASSWORD
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,6 +58,9 @@ class UserDataViewModel @Inject constructor(
 
     private val _error = MutableLiveData<Boolean>()
     val error: LiveData<Boolean> = _error
+
+    private val _errorLoadData = MutableLiveData<Boolean>()
+    val errorLoadData: LiveData<Boolean> = _errorLoadData
 
     private val _foundError = MutableLiveData<Boolean>()
 
@@ -144,6 +143,10 @@ class UserDataViewModel @Inject constructor(
         _error.postValue(error.error)
     }
 
+    fun resetErrorLoadData() {
+        _errorLoadData.value = false
+    }
+
     /**
      * data
      */
@@ -162,13 +165,24 @@ class UserDataViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().collect { userData ->
-            getUserDataEmail(email = userData.userEmail).data?.let { user ->
-                _userDataActive.postValue(user)
-                _name.postValue(user.username)
-                _email.postValue(user.userEmail)
-                _pass.postValue(user.userPass)
-                _image.postValue(user.userPicture)
-                _isLoading.postValue(false)
+            getUserDataEmail(email = userData.userEmail).let { data ->
+                when (data) {
+                    is Resource.Error -> {
+                        _errorLoadData.postValue(true)
+                        _isLoading.postValue(false)
+                    }
+                    is Resource.Loading -> TODO()
+                    is Resource.Success -> {
+                        data.data?.let {user ->
+                            _userDataActive.postValue(user)
+                            _name.postValue(user.username)
+                            _email.postValue(user.userEmail)
+                            _pass.postValue(user.userPass)
+                            _image.postValue(user.userPicture)
+                            _isLoading.postValue(false)
+                        }
+                    }
+                }
             }
         }
     }

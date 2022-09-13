@@ -3,8 +3,8 @@ package com.softyorch.taskapp.presentation.widgets.newTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.softyorch.taskapp.presentation.ErrorInterface
-import com.softyorch.taskapp.presentation.ErrorUserInput
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

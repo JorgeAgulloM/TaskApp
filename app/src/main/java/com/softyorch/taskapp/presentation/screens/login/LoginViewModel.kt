@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,8 +9,8 @@ import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.presentation.ErrorInterface
-import com.softyorch.taskapp.presentation.ErrorUserInput
+import com.softyorch.taskapp.presentation.errors.ErrorInterface
+import com.softyorch.taskapp.presentation.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -206,13 +207,19 @@ class LoginViewModel @Inject constructor(
         rememberMe: Boolean
     ): Boolean {
         signInUserWithEmailAndPassword(email = email, password = password).let { data ->
-            data.data?.let { user ->
-                user.lastLoginDate = Date.from(Instant.now())
-                user.rememberMe = rememberMe
-                updateLastLoginUser(userData = user)
-                datastore.saveData(userData = user)
+            when (data){
+                is Resource.Error -> return false
+                is Resource.Loading -> TODO()
+                is Resource.Success -> {
+                    data.data?.let { user ->
+                        user.lastLoginDate = Date.from(Instant.now())
+                        user.rememberMe = rememberMe
+                        updateLastLoginUser(userData = user)
+                        datastore.saveData(userData = user)
 
-                return true
+                        return true
+                    }
+                }
             }
         }
         return false
@@ -229,41 +236,6 @@ class LoginViewModel @Inject constructor(
         _errorEmailOrPassIncorrect.value = false
         _foundError.value = false
     }
-
-    /**
-     * Errors Control
-     */
-
-/*    private fun withOutErrors(email: String, pass: String): Boolean {
-        isValidEmail(email = email)
-        return (errorEmail.value == true || !isValidPass(pass = pass))
-    }
-
-    private fun withOutErrors(
-        name: String, email: String, emailRepeat: String, pass: String, passRepeat: String
-    ): Boolean {
-        isValidEmail(email = email)
-        return (!isValidName(name = name) ||
-                errorEmail.value == true ||
-                !isValidEmail(email = email, emailRepeat = emailRepeat) ||
-                !isValidPass(pass = pass) ||
-                !isValidPass(pass = pass, passRepeat = passRepeat))
-    }*/
-
-/*    private fun isValidName(name: String): Boolean =
-        (name.length >= 3).also { _errorName.value = !it }
-
-    private fun isValidEmail(email: String): Boolean =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches().also { _errorEmail.value = !it }
-
-    private fun isValidEmail(email: String, emailRepeat: String): Boolean =
-        (email == emailRepeat).also { _errorRepeatEmail.value = !it }
-
-    private fun isValidPass(pass: String): Boolean =
-        Pattern.matches(REGEX_PASSWORD, pass).also { _errorPass.value = !it }
-
-    private fun isValidPass(pass: String, passRepeat: String): Boolean =
-        (pass == passRepeat).also { _errorRepeatPass.value = !it }*/
 
     /**
      * data
