@@ -28,16 +28,15 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.activities.newImageGallery
-import com.softyorch.taskapp.presentation.components.ButtonCustom
+import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.presentation.components.textFieldCustom
-import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.launch
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -73,8 +72,7 @@ private fun ContentUserDataScreen(
     val viewModel = hiltViewModel<UserDataViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-    if (isLoading)
-        CircularIndicatorCustom(text = stringResource(loading_loading))
+    if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
 
     val mainImage: String by newImageGallery.observeAsState(initial = emptyString)
     val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
@@ -82,7 +80,7 @@ private fun ContentUserDataScreen(
     mainImage.let { new ->
         image.let { old ->
             when (new != emptyString && old != new) {
-                true -> if (!savingImage) viewModel.onImageChange(new)
+                true -> if (!savingImage) viewModel.onImageInputChange(new)
                 false -> if (savingImage) viewModel.resetSavingImage()
             }
         }
@@ -91,6 +89,14 @@ private fun ContentUserDataScreen(
     val email: String by viewModel.email.observeAsState(initial = emptyString)
     val pass: String by viewModel.pass.observeAsState(initial = emptyString)
     val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
+
+    /** Error states */
+    val errorName: Boolean by viewModel.errorName.observeAsState(initial = false)
+    val errorEmail: Boolean by viewModel.errorEmail.observeAsState(initial = false)
+    val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
+    val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+    val errorLoadData: Boolean by viewModel.errorLoadData.observeAsState(initial = false)
 
     var confirmDialog by remember { mutableStateOf(value = false) }
     var cancelDialog by remember { mutableStateOf(value = false) }
@@ -112,33 +118,31 @@ private fun ContentUserDataScreen(
         ) {
 
             TextFieldCustomDataScreen(
-                text = name, label = stringResource(R.string.name),
-                icon = Icons.Rounded.Person
+                text = name,
+                label = stringResource(R.string.name),
+                icon = Icons.Rounded.Person,
+                error = errorName,
+                errorText = stringResource(input_error_name)
             ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = it,
-                        email = email,
-                        pass = pass
-                    )
-                }
+                viewModel.onDataInputChange(name = it.trim(), email = email, pass = pass)
             }
+
             TextFieldCustomDataScreen(
-                text = email, label = stringResource(R.string.email),
+                text = email,
+                label = stringResource(R.string.email),
                 icon = Icons.Rounded.Email,
                 capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email,
+                error = errorEmail,
+                errorEmailExist = errorEmailExists,
+                errorText = stringResource(input_error_email)
             ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = name,
-                        email = it,
-                        pass = pass
-                    )
-                }
+                viewModel.onDataInputChange(name = name, email = it.trim(), pass = pass)
             }
+
             TextFieldCustomDataScreen(
-                text = pass, label = stringResource(password),
+                text = pass,
+                label = stringResource(password),
                 icon = Icons.Rounded.Key,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Go, password = true,
@@ -146,15 +150,11 @@ private fun ContentUserDataScreen(
                     onGo = {
                         confirmDialog = true
                     }
-                )
+                ),
+                error = errorPass,
+                errorText = stringResource(input_error_pass)
             ) {
-                viewModel.viewModelScope.launch {
-                    viewModel.onDataChange(
-                        name = name,
-                        email = email,
-                        pass = it
-                    )
-                }
+                viewModel.onDataInputChange(name = name, email = email, pass = it.trim())
             }
         }
         Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -162,19 +162,20 @@ private fun ContentUserDataScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ButtonCustomDataScreen(text = stringResource(logout), primary = true) {
-                logOutDialog = true
-            } //viewModel
-            Spacer(modifier = Modifier.padding(bottom = 4.dp))
             ButtonCustomDataScreen(
                 text = stringResource(save),
                 enable = saveEnabled,
-                primary = true
+                primary = true,
+                error = error
             ) {
                 confirmDialog = true
             }
             ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled) {
                 cancelDialog = true
+            }
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            ButtonCustomDataScreen(text = stringResource(logout), tertiary = true) {
+                logOutDialog = true
             }
         }
     }
@@ -186,13 +187,18 @@ private fun ContentUserDataScreen(
         onDismissRequest = { logOutDialog = false },
         onDismissButtonClick = { logOutDialog = false }
     ) {
-        viewModel.logOut()
         logOutDialog = false
-        navController.navigate(AppScreensRoutes.SplashScreen.route) {
-            navController.backQueue.clear()
+        viewModel.logOut().also {
+            viewModel.viewModelScope.launch {
+                it.join()
+                navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                    navController.backQueue.clear()
+                }
+            }
         }
-
     }
+
+    var showSnackBarErrors by remember { mutableStateOf(value = false) }
 
     if (confirmDialog) UserDataDialog(
         title = stringResource(save_user),
@@ -201,8 +207,9 @@ private fun ContentUserDataScreen(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.viewModelScope.launch { viewModel.onUpdateData() }
+        viewModel.onUpdateDataSend(name = name, email = email, pass = pass, image = image)
         confirmDialog = false
+        if (error) showSnackBarErrors = true
     }
 
     if (cancelDialog) UserDataDialog(
@@ -213,6 +220,20 @@ private fun ContentUserDataScreen(
         onDismissButtonClick = { cancelDialog = false }
     ) {
         navController.popBackStack()
+    }
+
+
+    if (!error) showSnackBarErrors = false
+    if (showSnackBarErrors) SnackBarError {
+        showSnackBarErrors = false
+    }
+
+    if (errorLoadData) Toast.makeText(
+        LocalContext.current,
+        "Error al cargar los datos de usuario",
+        Toast.LENGTH_SHORT
+    ).show().let {
+        viewModel.resetErrorLoadData()
     }
 
 }
@@ -264,7 +285,7 @@ private fun AsyncImageDataScreen(
     LogoUserCapitalLetter(
         capitalLetter = (
                 if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
-        size = 200.dp
+        size = 100.dp
     ) {
         //getImage()
         Toast.makeText(
@@ -277,14 +298,22 @@ private fun AsyncImageDataScreen(
 
 @Composable
 private fun ButtonCustomDataScreen(
-    text: String, enable: Boolean = true, primary: Boolean = false, onclick: () -> Unit
+    text: String,
+    enable: Boolean = true,
+    primary: Boolean = false,
+    tertiary: Boolean = false,
+    error: Boolean = false,
+    onclick: () -> Unit
 ) {
     ButtonCustom(
-        onClick = { onclick() },
         text = text,
         enable = enable,
-        primary = primary
-    )
+        tertiary = tertiary,
+        primary = primary,
+        error = error
+    ) {
+        onclick()
+    }
 }
 
 @Composable
@@ -297,24 +326,35 @@ private fun TextFieldCustomDataScreen(
     imeAction: ImeAction = ImeAction.Next,
     keyboardActions: KeyboardActions = KeyboardActions(),
     password: Boolean = false,
+    error: Boolean,
+    errorEmailExist: Boolean = false,
+    errorText: String,
     onTextFieldChanged: (String) -> Unit
 ) {
-    textFieldCustom(
-        text = text,
-        label = label,
-        placeholder = stringResource(write_your_label) + label.lowercase(),
-        icon = icon,
-        contentDescription = label + stringResource(label_of_user),
-        keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-            capitalization = capitalization,
-            keyboardType = keyboardType,
-            imeAction = imeAction
-        ),
-        keyboardActions = keyboardActions,
-        singleLine = true,
-        password = password,
-        onTextFieldChanged = { onTextFieldChanged(it) }
-    )
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        textFieldCustom(
+            text = text,
+            label = label,
+            placeholder = stringResource(write_your_label) + label.lowercase(),
+            icon = icon,
+            contentDescription = label + stringResource(label_of_user),
+            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                capitalization = capitalization,
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = keyboardActions,
+            singleLine = true,
+            isError = error || errorEmailExist,
+            password = password,
+            onTextFieldChanged = { onTextFieldChanged(it) }
+        )
+        if (error || errorEmailExist) IconError(
+            errorText =
+            if (errorEmailExist) stringResource(error_email_exist)
+            else errorText
+        )
+    }
 }
 
 @Composable

@@ -6,15 +6,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.domain.repository.DatastoreRepository
 import com.softyorch.taskapp.domain.repository.UserDataRepository
-import com.softyorch.taskapp.utils.StateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val stateLogin: StateLogin
+    private val datastore: DatastoreRepository
 ) : ViewModel() {
 
     private val _settings = MutableLiveData<UserData>()
@@ -28,46 +30,35 @@ class SettingsViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        loadData()
+        loadUserData()
     }
 
-    private fun loadData(){
-        _settings.postValue(getUserActiveSharedPreferences())
-        _isLoading.value = false
-    }
-
-    suspend fun applyChanges() {
+    fun applyChanges() {
         _isLoading.value = true
         _settings.value?.let {
-            val result = updatePreferences(settingsUserData = it)
-            result.join()
-
+            updatePreferences(userData = it)
             _isLoading.postValue(false)
         }
     }
 
-    private fun getUserActiveSharedPreferences(): UserData? {
-        return stateLogin.userDataActive
+    private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
+        datastore.getData().collect { userData ->
+            repository.getUserDataEmail(email = userData.userEmail).data.let { user ->
+                _settings.postValue(user)
+                _isLoading.postValue(false)
+            }
+        }
     }
 
-    private fun updatePreferences(settingsUserData: UserData) = viewModelScope.launch {
-        stateLogin.userDataActive?.let { userData ->
-            userData.lastLoginDate = settingsUserData.lastLoginDate
-            userData.rememberMe = settingsUserData.rememberMe
-            userData.lightDarkAutomaticTheme = settingsUserData.lightDarkAutomaticTheme
-            userData.lightOrDarkTheme = settingsUserData.lightOrDarkTheme
-            userData.automaticLanguage = settingsUserData.automaticLanguage
-            userData.automaticColors = settingsUserData.automaticColors
-            userData.timeLimitAutoLoading = settingsUserData.timeLimitAutoLoading
-            userData.textSize = settingsUserData.textSize
-            updateUser(userData = userData)
-            stateLogIn(userData = userData)
-        }
+    private fun updatePreferences(userData: UserData) = viewModelScope.launch(Dispatchers.IO) {
+        updateUser(userData = userData)
+        updateData(userData = userData)
     }
 
     private suspend fun updateUser(userData: UserData) =
         repository.updateUserData(userData = userData)
 
-    private fun stateLogIn(userData: UserData) = stateLogin.logIn(userData = userData)
+    private suspend fun updateData(userData: UserData) = datastore.saveData(userData = userData)
+
 }
 

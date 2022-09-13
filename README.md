@@ -70,7 +70,18 @@ https://www.youtube.com/embed/ZUFTF1OtWs0
 ## Navigation.
 https://www.youtube.com/embed/tdLMn0rjapo
 
+<br>
+<br>
+
 ### Version 1.1.0-Alpha01
 Version 1.1.0_Alpha01 - 08/09/2022
+- Datastore has been added to replace SharePreferences, since google has deprecated them. 
 
-Datastore has been added to replace SharePreferences, since google has deprecated them. 
+<br>
+<br>
+
+### Version 1.2.0-Alpha01
+Version 1.2.0_Alpha01 - 13/09/2022
+- Error checking has been added for both user input data and database load data, along with the 
+logic necessary to display such errors to the user via the UI.
+
