@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
+import com.softyorch.taskapp.utils.ANIMATED_ENTER_TEXT_FIELDS
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
@@ -67,19 +68,7 @@ fun textFieldCustom(
     }
     AnimatedVisibility(
         visible = visible,
-        enter = if (newTask) slideInVertically {
-            with(density) { -500.dp.roundToPx() }
-        } + expandVertically(
-            expandFrom = Alignment.Bottom
-        ) + fadeIn(
-            initialAlpha = 0f
-        ) else slideInHorizontally {
-            with(density) { 500.dp.roundToPx() }
-        } + expandHorizontally (
-            expandFrom = Alignment.End
-        ) + fadeIn(
-            initialAlpha = 0f
-        )
+        enter = ANIMATED_ENTER_TEXT_FIELDS
     ) {
         TextField(
             value = text,
