@@ -1,6 +1,10 @@
 package com.softyorch.taskapp.utils
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,4 +61,51 @@ const val TIME_LIMIT_AUTOLOGIN = "time_limit_auto_loading"
 const val TEXT_SIZE = "text_size"
 
 /** Tables -> Names of values -> shared preferences */
-const val USER_DATA="user_data"
+const val USER_DATA = "user_data"
+
+/******* Animations ************************/
+@OptIn(ExperimentalAnimationApi::class)
+val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+
+//val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
+@OptIn(ExperimentalAnimationApi::class)
+val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+//val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
+
+val ANIMATED_ENTER_TEXT_FIELDS: EnterTransition =
+    //fadeIn(animationSpec = tween(5000))
+    //slideInHorizontally(animationSpec = tween(500)) +
+    expandHorizontally(animationSpec = tween(5000),expandFrom = Alignment.End)
+val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition = slideOutHorizontally(animationSpec = tween(500))
+
+/*enter = if (newTask) slideInVertically {
+            with(density) { -500.dp.roundToPx() }
+        } + expandVertically(
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(
+            initialAlpha = 0f
+        ) else slideInHorizontally {
+            with(density) { 500.dp.roundToPx() }
+        } + expandHorizontally (
+            expandFrom = Alignment.End
+        ) + fadeIn(
+            initialAlpha = 0f
+        )*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
