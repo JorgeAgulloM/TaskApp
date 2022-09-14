@@ -10,7 +10,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -53,8 +52,8 @@ fun DetailScreen(
     }
     AnimatedVisibility(
         visible = visibleScreen,
-        enter = ENTER_SCALE_IN_TWEEN_500,
-        exit = EXIT_SCALE_OUT_TWEEN_500
+        enter = ANIMATED_ENTER,
+        exit = ANIMATED_EXIT
     ) {
         Scaffold(
             topBar = {

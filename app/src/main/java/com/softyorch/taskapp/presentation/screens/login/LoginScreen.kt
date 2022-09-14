@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,22 +27,38 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
+import com.softyorch.taskapp.utils.ANIMATED_ENTER
+import com.softyorch.taskapp.utils.ANIMATED_EXIT
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
     val viewModel = hiltViewModel<LoginViewModel>()
-
-    Box {
-        LoginOrNewAccount(
-            modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
-            viewModel = viewModel,
-            navController = navController
-        )
+    var visibleScreen by remember { mutableStateOf(value = false) }
+    rememberCoroutineScope().launch {
+        delay(100)
+        visibleScreen = true
+    }
+    AnimatedVisibility(
+        visible = visibleScreen,
+        enter = ANIMATED_ENTER,
+        exit = ANIMATED_EXIT
+    ) {
+        Box {
+            LoginOrNewAccount(
+                modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
+                viewModel = viewModel,
+                navController = navController
+            ){
+                visibleScreen = false
+            }
+        }
     }
 }
 
@@ -51,7 +68,8 @@ fun LoginScreen(navController: NavHostController) {
 private fun LoginOrNewAccount(
     modifier: Modifier,
     viewModel: LoginViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    onGoMain: () -> Unit
 ) {
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     val name: String by viewModel.name.observeAsState(initial = emptyString)
@@ -212,6 +230,7 @@ private fun LoginOrNewAccount(
                 ) {
                     showSnackBarErrors = true
                 } else {
+                    onGoMain()
                     navController.navigate(
                         AppScreensRoutes.MainScreen.route
                     ) {

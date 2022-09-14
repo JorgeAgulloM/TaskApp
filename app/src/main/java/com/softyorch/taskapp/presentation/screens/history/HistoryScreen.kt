@@ -42,8 +42,8 @@ fun HistoryScreen(navController: NavHostController) {
     }
     AnimatedVisibility(
         visible = visibleScreen,
-        enter = ENTER_SCALE_IN_TWEEN_500,
-        exit = EXIT_SCALE_OUT_TWEEN_500
+        enter = ANIMATED_ENTER,
+        exit = ANIMATED_EXIT
     ) {
         Scaffold(
             topBar = {

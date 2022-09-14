@@ -34,8 +34,8 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
-import com.softyorch.taskapp.utils.ENTER_SCALE_IN_TWEEN_500
-import com.softyorch.taskapp.utils.EXIT_SCALE_OUT_TWEEN_500
+import com.softyorch.taskapp.utils.ANIMATED_ENTER
+import com.softyorch.taskapp.utils.ANIMATED_EXIT
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.delay
@@ -56,8 +56,8 @@ fun UserDataScreen(
     }
     AnimatedVisibility(
         visible = visibleScreen,
-        enter = ENTER_SCALE_IN_TWEEN_500,
-        exit = EXIT_SCALE_OUT_TWEEN_500
+        enter = ANIMATED_ENTER,
+        exit = ANIMATED_EXIT
     ) {
         Scaffold(
             topBar = {

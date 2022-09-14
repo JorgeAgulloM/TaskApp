@@ -31,8 +31,8 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
-import com.softyorch.taskapp.utils.ENTER_SCALE_IN_TWEEN_500
-import com.softyorch.taskapp.utils.EXIT_SCALE_OUT_TWEEN_500
+import com.softyorch.taskapp.utils.ANIMATED_ENTER
+import com.softyorch.taskapp.utils.ANIMATED_EXIT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -52,8 +52,8 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
     }
     AnimatedVisibility(
         visible = visibleScreen,
-        enter = ENTER_SCALE_IN_TWEEN_500,
-        exit = EXIT_SCALE_OUT_TWEEN_500
+        enter = ANIMATED_ENTER,
+        exit = ANIMATED_EXIT
     ) {
         Scaffold(
             topBar = {

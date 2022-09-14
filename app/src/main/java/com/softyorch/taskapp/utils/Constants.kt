@@ -63,6 +63,29 @@ const val USER_DATA="user_data"
 
 /******* Animations ************************/
 @OptIn(ExperimentalAnimationApi::class)
-val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
+val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+//val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
 @OptIn(ExperimentalAnimationApi::class)
-val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
+val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+//val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
