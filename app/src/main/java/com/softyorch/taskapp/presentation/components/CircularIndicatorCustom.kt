@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +20,8 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun CircularIndicatorCustom(
-    text: String
+    text: String,
+    modifier: Modifier = Modifier
 ){
     val infiniteTransition = rememberInfiniteTransition()
     val color by infiniteTransition.animateColor(
@@ -30,21 +32,21 @@ fun CircularIndicatorCustom(
             repeatMode = RepeatMode.Reverse
         )
     )
-    Dialog(
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            color = color
+        )
+        //Text(text = text, style = TextStyle(textAlign = TextAlign.Center))
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+    }
+    /*Dialog(
         onDismissRequest = {},
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     ) {
-        Column(
-            modifier = Modifier.safeContentPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(
-                color = color
-            )
-            //Text(text = text, style = TextStyle(textAlign = TextAlign.Center))
-            Text(text = text, style = MaterialTheme.typography.bodyMedium)
-        }
 
-    }
+    }*/
 }
