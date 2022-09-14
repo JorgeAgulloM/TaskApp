@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.components.topAppBarCustom
 
-import android.util.Size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -28,7 +27,8 @@ fun TopAppBarCustom(
     title: String,
     isMainScreen: Boolean = false,
     nameScreen: String,
-    navController: NavController
+    navController: NavController,
+    onExitScreen: () -> Unit
 ) {
 
     val viewModel = hiltViewModel<TopAppBarCustomViewModel>()
@@ -51,6 +51,7 @@ fun TopAppBarCustom(
                 imageVector = Icons.Rounded.ArrowBack,
                 text = stringResource(go_to_home),
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.MainScreen.route) {
                     navController.backQueue.clear()
                 }
@@ -60,6 +61,7 @@ fun TopAppBarCustom(
             if (nameScreen != AppScreens.MainScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.Home, text = stringResource(go_home)
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.MainScreen.route) {
                     navController.backQueue.clear()
                 }
@@ -68,18 +70,21 @@ fun TopAppBarCustom(
             if (nameScreen != AppScreens.HistoryScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.History, text = stringResource(history)
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.HistoryScreen.route)
             }
 
             if (nameScreen != AppScreens.SettingsScreen.name) IconButtonTABC(
                 imageVector = Icons.Rounded.Settings, text = stringResource(settings)
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.SettingsScreen.route)
             }
 
             if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABCUser(
                 image = userPicture, userName = userName
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
         }

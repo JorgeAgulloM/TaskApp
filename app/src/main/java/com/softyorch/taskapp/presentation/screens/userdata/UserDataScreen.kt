@@ -2,6 +2,7 @@ package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -33,31 +34,48 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
+import com.softyorch.taskapp.utils.ENTER_SCALE_IN_TWEEN_500
+import com.softyorch.taskapp.utils.EXIT_SCALE_OUT_TWEEN_500
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
     navController: NavHostController,
     getUserImage: Pair<() -> Unit, String?>
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBarCustom(
-                title = stringResource(user_data),
-                nameScreen = AppScreens.UserDataScreen.name,
-                navController = navController,
-            )
-        }) {
+    var visibleScreen by remember { mutableStateOf(value = false) }
+    rememberCoroutineScope().launch {
+        delay(100)
+        visibleScreen = true
+    }
+    AnimatedVisibility(
+        visible = visibleScreen,
+        enter = ENTER_SCALE_IN_TWEEN_500,
+        exit = EXIT_SCALE_OUT_TWEEN_500
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBarCustom(
+                    title = stringResource(user_data),
+                    nameScreen = AppScreens.UserDataScreen.name,
+                    navController = navController,
+                ) {
+                    visibleScreen = false
+                }
+            }) {
 
-        ContentUserDataScreen(
-            it = it,
-            navController = navController,
-            getUserImage = getUserImage
-        )
+            ContentUserDataScreen(
+                it = it,
+                navController = navController,
+                getUserImage = getUserImage
+            )
+        }
     }
 }
 

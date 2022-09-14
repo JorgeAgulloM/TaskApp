@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -22,17 +24,17 @@ import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.toStringFormatted
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
-import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.toastError
+import com.softyorch.taskapp.utils.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
@@ -44,17 +46,30 @@ fun DetailScreen(
     val viewModel = hiltViewModel<DetailScreenViewModel>()
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBarCustom(
-                title = stringResource(details),
-                nameScreen = AppScreens.DetailsScreen.name,
-                navController = navController,
-            )
-        }
+    var visibleScreen by remember { mutableStateOf(value = false) }
+    rememberCoroutineScope().launch {
+        delay(100)
+        visibleScreen = true
+    }
+    AnimatedVisibility(
+        visible = visibleScreen,
+        enter = ENTER_SCALE_IN_TWEEN_500,
+        exit = EXIT_SCALE_OUT_TWEEN_500
     ) {
-        coroutineScope.launch { viewModel.getTask(id = id) }
-        Content(it = it, viewModel = viewModel, navController = navController)
+        Scaffold(
+            topBar = {
+                TopAppBarCustom(
+                    title = stringResource(details),
+                    nameScreen = AppScreens.DetailsScreen.name,
+                    navController = navController,
+                ){
+                    visibleScreen = false
+                }
+            }
+        ) {
+            coroutineScope.launch { viewModel.getTask(id = id) }
+            Content(it = it, viewModel = viewModel, navController = navController)
+        }
     }
 }
 

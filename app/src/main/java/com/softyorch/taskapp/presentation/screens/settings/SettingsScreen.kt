@@ -32,17 +32,30 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBarCustom(
-                title = stringResource(settings),
-                nameScreen = AppScreens.SettingsScreen.name,
-                navController = navController,
-            )
-        },
-        content = {
-            Content(it = it, reloadComposable = reloadComposable)
-        })
+    var visibleScreen by remember { mutableStateOf(value = false) }
+    rememberCoroutineScope().launch {
+        delay(100)
+        visibleScreen = true
+    }
+    AnimatedVisibility(
+        visible = visibleScreen,
+        enter = ENTER_SCALE_IN_TWEEN_500,
+        exit = EXIT_SCALE_OUT_TWEEN_500
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBarCustom(
+                    title = stringResource(settings),
+                    nameScreen = AppScreens.SettingsScreen.name,
+                    navController = navController,
+                ) {
+                    visibleScreen = false
+                }
+            },
+            content = {
+                Content(it = it, reloadComposable = reloadComposable)
+            })
+    }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")

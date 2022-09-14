@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.main
 
 import android.annotation.SuppressLint
-import android.widget.CheckBox
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -32,35 +31,60 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
+import com.softyorch.taskapp.utils.ENTER_SCALE_IN_TWEEN_500
+import com.softyorch.taskapp.utils.EXIT_SCALE_OUT_TWEEN_500
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KSuspendFunction1
 
+@OptIn(ExperimentalAnimationApi::class)
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
-    Scaffold(
-        topBar = {
-            TopAppBarCustom(
-                title = stringResource(main),
-                isMainScreen = true,
-                nameScreen = AppScreens.MainScreen.name,
-                navController = navController,
-            )
-        },
-        floatingActionButton = {
-            FABCustom()
-        },
+
+    var visibleScreen by remember { mutableStateOf(value = false) }
+    rememberCoroutineScope().launch {
+        delay(100)
+        visibleScreen = true
+    }
+    AnimatedVisibility(
+        visible = visibleScreen,
+        enter = ENTER_SCALE_IN_TWEEN_500,
+        exit = EXIT_SCALE_OUT_TWEEN_500
     ) {
-        Content(it = it, viewModel = mainViewModel, navController = navController)
+        Scaffold(
+            topBar = {
+                TopAppBarCustom(
+                    title = stringResource(main),
+                    isMainScreen = true,
+                    nameScreen = AppScreens.MainScreen.name,
+                    navController = navController,
+                ){
+                    visibleScreen = false
+                }
+            },
+            floatingActionButton = {
+                FABCustom()
+            },
+        ) {
+            Content(it = it, viewModel = mainViewModel, navController = navController){
+                visibleScreen = false
+            }
+        }
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
+private fun Content(
+    it: PaddingValues,
+    viewModel: MainViewModel,
+    navController: NavController,
+    onExitScreen: () -> Unit
+) {
 
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
@@ -92,6 +116,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
                 initStateCheck = false,
                 enabled = !isLoading
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
             Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
@@ -110,6 +135,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
                 initStateCheck = true,
                 enabled = !isLoading
             ) {
+                onExitScreen()
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
             Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))

@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.utils
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -58,3 +60,9 @@ const val TEXT_SIZE = "text_size"
 
 /** Tables -> Names of values -> shared preferences */
 const val USER_DATA="user_data"
+
+/******* Animations ************************/
+@OptIn(ExperimentalAnimationApi::class)
+val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
+@OptIn(ExperimentalAnimationApi::class)
+val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
