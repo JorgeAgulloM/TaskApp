@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.presentation.components
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -10,15 +12,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -26,9 +27,12 @@ import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 //TextField V1
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun textFieldCustom(
@@ -55,76 +59,99 @@ fun textFieldCustom(
     val textChange = rememberSaveable { mutableStateOf(text) }
     var passVisible by rememberSaveable { mutableStateOf(password) }
 
-    TextField(
-        value = text,
-        onValueChange = { onTextFieldChanged(it) },
-        modifier = Modifier
-            .padding(
-                start = if (newTask) 8.dp else 32.dp,
-                top = 4.dp,
-                bottom = 4.dp,
-                end = if (newTask) 8.dp else 0.dp
-            )
-            .width(width = if (newTask) 370.dp else 350.dp)
-            .height(
-                height =
-                if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
-            )
-            .shadow(
-                elevation = ELEVATION_DP, shape = personalizedShape
-            ),
-        readOnly = readOnly,
-        textStyle = MaterialTheme.typography.bodyLarge,
-        label = { Text(text = label) },
-        placeholder = { Text(text = placeholder) },
-        leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
-        trailingIcon = {
-            if (password) {
-                val image = if (passVisible)
-                    Icons.Rounded.Visibility
-                else
-                    Icons.Rounded.VisibilityOff
-
-                val description = if (passVisible)
-                    stringResource(hide_password)
-                else
-                    stringResource(show_password)
-
-                IconButton(
-                    onClick = {
-                        passVisible = !passVisible
-                    },
-                    content = {
-                        Icon(
-                            imageVector = image,
-                            contentDescription = description,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+    var visible by remember { mutableStateOf(value = false) }
+    val density = LocalDensity.current
+    rememberCoroutineScope().launch {
+        delay(100)
+        visible = true
+    }
+    AnimatedVisibility(
+        visible = visible,
+        enter = if (newTask) slideInVertically {
+            with(density) { -500.dp.roundToPx() }
+        } + expandVertically(
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(
+            initialAlpha = 0f
+        ) else slideInHorizontally {
+            with(density) { 500.dp.roundToPx() }
+        } + expandHorizontally (
+            expandFrom = Alignment.End
+        ) + fadeIn(
+            initialAlpha = 0f
+        )
+    ) {
+        TextField(
+            value = text,
+            onValueChange = { onTextFieldChanged(it) },
+            modifier = Modifier
+                .padding(
+                    start = if (newTask) 8.dp else 32.dp,
+                    top = 4.dp,
+                    bottom = 4.dp,
+                    end = if (newTask) 8.dp else 0.dp
                 )
-            }
-        },
-        isError = isError,
-        visualTransformation = if (!passVisible) VisualTransformation.None
-        else PasswordVisualTransformation(),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        singleLine = singleLine,
-        maxLines = 5,
-        shape = personalizedShape,
-        /*colors = TextFieldDefaults.textFieldColors(
-            textColor = LightMode90t,
-            placeholderColor = LightMode90t.copy(alpha = 0.4f),
-            focusedLabelColor = unfocusedColor,
-            unfocusedLabelColor = unfocusedColor,
-            unfocusedLeadingIconColor = unfocusedColor,
-            focusedLeadingIconColor = focusedColor,
-            containerColor = MaterialTheme.colorScheme.primary,
-            focusedIndicatorColor = focusedColor,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = focusedColor
-        )*/
-    )
+                .width(width = if (newTask) 370.dp else 350.dp)
+                .height(
+                    height =
+                    if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
+                )
+                .shadow(
+                    elevation = ELEVATION_DP, shape = personalizedShape
+                ),
+            readOnly = readOnly,
+            textStyle = MaterialTheme.typography.bodyLarge,
+            label = { Text(text = label) },
+            placeholder = { Text(text = placeholder) },
+            leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
+            trailingIcon = {
+                if (password) {
+                    val image = if (passVisible)
+                        Icons.Rounded.Visibility
+                    else
+                        Icons.Rounded.VisibilityOff
+
+                    val description = if (passVisible)
+                        stringResource(hide_password)
+                    else
+                        stringResource(show_password)
+
+                    IconButton(
+                        onClick = {
+                            passVisible = !passVisible
+                        },
+                        content = {
+                            Icon(
+                                imageVector = image,
+                                contentDescription = description,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+                }
+            },
+            isError = isError,
+            visualTransformation = if (!passVisible) VisualTransformation.None
+            else PasswordVisualTransformation(),
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = singleLine,
+            maxLines = 5,
+            shape = personalizedShape,
+            /*colors = TextFieldDefaults.textFieldColors(
+                textColor = LightMode90t,
+                placeholderColor = LightMode90t.copy(alpha = 0.4f),
+                focusedLabelColor = unfocusedColor,
+                unfocusedLabelColor = unfocusedColor,
+                unfocusedLeadingIconColor = unfocusedColor,
+                focusedLeadingIconColor = focusedColor,
+                containerColor = MaterialTheme.colorScheme.primary,
+                focusedIndicatorColor = focusedColor,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = focusedColor
+            )*/
+        )
+    }
 
     return textChange.value
 }
