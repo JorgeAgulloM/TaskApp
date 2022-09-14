@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 fun CheckCustom(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
     text: String,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit
@@ -30,6 +31,7 @@ fun CheckCustom(
             Checkbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
+                enabled = enabled,
                 colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.secondary,
                 )

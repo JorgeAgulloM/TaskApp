@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.screens.main
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.fabCustom.FABCustom
 import com.softyorch.taskapp.presentation.components.CheckCustom
@@ -38,7 +36,6 @@ import kotlin.reflect.KSuspendFunction1
 @ExperimentalMaterial3Api
 @Composable
 fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
-    val isLoading: Boolean by mainViewModel.isLoading.observeAsState(initial = false)
     Scaffold(
         topBar = {
             TopAppBarCustom(
@@ -52,7 +49,6 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
             FABCustom()
         },
     ) {
-        if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
         Content(it = it, viewModel = mainViewModel, navController = navController)
     }
 }
@@ -61,6 +57,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
 
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
 
     Column(
@@ -87,7 +84,8 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = stringResource(add_new_task),
-                initStateCheck = false
+                initStateCheck = false,
+                enabled = !isLoading
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
@@ -105,11 +103,19 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
                 updateTask = viewModel::updateTask,
                 text = stringResource(not_yet_complet_any_task),
                 initStateCheck = true,
+                enabled = !isLoading
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
             Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
+        if (isLoading)
+            CircularIndicatorCustom(
+            text = stringResource(loading_loading),
+            modifier = Modifier
+                .safeContentPadding()
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -126,6 +132,7 @@ private fun FillLazyColumn(
     updateTask: KSuspendFunction1<Task, Unit>,
     text: String,
     initStateCheck: Boolean,
+    enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {
 
@@ -143,13 +150,15 @@ private fun FillLazyColumn(
             ) {
                 items(tasks.filter { it.checkState == initStateCheck }) { task ->
                     CheckCustomMain(
-                        task = task, onCheckedChange = {
+                        task = task,
+                        onCheckedChange = {
                             task.checkState = it
                             task.finishDate = if (it) Date.from(Instant.now()) else null
                             coroutineScope.launch {
                                 updateTask(task)
                             }
-                        }
+                        },
+                        enabled = enabled
                     ) {
                         onClick(task.id)
                     }
@@ -190,11 +199,15 @@ private fun FillLazyColumn(
 @ExperimentalMaterial3Api
 @Composable
 private fun CheckCustomMain(
-    task: Task, onCheckedChange: (Boolean) -> Unit, onClick: () -> Unit
+    task: Task,
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
+    onClick: () -> Unit
 ) {
     CheckCustom(
         checked = task.checkState,
         onCheckedChange = { onCheckedChange(it) },
+        enabled = enabled,
         text = task.title,
         onClick = { onClick() }
     )
