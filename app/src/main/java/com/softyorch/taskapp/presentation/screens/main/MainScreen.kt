@@ -1,5 +1,8 @@
 package com.softyorch.taskapp.presentation.screens.main
 
+import android.annotation.SuppressLint
+import android.widget.CheckBox
+import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
@@ -14,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,7 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -111,11 +116,11 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         }
         if (isLoading)
             CircularIndicatorCustom(
-            text = stringResource(loading_loading),
-            modifier = Modifier
-                .safeContentPadding()
-                .align(Alignment.CenterHorizontally)
-        )
+                text = stringResource(loading_loading),
+                modifier = Modifier
+                    .safeContentPadding()
+                    .align(Alignment.CenterHorizontally)
+            )
     }
 }
 
@@ -196,6 +201,7 @@ private fun FillLazyColumn(
         } else RowInfo(text = text, paddingStart = 16.dp)
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 private fun CheckCustomMain(
@@ -204,11 +210,33 @@ private fun CheckCustomMain(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    CheckCustom(
-        checked = task.checkState,
-        onCheckedChange = { onCheckedChange(it) },
-        enabled = enabled,
-        text = task.title,
-        onClick = { onClick() }
+    var visible by remember { mutableStateOf(value = false) }
+    val density = LocalDensity.current
+    rememberCoroutineScope().launch {
+        delay(100)
+        visible = true
+    }
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally {
+            with(density) { -100.dp.roundToPx() }
+        } + expandHorizontally(
+            expandFrom = Alignment.Start
+        ) + fadeIn(
+            initialAlpha = 0.3f
+        ),
+        exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()
     )
+    {
+        CheckCustom(
+            checked = task.checkState,
+            onCheckedChange = {
+                visible = false
+                onCheckedChange(it)
+            },
+            enabled = enabled,
+            text = task.title,
+            onClick = { onClick() }
+        )
+    }
 }
