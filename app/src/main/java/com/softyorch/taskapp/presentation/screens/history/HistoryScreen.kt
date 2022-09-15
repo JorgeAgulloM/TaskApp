@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.history
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,9 +24,6 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.R.string.history
 import com.softyorch.taskapp.utils.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
@@ -35,11 +31,6 @@ import kotlinx.coroutines.launch
 fun HistoryScreen(navController: NavHostController) {
 
     val viewModel = hiltViewModel<HistoryViewModel>()
-    var visibleScreen by remember { mutableStateOf(value = false) }
-    rememberCoroutineScope().launch {
-        delay(TIME_IN_MILLIS_OF_DELAY)
-        visibleScreen = true
-    }
 
     Scaffold(
         topBar = {
@@ -47,18 +38,10 @@ fun HistoryScreen(navController: NavHostController) {
                 title = stringResource(history),
                 nameScreen = AppScreens.HistoryScreen.name,
                 navController = navController,
-            ) {
-                visibleScreen = false
-            }
+            )
         }
     ) {
-        AnimatedVisibility(
-            visible = visibleScreen,
-            enter = ANIMATED_ENTER,
-            exit = ANIMATED_EXIT
-        ) {
-            Content(it = it, navController = navController, viewModel = viewModel)
-        }
+        Content(it = it, navController = navController, viewModel = viewModel)
     }
 }
 

@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,13 +26,11 @@ import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
 import com.softyorch.taskapp.utils.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 
 
-@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
@@ -41,15 +38,8 @@ fun DetailScreen(
     navController: NavController,
     id: String
 ) {
-
     val viewModel = hiltViewModel<DetailScreenViewModel>()
     val coroutineScope = rememberCoroutineScope()
-
-    var visibleScreen by remember { mutableStateOf(value = false) }
-    rememberCoroutineScope().launch {
-        delay(TIME_IN_MILLIS_OF_DELAY)
-        visibleScreen = true
-    }
 
     Scaffold(
         topBar = {
@@ -57,22 +47,15 @@ fun DetailScreen(
                 title = stringResource(details),
                 nameScreen = AppScreens.DetailsScreen.name,
                 navController = navController,
-            ) {
-                visibleScreen = false
-            }
+            )
         }
     ) {
-        AnimatedVisibility(
-            visible = visibleScreen,
-            enter = ANIMATED_ENTER,
-            exit = ANIMATED_EXIT
-        ) {
-            coroutineScope.launch { viewModel.getTask(id = id) }
-            Content(it = it, viewModel = viewModel, navController = navController)
-        }
+        coroutineScope.launch { viewModel.getTask(id = id) }
+        Content(it = it, viewModel = viewModel, navController = navController)
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun Content(
     it: PaddingValues,
@@ -221,6 +204,7 @@ private fun Content(
 }
 
 
+@ExperimentalMaterial3Api
 @Composable
 private fun newTaskDetails(
     viewModel: DetailScreenViewModel,

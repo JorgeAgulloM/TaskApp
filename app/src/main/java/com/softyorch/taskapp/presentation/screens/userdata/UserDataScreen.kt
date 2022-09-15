@@ -2,7 +2,6 @@ package com.softyorch.taskapp.presentation.screens.userdata
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -35,7 +34,6 @@ import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -46,33 +44,20 @@ fun UserDataScreen(
     navController: NavHostController,
     getUserImage: Pair<() -> Unit, String?>
 ) {
-    var visibleScreen by remember { mutableStateOf(value = false) }
-    rememberCoroutineScope().launch {
-        delay(TIME_IN_MILLIS_OF_DELAY)
-        visibleScreen = true
-    }
-
     Scaffold(
         topBar = {
             TopAppBarCustom(
                 title = stringResource(user_data),
                 nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
-            ) {
-                visibleScreen = false
-            }
-        }) {
-        AnimatedVisibility(
-            visible = visibleScreen,
-            enter = ANIMATED_ENTER,
-            exit = ANIMATED_EXIT
-        ) {
-        ContentUserDataScreen(
+            )
+        }
+    ) {
+        Content(
             it = it,
             navController = navController,
             getUserImage = getUserImage
         )
-        }
     }
 }
 
@@ -80,7 +65,7 @@ fun UserDataScreen(
 @ExperimentalMaterial3Api
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun ContentUserDataScreen(
+private fun Content(
     it: PaddingValues,
     navController: NavHostController,
     getUserImage: Pair<() -> Unit, String?>

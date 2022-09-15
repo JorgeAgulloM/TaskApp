@@ -33,11 +33,6 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
-    var visibleScreen by remember { mutableStateOf(value = false) }
-    rememberCoroutineScope().launch {
-        delay(TIME_IN_MILLIS_OF_DELAY)
-        visibleScreen = true
-    }
 
     Scaffold(
         topBar = {
@@ -45,18 +40,10 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
                 title = stringResource(settings),
                 nameScreen = AppScreens.SettingsScreen.name,
                 navController = navController,
-            ) {
-                visibleScreen = false
-            }
+            )
         }
     ) {
-        AnimatedVisibility(
-            visible = visibleScreen,
-            enter = ANIMATED_ENTER,
-            exit = ANIMATED_EXIT
-        ) {
-            Content(it = it, reloadComposable = reloadComposable)
-        }
+        Content(it = it, reloadComposable = reloadComposable)
     }
 }
 
