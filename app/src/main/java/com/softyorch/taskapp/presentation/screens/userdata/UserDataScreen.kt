@@ -34,10 +34,7 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
-import com.softyorch.taskapp.utils.ANIMATED_ENTER
-import com.softyorch.taskapp.utils.ANIMATED_EXIT
-import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,25 +48,25 @@ fun UserDataScreen(
 ) {
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBarCustom(
-                    title = stringResource(user_data),
-                    nameScreen = AppScreens.UserDataScreen.name,
-                    navController = navController,
-                ) {
-                    visibleScreen = false
-                }
-            }) {
 
+    Scaffold(
+        topBar = {
+            TopAppBarCustom(
+                title = stringResource(user_data),
+                nameScreen = AppScreens.UserDataScreen.name,
+                navController = navController,
+            ) {
+                visibleScreen = false
+            }
+        }) {
+        AnimatedVisibility(
+            visible = visibleScreen,
+            enter = ANIMATED_ENTER,
+            exit = ANIMATED_EXIT
+        ) {
             ContentUserDataScreen(
                 it = it,
                 navController = navController,

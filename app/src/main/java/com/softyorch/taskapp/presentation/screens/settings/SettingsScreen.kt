@@ -29,32 +29,34 @@ import com.softyorch.taskapp.presentation.widgets.RowInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
+
+    Scaffold(
+        topBar = {
+            TopAppBarCustom(
+                title = stringResource(settings),
+                nameScreen = AppScreens.SettingsScreen.name,
+                navController = navController,
+            ) {
+                visibleScreen = false
+            }
+        }
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBarCustom(
-                    title = stringResource(settings),
-                    nameScreen = AppScreens.SettingsScreen.name,
-                    navController = navController,
-                ) {
-                    visibleScreen = false
-                }
-            },
-            content = {
-                Content(it = it, reloadComposable = reloadComposable)
-            })
+        AnimatedVisibility(
+            visible = visibleScreen,
+            enter = ANIMATED_ENTER,
+            exit = ANIMATED_EXIT
+        ) {
+            Content(it = it, reloadComposable = reloadComposable)
+        }
     }
 }
 

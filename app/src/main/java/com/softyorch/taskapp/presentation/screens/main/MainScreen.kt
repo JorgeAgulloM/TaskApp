@@ -2,6 +2,7 @@ package com.softyorch.taskapp.presentation.screens.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateDecay
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
@@ -33,13 +34,13 @@ import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.utils.ANIMATED_ENTER
 import com.softyorch.taskapp.utils.ANIMATED_EXIT
+import com.softyorch.taskapp.utils.TIME_IN_MILLIS_OF_DELAY
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KSuspendFunction1
 
-@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
@@ -47,30 +48,30 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
+    Scaffold(
+        topBar = {
+            TopAppBarCustom(
+                title = stringResource(main),
+                isMainScreen = true,
+                nameScreen = AppScreens.MainScreen.name,
+                navController = navController,
+            ) {
+                visibleScreen = false
+            }
+        },
+        floatingActionButton = {
+            FABCustom()
+        },
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBarCustom(
-                    title = stringResource(main),
-                    isMainScreen = true,
-                    nameScreen = AppScreens.MainScreen.name,
-                    navController = navController,
-                ){
-                    visibleScreen = false
-                }
-            },
-            floatingActionButton = {
-                FABCustom()
-            },
+        AnimatedVisibility(
+            visible = visibleScreen,
+            enter = ANIMATED_ENTER,
+            exit = ANIMATED_EXIT
         ) {
-            Content(it = it, viewModel = mainViewModel, navController = navController){
+            Content(it = it, viewModel = mainViewModel, navController = navController) {
                 visibleScreen = false
             }
         }

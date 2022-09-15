@@ -37,27 +37,28 @@ fun HistoryScreen(navController: NavHostController) {
     val viewModel = hiltViewModel<HistoryViewModel>()
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
+
+    Scaffold(
+        topBar = {
+            TopAppBarCustom(
+                title = stringResource(history),
+                nameScreen = AppScreens.HistoryScreen.name,
+                navController = navController,
+            ) {
+                visibleScreen = false
+            }
+        }
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBarCustom(
-                    title = stringResource(history),
-                    nameScreen = AppScreens.HistoryScreen.name,
-                    navController = navController,
-                ) {
-                    visibleScreen = false
-                }
-            },
-            content = {
-                Content(it = it, navController = navController, viewModel = viewModel)
-            })
+        AnimatedVisibility(
+            visible = visibleScreen,
+            enter = ANIMATED_ENTER,
+            exit = ANIMATED_EXIT
+        ) {
+            Content(it = it, navController = navController, viewModel = viewModel)
+        }
     }
 }
 

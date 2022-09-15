@@ -27,10 +27,7 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.ANIMATED_ENTER
-import com.softyorch.taskapp.utils.ANIMATED_EXIT
-import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,7 +39,7 @@ fun LoginScreen(navController: NavHostController) {
     val viewModel = hiltViewModel<LoginViewModel>()
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
     AnimatedVisibility(

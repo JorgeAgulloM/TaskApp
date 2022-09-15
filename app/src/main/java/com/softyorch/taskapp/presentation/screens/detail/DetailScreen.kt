@@ -47,24 +47,25 @@ fun DetailScreen(
 
     var visibleScreen by remember { mutableStateOf(value = false) }
     rememberCoroutineScope().launch {
-        delay(100)
+        delay(TIME_IN_MILLIS_OF_DELAY)
         visibleScreen = true
     }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBarCustom(
-                    title = stringResource(details),
-                    nameScreen = AppScreens.DetailsScreen.name,
-                    navController = navController,
-                ){
-                    visibleScreen = false
-                }
+
+    Scaffold(
+        topBar = {
+            TopAppBarCustom(
+                title = stringResource(details),
+                nameScreen = AppScreens.DetailsScreen.name,
+                navController = navController,
+            ) {
+                visibleScreen = false
             }
+        }
+    ) {
+        AnimatedVisibility(
+            visible = visibleScreen,
+            enter = ANIMATED_ENTER,
+            exit = ANIMATED_EXIT
         ) {
             coroutineScope.launch { viewModel.getTask(id = id) }
             Content(it = it, viewModel = viewModel, navController = navController)
