@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -175,34 +178,67 @@ private fun FillLazyColumn(
                 }
             }
 
-            val showArrow by remember {
-                derivedStateOf {
-                    lazyState.layoutInfo.visibleItemsInfo.count() < tasks.filter {
-                        it.checkState == initStateCheck
-                    }.size
-                }
-            }
+            val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
+            //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
 
-            if (showArrow) {
-                val isLastItem by remember {
-                    derivedStateOf {
-                        lazyState.firstVisibleItemIndex ==
-                                lazyState.layoutInfo.totalItemsCount -
-                                lazyState.layoutInfo.visibleItemsInfo.count()
-                    }
-                }
 
-                Icon(
-                    imageVector = if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = stringResource(go_to_up),
-                    modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
-                        if (isLastItem) {
-                            coroutineScope.launch { lazyState.animateScrollToItem(0) }
-                        }
+            if (showIcon) Icon(
+                imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = stringResource(go_to_up),
+                modifier = Modifier
+                    .padding(top = 4.dp, start = 8.dp)
+                    .clickable {
+                        coroutineScope.launch { lazyState.animateScrollToItem(0) }
                     },
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            /* val totalItemsCheckedOrUnchecked by remember { mutableStateOf( tasks.filter { it.checkState == initStateCheck }.count() ) }
+             Log.d("TOTAILITEMSFILTERED", "totalItemsCheckedOrUnchecked -> $totalItemsCheckedOrUnchecked")
+
+             val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
+             val totalVisualItemsFilter by remember {
+                 derivedStateOf {
+                     if (itemsFilter > 1) {
+                         lazyState.layoutInfo.visibleItemsInfo.count()
+
+                     } else if (itemsFilter > 0) {
+                         lazyState.layoutInfo.visibleItemsInfo.count() - 1
+
+                     } else {
+                         lazyState.layoutInfo.visibleItemsInfo.count() - 2
+                     }
+                 }
+             }
+
+             val showArrow by remember {
+                 derivedStateOf {
+                     totalVisualItemsFilter + 1 < tasks.filter {
+                         it.checkState == initStateCheck
+                     }.size
+                 }
+             }
+
+             if (showArrow) {
+                 val isLastItem by remember {
+                     derivedStateOf {
+                         lazyState.firstVisibleItemIndex ==
+                                 lazyState.layoutInfo.totalItemsCount -
+                                 totalVisualItemsFilter - 1
+                     }
+                 }
+
+                 Icon(
+                     imageVector = if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                     contentDescription = stringResource(go_to_up),
+                     modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
+                         if (isLastItem) {
+                             coroutineScope.launch { lazyState.animateScrollToItem(0) }
+                         }
+                     },
+                     tint = MaterialTheme.colorScheme.primary
+                 )
+             }*/
         } else RowInfo(text = text, paddingStart = 16.dp)
 }
 
@@ -221,7 +257,7 @@ private fun CheckCustomMain(
         delay(100)
         visible = true
     }
-    AnimatedVisibility(
+/*    AnimatedVisibility(
         visible = visible,
         enter = slideInHorizontally {
             with(density) { -100.dp.roundToPx() }
@@ -232,7 +268,7 @@ private fun CheckCustomMain(
         ),
         exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()
     )
-    {
+    {*/
         CheckCustom(
             checked = task.checkState,
             onCheckedChange = {
@@ -243,5 +279,5 @@ private fun CheckCustomMain(
             text = task.title,
             onClick = { onClick() }
         )
-    }
+    //}
 }
