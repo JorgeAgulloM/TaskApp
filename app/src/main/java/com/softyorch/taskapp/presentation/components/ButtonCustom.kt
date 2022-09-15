@@ -1,5 +1,7 @@
 package com.softyorch.taskapp.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -8,10 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -19,6 +18,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.utils.DURATION_MILLIS_BTN_CHANGE_COLOR
 import com.softyorch.taskapp.utils.ELEVATION_FLOAT
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
@@ -31,23 +31,41 @@ fun ButtonCustom(
     error: Boolean = false,
     onClick: () -> Unit
 ) {
+
+    var onClickButton by remember { mutableStateOf(value = false) }
+
+    val containerColor by animateColorAsState(
+        targetValue =
+        if (error) MaterialTheme.colorScheme.error
+        else if (onClickButton) MaterialTheme.colorScheme.primaryContainer
+        else if (primary) MaterialTheme.colorScheme.primary
+        else if (tertiary) MaterialTheme.colorScheme.tertiary
+        else Color.Transparent,
+        animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR),
+        finishedListener = {
+            if (onClickButton) {
+                onClickButton = false
+                onClick()
+            }
+        }
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (error) MaterialTheme.colorScheme.onError
+        else if (primary) MaterialTheme.colorScheme.background
+        else if (tertiary) MaterialTheme.colorScheme.onTertiary
+        else MaterialTheme.colorScheme.onBackground,
+        animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
+    )
+
     Button(
         onClick = {
-            onClick()
+            onClickButton = true
         },
         modifier = Modifier.width(144.dp).height(40.dp).padding(4.dp),
         enabled = enable,
         colors = ButtonDefaults.buttonColors(
-            containerColor =
-            if (error) MaterialTheme.colorScheme.error
-            else if (primary) MaterialTheme.colorScheme.primary
-            else if (tertiary) MaterialTheme.colorScheme.tertiary
-            else Color.Transparent,
-            contentColor =
-            if (error) MaterialTheme.colorScheme.onError
-            else if (primary) MaterialTheme.colorScheme.background
-            else if (tertiary) MaterialTheme.colorScheme.onTertiary
-            else MaterialTheme.colorScheme.onBackground
+            containerColor = containerColor,
+            contentColor = contentColor
         ),
         content = {
             Text(
@@ -71,7 +89,7 @@ fun ButtonCustom(
 
 @Preview(showBackground = true)
 @Composable
-private fun showButtonCustom() {
+private fun ShowButtonCustom() {
 
     val error by remember { mutableStateOf(false) }
 
@@ -80,6 +98,6 @@ private fun showButtonCustom() {
         enable = true,
         primary = true,
         error = error,
-        onClick = { error != error},
+        onClick = { error != error },
     )
 }
