@@ -67,16 +67,17 @@ fun UserDataScreen(
             enter = ANIMATED_ENTER,
             exit = ANIMATED_EXIT
         ) {
-            ContentUserDataScreen(
-                it = it,
-                navController = navController,
-                getUserImage = getUserImage
-            )
+        ContentUserDataScreen(
+            it = it,
+            navController = navController,
+            getUserImage = getUserImage
+        )
         }
     }
 }
 
 
+@ExperimentalMaterial3Api
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun ContentUserDataScreen(
@@ -331,6 +332,7 @@ private fun ButtonCustomDataScreen(
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldCustomDataScreen(
     text: String,
@@ -347,28 +349,31 @@ private fun TextFieldCustomDataScreen(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
-            text = text,
-            label = label,
-            placeholder = stringResource(write_your_label) + label.lowercase(),
-            icon = icon,
-            contentDescription = label + stringResource(label_of_user),
-            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                capitalization = capitalization,
-                keyboardType = keyboardType,
-                imeAction = imeAction
-            ),
-            keyboardActions = keyboardActions,
-            singleLine = true,
-            isError = error || errorEmailExist,
-            password = password,
-            onTextFieldChanged = { onTextFieldChanged(it) }
-        )
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            textFieldCustom(
+                text = text,
+                label = label,
+                placeholder = stringResource(write_your_label) + label.lowercase(),
+                icon = icon,
+                contentDescription = label + stringResource(label_of_user),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = capitalization,
+                    keyboardType = keyboardType,
+                    imeAction = imeAction
+                ),
+                keyboardActions = keyboardActions,
+                singleLine = true,
+                isError = error || errorEmailExist,
+                password = password,
+                onTextFieldChanged = { onTextFieldChanged(it) }
+            )
+        }
         if (error || errorEmailExist) IconError(
             errorText =
             if (errorEmailExist) stringResource(error_email_exist)
             else errorText
         )
+
     }
 }
 
