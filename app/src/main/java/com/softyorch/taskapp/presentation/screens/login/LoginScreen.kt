@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.annotation.SuppressLint
+import android.text.BoringLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -52,7 +53,7 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
                 viewModel = viewModel,
                 navController = navController
-            ){
+            ) {
                 visibleScreen = false
             }
         }
@@ -119,7 +120,11 @@ private fun LoginOrNewAccount(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            if (newAccount) TextFieldName(name = name, error = errorName) {
+            TextFieldName(
+                name = name,
+                error = errorName,
+                isVisible = newAccount
+            ) {
                 viewModel.onNewAccountInputChange(
                     name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
                     passRepeat = passRepeat
@@ -127,7 +132,9 @@ private fun LoginOrNewAccount(
             }
 
             TextFieldEmail(
-                email = email, error = errorEmail, errorEmailExist = errorEmailExists,
+                email = email,
+                error = errorEmail,
+                errorEmailExist = errorEmailExists,
                 errorAccount = errorEmailOrPassIncorrect
             ) {
                 viewModel.onLoginInputChange(
@@ -135,15 +142,20 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            if (newAccount)
-                TextFieldEmailRepeat(email = emailRepeat, error = errorRepeatEmail) {
-                    viewModel.onNewAccountInputChange(
-                        name = name, email = email, emailRepeat = it.trim().lowercase(),
-                        pass = pass, passRepeat = passRepeat
-                    )
-                }
+            TextFieldEmailRepeat(
+                email = emailRepeat,
+                error = errorRepeatEmail,
+                isVisible = newAccount
+            ) {
+                viewModel.onNewAccountInputChange(
+                    name = name, email = email, emailRepeat = it.trim().lowercase(),
+                    pass = pass, passRepeat = passRepeat
+                )
+            }
 
-            TextFieldPass(pass = pass, newAccount = newAccount,
+            TextFieldPass(
+                pass = pass,
+                newAccount = newAccount,
                 keyboardActions = KeyboardActions(
                     onGo = {
                         if (!newAccount) goOrErrorLogin = true
@@ -156,12 +168,13 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            if (newAccount) TextFieldPassRepeat(
+            TextFieldPassRepeat(
                 passRepeat = passRepeat,
                 keyboardActions = KeyboardActions(
                     onGo = { goOrErrorNewAccount = true }
                 ),
-                error = errorRepeatPass) {
+                error = errorRepeatPass,
+                isVisible = newAccount) {
                 viewModel.onNewAccountInputChange(
                     name = name, email = email, emailRepeat = emailRepeat, pass = pass,
                     passRepeat = it.trim()
@@ -278,7 +291,12 @@ private fun TitleLogin(modifier: Modifier) {
 }
 
 @Composable
-private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldName(
+    name: String,
+    error: Boolean,
+    isVisible: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         textFieldCustom(
             text = name,
@@ -288,6 +306,7 @@ private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (Str
             contentDescription = stringResource(type_your_name),
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             onTextFieldChanged = onTextFieldChanged
         )
         if (error) IconError(errorText = stringResource(input_error_name))
@@ -328,6 +347,7 @@ private fun TextFieldEmail(
 private fun TextFieldEmailRepeat(
     email: String,
     error: Boolean,
+    isVisible: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -343,6 +363,7 @@ private fun TextFieldEmailRepeat(
             ),
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             onTextFieldChanged = onTextFieldChanged
         )
         if (error) IconError(errorText = stringResource(input_error_repeat_email))
@@ -384,7 +405,10 @@ private fun TextFieldPass(
 
 @Composable
 private fun TextFieldPassRepeat(
-    passRepeat: String, keyboardActions: KeyboardActions, error: Boolean,
+    passRepeat: String,
+    keyboardActions: KeyboardActions,
+    error: Boolean,
+    isVisible: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -400,6 +424,7 @@ private fun TextFieldPassRepeat(
             keyboardActions = keyboardActions,
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             password = true,
             onTextFieldChanged = onTextFieldChanged
         )

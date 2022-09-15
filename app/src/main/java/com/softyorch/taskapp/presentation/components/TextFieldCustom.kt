@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.utils.ANIMATED_ENTER_TEXT_FIELDS
+import com.softyorch.taskapp.utils.ANIMATED_EXIT_TEXT_FIELDS
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
@@ -48,6 +49,7 @@ fun textFieldCustom(
     newTask: Boolean = false,
     readOnly: Boolean = false,
     isError: Boolean = false,
+    isVisible: Boolean = true,
     password: Boolean = false,
     onTextFieldChanged: (String) -> Unit = {}
 ): String {
@@ -59,16 +61,16 @@ fun textFieldCustom(
     )
     val textChange = rememberSaveable { mutableStateOf(text) }
     var passVisible by rememberSaveable { mutableStateOf(password) }
-
     var visible by remember { mutableStateOf(value = false) }
-    val density = LocalDensity.current
+
     rememberCoroutineScope().launch {
         delay(100)
-        visible = true
+        visible = isVisible
     }
     AnimatedVisibility(
         visible = visible,
-        enter = ANIMATED_ENTER_TEXT_FIELDS
+        enter = ANIMATED_ENTER_TEXT_FIELDS,
+        exit = ANIMATED_EXIT_TEXT_FIELDS
     ) {
         TextField(
             value = text,

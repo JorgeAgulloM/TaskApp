@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
@@ -82,8 +83,10 @@ val ANIMATED_ENTER_TEXT_FIELDS: EnterTransition =
     //slideInHorizontally(animationSpec = tween(500)) +
     //expandHorizontally(animationSpec = tween(500),expandFrom = Alignment.End)
     //slideInVertically(animationSpec = tween(1000)) +
-    expandVertically(animationSpec = tween(1000), expandFrom = Alignment.Bottom)
-val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition = slideOutHorizontally(animationSpec = tween(500))
+    expandVertically(animationSpec = tween(200,100, easing = LinearEasing), expandFrom = Alignment.Bottom)
+val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition =
+    //slideOutHorizontally(animationSpec = tween(500))
+    shrinkVertically(animationSpec = tween(200,100, easing = LinearEasing), shrinkTowards = Alignment.Top)
 
 /*enter = if (newTask) slideInVertically {
             with(density) { -500.dp.roundToPx() }
