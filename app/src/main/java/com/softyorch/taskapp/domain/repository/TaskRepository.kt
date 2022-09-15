@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.domain.repository
 
+import com.google.android.gms.common.api.Response
 import com.softyorch.taskapp.data.data.Resource
 import com.softyorch.taskapp.data.data.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.domain.model.Task
@@ -26,8 +27,19 @@ class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDataba
         Resource.Loading(data = false)
         return Resource.Success(data = response)
     }
+
     suspend fun addTask(task: Task) = taskDatabaseDao.insert(task = task)
     suspend fun updateTask(task: Task) = taskDatabaseDao.update(task = task)
-    suspend fun deleteTask(task: Task) = taskDatabaseDao.deleteTask(task = task)
+    suspend fun deleteTask(task: Task): Resource<Boolean> =
+        try {
+            Resource.Loading(data = true)
+            taskDatabaseDao.deleteTask(task = task)
+            Resource.Loading(data = false)
+            Resource.Success(data = true)
+        } catch (e:Exception){
+            Resource.Loading(data = false)
+            Resource.Error(data = false, message = e.message.toString())
+        }
+
     suspend fun deleteAllTask() = taskDatabaseDao.deleteAll()
 }

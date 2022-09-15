@@ -66,6 +66,7 @@ private fun Content(
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val isDeleted: Boolean by viewModel.isDeleted.observeAsState(initial = false)
     val task: Task by viewModel.taskDetail.observeAsState(
         initial = Task(
             title = emptyString,
@@ -73,132 +74,136 @@ private fun Content(
             author = emptyString
         )
     )
-
-    if (isLoading) CircularIndicatorCustom(stringResource(loading_loading))
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(
-                top = it.calculateTopPadding() + 16.dp,
-                start = 16.dp,
-                end = 16.dp
-            )
-    ) {
-        RowInfoDetail(text = stringResource(details))
-        ShowTaskDetails(task = task)
-        Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
-        RowInfoDetail(text = task.title, style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.padding(top = 8.dp))
-        TextDescriptionDetails(task = task)
+    if (isLoading || isDeleted) {
+        CircularIndicatorCustom(stringResource(loading_loading))
+        if (isDeleted) LocalContext.current.toastError("La tarea ha sido eliminada") {}
 
+    } else {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(1f)
-                .padding(vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            modifier = Modifier.fillMaxSize()
+                .padding(
+                    top = it.calculateTopPadding() + 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
         ) {
+            RowInfoDetail(text = stringResource(details))
+            ShowTaskDetails(task = task)
+            Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
+            RowInfoDetail(text = task.title, style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.padding(top = 8.dp))
+            TextDescriptionDetails(task = task)
 
-            var openEditDialog by rememberSaveable { mutableStateOf(false) }
-            var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
-            var openResetDialog by rememberSaveable { mutableStateOf(false) }
-            var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
-
-            ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
-                openEditDialog = true
-            }
-            ButtonCustomDetails(
-                text = if (!task.checkState) stringResource(complete) else stringResource(
-                    completed
-                ),
-                primary = true
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(1f)
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                if (!task.checkState) openCompleteDialog = true
-                if (task.checkState) openResetDialog = true
-            }
-            ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
 
-            /** Edit Dialog */
-            if (openEditDialog) openEditDialog = newTaskDetails(
-                viewModel = viewModel, task = task
-            )
+                var openEditDialog by rememberSaveable { mutableStateOf(false) }
+                var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
+                var openResetDialog by rememberSaveable { mutableStateOf(false) }
+                var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-            /** Complete Dialog */
-            if (openCompleteDialog) AlertDialog(onDismissRequest = {
-                openCompleteDialog = false
-            },
-                confirmButton = {
-                    ButtonCustomDetails(text = stringResource(complete), primary = true) {
-                        task.checkState = !task.checkState
-                        task.finishDate = Date.from(Instant.now())
-                        viewModel.updateTask(task = task)
-                        navController.popBackStack()
-                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                        openCompleteDialog = false
-                    }
-                },
-                text = {
-                    TextDetails(
-                        text = stringResource(great_next_one)
-                    )
+                ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
+                    openEditDialog = true
                 }
-            )
-
-            /** Reset Dialog */
-            if (openResetDialog) AlertDialog(onDismissRequest = {
-                openResetDialog = false
-            },
-                confirmButton = {
-                    ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
-                        /** OJO, se repite el código */
-                        task.checkState = !task.checkState
-                        task.finishDate = Date.from(Instant.now())
-                        viewModel.updateTask(task = task)
-                        navController.popBackStack()
-                        navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
-                        openResetDialog = false
-                    }
-                },
-                dismissButton = {
-                    ButtonCustomDetails(text = stringResource(cancel)) {
-                        openResetDialog = false
-                    }
-                },
-                text = {
-                    TextDetails(
-                        text = stringResource(sure_restart_task)
-                    )
+                ButtonCustomDetails(
+                    text = if (!task.checkState) stringResource(complete) else stringResource(
+                        completed
+                    ),
+                    primary = true
+                ) {
+                    if (!task.checkState) openCompleteDialog = true
+                    if (task.checkState) openResetDialog = true
                 }
-            )
+                ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
 
-            /** Delete Dialog */
-            if (openDeleteDialog) AlertDialog(
-                onDismissRequest = {
-                    openDeleteDialog = false
+                /** Edit Dialog */
+                if (openEditDialog) openEditDialog = newTaskDetails(
+                    viewModel = viewModel, task = task
+                )
+
+                /** Complete Dialog */
+                if (openCompleteDialog) AlertDialog(onDismissRequest = {
+                    openCompleteDialog = false
                 },
-                confirmButton = {
-                    ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
-                        openDeleteDialog = false
-                        viewModel.removeTask(task = task)
-                        navController.navigate(AppScreensRoutes.MainScreen.route) {
-                            navController.backQueue.clear()
+                    confirmButton = {
+                        ButtonCustomDetails(text = stringResource(complete), primary = true) {
+                            task.checkState = !task.checkState
+                            task.finishDate = Date.from(Instant.now())
+                            viewModel.updateTask(task = task)
+                            navController.popBackStack()
+                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                            openCompleteDialog = false
                         }
+                    },
+                    text = {
+                        TextDetails(
+                            text = stringResource(great_next_one)
+                        )
                     }
-                },
-                dismissButton = {
-                    ButtonCustomDetails(text = stringResource(cancel)) {
-                        openDeleteDialog = false
-                    }
-                },
-                text = {
-                    TextDetails(
-                        text = stringResource(you_sure_eliminate_task)
-                    )
-                },
-            )
+                )
 
+                /** Reset Dialog */
+                if (openResetDialog) AlertDialog(onDismissRequest = {
+                    openResetDialog = false
+                },
+                    confirmButton = {
+                        ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
+                            /** OJO, se repite el código */
+                            task.checkState = !task.checkState
+                            task.finishDate = Date.from(Instant.now())
+                            viewModel.updateTask(task = task)
+                            navController.popBackStack()
+                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                            openResetDialog = false
+                        }
+                    },
+                    dismissButton = {
+                        ButtonCustomDetails(text = stringResource(cancel)) {
+                            openResetDialog = false
+                        }
+                    },
+                    text = {
+                        TextDetails(
+                            text = stringResource(sure_restart_task)
+                        )
+                    }
+                )
+
+                /** Delete Dialog */
+                if (openDeleteDialog) AlertDialog(
+                    onDismissRequest = {
+                        openDeleteDialog = false
+                    },
+                    confirmButton = {
+                        ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
+                            openDeleteDialog = false
+                            viewModel.removeTask(task = task)
+                            navController.navigate(AppScreensRoutes.MainScreen.route) {
+                                navController.backQueue.clear()
+                            }
+                        }
+                    },
+                    dismissButton = {
+                        ButtonCustomDetails(text = stringResource(cancel)) {
+                            openDeleteDialog = false
+                        }
+                    },
+                    text = {
+                        TextDetails(
+                            text = stringResource(you_sure_eliminate_task)
+                        )
+                    },
+                )
+
+            }
         }
     }
 }
