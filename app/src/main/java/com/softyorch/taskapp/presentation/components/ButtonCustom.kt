@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.utils.DURATION_MILLIS_BTN_CHANGE_COLOR
@@ -71,14 +72,8 @@ fun ButtonCustom(
             Text(
                 text = text,
                 style = TextStyle(
-                    shadow = Shadow(
-                        //color = MaterialTheme.colorScheme.primary,
-                        offset = if (primary || tertiary) Offset(x = 0f, y = 0f) else Offset(
-                            x = ELEVATION_FLOAT,
-                            y = ELEVATION_FLOAT
-                        ),
-                        blurRadius = if (primary || tertiary) 0f else ELEVATION_FLOAT
-                    )
+                    textDecoration = if (primary || tertiary) TextDecoration.None
+                    else TextDecoration.Underline
                 ),
             )
         },
