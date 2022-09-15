@@ -181,11 +181,13 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
-                viewModel.onLoginInputChange(
-                    email = email, pass = pass, rememberMe = it
-                )
-            }
+            if (!newAccount) {
+                CheckerRememberMe(rememberMe = rememberMe) {
+                    viewModel.onLoginInputChange(
+                        email = email, pass = pass, rememberMe = it
+                    )
+                }
+            } else Spacer(modifier = modifier.padding(bottom = 35.dp))
 
             Spacer(modifier = modifier.padding(vertical = 8.dp))
         }
