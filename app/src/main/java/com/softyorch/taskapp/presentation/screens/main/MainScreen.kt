@@ -3,6 +3,7 @@ package com.softyorch.taskapp.presentation.screens.main
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -34,6 +36,7 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -74,7 +77,9 @@ private fun Content(
     val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
 
     Column(
-        modifier = Modifier.fillMaxSize(1f)
+        modifier = Modifier
+            .fillMaxSize(1f)
+            //.background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
@@ -88,12 +93,18 @@ private fun Content(
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         Column(
+            modifier = Modifier
+                //.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = MaterialTheme.shapes.large
+                ),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             RowInfoMain(text = stringResource(to_be_made))
             FillLazyColumn(
-                modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 280.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = stringResource(add_new_task),
@@ -102,16 +113,22 @@ private fun Content(
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
-            Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
+            Divider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
         }
-
+        Spacer(modifier = Modifier.padding(8.dp))
         Column(
+            modifier = Modifier
+                //.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = MaterialTheme.shapes.large
+                ),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             RowInfoMain(text = stringResource(tasks_completed_last_days))
             FillLazyColumn(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
                 tasks = tasks,
                 updateTask = viewModel::updateTask,
                 text = stringResource(not_yet_complet_any_task),
@@ -182,16 +199,18 @@ private fun FillLazyColumn(
             //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
 
 
-            if (showIcon) Icon(
-                imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = stringResource(go_to_up),
-                modifier = Modifier
-                    .padding(top = 4.dp, start = 8.dp)
-                    .clickable {
-                        coroutineScope.launch { lazyState.animateScrollToItem(0) }
-                    },
-                tint = MaterialTheme.colorScheme.primary
-            )
+            if (showIcon) {
+                Icon(
+                    imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = stringResource(go_to_up),
+                    modifier = Modifier
+                        .padding(top = 4.dp, start = 8.dp)
+                        .clickable {
+                            coroutineScope.launch { lazyState.animateScrollToItem(0) }
+                        },
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            } else Box(modifier = Modifier.height(28.dp)) {}
 
             /* val totalItemsCheckedOrUnchecked by remember { mutableStateOf( tasks.filter { it.checkState == initStateCheck }.count() ) }
              Log.d("TOTAILITEMSFILTERED", "totalItemsCheckedOrUnchecked -> $totalItemsCheckedOrUnchecked")
@@ -269,15 +288,15 @@ private fun CheckCustomMain(
         exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()
     )
     {*/
-        CheckCustom(
-            checked = task.checkState,
-            onCheckedChange = {
-                visible = false
-                onCheckedChange(it)
-            },
-            enabled = enabled,
-            text = task.title,
-            onClick = { onClick() }
-        )
+    CheckCustom(
+        checked = task.checkState,
+        onCheckedChange = {
+            visible = false
+            onCheckedChange(it)
+        },
+        enabled = enabled,
+        text = task.title,
+        onClick = { onClick() }
+    )
     //}
 }
