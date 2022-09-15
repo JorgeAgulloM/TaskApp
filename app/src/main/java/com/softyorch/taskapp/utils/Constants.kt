@@ -64,18 +64,25 @@ const val TEXT_SIZE = "text_size"
 const val USER_DATA = "user_data"
 
 /******* Animations ************************/
+
+const val TIME_IN_MILLIS_OF_DELAY: Long = 100
+const val DURATION_MILLIS_BTN_CHANGE_COLOR: Int = 300
 @OptIn(ExperimentalAnimationApi::class)
-val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+//val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+val ANIMATED_ENTER: EnterTransition = expandHorizontally(expandFrom = Alignment.Start)
 
 //val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
 @OptIn(ExperimentalAnimationApi::class)
-val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+//val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+val ANIMATED_EXIT: ExitTransition = shrinkHorizontally(shrinkTowards = Alignment.End)
 //val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
 
 val ANIMATED_ENTER_TEXT_FIELDS: EnterTransition =
     //fadeIn(animationSpec = tween(5000))
     //slideInHorizontally(animationSpec = tween(500)) +
-    expandHorizontally(animationSpec = tween(5000),expandFrom = Alignment.End)
+    //expandHorizontally(animationSpec = tween(500),expandFrom = Alignment.End)
+    //slideInVertically(animationSpec = tween(1000)) +
+    expandVertically(animationSpec = tween(1000), expandFrom = Alignment.Bottom)
 val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition = slideOutHorizontally(animationSpec = tween(500))
 
 /*enter = if (newTask) slideInVertically {
