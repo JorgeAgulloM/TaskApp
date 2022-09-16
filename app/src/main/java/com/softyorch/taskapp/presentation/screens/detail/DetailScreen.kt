@@ -1,8 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,7 +12,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -60,15 +57,7 @@ fun DetailScreen(
         if (!exitDetails) enterDetails = true
     }
 
-    val slideCheckBox by animateIntOffsetAsState(
-        targetValue = if (enterDetails) IntOffset(0, 0)
-        else IntOffset(1500, 0),
-        animationSpec = tween(
-            durationMillis = 400,
-            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
-            easing = FastOutSlowInEasing
-        )
-    ) {
+    val slideCheckBox by enterDetails.intOffsetAnimation {
         if (!enterDetails)
             navController.navigate(AppScreensRoutes.MainScreen.route) {
                 popUpTo(AppScreensRoutes.DetailScreen.route) {
@@ -77,28 +66,14 @@ fun DetailScreen(
                 }
             }
     }
-    val alpha: Float by animateFloatAsState(
-        targetValue = if (exitDetails) 0.2f else 1f,
-        animationSpec = tween(
-            durationMillis = 200,
-            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
-            easing = FastOutSlowInEasing
-        )
-    )
+    val alphaAnimation: Float by exitDetails.alphaAnimation()
+    val colorAnimation by exitDetails.containerColorAnimation()
 
     Column(
         modifier = Modifier
             .offset { slideCheckBox }
-            .graphicsLayer(alpha = alpha)
+            .graphicsLayer(alpha = alphaAnimation)
     ) {
-        val containerColor by animateColorAsState(
-            targetValue =
-            if (exitDetails) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.background,
-            animationSpec = tween(
-                durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
-            easing = FastOutSlowInEasing)//CubicBezierEasing(0.9f,0.6f,0.3f,0.1f))
-        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -111,7 +86,7 @@ fun DetailScreen(
                 },
                 modifier = Modifier
                     .padding(8.dp)
-                    .background(color = containerColor, shape = MaterialTheme.shapes.large),
+                    .background(color = colorAnimation, shape = MaterialTheme.shapes.large),
                 //colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor)
             ) {
                 Icon(
