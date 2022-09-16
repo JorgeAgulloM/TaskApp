@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
@@ -12,9 +13,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.regex.Pattern.*
 
-private const val ELEVATION: Int = 4
+private const val ELEVATION: Int = 2
 val ELEVATION_DP: Dp = ELEVATION.dp
-const val ELEVATION_FLOAT: Float = (ELEVATION / 2).toFloat()
+const val ELEVATION_FLOAT: Float = (ELEVATION).toFloat()
 
 val KEYBOARD_OPTIONS_CUSTOM: KeyboardOptions = KeyboardOptions.Default.copy(
     capitalization = KeyboardCapitalization.Sentences,
@@ -64,19 +65,28 @@ const val TEXT_SIZE = "text_size"
 const val USER_DATA = "user_data"
 
 /******* Animations ************************/
+
+const val TIME_IN_MILLIS_OF_DELAY: Long = 100
+const val DURATION_MILLIS_BTN_CHANGE_COLOR: Int = 300
 @OptIn(ExperimentalAnimationApi::class)
-val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+//val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
+val ANIMATED_ENTER: EnterTransition = expandHorizontally(expandFrom = Alignment.Start)
 
 //val ENTER_SCALE_IN_TWEEN_500: EnterTransition = scaleIn(animationSpec = tween(500))
 @OptIn(ExperimentalAnimationApi::class)
-val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+//val ANIMATED_EXIT: ExitTransition = scaleOut(animationSpec = tween(500))
+val ANIMATED_EXIT: ExitTransition = shrinkHorizontally(shrinkTowards = Alignment.End)
 //val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
 
 val ANIMATED_ENTER_TEXT_FIELDS: EnterTransition =
     //fadeIn(animationSpec = tween(5000))
     //slideInHorizontally(animationSpec = tween(500)) +
-    expandHorizontally(animationSpec = tween(5000),expandFrom = Alignment.End)
-val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition = slideOutHorizontally(animationSpec = tween(500))
+    //expandHorizontally(animationSpec = tween(500),expandFrom = Alignment.End)
+    //slideInVertically(animationSpec = tween(1000)) +
+    expandVertically(animationSpec = tween(200,100, easing = LinearEasing), expandFrom = Alignment.Bottom)
+val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition =
+    //slideOutHorizontally(animationSpec = tween(500))
+    shrinkVertically(animationSpec = tween(200,100, easing = LinearEasing), shrinkTowards = Alignment.Top)
 
 /*enter = if (newTask) slideInVertically {
             with(density) { -500.dp.roundToPx() }

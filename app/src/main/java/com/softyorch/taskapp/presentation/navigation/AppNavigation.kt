@@ -25,7 +25,6 @@ fun TaskAppNavigation(
     getUserImage: Pair<() -> Unit, String?>
 ) {
     val navController = rememberNavController()
-    val mainViewModel = hiltViewModel<MainViewModel>()
 
     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
@@ -39,6 +38,7 @@ fun TaskAppNavigation(
             LoginScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.MainScreen.route) {
+            val mainViewModel = hiltViewModel<MainViewModel>()
             MainScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(route = "${AppScreensRoutes.DetailScreen.route}/{id}", arguments = listOf(

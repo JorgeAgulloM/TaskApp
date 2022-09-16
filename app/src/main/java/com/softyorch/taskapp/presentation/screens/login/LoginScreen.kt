@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.presentation.screens.login
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,11 +26,7 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.*
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.ANIMATED_ENTER
-import com.softyorch.taskapp.utils.ANIMATED_EXIT
-import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import com.softyorch.taskapp.utils.emptyString
-import kotlinx.coroutines.delay
+import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -40,25 +35,13 @@ import kotlinx.coroutines.launch
 fun LoginScreen(navController: NavHostController) {
 
     val viewModel = hiltViewModel<LoginViewModel>()
-    var visibleScreen by remember { mutableStateOf(value = false) }
-    rememberCoroutineScope().launch {
-        delay(100)
-        visibleScreen = true
-    }
-    AnimatedVisibility(
-        visible = visibleScreen,
-        enter = ANIMATED_ENTER,
-        exit = ANIMATED_EXIT
-    ) {
-        Box {
-            LoginOrNewAccount(
-                modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
-                viewModel = viewModel,
-                navController = navController
-            ){
-                visibleScreen = false
-            }
-        }
+
+    Box {
+        LoginOrNewAccount(
+            modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Center),
+            viewModel = viewModel,
+            navController = navController
+        )
     }
 }
 
@@ -68,8 +51,7 @@ fun LoginScreen(navController: NavHostController) {
 private fun LoginOrNewAccount(
     modifier: Modifier,
     viewModel: LoginViewModel,
-    navController: NavHostController,
-    onGoMain: () -> Unit
+    navController: NavHostController
 ) {
     var newAccount by rememberSaveable { mutableStateOf(value = false) }
     val name: String by viewModel.name.observeAsState(initial = emptyString)
@@ -122,7 +104,11 @@ private fun LoginOrNewAccount(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            if (newAccount) TextFieldName(name = name, error = errorName) {
+            TextFieldName(
+                name = name,
+                error = errorName,
+                isVisible = newAccount
+            ) {
                 viewModel.onNewAccountInputChange(
                     name = it.trim(), email = email, emailRepeat = emailRepeat, pass = pass,
                     passRepeat = passRepeat
@@ -130,7 +116,9 @@ private fun LoginOrNewAccount(
             }
 
             TextFieldEmail(
-                email = email, error = errorEmail, errorEmailExist = errorEmailExists,
+                email = email,
+                error = errorEmail,
+                errorEmailExist = errorEmailExists,
                 errorAccount = errorEmailOrPassIncorrect
             ) {
                 viewModel.onLoginInputChange(
@@ -138,15 +126,20 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            if (newAccount)
-                TextFieldEmailRepeat(email = emailRepeat, error = errorRepeatEmail) {
-                    viewModel.onNewAccountInputChange(
-                        name = name, email = email, emailRepeat = it.trim().lowercase(),
-                        pass = pass, passRepeat = passRepeat
-                    )
-                }
+            TextFieldEmailRepeat(
+                email = emailRepeat,
+                error = errorRepeatEmail,
+                isVisible = newAccount
+            ) {
+                viewModel.onNewAccountInputChange(
+                    name = name, email = email, emailRepeat = it.trim().lowercase(),
+                    pass = pass, passRepeat = passRepeat
+                )
+            }
 
-            TextFieldPass(pass = pass, newAccount = newAccount,
+            TextFieldPass(
+                pass = pass,
+                newAccount = newAccount,
                 keyboardActions = KeyboardActions(
                     onGo = {
                         if (!newAccount) goOrErrorLogin = true
@@ -159,23 +152,26 @@ private fun LoginOrNewAccount(
                 )
             }
 
-            if (newAccount) TextFieldPassRepeat(
+            TextFieldPassRepeat(
                 passRepeat = passRepeat,
                 keyboardActions = KeyboardActions(
                     onGo = { goOrErrorNewAccount = true }
                 ),
-                error = errorRepeatPass) {
+                error = errorRepeatPass,
+                isVisible = newAccount) {
                 viewModel.onNewAccountInputChange(
                     name = name, email = email, emailRepeat = emailRepeat, pass = pass,
                     passRepeat = it.trim()
                 )
             }
 
-            if (!newAccount) CheckerRememberMe(rememberMe = rememberMe) {
-                viewModel.onLoginInputChange(
-                    email = email, pass = pass, rememberMe = it
-                )
-            }
+            if (!newAccount) {
+                CheckerRememberMe(rememberMe = rememberMe) {
+                    viewModel.onLoginInputChange(
+                        email = email, pass = pass, rememberMe = it
+                    )
+                }
+            } else Spacer(modifier = modifier.padding(bottom = 35.dp))
 
             Spacer(modifier = modifier.padding(vertical = 8.dp))
         }
@@ -230,7 +226,6 @@ private fun LoginOrNewAccount(
                 ) {
                     showSnackBarErrors = true
                 } else {
-                    onGoMain()
                     navController.navigate(
                         AppScreensRoutes.MainScreen.route
                     ) {
@@ -280,8 +275,14 @@ private fun TitleLogin(modifier: Modifier) {
     )
 }
 
+@ExperimentalMaterial3Api
 @Composable
-private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (String) -> Unit) {
+private fun TextFieldName(
+    name: String,
+    error: Boolean,
+    isVisible: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         textFieldCustom(
             text = name,
@@ -291,12 +292,14 @@ private fun TextFieldName(name: String, error: Boolean, onTextFieldChanged: (Str
             contentDescription = stringResource(type_your_name),
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             onTextFieldChanged = onTextFieldChanged
         )
         if (error) IconError(errorText = stringResource(input_error_name))
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldEmail(
     email: String,
@@ -305,21 +308,24 @@ private fun TextFieldEmail(
     errorEmailExist: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
+
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
-            text = email,
-            label = stringResource(R.string.email),
-            placeholder = stringResource(type_your_email),
-            icon = Icons.Rounded.Email,
-            contentDescription = stringResource(type_your_email),
-            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Email
-            ),
-            singleLine = true,
-            isError = error || errorAccount || errorEmailExist,
-            onTextFieldChanged = onTextFieldChanged
-        )
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            textFieldCustom(
+                text = email,
+                label = stringResource(R.string.email),
+                placeholder = stringResource(type_your_email),
+                icon = Icons.Rounded.Email,
+                contentDescription = stringResource(type_your_email),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = KeyboardCapitalization.None,
+                    keyboardType = KeyboardType.Email
+                ),
+                singleLine = true,
+                isError = error || errorAccount || errorEmailExist,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
         if (error && !errorAccount) IconError(
             errorText = if (errorEmailExist) stringResource(error_email_exist)
             else stringResource(input_error_email)
@@ -327,10 +333,12 @@ private fun TextFieldEmail(
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldEmailRepeat(
     email: String,
     error: Boolean,
+    isVisible: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -346,12 +354,14 @@ private fun TextFieldEmailRepeat(
             ),
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             onTextFieldChanged = onTextFieldChanged
         )
         if (error) IconError(errorText = stringResource(input_error_repeat_email))
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldPass(
     pass: String,
@@ -362,22 +372,24 @@ private fun TextFieldPass(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
-            text = pass,
-            label = stringResource(password),
-            placeholder = stringResource(type_your_password),
-            icon = Icons.Rounded.Key,
-            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
-            ),
-            keyboardActions = keyboardActions,
-            contentDescription = stringResource(type_your_password),
-            singleLine = true,
-            isError = error || errorAccount,
-            password = true,
-            onTextFieldChanged = onTextFieldChanged
-        )
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            textFieldCustom(
+                text = pass,
+                label = stringResource(password),
+                placeholder = stringResource(type_your_password),
+                icon = Icons.Rounded.Key,
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+                ),
+                keyboardActions = keyboardActions,
+                contentDescription = stringResource(type_your_password),
+                singleLine = true,
+                isError = error || errorAccount,
+                password = true,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
         if (error) IconError(
             errorText = if (errorAccount) stringResource(error_email_or_pass)
             else stringResource(input_error_pass)
@@ -385,9 +397,13 @@ private fun TextFieldPass(
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldPassRepeat(
-    passRepeat: String, keyboardActions: KeyboardActions, error: Boolean,
+    passRepeat: String,
+    keyboardActions: KeyboardActions,
+    error: Boolean,
+    isVisible: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -403,6 +419,7 @@ private fun TextFieldPassRepeat(
             keyboardActions = keyboardActions,
             singleLine = true,
             isError = error,
+            isVisible = isVisible,
             password = true,
             onTextFieldChanged = onTextFieldChanged
         )
