@@ -1,7 +1,10 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -11,6 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -61,7 +65,7 @@ fun DetailScreen(
         else IntOffset(1500, 0),
         animationSpec = tween(
             durationMillis = 400,
-            delayMillis = 100,
+            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         )
     ) {
@@ -77,7 +81,7 @@ fun DetailScreen(
         targetValue = if (exitDetails) 0.2f else 1f,
         animationSpec = tween(
             durationMillis = 200,
-            delayMillis = 0,
+            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         )
     )
@@ -87,8 +91,17 @@ fun DetailScreen(
             .offset { slideCheckBox }
             .graphicsLayer(alpha = alpha)
     ) {
+        val containerColor by animateColorAsState(
+            targetValue =
+            if (exitDetails) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.background,
+            animationSpec = tween(
+                durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing)//CubicBezierEasing(0.9f,0.6f,0.3f,0.1f))
+        )
+
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
             IconButton(
@@ -96,6 +109,10 @@ fun DetailScreen(
                     exitDetails = true
                     enterDetails = false
                 },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .background(color = containerColor, shape = MaterialTheme.shapes.large),
+                //colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor)
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
