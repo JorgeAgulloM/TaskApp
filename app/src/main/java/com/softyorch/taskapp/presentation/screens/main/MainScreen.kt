@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.presentation.screens.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -30,6 +31,7 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -141,13 +143,18 @@ private fun FillLazyColumnNoCheckeds(
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
                     items(tasks) { task ->
+                        var myCheck by remember { mutableStateOf(value = task.checkState)}
+
                         CheckCustomMain(
-                            checked = task.checkState,
+                            checked = myCheck,
                             title = task.title,
                             onCheckedChange = {
+                                myCheck = it
                                 task.checkState = it
                                 task.finishDate = if (it) Date.from(Instant.now()) else null
                                 coroutineScope.launch {
+                                    delay(400)
+                                    myCheck = !it
                                     updateTask(task)
                                 }
                             },
@@ -211,13 +218,18 @@ private fun FillLazyColumnCheckeds(
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
                     items(tasks) { task ->
+                        var myCheck by remember { mutableStateOf(value = task.checkState)}
+
                         CheckCustomMain(
-                            checked = task.checkState,
+                            checked = myCheck,
                             title = task.title,
                             onCheckedChange = {
+                                myCheck = it
                                 task.checkState = it
                                 task.finishDate = if (it) Date.from(Instant.now()) else null
                                 coroutineScope.launch {
+                                    delay(400)
+                                    myCheck = !it
                                     updateTask(task)
                                 }
                             },

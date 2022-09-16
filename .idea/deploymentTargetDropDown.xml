@@ -6,12 +6,12 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="emulator-5556" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\Jorge\.android\avd\Resizable_API_Tiramisu_2.avd" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2022-09-16T11:41:15.273487Z" />
+    <timeTargetWasSelectedWithDropDown value="2022-09-16T13:58:41.415913Z" />
   </component>
 </project>
