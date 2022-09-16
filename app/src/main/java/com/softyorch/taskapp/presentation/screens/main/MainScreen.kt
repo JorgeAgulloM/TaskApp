@@ -166,11 +166,8 @@ private fun FillLazyColumn(
     onClick: (UUID) -> Unit
 ) {
 
-    //val lazyState = rememberLazyListState()
-    //val coroutineScope = rememberCoroutineScope()
     if (tasks.any { it.checkState == initStateCheck })
         Column(
-            //verticalArrangement = Arrangement.SpaceEvenly
             verticalArrangement = Arrangement.spacedBy(space = 8.dp)
         ) {
             LazyColumn(
@@ -181,7 +178,8 @@ private fun FillLazyColumn(
             ) {
                 items(tasks) { task ->
                     CheckCustomMain(
-                        task = task,
+                        checked = task.checkState,
+                        title = task.title,
                         onCheckedChange = {
                             task.checkState = it
                             task.finishDate = if (it) Date.from(Instant.now()) else null
@@ -199,7 +197,6 @@ private fun FillLazyColumn(
             val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
             //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
 
-
             if (showIcon) {
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
@@ -212,53 +209,6 @@ private fun FillLazyColumn(
                     tint = MaterialTheme.colorScheme.primary
                 )
             } else Box(modifier = Modifier.height(28.dp)) {}
-
-            /* val totalItemsCheckedOrUnchecked by remember { mutableStateOf( tasks.filter { it.checkState == initStateCheck }.count() ) }
-             Log.d("TOTAILITEMSFILTERED", "totalItemsCheckedOrUnchecked -> $totalItemsCheckedOrUnchecked")
-
-             val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
-             val totalVisualItemsFilter by remember {
-                 derivedStateOf {
-                     if (itemsFilter > 1) {
-                         lazyState.layoutInfo.visibleItemsInfo.count()
-
-                     } else if (itemsFilter > 0) {
-                         lazyState.layoutInfo.visibleItemsInfo.count() - 1
-
-                     } else {
-                         lazyState.layoutInfo.visibleItemsInfo.count() - 2
-                     }
-                 }
-             }
-
-             val showArrow by remember {
-                 derivedStateOf {
-                     totalVisualItemsFilter + 1 < tasks.filter {
-                         it.checkState == initStateCheck
-                     }.size
-                 }
-             }
-
-             if (showArrow) {
-                 val isLastItem by remember {
-                     derivedStateOf {
-                         lazyState.firstVisibleItemIndex ==
-                                 lazyState.layoutInfo.totalItemsCount -
-                                 totalVisualItemsFilter - 1
-                     }
-                 }
-
-                 Icon(
-                     imageVector = if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                     contentDescription = stringResource(go_to_up),
-                     modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
-                         if (isLastItem) {
-                             coroutineScope.launch { lazyState.animateScrollToItem(0) }
-                         }
-                     },
-                     tint = MaterialTheme.colorScheme.primary
-                 )
-             }*/
         } else RowInfo(text = text, paddingStart = 16.dp)
 }
 
@@ -266,19 +216,20 @@ private fun FillLazyColumn(
 @ExperimentalMaterial3Api
 @Composable
 private fun CheckCustomMain(
-    task: Task,
+    checked: Boolean,
+    title: String,
     onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     CheckCustom(
-        checked = task.checkState,
+        checked = checked,
         onCheckedChange = {
             onCheckedChange(it)
         },
         enabled = enabled,
         animated = true,
-        text = task.title,
+        text = title,
         onClick = { onClick() }
     )
 }
