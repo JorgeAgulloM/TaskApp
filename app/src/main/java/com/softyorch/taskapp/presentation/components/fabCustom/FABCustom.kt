@@ -14,6 +14,7 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
 
+@ExperimentalMaterial3Api
 @Composable
 fun FABCustom() {
 

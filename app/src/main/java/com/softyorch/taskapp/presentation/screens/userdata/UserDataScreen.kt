@@ -33,11 +33,11 @@ import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCu
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.LogoUserCapitalLetter
-import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
-import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
@@ -51,9 +51,9 @@ fun UserDataScreen(
                 nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
             )
-        }) {
-
-        ContentUserDataScreen(
+        }
+    ) {
+        Content(
             it = it,
             navController = navController,
             getUserImage = getUserImage
@@ -62,9 +62,10 @@ fun UserDataScreen(
 }
 
 
+@ExperimentalMaterial3Api
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun ContentUserDataScreen(
+private fun Content(
     it: PaddingValues,
     navController: NavHostController,
     getUserImage: Pair<() -> Unit, String?>
@@ -316,6 +317,7 @@ private fun ButtonCustomDataScreen(
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun TextFieldCustomDataScreen(
     text: String,
@@ -332,28 +334,31 @@ private fun TextFieldCustomDataScreen(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
-            text = text,
-            label = label,
-            placeholder = stringResource(write_your_label) + label.lowercase(),
-            icon = icon,
-            contentDescription = label + stringResource(label_of_user),
-            keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                capitalization = capitalization,
-                keyboardType = keyboardType,
-                imeAction = imeAction
-            ),
-            keyboardActions = keyboardActions,
-            singleLine = true,
-            isError = error || errorEmailExist,
-            password = password,
-            onTextFieldChanged = { onTextFieldChanged(it) }
-        )
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            textFieldCustom(
+                text = text,
+                label = label,
+                placeholder = stringResource(write_your_label) + label.lowercase(),
+                icon = icon,
+                contentDescription = label + stringResource(label_of_user),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = capitalization,
+                    keyboardType = keyboardType,
+                    imeAction = imeAction
+                ),
+                keyboardActions = keyboardActions,
+                singleLine = true,
+                isError = error || errorEmailExist,
+                password = password,
+                onTextFieldChanged = { onTextFieldChanged(it) }
+            )
+        }
         if (error || errorEmailExist) IconError(
             errorText =
             if (errorEmailExist) stringResource(error_email_exist)
             else errorText
         )
+
     }
 }
 

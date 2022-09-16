@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.presentation.components.topAppBarCustom
 
-import android.util.Size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
