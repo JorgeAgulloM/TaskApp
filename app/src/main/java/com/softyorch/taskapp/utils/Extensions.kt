@@ -5,11 +5,9 @@ import android.app.Application
 import android.content.Context
 import android.view.PixelCopy
 import android.widget.Toast
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntOffsetAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -67,17 +65,30 @@ fun Boolean.containerColorAnimation(): State<Color> =
         else MaterialTheme.colorScheme.background,
         animationSpec = tween(
             durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
-            easing = FastOutSlowInEasing)
+            easing = FastOutSlowInEasing
+        )
     )
 
 @Composable
-fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> = animateIntOffsetAsState(
-    targetValue = if (this) IntOffset(0, 0)
-    else IntOffset(1500, 0),
-    animationSpec = tween(
-        durationMillis = 400,
-        delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
-        easing = FastOutSlowInEasing
-    ),
-    finishedListener = { finishedListener() }
-)
+fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> =
+    animateIntOffsetAsState(
+        targetValue = if (this) IntOffset(0, 0)
+        else IntOffset(1500, 0),
+        animationSpec = tween(
+            durationMillis = 400,
+            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
+fun MaterialTheme.infiniteTransitionAnimateColor(): State<Color> =
+    rememberInfiniteTransition().animateColor(
+        initialValue = this.colorScheme.tertiary,
+        targetValue = this.colorScheme.primary,
+        animationSpec = infiniteRepeatable(
+            animation = tween(200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
