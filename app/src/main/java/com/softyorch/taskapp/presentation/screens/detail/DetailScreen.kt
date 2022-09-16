@@ -1,35 +1,38 @@
 package com.softyorch.taskapp.presentation.screens.detail
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.presentation.components.ButtonCustom
-import com.softyorch.taskapp.presentation.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
-import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
 import com.softyorch.taskapp.presentation.widgets.ShowTask
 import com.softyorch.taskapp.presentation.widgets.newTask.newTask
 import com.softyorch.taskapp.utils.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
-
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
@@ -38,27 +41,77 @@ fun DetailScreen(
     navController: NavController,
     id: String
 ) {
+
+    /** 16.09.2022
+     * -Transformar a componente para probar a que se coloque encima de la pantalla main*/
+
     val viewModel = hiltViewModel<DetailScreenViewModel>()
     val coroutineScope = rememberCoroutineScope()
+    var enterDetails by remember { mutableStateOf(value = false) }
+    var exitDetails by remember { mutableStateOf(value = false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBarCustom(
-                title = stringResource(details),
-                nameScreen = AppScreens.DetailsScreen.name,
-                navController = navController,
-            )
-        }
+    coroutineScope.launch {
+        viewModel.getTask(id = id)
+        delay(100)
+        if (!exitDetails) enterDetails = true
+    }
+
+    val slideCheckBox by animateIntOffsetAsState(
+        targetValue = if (enterDetails) IntOffset(0, 0)
+        else IntOffset(1500, 0),
+        animationSpec = tween(
+            durationMillis = 400,
+            delayMillis = 100,
+            easing = FastOutSlowInEasing
+        )
     ) {
-        coroutineScope.launch { viewModel.getTask(id = id) }
-        Content(it = it, viewModel = viewModel, navController = navController)
+        if (!enterDetails)
+            navController.navigate(AppScreensRoutes.MainScreen.route) {
+                popUpTo(AppScreensRoutes.DetailScreen.route) {
+                    inclusive = true
+                    navController.backQueue.clear()
+                }
+            }
+    }
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (exitDetails) 0.2f else 1f,
+        animationSpec = tween(
+            durationMillis = 200,
+            delayMillis = 0,
+            easing = FastOutSlowInEasing
+        )
+    )
+
+    Column(
+        modifier = Modifier
+            .offset { slideCheckBox }
+            .graphicsLayer(alpha = alpha)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            IconButton(
+                onClick = {
+                    exitDetails = true
+                    enterDetails = false
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(
+                        go_to_home
+                    )
+                )
+            }
+        }
+        Content(viewModel = viewModel, navController = navController)
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
 private fun Content(
-    it: PaddingValues,
     viewModel: DetailScreenViewModel,
     navController: NavController
 ) {
@@ -84,11 +137,12 @@ private fun Content(
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(
-                    top = it.calculateTopPadding() + 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
+                    top = 8.dp,
+                    start = 8.dp,
+                    end = 8.dp
                 )
         ) {
+
             RowInfoDetail(text = stringResource(details))
             ShowTaskDetails(task = task)
             Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
