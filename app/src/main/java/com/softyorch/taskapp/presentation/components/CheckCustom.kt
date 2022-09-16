@@ -60,7 +60,7 @@ fun CheckCustom(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = horizontalArrangement
     ) {
-        var checkedChange by remember { mutableStateOf(value = false) }
+        /*var checkedChange by remember { mutableStateOf(value = false) }
         var checkedOrNot by remember { mutableStateOf(value = checked) }
         val alphaCheck: Float by animateFloatAsState(
             targetValue = if (checkedChange && animated) 0.2f else 1f,
@@ -72,14 +72,14 @@ fun CheckCustom(
             finishedListener = {
                 onCheckedChange.invoke(checkedOrNot)
             }
-        )
+        )*/
         Checkbox(
-            modifier = Modifier.graphicsLayer(alpha = alphaCheck),
-            checked = checkedOrNot,
-            onCheckedChange = {
+            //modifier = Modifier.graphicsLayer(alpha = alphaCheck),
+            checked = checked,//checkedOrNot,
+            onCheckedChange = {onCheckedChange(it) },/*
                 checkedOrNot = !checkedOrNot
                 checkedChange = true
-            },//onCheckedChange(it) },
+            },*/
             enabled = enabled,
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.secondary,
