@@ -83,6 +83,31 @@ fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> 
     )
 
 @Composable
+fun Boolean.contentColorAsStateAnimation(stateOne: Boolean, stateTwo: Boolean):
+        State<Color> = animateColorAsState(
+    targetValue =
+    if (this) MaterialTheme.colorScheme.onError
+    else if (stateOne) MaterialTheme.colorScheme.background
+    else if (stateTwo) MaterialTheme.colorScheme.onTertiary
+    else MaterialTheme.colorScheme.onBackground,
+    animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
+)
+
+@Composable
+fun Boolean.containerColorAsStateAnimation(
+    stateOne: Boolean, stateTwo: Boolean, stateThree: Boolean, finishListener: () -> Unit?):
+        State<Color> = animateColorAsState(
+    targetValue =
+    if (this) MaterialTheme.colorScheme.error
+    else if (stateOne) MaterialTheme.colorScheme.primaryContainer
+    else if (stateTwo) MaterialTheme.colorScheme.primary
+    else if (stateThree) MaterialTheme.colorScheme.tertiary
+    else Color.Transparent,
+    animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR),
+    finishedListener = { finishListener() }
+)
+
+@Composable
 fun MaterialTheme.infiniteTransitionAnimateColor(): State<Color> =
     rememberInfiniteTransition().animateColor(
         initialValue = this.colorScheme.tertiary,
@@ -92,3 +117,18 @@ fun MaterialTheme.infiniteTransitionAnimateColor(): State<Color> =
             repeatMode = RepeatMode.Reverse
         )
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

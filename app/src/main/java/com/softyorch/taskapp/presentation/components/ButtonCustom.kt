@@ -19,9 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.utils.DURATION_MILLIS_BTN_CHANGE_COLOR
-import com.softyorch.taskapp.utils.ELEVATION_FLOAT
-import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.*
 
 @Composable
 fun ButtonCustom(
@@ -35,27 +33,17 @@ fun ButtonCustom(
 
     var onClickButton by remember { mutableStateOf(value = false) }
 
-    val containerColor by animateColorAsState(
-        targetValue =
-        if (error) MaterialTheme.colorScheme.error
-        else if (onClickButton) MaterialTheme.colorScheme.primaryContainer
-        else if (primary) MaterialTheme.colorScheme.primary
-        else if (tertiary) MaterialTheme.colorScheme.tertiary
-        else Color.Transparent,
-        animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR),
-        finishedListener = {
-            if (onClickButton) {
-                onClickButton = false
-                onClick()
-            }
+    val containerColor by error.containerColorAsStateAnimation(
+        stateOne = onClickButton, stateTwo = primary, stateThree = tertiary
+    ){
+        if (onClickButton) {
+            onClickButton = false
+            onClick()
         }
-    )
-    val contentColor by animateColorAsState(
-        targetValue = if (error) MaterialTheme.colorScheme.onError
-        else if (primary) MaterialTheme.colorScheme.background
-        else if (tertiary) MaterialTheme.colorScheme.onTertiary
-        else MaterialTheme.colorScheme.onBackground,
-        animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
+    }
+
+    val contentColor by error.contentColorAsStateAnimation(
+        stateOne = primary, stateTwo = tertiary
     )
 
     Button(
