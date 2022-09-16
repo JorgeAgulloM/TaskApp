@@ -1,27 +1,22 @@
 package com.softyorch.taskapp.presentation.screens.main
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -36,8 +31,7 @@ import com.softyorch.taskapp.presentation.components.CircularIndicatorCustom
 import com.softyorch.taskapp.presentation.navigation.AppScreens
 import com.softyorch.taskapp.presentation.navigation.AppScreensRoutes
 import com.softyorch.taskapp.presentation.widgets.RowInfo
-import com.softyorch.taskapp.utils.ELEVATION_DP
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -79,7 +73,7 @@ private fun Content(
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            //.background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            /**.background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) */
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
@@ -94,7 +88,7 @@ private fun Content(
 
         Column(
             modifier = Modifier
-                //.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
                 .background(
                     color = MaterialTheme.colorScheme.background,
                     shape = MaterialTheme.shapes.large
@@ -105,11 +99,13 @@ private fun Content(
             RowInfoMain(text = stringResource(to_be_made))
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
-                tasks = tasks,
+                tasks = tasks.filter { !it.checkState },
                 updateTask = viewModel::updateTask,
                 text = stringResource(add_new_task),
                 initStateCheck = false,
-                enabled = !isLoading
+                enabled = !isLoading,
+                lazyState = rememberLazyListState(),
+                coroutineScope = rememberCoroutineScope()
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
@@ -118,7 +114,7 @@ private fun Content(
         Spacer(modifier = Modifier.padding(8.dp))
         Column(
             modifier = Modifier
-                //.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
                 .background(
                     color = MaterialTheme.colorScheme.background,
                     shape = MaterialTheme.shapes.large
@@ -129,23 +125,25 @@ private fun Content(
             RowInfoMain(text = stringResource(tasks_completed_last_days))
             FillLazyColumn(
                 modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
-                tasks = tasks,
+                tasks = tasks.filter { it.checkState },
                 updateTask = viewModel::updateTask,
                 text = stringResource(not_yet_complet_any_task),
                 initStateCheck = true,
-                enabled = !isLoading
+                enabled = !isLoading,
+                lazyState = rememberLazyListState(),
+                coroutineScope = rememberCoroutineScope()
             ) {
                 navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}")
             }
             Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
         }
-        if (isLoading)
-            CircularIndicatorCustom(
-                text = stringResource(loading_loading),
-                modifier = Modifier
-                    .safeContentPadding()
-                    .align(Alignment.CenterHorizontally)
-            )
+
+        if (isLoading) CircularIndicatorCustom(
+            text = stringResource(loading_loading),
+            modifier = Modifier
+                .safeContentPadding()
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -163,14 +161,17 @@ private fun FillLazyColumn(
     text: String,
     initStateCheck: Boolean,
     enabled: Boolean,
+    lazyState: LazyListState,
+    coroutineScope: CoroutineScope,
     onClick: (UUID) -> Unit
 ) {
 
-    val lazyState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
+    //val lazyState = rememberLazyListState()
+    //val coroutineScope = rememberCoroutineScope()
     if (tasks.any { it.checkState == initStateCheck })
         Column(
-            verticalArrangement = Arrangement.SpaceEvenly
+            //verticalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.spacedBy(space = 8.dp)
         ) {
             LazyColumn(
                 modifier = modifier,
@@ -178,7 +179,7 @@ private fun FillLazyColumn(
                 userScrollEnabled = true,
                 flingBehavior = ScrollableDefaults.flingBehavior()
             ) {
-                items(tasks.filter { it.checkState == initStateCheck }) { task ->
+                items(tasks) { task ->
                     CheckCustomMain(
                         task = task,
                         onCheckedChange = {
@@ -270,33 +271,14 @@ private fun CheckCustomMain(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    var visible by remember { mutableStateOf(value = false) }
-    val density = LocalDensity.current
-    rememberCoroutineScope().launch {
-        delay(100)
-        visible = true
-    }
-/*    AnimatedVisibility(
-        visible = visible,
-        enter = slideInHorizontally {
-            with(density) { -100.dp.roundToPx() }
-        } + expandHorizontally(
-            expandFrom = Alignment.Start
-        ) + fadeIn(
-            initialAlpha = 0.3f
-        ),
-        exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()
-    )
-    {*/
     CheckCustom(
         checked = task.checkState,
         onCheckedChange = {
-            visible = false
             onCheckedChange(it)
         },
         enabled = enabled,
+        animated = true,
         text = task.title,
         onClick = { onClick() }
     )
-    //}
 }
