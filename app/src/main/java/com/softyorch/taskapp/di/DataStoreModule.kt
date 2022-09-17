@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data.di
+package com.softyorch.taskapp.di
 
 import android.content.Context
 import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
