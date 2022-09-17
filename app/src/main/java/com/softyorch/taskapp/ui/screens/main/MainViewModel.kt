@@ -1,13 +1,19 @@
 package com.softyorch.taskapp.ui.screens.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.data.repository.TaskRepository2
+import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.domain.taskUsesCase.GetAllTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,9 +21,13 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: TaskRepository,
+    private val getAllTaskUseCase: GetAllTaskUseCase
 ) : ViewModel() {
     private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
     val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+
+    private val _taskList = MutableLiveData<List<Task>>()
+
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -28,6 +38,23 @@ class MainViewModel @Inject constructor(
     init {
         _isLoading.value = true
         loadData()
+        loading2()
+    }
+
+    private fun loading2() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = getAllTaskUseCase()
+
+            result.distinctUntilChanged().collect { listOfTask ->
+                if (listOfTask.isNotEmpty())
+                    listOfTask.let { list ->
+                        _taskList.postValue(list)
+                    }
+                _isLoading.postValue(false)
+                delay(500)
+                Log.d("LISTTWO", "ListOfTask -> ${_taskList.value}")
+            }
+        }
     }
 
     private fun loadData() {
