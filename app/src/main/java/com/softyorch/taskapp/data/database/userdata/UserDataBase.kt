@@ -1,9 +1,8 @@
-package com.softyorch.taskapp.data.data.userdata
+package com.softyorch.taskapp.data.database.userdata
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.softyorch.taskapp.domain.model.UserData
 import com.softyorch.taskapp.utils.DateConverter
 import com.softyorch.taskapp.utils.UUIDConverter
 

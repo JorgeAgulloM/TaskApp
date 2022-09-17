@@ -1,9 +1,8 @@
-package com.softyorch.taskapp.data.data.tasks
+package com.softyorch.taskapp.data.database.tasks
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.utils.DateConverter
 import com.softyorch.taskapp.utils.UUIDConverter
 

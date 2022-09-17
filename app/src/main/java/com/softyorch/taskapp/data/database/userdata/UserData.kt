@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.domain.model
+package com.softyorch.taskapp.data.database.userdata
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

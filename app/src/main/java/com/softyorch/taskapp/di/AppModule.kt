@@ -2,8 +2,8 @@ package com.softyorch.taskapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.softyorch.taskapp.data.data.tasks.TaskDatabase
-import com.softyorch.taskapp.data.data.tasks.TaskDatabaseDao
+import com.softyorch.taskapp.data.database.tasks.TaskDatabase
+import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.utils.*
 import dagger.Module
 import dagger.Provides

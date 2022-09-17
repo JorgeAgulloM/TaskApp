@@ -1,7 +1,6 @@
-package com.softyorch.taskapp.data.data.tasks
+package com.softyorch.taskapp.data.database.tasks
 
 import androidx.room.*
-import com.softyorch.taskapp.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao

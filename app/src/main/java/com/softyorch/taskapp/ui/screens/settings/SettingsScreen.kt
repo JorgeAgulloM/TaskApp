@@ -18,7 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.data.database.userdata.UserData
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.switchCustom.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom

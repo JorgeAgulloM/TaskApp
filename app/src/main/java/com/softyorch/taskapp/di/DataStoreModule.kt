@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.di
 
 import android.content.Context
-import com.softyorch.taskapp.data.data.datastore.DatastoreDataBase
+import com.softyorch.taskapp.data.database.datastore.DatastoreDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.data.database.tasks.Task
 import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM

@@ -1,8 +1,8 @@
-package com.softyorch.taskapp.domain.repository
+package com.softyorch.taskapp.data.repository
 
-import com.softyorch.taskapp.data.data.Resource
-import com.softyorch.taskapp.data.data.userdata.UserDataBaseDao
-import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.data.Resource
+import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
+import com.softyorch.taskapp.data.database.userdata.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate

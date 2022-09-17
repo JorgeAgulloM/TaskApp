@@ -1,7 +1,6 @@
-package com.softyorch.taskapp.data.data.userdata
+package com.softyorch.taskapp.data.database.userdata
 
 import androidx.room.*
-import com.softyorch.taskapp.domain.model.UserData
 import kotlinx.coroutines.flow.Flow
 
 @Dao

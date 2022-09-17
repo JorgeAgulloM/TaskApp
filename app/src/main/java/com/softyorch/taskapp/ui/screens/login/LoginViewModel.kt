@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.data.Resource
-import com.softyorch.taskapp.domain.model.UserData
-import com.softyorch.taskapp.domain.repository.DatastoreRepository
-import com.softyorch.taskapp.domain.repository.UserDataRepository
+import com.softyorch.taskapp.data.Resource
+import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.repository.DatastoreRepository
+import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.ui.errors.ErrorInterface
 import com.softyorch.taskapp.ui.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString

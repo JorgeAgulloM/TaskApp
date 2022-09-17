@@ -1,12 +1,12 @@
-package com.softyorch.taskapp.data.data.datastore
+package com.softyorch.taskapp.data.database.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.softyorch.taskapp.data.data.Resource
-import com.softyorch.taskapp.domain.model.UserData
+import com.softyorch.taskapp.data.Resource
+import com.softyorch.taskapp.data.database.userdata.UserData
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString

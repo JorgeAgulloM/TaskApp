@@ -1,9 +1,8 @@
-package com.softyorch.taskapp.domain.repository
+package com.softyorch.taskapp.data.repository
 
-import com.google.android.gms.common.api.Response
-import com.softyorch.taskapp.data.data.Resource
-import com.softyorch.taskapp.data.data.tasks.TaskDatabaseDao
-import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.data.Resource
+import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
+import com.softyorch.taskapp.data.database.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
