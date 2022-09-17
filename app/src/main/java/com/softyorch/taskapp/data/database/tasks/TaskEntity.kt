@@ -8,7 +8,7 @@ import java.time.Instant
 import java.util.*
 
 @Entity(tableName = TASK_TBL)
-data class Task(
+data class TaskEntity(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = TITLE) var title: String,
     @ColumnInfo(name = DESCRIPTION) var description: String,
@@ -16,4 +16,13 @@ data class Task(
     @ColumnInfo(name = ENTRY_DATE) val entryDate: Date = Date.from(Instant.now()),
     @ColumnInfo(name = FINISH_DATE) var finishDate: Date? = null,
     @ColumnInfo(name = CHECK_STATE) var checkState: Boolean = false
+)
+
+fun TaskEntity.toDatabase() = TaskEntity(
+    title = title,
+    description = description,
+    author = author,
+    entryDate = entryDate,
+    finishDate = finishDate,
+    checkState = checkState
 )

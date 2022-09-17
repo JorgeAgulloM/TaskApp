@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,5 +48,5 @@ class FABCustomViewModel @Inject constructor(
         }
     }
 
-    fun addTask(task: Task) = viewModelScope.launch { repository.addTask(task = task) }
+    fun addTask(taskEntity: TaskEntity) = viewModelScope.launch { repository.addTask(taskEntity = taskEntity) }
 }

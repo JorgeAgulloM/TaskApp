@@ -25,7 +25,7 @@ import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
@@ -62,7 +62,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
+    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -81,16 +81,16 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
         FillLazyColumnNoCheckeds(
-            tasks = tasks.filter { !it.checkState },
-            updateTask = viewModel::updateTask,
+            taskEntities = taskEntities.filter { !it.checkState },
+            updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading,
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
         Spacer(modifier = Modifier.padding(8.dp))
 
         FillLazyColumnCheckeds(
-            tasks = tasks.filter { it.checkState },
-            updateTask = viewModel::updateTask,
+            taskEntities = taskEntities.filter { it.checkState },
+            updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading,
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
@@ -111,8 +111,8 @@ private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typograph
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumnNoCheckeds(
-    tasks: List<Task>,
-    updateTask: KSuspendFunction1<Task, Unit>,
+    taskEntities: List<TaskEntity>,
+    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {
@@ -131,7 +131,7 @@ private fun FillLazyColumnNoCheckeds(
         horizontalAlignment = Alignment.Start
     ) {
         RowInfoMain(text = stringResource(to_be_made))
-        if (tasks.any { !it.checkState })
+        if (taskEntities.any { !it.checkState })
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
@@ -141,7 +141,7 @@ private fun FillLazyColumnNoCheckeds(
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
-                    items(tasks) { task ->
+                    items(taskEntities) { task ->
                         var myCheck by remember { mutableStateOf(value = task.checkState)}
 
                         CheckCustomMain(
@@ -154,7 +154,7 @@ private fun FillLazyColumnNoCheckeds(
                                 coroutineScope.launch {
                                     delay(400)
                                     myCheck = !it
-                                    updateTask(task)
+                                    updateTaskEntity(task)
                                 }
                             },
                             enabled = enabled
@@ -187,8 +187,8 @@ private fun FillLazyColumnNoCheckeds(
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumnCheckeds(
-    tasks: List<Task>,
-    updateTask: KSuspendFunction1<Task, Unit>,
+    taskEntities: List<TaskEntity>,
+    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {
@@ -206,7 +206,7 @@ private fun FillLazyColumnCheckeds(
         horizontalAlignment = Alignment.Start
     ) {
         RowInfoMain(text = stringResource(tasks_completed_last_days))
-        if (tasks.any { it.checkState })
+        if (taskEntities.any { it.checkState })
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
@@ -216,7 +216,7 @@ private fun FillLazyColumnCheckeds(
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
-                    items(tasks) { task ->
+                    items(taskEntities) { task ->
                         var myCheck by remember { mutableStateOf(value = task.checkState)}
 
                         CheckCustomMain(
@@ -229,7 +229,7 @@ private fun FillLazyColumnCheckeds(
                                 coroutineScope.launch {
                                     delay(400)
                                     myCheck = !it
-                                    updateTask(task)
+                                    updateTaskEntity(task)
                                 }
                             },
                             enabled = enabled

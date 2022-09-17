@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.R.string.history
@@ -54,14 +54,14 @@ private fun Content(
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
-    val tasks: List<Task> by viewModel.taskList.observeAsState(initial = emptyList())
+    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
 
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
             .padding(top = it.calculateTopPadding() * 1.5f, start = 16.dp, end = 16.dp)
     ) {
-        items(tasks) { task ->
+        items(taskEntities) { task ->
             Row(
                 modifier = Modifier
                     .padding(top = 4.dp)
@@ -71,8 +71,8 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextHeadHistry(task = task)
-                TextContentHistory(task = task)
+                TextHeadHistry(taskEntity = task)
+                TextContentHistory(taskEntity = task)
             }
         }
     }
@@ -80,11 +80,11 @@ private fun Content(
 
 @Composable
 private fun TextHeadHistry(
-    task: Task
+    taskEntity: TaskEntity
 ) {
     Text(
         modifier = Modifier.padding(end = 8.dp),
-        text = task.entryDate.toStringFormatDate(),
+        text = taskEntity.entryDate.toStringFormatDate(),
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
@@ -94,10 +94,10 @@ private fun TextHeadHistry(
 
 @Composable
 private fun TextContentHistory(
-    task: Task
+    taskEntity: TaskEntity
 ) {
     Text(
-        text = task.title,
+        text = taskEntity.title,
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,

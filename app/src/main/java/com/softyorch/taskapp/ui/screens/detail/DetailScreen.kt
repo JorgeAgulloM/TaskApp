@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
@@ -110,8 +110,8 @@ private fun Content(
 
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val isDeleted: Boolean by viewModel.isDeleted.observeAsState(initial = false)
-    val task: Task by viewModel.taskDetail.observeAsState(
-        initial = Task(
+    val taskEntity: TaskEntity by viewModel.taskEntityDetail.observeAsState(
+        initial = TaskEntity(
             title = emptyString,
             description = emptyString,
             author = emptyString
@@ -134,11 +134,11 @@ private fun Content(
         ) {
 
             RowInfoDetail(text = stringResource(details))
-            ShowTaskDetails(task = task)
+            ShowTaskDetails(taskEntity = taskEntity)
             Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
-            RowInfoDetail(text = task.title, style = MaterialTheme.typography.titleLarge)
+            RowInfoDetail(text = taskEntity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(top = 8.dp))
-            TextDescriptionDetails(task = task)
+            TextDescriptionDetails(taskEntity = taskEntity)
 
             Column(
                 modifier = Modifier
@@ -158,19 +158,19 @@ private fun Content(
                     openEditDialog = true
                 }
                 ButtonCustomDetails(
-                    text = if (!task.checkState) stringResource(complete) else stringResource(
+                    text = if (!taskEntity.checkState) stringResource(complete) else stringResource(
                         completed
                     ),
                     primary = true
                 ) {
-                    if (!task.checkState) openCompleteDialog = true
-                    if (task.checkState) openResetDialog = true
+                    if (!taskEntity.checkState) openCompleteDialog = true
+                    if (taskEntity.checkState) openResetDialog = true
                 }
                 ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
 
                 /** Edit Dialog */
                 if (openEditDialog) openEditDialog = newTaskDetails(
-                    viewModel = viewModel, task = task
+                    viewModel = viewModel, taskEntity = taskEntity
                 )
 
                 /** Complete Dialog */
@@ -179,11 +179,11 @@ private fun Content(
                 },
                     confirmButton = {
                         ButtonCustomDetails(text = stringResource(complete), primary = true) {
-                            task.checkState = !task.checkState
-                            task.finishDate = Date.from(Instant.now())
-                            viewModel.updateTask(task = task)
+                            taskEntity.checkState = !taskEntity.checkState
+                            taskEntity.finishDate = Date.from(Instant.now())
+                            viewModel.updateTask(taskEntity = taskEntity)
                             navController.popBackStack()
-                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${taskEntity.id}")
                             openCompleteDialog = false
                         }
                     },
@@ -201,11 +201,11 @@ private fun Content(
                     confirmButton = {
                         ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
                             /** OJO, se repite el código */
-                            task.checkState = !task.checkState
-                            task.finishDate = Date.from(Instant.now())
-                            viewModel.updateTask(task = task)
+                            taskEntity.checkState = !taskEntity.checkState
+                            taskEntity.finishDate = Date.from(Instant.now())
+                            viewModel.updateTask(taskEntity = taskEntity)
                             navController.popBackStack()
-                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${task.id}")
+                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${taskEntity.id}")
                             openResetDialog = false
                         }
                     },
@@ -229,7 +229,7 @@ private fun Content(
                     confirmButton = {
                         ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
                             openDeleteDialog = false
-                            viewModel.removeTask(task = task)
+                            viewModel.removeTask(taskEntity = taskEntity)
                             navController.navigate(AppScreensRoutes.MainScreen.route) {
                                 navController.backQueue.clear()
                             }
@@ -257,11 +257,11 @@ private fun Content(
 @Composable
 private fun newTaskDetails(
     viewModel: DetailScreenViewModel,
-    task: Task,
+    taskEntity: TaskEntity,
 ): Boolean = newTask(
-    addOrEditTaskFunc = viewModel::updateAndRefreshTask,
-    userName = task.author,
-    taskToEdit = task
+    addOrEditTaskEntityFunc = viewModel::updateAndRefreshTask,
+    userName = taskEntity.author,
+    taskEntityToEdit = taskEntity
 )
 
 @Composable
@@ -291,20 +291,20 @@ private fun RowInfoDetail(
 
 @Composable
 private fun TextDescriptionDetails(
-    task: Task
+    taskEntity: TaskEntity
 ) {
     Text(
-        text = task.description,
+        text = taskEntity.description,
         color = MaterialTheme.colorScheme.onSurface
     )
 }
 
 @Composable
-private fun ShowTaskDetails(task: Task) {
+private fun ShowTaskDetails(taskEntity: TaskEntity) {
     ShowTask(
-        author = task.author,
-        date = task.entryDate.toStringFormatted(),
-        completedDate = task.finishDate?.toStringFormatted()
+        author = taskEntity.author,
+        date = taskEntity.entryDate.toStringFormatted(),
+        completedDate = taskEntity.finishDate?.toStringFormatted()
             ?: stringResource(unknown),
         paddingStart = 0.dp
     )

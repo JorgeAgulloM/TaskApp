@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.softyorch.taskapp.utils.DateConverter
 import com.softyorch.taskapp.utils.UUIDConverter
 
-@Database(entities = [Task::class], version = 1, exportSchema = false)
+@Database(entities = [TaskEntity::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, UUIDConverter::class)
 abstract class TaskDatabase: RoomDatabase() {
     abstract fun taskDao(): TaskDatabaseDao

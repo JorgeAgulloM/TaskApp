@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.TaskRepository
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +17,8 @@ import javax.inject.Inject
 class DetailScreenViewModel @Inject constructor(
     private val repository: TaskRepository
 ) : ViewModel() {
-    private val _taskDetail = MutableLiveData<Task>()
-    val taskDetail: LiveData<Task> = _taskDetail
+    private val _taskEntityDetail = MutableLiveData<TaskEntity>()
+    val taskEntityDetail: LiveData<TaskEntity> = _taskEntityDetail
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -39,7 +39,7 @@ class DetailScreenViewModel @Inject constructor(
                 when (task) {
                     is Resource.Error -> showError(task.message.toString())
                     is Resource.Loading -> _isLoading.value = true
-                    is Resource.Success -> _taskDetail.postValue(task.data)
+                    is Resource.Success -> _taskEntityDetail.postValue(task.data)
                 }
                 _isLoading.postValue(false)
             }
@@ -49,11 +49,11 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateAndRefreshTask(task: Task) = viewModelScope.launch(Dispatchers.IO) {
+    fun updateAndRefreshTask(taskEntity: TaskEntity) = viewModelScope.launch(Dispatchers.IO) {
         _isLoading.postValue(true)
-        var result = updateTask(task = task)
+        var result = updateTask(taskEntity = taskEntity)
         result.join()
-        result = getTask(id = task.id.toString())
+        result = getTask(id = taskEntity.id.toString())
         result.join()
         _isLoading.postValue(false)
     }
@@ -69,15 +69,15 @@ class DetailScreenViewModel @Inject constructor(
     }
 
 
-    private suspend fun getTaskId(id: String): Resource<Task> = repository.getTaskId(id = id)
-    fun updateTask(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        repository.updateTask(task = task)
+    private suspend fun getTaskId(id: String): Resource<TaskEntity> = repository.getTaskId(id = id)
+    fun updateTask(taskEntity: TaskEntity) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateTask(taskEntity = taskEntity)
     }
 
-    fun removeTask(task: Task) {
+    fun removeTask(taskEntity: TaskEntity) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            (repository.deleteTask(task = task).data == true).also {
+            (repository.deleteTask(taskEntity = taskEntity).data == true).also {
                 _isDeleted.postValue(it)
                 _error.postValue(!it)
                 _isLoading.postValue(false)

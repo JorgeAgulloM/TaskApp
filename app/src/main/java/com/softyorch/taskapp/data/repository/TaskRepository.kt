@@ -2,7 +2,7 @@ package com.softyorch.taskapp.data.repository
 
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
-import com.softyorch.taskapp.data.database.tasks.Task
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -12,10 +12,10 @@ import javax.inject.Singleton
 
 @Singleton
 class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
-    fun getAllTasks(): Flow<List<Task>> =
+    fun getAllTasks(): Flow<List<TaskEntity>> =
         taskDatabaseDao.getTasks().flowOn(Dispatchers.IO).conflate()
 
-    suspend fun getTaskId(id: String): Resource<Task> {
+    suspend fun getTaskId(id: String): Resource<TaskEntity> {
         val response = try {
             Resource.Loading(data = true)
             taskDatabaseDao.getTaskById(id = id)
@@ -27,12 +27,12 @@ class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDataba
         return Resource.Success(data = response)
     }
 
-    suspend fun addTask(task: Task) = taskDatabaseDao.insert(task = task)
-    suspend fun updateTask(task: Task) = taskDatabaseDao.update(task = task)
-    suspend fun deleteTask(task: Task): Resource<Boolean> =
+    suspend fun addTask(taskEntity: TaskEntity) = taskDatabaseDao.insert(taskEntity = taskEntity)
+    suspend fun updateTask(taskEntity: TaskEntity) = taskDatabaseDao.update(taskEntity = taskEntity)
+    suspend fun deleteTask(taskEntity: TaskEntity): Resource<Boolean> =
         try {
             Resource.Loading(data = true)
-            taskDatabaseDao.deleteTask(task = task)
+            taskDatabaseDao.deleteTask(taskEntity = taskEntity)
             Resource.Loading(data = false)
             Resource.Success(data = true)
         } catch (e:Exception){
