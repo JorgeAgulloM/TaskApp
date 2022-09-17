@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.ui.errors.ErrorInterface
@@ -22,8 +22,8 @@ class UserDataViewModel @Inject constructor(
     private val repository: UserDataRepository,
     private val datastore: DatastoreRepository
 ) : ViewModel(), ErrorInterface {
-    private val _userDataActive = MutableLiveData<UserData>()
-    val userDataActive: LiveData<UserData> = _userDataActive
+    private val _userDataEntityActive = MutableLiveData<UserDataEntity>()
+    val userDataEntityActive: LiveData<UserDataEntity> = _userDataEntityActive
 
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
@@ -107,15 +107,15 @@ class UserDataViewModel @Inject constructor(
         withOutErrors(name = name, email = email, pass = pass).let { error ->
             setErrorsData(error = error)
             if (!error.error) {
-                _userDataActive.value?.let { user ->
+                _userDataEntityActive.value?.let { user ->
                     user.username = name
                     user.userEmail = email
                     user.userPass = pass
                     user.userPicture = image
                 }
                 viewModelScope.launch(Dispatchers.IO) {
-                    userDataActive.value?.let { userData ->
-                        updateUserData(userData = userData).also { userNotExist ->
+                    userDataEntityActive.value?.let { userData ->
+                        updateUserData(userDataEntity = userData).also { userNotExist ->
                             if (!userNotExist){
                                 error.emailExists = true
                                 error.email = true
@@ -124,7 +124,7 @@ class UserDataViewModel @Inject constructor(
                                 _isLoading.postValue(false)
                                 _saveEnabled.postValue(false)
                             } else {
-                                userDataActive.value?.let { updateUserDataDatastore(userData = userData) }
+                                userDataEntityActive.value?.let { updateUserDataDatastore(userDataEntity = userData) }
                                 loadUserData()
                                 _isLoading.postValue(false)
                                 _saveEnabled.postValue(false)
@@ -153,11 +153,11 @@ class UserDataViewModel @Inject constructor(
      * data
      */
 
-    private suspend fun getUserDataEmail(email: String): Resource<UserData> =
+    private suspend fun getUserDataEmail(email: String): Resource<UserDataEntity> =
         repository.getUserDataEmail(email = email)
 
-    private suspend fun updateUserData(userData: UserData): Boolean =
-        repository.updateUserData(userData = userData)
+    private suspend fun updateUserData(userDataEntity: UserDataEntity): Boolean =
+        repository.updateUserData(userDataEntity = userDataEntity)
 
     /**
      * datastore
@@ -183,7 +183,7 @@ class UserDataViewModel @Inject constructor(
                                 is Resource.Loading -> TODO()
                                 is Resource.Success -> {
                                     userData.data?.let {user ->
-                                        _userDataActive.postValue(user)
+                                        _userDataEntityActive.postValue(user)
                                         _name.postValue(user.username)
                                         _email.postValue(user.userEmail)
                                         _pass.postValue(user.userPass)
@@ -199,6 +199,6 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateUserDataDatastore(userData: UserData) =
-        datastore.saveData(userData = userData)
+    private suspend fun updateUserDataDatastore(userDataEntity: UserDataEntity) =
+        datastore.saveData(userDataEntity = userDataEntity)
 }

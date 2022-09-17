@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString
@@ -21,21 +21,21 @@ import javax.inject.Singleton
 @Singleton
 class DatastoreDataBase @Inject constructor(private val context: Context) {
 
-    suspend fun saveData(userData: UserData) {
+    suspend fun saveData(userDataEntity: UserDataEntity) {
         context.datastore.edit { setting ->
-            setting[stringPreferencesKey(Name.name)] = userData.username
-            setting[stringPreferencesKey(Email.name)] = userData.userEmail
-            setting[stringPreferencesKey(Pass.name)] = userData.userPass
-            setting[stringPreferencesKey(Picture.name)] = userData.userPicture
-            setting[stringPreferencesKey(LastLoginDate.name)] = userData.lastLoginDate.toString()
-            setting[booleanPreferencesKey(RememberMe.name)] = userData.rememberMe
+            setting[stringPreferencesKey(Name.name)] = userDataEntity.username
+            setting[stringPreferencesKey(Email.name)] = userDataEntity.userEmail
+            setting[stringPreferencesKey(Pass.name)] = userDataEntity.userPass
+            setting[stringPreferencesKey(Picture.name)] = userDataEntity.userPicture
+            setting[stringPreferencesKey(LastLoginDate.name)] = userDataEntity.lastLoginDate.toString()
+            setting[booleanPreferencesKey(RememberMe.name)] = userDataEntity.rememberMe
             setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)] =
-                userData.lightDarkAutomaticTheme
-            setting[booleanPreferencesKey(LightOrDarkTheme.name)] = userData.lightOrDarkTheme
-            setting[booleanPreferencesKey(AutomaticLanguage.name)] = userData.automaticLanguage
-            setting[booleanPreferencesKey(AutomaticColors.name)] = userData.automaticColors
-            setting[intPreferencesKey(TimeLimitAutoLoading.name)] = userData.timeLimitAutoLoading
-            setting[intPreferencesKey(TextSize.name)] = userData.textSize
+                userDataEntity.lightDarkAutomaticTheme
+            setting[booleanPreferencesKey(LightOrDarkTheme.name)] = userDataEntity.lightOrDarkTheme
+            setting[booleanPreferencesKey(AutomaticLanguage.name)] = userDataEntity.automaticLanguage
+            setting[booleanPreferencesKey(AutomaticColors.name)] = userDataEntity.automaticColors
+            setting[intPreferencesKey(TimeLimitAutoLoading.name)] = userDataEntity.timeLimitAutoLoading
+            setting[intPreferencesKey(TextSize.name)] = userDataEntity.textSize
         }
     }
 
@@ -56,10 +56,10 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
         }
     }
 
-    fun getData(): Resource<Flow<UserData>> {
+    fun getData(): Resource<Flow<UserDataEntity>> {
         return try {
             Resource.Success(data = context.datastore.data.map { setting ->
-                UserData(
+                UserDataEntity(
                     username = setting[stringPreferencesKey(Name.name)].orEmpty(),
                     userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
                     userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),

@@ -2,7 +2,7 @@ package com.softyorch.taskapp.data.repository
 
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -12,10 +12,10 @@ import javax.inject.Singleton
 
 @Singleton
 class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDataBaseDao) {
-    fun getAllUser(): Flow<List<UserData>> =
+    fun getAllUser(): Flow<List<UserDataEntity>> =
         userDataBaseDao.getAllUser().flowOn(Dispatchers.IO).conflate()
 
-    suspend fun getUserDataId(id: String): Resource<UserData> {
+    suspend fun getUserDataId(id: String): Resource<UserDataEntity> {
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.getUserId(id = id)
@@ -27,7 +27,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun getUserDataEmail(email: String): Resource<UserData> {
+    suspend fun getUserDataEmail(email: String): Resource<UserDataEntity> {
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.getUserEmail(email = email)
@@ -42,7 +42,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
     suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
-    ): Resource<UserData> {
+    ): Resource<UserDataEntity> {
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.signIn(email = email, password = password)
@@ -54,7 +54,7 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun signInSharePreferences(email: String, password: String): Resource<UserData> {
+    suspend fun signInSharePreferences(email: String, password: String): Resource<UserDataEntity> {
         val response = try {
             Resource.Loading(data = true)
             userDataBaseDao.signIn(email = email, password = password)
@@ -66,19 +66,19 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         return Resource.Success(data = response)
     }
 
-    suspend fun addUserData(userData: UserData): Boolean =
-        getUserDataEmail(email = userData.userEmail).let {
+    suspend fun addUserData(userDataEntity: UserDataEntity): Boolean =
+        getUserDataEmail(email = userDataEntity.userEmail).let {
             if (it.data?.userEmail.isNullOrEmpty()) {
-                userDataBaseDao.insert(userData = userData)
+                userDataBaseDao.insert(userDataEntity = userDataEntity)
                 true
             } else false
         }
 
 
-    suspend fun updateUserData(userData: UserData): Boolean =
-        getUserDataEmail(email = userData.userEmail).let {
+    suspend fun updateUserData(userDataEntity: UserDataEntity): Boolean =
+        getUserDataEmail(email = userDataEntity.userEmail).let {
             if (!it.data?.userEmail.isNullOrEmpty()){
-                userDataBaseDao.update(userData = userData)
+                userDataBaseDao.update(userDataEntity = userDataEntity)
                 true
             } else false
         }
@@ -86,5 +86,5 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
 
 
     suspend fun deleteAllUsers() = userDataBaseDao.deleteAll()
-    suspend fun deleteUserData(userData: UserData) = userDataBaseDao.delete(userData = userData)
+    suspend fun deleteUserData(userDataEntity: UserDataEntity) = userDataBaseDao.delete(userDataEntity = userDataEntity)
 }

@@ -7,7 +7,7 @@ import com.softyorch.taskapp.utils.*
 import java.util.*
 
 @Entity(tableName = USERDATA_TBL)
-data class UserData(
+data class UserDataEntity(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = USER_NAME) var username: String,
     @ColumnInfo(name = USER_EMAIL) var userEmail: String,
@@ -24,4 +24,17 @@ data class UserData(
     @ColumnInfo(name = AUTOMATIC_COLORS) var automaticColors: Boolean = false,
     @ColumnInfo(name = TIME_LIMIT_AUTOLOGIN) var timeLimitAutoLoading: Int = 1, //One week
     @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
+)
+
+fun UserDataEntity.toDatabase() = UserDataEntity(
+    username = username,
+    userEmail= userEmail,
+    userPass = userPass,
+    userPicture = userPicture,
+    lastLoginDate = lastLoginDate,
+    rememberMe = rememberMe,
+    lightDarkAutomaticTheme = lightDarkAutomaticTheme,
+    lightOrDarkTheme = lightOrDarkTheme,
+    automaticLanguage = automaticLanguage,
+    automaticColors = automaticColors
 )

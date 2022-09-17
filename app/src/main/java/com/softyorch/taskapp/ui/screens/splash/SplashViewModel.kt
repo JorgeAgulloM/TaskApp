@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
@@ -75,17 +75,17 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserData> =
+    private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserDataEntity> =
         repository.signInSharePreferences(email = email, password = pass)
 
-    private suspend fun isAutoLoginTime(user: UserData) {
+    private suspend fun isAutoLoginTime(user: UserDataEntity) {
         val timeWeekInMillis =
             timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
         user.lastLoginDate?.time?.let { autoLoginLimit ->
             val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
             timeWeekInMillis.compareTo(dif).let {
                 if (it == 1) {
-                    datastore.saveData(userData = user)
+                    datastore.saveData(userDataEntity = user)
 
                     _goToAutologin.value = true
                     _isLoading.value = false

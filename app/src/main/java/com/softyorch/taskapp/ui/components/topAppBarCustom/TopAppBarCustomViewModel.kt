@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +18,8 @@ import javax.inject.Inject
 class TopAppBarCustomViewModel @Inject constructor(
     private val datastore: DatastoreRepository
 ) : ViewModel() {
-    private val _userData = MutableLiveData<UserData>()
-    val userData: LiveData<UserData> = _userData
+    private val _userDataEntity = MutableLiveData<UserDataEntity>()
+    val userDataEntity: LiveData<UserDataEntity> = _userDataEntity
 
     private val _imageUser = MutableLiveData<String>()
     val imageUser: LiveData<String> = _imageUser
@@ -41,7 +41,7 @@ class TopAppBarCustomViewModel @Inject constructor(
                     is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
                     is Resource.Success -> {
                         resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
-                            _userData.postValue(user).let {
+                            _userDataEntity.postValue(user).let {
                                 _imageUser.postValue(user.userPicture)
                                 _userName.postValue(user.username)
                             }

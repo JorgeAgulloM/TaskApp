@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.ui.errors.ErrorInterface
@@ -171,7 +171,7 @@ class LoginViewModel @Inject constructor(
             passRepeat = passRepeat
         ).let { error ->
             if (!error.error) {
-                addNewUser(UserData(username = name, userEmail = email, userPass = pass)).also {
+                addNewUser(UserDataEntity(username = name, userEmail = email, userPass = pass)).also {
                     error.emailExists = !it
                     error.email = !it
                     error.error = !it
@@ -213,8 +213,8 @@ class LoginViewModel @Inject constructor(
                     data.data?.let { user ->
                         user.lastLoginDate = Date.from(Instant.now())
                         user.rememberMe = rememberMe
-                        updateLastLoginUser(userData = user)
-                        datastore.saveData(userData = user)
+                        updateLastLoginUser(userDataEntity = user)
+                        datastore.saveData(userDataEntity = user)
 
                         return true
                     }
@@ -240,17 +240,17 @@ class LoginViewModel @Inject constructor(
      * data
      */
 
-    private suspend fun addNewUser(userData: UserData): Boolean {
-        return repository.addUserData(userData = userData)
+    private suspend fun addNewUser(userDataEntity: UserDataEntity): Boolean {
+        return repository.addUserData(userDataEntity = userDataEntity)
     }
 
-    private fun updateLastLoginUser(userData: UserData) =
-        viewModelScope.launch { repository.updateUserData(userData = userData) }
+    private fun updateLastLoginUser(userDataEntity: UserDataEntity) =
+        viewModelScope.launch { repository.updateUserData(userDataEntity = userDataEntity) }
 
     private suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
-    ): Resource<UserData> =
+    ): Resource<UserDataEntity> =
         repository.signInUserWithEmailAndPassword(email = email, password = password)
 
 }

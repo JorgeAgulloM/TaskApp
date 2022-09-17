@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
-import com.softyorch.taskapp.data.database.userdata.UserData
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +22,8 @@ class SettingsViewModel @Inject constructor(
     private val datastore: DatastoreRepository
 ) : ViewModel() {
 
-    private val _settings = MutableLiveData<UserData>()
-    val settings: LiveData<UserData> = _settings
+    private val _settings = MutableLiveData<UserDataEntity>()
+    val settings: LiveData<UserDataEntity> = _settings
 
     private val _reloading = MutableLiveData<Boolean>()
     val needReload: LiveData<Boolean> = _reloading
@@ -63,25 +63,25 @@ class SettingsViewModel @Inject constructor(
     fun applyChanges() {
         _isLoading.value = true
         _settings.value?.let {
-            updatePreferences(userData = it)
+            updatePreferences(userDataEntity = it)
         }
     }
 
-    private fun updatePreferences(userData: UserData) {
+    private fun updatePreferences(userDataEntity: UserDataEntity) {
         viewModelScope.launch {
             this.launch(Dispatchers.IO) {
-                updateUser(userData = userData)
+                updateUser(userDataEntity = userDataEntity)
             }.join()
             this.launch(Dispatchers.IO) {
-                updateData(userData = userData)
+                updateData(userDataEntity = userDataEntity)
             }.join()
             _reloading.value = true
         }
     }
 
-    private suspend fun updateUser(userData: UserData) =
-        repository.updateUserData(userData = userData)
-    private suspend fun updateData(userData: UserData) = datastore.saveData(userData = userData)
+    private suspend fun updateUser(userDataEntity: UserDataEntity) =
+        repository.updateUserData(userDataEntity = userDataEntity)
+    private suspend fun updateData(userDataEntity: UserDataEntity) = datastore.saveData(userDataEntity = userDataEntity)
 
 }
 
