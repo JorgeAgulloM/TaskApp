@@ -3,42 +3,28 @@ package com.softyorch.taskapp.data.repository
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
-    fun getAllTasks(): Flow<List<TaskEntity>> =
-        taskDatabaseDao.getTasks().flowOn(Dispatchers.IO).conflate()
+    fun getAllTaskFromDatabase(): Flow<List<TaskEntity>> = taskDatabaseDao.getTasks()
 
-    suspend fun getTaskId(id: String): Resource<TaskEntity> {
-        val response = try {
-            Resource.Loading(data = true)
-            taskDatabaseDao.getTaskById(id = id)
-        } catch (exception: Exception) {
-            return Resource.Error(message = exception.message.toString())
-        }
-
-        Resource.Loading(data = false)
-        return Resource.Success(data = response)
-    }
-
+    suspend fun getTaskById2(idTask: String): TaskEntity = taskDatabaseDao.getTaskById(id = idTask)
     suspend fun addTask(taskEntity: TaskEntity) = taskDatabaseDao.insert(taskEntity = taskEntity)
     suspend fun updateTask(taskEntity: TaskEntity) = taskDatabaseDao.update(taskEntity = taskEntity)
-    suspend fun deleteTask(taskEntity: TaskEntity): Resource<Boolean> =
+    suspend fun deleteTask(taskEntity: TaskEntity): Resource<Boolean> {
+        Resource.Loading(data = true)
         try {
-            Resource.Loading(data = true)
             taskDatabaseDao.deleteTask(taskEntity = taskEntity)
             Resource.Loading(data = false)
-            Resource.Success(data = true)
-        } catch (e:Exception){
+        } catch (e: Exception) {
             Resource.Loading(data = false)
             Resource.Error(data = false, message = e.message.toString())
         }
+        return Resource.Success(data = true)
+    }
 
     suspend fun deleteAllTask() = taskDatabaseDao.deleteAll()
 }

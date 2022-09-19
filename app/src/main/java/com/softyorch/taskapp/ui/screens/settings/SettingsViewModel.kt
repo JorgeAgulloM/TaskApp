@@ -9,7 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.domain.userdataUseCase.GetUserEmailExistUseCase
+import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -18,8 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val repository: UserDataRepository,
-    private val datastore: DatastoreRepository
+    private val datastore: DatastoreRepository,
+    private val getUserEmailExistUseCase: GetUserEmailExistUseCase,
+    private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel() {
 
     private val _settings = MutableLiveData<UserDataEntity>()
@@ -45,7 +47,7 @@ class SettingsViewModel @Inject constructor(
                 is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
                 is Resource.Success -> {
                     resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
-                        repository.getUserDataEmail(email = data.userEmail).data.let { user ->
+                        getUserEmailExistUseCase(email = data.userEmail).data.let { user ->
                             _settings.postValue(user)
                             _isLoading.postValue(false)
                         }
@@ -80,7 +82,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
-        repository.updateUserData(userDataEntity = userDataEntity)
+        updateUserUseCase(userDataEntity = userDataEntity)
     private suspend fun updateData(userDataEntity: UserDataEntity) = datastore.saveData(userDataEntity = userDataEntity)
 
 }

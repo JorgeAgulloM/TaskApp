@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
+import com.softyorch.taskapp.domain.userdataUseCase.NewAccountUserUseCase
+import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
 import com.softyorch.taskapp.ui.errors.ErrorInterface
 import com.softyorch.taskapp.ui.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
@@ -19,8 +21,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: UserDataRepository,
-    private val datastore: DatastoreRepository
+    private val datastore: DatastoreRepository,
+    private val loginUserUseCase: LoginUserUseCase,
+    private val newAccountUserUseCase: NewAccountUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel(), ErrorInterface {
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
@@ -241,17 +245,17 @@ class LoginViewModel @Inject constructor(
      */
 
     private suspend fun addNewUser(userDataEntity: UserDataEntity): Boolean {
-        return repository.addUserData(userDataEntity = userDataEntity)
+        return newAccountUserUseCase(userDataEntity = userDataEntity)
     }
 
     private fun updateLastLoginUser(userDataEntity: UserDataEntity) =
-        viewModelScope.launch { repository.updateUserData(userDataEntity = userDataEntity) }
+        viewModelScope.launch { updateUserUseCase(userDataEntity = userDataEntity) }
 
     private suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
     ): Resource<UserDataEntity> =
-        repository.signInUserWithEmailAndPassword(email = email, password = password)
+        loginUserUseCase(email = email, password = password)
 
 }
 

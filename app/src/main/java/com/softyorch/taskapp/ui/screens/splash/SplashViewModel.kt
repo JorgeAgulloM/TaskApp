@@ -76,7 +76,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserDataEntity> =
-        repository.signInSharePreferences(email = email, password = pass)
+        repository.singInUser(email = email, password = pass)
 
     private suspend fun isAutoLoginTime(user: UserDataEntity) {
         val timeWeekInMillis =

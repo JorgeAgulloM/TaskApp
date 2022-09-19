@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.data.repository.TaskRepository
 import com.softyorch.taskapp.domain.taskUsesCase.AddNewTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
