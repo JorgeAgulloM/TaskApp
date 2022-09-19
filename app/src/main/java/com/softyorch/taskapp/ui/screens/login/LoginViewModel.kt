@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
+import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.NewAccountUserUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val datastore: DatastoreRepository,
+    private val saveDataUseCase: SaveDataUseCase,
     private val loginUserUseCase: LoginUserUseCase,
     private val newAccountUserUseCase: NewAccountUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase
@@ -218,7 +219,7 @@ class LoginViewModel @Inject constructor(
                         user.lastLoginDate = Date.from(Instant.now())
                         user.rememberMe = rememberMe
                         updateLastLoginUser(userDataEntity = user)
-                        datastore.saveData(userDataEntity = user)
+                        saveDataUseCase(userDataEntity = user)
 
                         return true
                     }

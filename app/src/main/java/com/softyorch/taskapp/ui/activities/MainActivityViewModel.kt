@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.repository.DatastoreRepository
+import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val datastore: DatastoreRepository
+    private val getDataUseCase: GetDataUseCase
 ) : ViewModel() {
     private val _darkSystem = MutableLiveData<Boolean>()
     val darkSystem: LiveData<Boolean> = _darkSystem
@@ -39,7 +40,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun getUserDataSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData().let { resource ->
+            getDataUseCase().let { resource ->
                 when (resource){
                     is Resource.Error -> {
                         _darkSystem.postValue(true)

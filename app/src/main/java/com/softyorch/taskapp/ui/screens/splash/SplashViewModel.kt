@@ -9,6 +9,8 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val repository: UserDataRepository,
-    private val datastore: DatastoreRepository
+    private val getDataUseCase: GetDataUseCase,
+    private val saveDataUseCase: SaveDataUseCase
 ) : ViewModel() {
 
     private val _goToAutologin = MutableLiveData<Boolean>()
@@ -38,7 +41,7 @@ class SplashViewModel @Inject constructor(
     private suspend fun loadData() = userActivated()
 
     private suspend fun userActivated() {
-        datastore.getData().let { resource ->
+        getDataUseCase().let { resource ->
             when (resource) {
                 is Resource.Error -> {
                     Log.d(
@@ -85,7 +88,7 @@ class SplashViewModel @Inject constructor(
             val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
             timeWeekInMillis.compareTo(dif).let {
                 if (it == 1) {
-                    datastore.saveData(userDataEntity = user)
+                    saveDataUseCase(userDataEntity = user)
 
                     _goToAutologin.value = true
                     _isLoading.value = false
