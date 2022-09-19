@@ -9,6 +9,7 @@ import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.domain.taskUsesCase.AddNewTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -17,8 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
-    private val repository: TaskRepository,
-    private val datastore: DatastoreRepository
+    private val datastore: DatastoreRepository,
+    private val addNewTaskUseCase: AddNewTaskUseCase
 ) : ViewModel() {
     private val _user = MutableLiveData<String>()
     val user: LiveData<String> = _user
@@ -48,5 +49,6 @@ class FABCustomViewModel @Inject constructor(
         }
     }
 
-    fun addTask(taskEntity: TaskEntity) = viewModelScope.launch { repository.addTask(taskEntity = taskEntity) }
+    fun addTask(taskEntity: TaskEntity) =
+        viewModelScope.launch(Dispatchers.IO) { addNewTaskUseCase(taskEntity = taskEntity) }
 }
