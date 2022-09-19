@@ -27,6 +27,7 @@ import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
+import com.softyorch.taskapp.ui.model.TaskModel
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
@@ -62,7 +63,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskEntities: List<TaskModel> by viewModel.taskEntityList.observeAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -111,8 +112,8 @@ private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typograph
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumnNoCheckeds(
-    taskEntities: List<TaskEntity>,
-    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
+    taskEntities: List<TaskModel>,
+    updateTaskEntity: KSuspendFunction1<TaskModel, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {
@@ -187,8 +188,8 @@ private fun FillLazyColumnNoCheckeds(
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumnCheckeds(
-    taskEntities: List<TaskEntity>,
-    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
+    taskEntities: List<TaskModel>,
+    updateTaskEntity: KSuspendFunction1<TaskModel, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {

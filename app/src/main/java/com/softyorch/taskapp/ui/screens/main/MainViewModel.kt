@@ -7,26 +7,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.data.repository.TaskRepository
-import com.softyorch.taskapp.data.repository.TaskRepository2
-import com.softyorch.taskapp.domain.model.Task
+import com.softyorch.taskapp.domain.model.toDomain
+import com.softyorch.taskapp.domain.model.toUI
+
 import com.softyorch.taskapp.domain.taskUsesCase.GetAllTaskUseCase
+import com.softyorch.taskapp.domain.taskUsesCase.UpdateTaskUseCase
+import com.softyorch.taskapp.ui.model.TaskModel
+import com.softyorch.taskapp.ui.model.toUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: TaskRepository,
-    private val getAllTaskUseCase: GetAllTaskUseCase
+    private val getAllTaskUseCase: GetAllTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase
 ) : ViewModel() {
-    private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
-    val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+    private val _taskEntityList = MutableLiveData<List<TaskModel>>()
+    val taskEntityList: LiveData<List<TaskModel>> = _taskEntityList
 
-    private val _taskList = MutableLiveData<List<Task>>()
+    private val _taskList = MutableLiveData<List<TaskModel>>()
 
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -37,7 +42,7 @@ class MainViewModel @Inject constructor(
 
     init {
         _isLoading.value = true
-        loadData()
+        //loadData()
         loading2()
     }
 
@@ -45,18 +50,19 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = getAllTaskUseCase()
 
-            result.distinctUntilChanged().collect { listOfTask ->
-                if (listOfTask.isNotEmpty())
-                    listOfTask.let { list ->
-                        _taskList.postValue(list)
-                    }
-                _isLoading.postValue(false)
-                delay(500)
-                Log.d("LISTTWO", "ListOfTask -> ${_taskList.value}")
+            result.flowOn(Dispatchers.IO).collect{ list ->
+                _taskEntityList.postValue(list)
+                updateLists(list)
+                Log.d("MAPPING2", "list -> $list")
             }
+
+            Log.d("MAPPING2", "_taskEntityList -> ${taskEntityList.value}")
+            _isLoading.postValue(false)
+
         }
     }
 
+/*
     private fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllTasks().distinctUntilChanged()
@@ -74,19 +80,22 @@ class MainViewModel @Inject constructor(
                 }
         }
     }
+*/
 
-    suspend fun updateTask(taskEntity: TaskEntity) {
+    suspend fun updateTask(taskModel: TaskModel) {
         _isLoading.value = true
         val state = viewModelScope.launch {
-            repository.updateTask(taskEntity = taskEntity)
+            //repository.updateTask(taskEntity = taskEntity)
+            updateTaskUseCase(taskEntity = taskModel.toUI())
         }
         state.join()
         updateLists()
 
-        loadData()
+        //loadData()
+        loading2()
     }
 
-    private fun updateLists(listOfTaskEntities: List<TaskEntity>? = _taskEntityList.value) {
+    private fun updateLists(listOfTaskEntities: List<TaskModel>? = _taskEntityList.value) {
         listOfTaskEntities?.let { list ->
             val listToDo = list.filter { task -> !task.checkState }.size
             val listDone = list.filter { task -> task.checkState }.size

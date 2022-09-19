@@ -5,17 +5,21 @@ import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.domain.model.toDomain
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TaskRepository2 @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
     suspend fun getAllTaskFromDatabase(): Flow<List<Task>> {
-        val response: Flow<List<TaskEntity>> = taskDatabaseDao.getTasks()
-        return response.map { list -> list.map { task -> task.toDomain() } }
+        return taskDatabaseDao.getTasks().map { value: List<TaskEntity> ->
+            value.map {
+                it.toDomain()
+            }
+        }
     }
+
 
     suspend fun getTaskId(id: String): Resource<TaskEntity> {
         val response = try {
@@ -37,7 +41,7 @@ class TaskRepository2 @Inject constructor(private val taskDatabaseDao: TaskDatab
             taskDatabaseDao.deleteTask(taskEntity = taskEntity)
             Resource.Loading(data = false)
             Resource.Success(data = true)
-        } catch (e:Exception){
+        } catch (e: Exception) {
             Resource.Loading(data = false)
             Resource.Error(data = false, message = e.message.toString())
         }

@@ -1,11 +1,11 @@
-package com.softyorch.taskapp.domain.model
+package com.softyorch.taskapp.ui.model
 
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.ui.model.TaskModel
+import com.softyorch.taskapp.domain.model.Task
 import java.time.Instant
 import java.util.*
 
-data class Task(
+data class TaskModel(
     val id: UUID,
     var title: String,
     var description: String,
@@ -15,5 +15,5 @@ data class Task(
     var checkState: Boolean = false
 )
 
-fun TaskEntity.toDomain() = Task(id, title, description, author, entryDate, finishDate, checkState)
-fun TaskModel.toUI() = TaskEntity(id, title, description, author, entryDate, finishDate, checkState)
+fun Task.toUI() = TaskModel(id, title, description, author, entryDate, finishDate, checkState)
+fun TaskEntity.toUI() = TaskModel(id, title, description, author, entryDate, finishDate, checkState)

@@ -3,6 +3,7 @@ package com.softyorch.taskapp.data.database.tasks
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.utils.*
 import java.time.Instant
 import java.util.*
@@ -18,7 +19,8 @@ data class TaskEntity(
     @ColumnInfo(name = CHECK_STATE) var checkState: Boolean = false
 )
 
-fun TaskEntity.toDatabase() = TaskEntity(
+fun Task.toDatabase() = TaskEntity(
+    id = id,
     title = title,
     description = description,
     author = author,
