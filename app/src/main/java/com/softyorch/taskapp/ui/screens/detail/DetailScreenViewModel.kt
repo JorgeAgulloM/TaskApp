@@ -42,7 +42,7 @@ class DetailScreenViewModel @Inject constructor(
             _isLoading.postValue(true)
             getTaskId(id = id)
         } catch (e: Exception) {
-            showError("Error al recuperar la información de la tarea. " + e.message.toString())
+            if (isDeleted.value == false) showError("Error al recuperar la información de la tarea. " + e.message.toString())
             _isLoading.postValue(false)
         }
         _isLoading.postValue(false)
@@ -64,7 +64,7 @@ class DetailScreenViewModel @Inject constructor(
 
     private fun showError(message: String) {
         _messageError.postValue(message)
-        _error.value = true
+        _error.postValue(true)
     }
 
     private suspend fun getTaskId(id: String) {
@@ -82,9 +82,8 @@ class DetailScreenViewModel @Inject constructor(
     fun removeTask(taskEntity: TaskEntity) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            (deleteTaskUseCase(taskEntity = taskEntity).data == true).also {
-                _isDeleted.postValue(it)
-                _error.postValue(!it)
+            deleteTaskUseCase(taskEntity = taskEntity).also {
+                _isDeleted.postValue(true)
                 _isLoading.postValue(false)
             }
         }
