@@ -176,7 +176,13 @@ class LoginViewModel @Inject constructor(
             passRepeat = passRepeat
         ).let { error ->
             if (!error.error) {
-                addNewUser(UserDataEntity(username = name, userEmail = email, userPass = pass)).also {
+                addNewUser(
+                    UserDataEntity(
+                        username = name,
+                        userEmail = email,
+                        userPass = pass
+                    )
+                ).also {
                     error.emailExists = !it
                     error.email = !it
                     error.error = !it
@@ -210,20 +216,16 @@ class LoginViewModel @Inject constructor(
         password: String,
         rememberMe: Boolean
     ): Boolean {
-        signInUserWithEmailAndPassword(email = email, password = password).let { data ->
-            when (data){
-                is Resource.Error -> return false
-                is Resource.Loading -> TODO()
-                is Resource.Success -> {
-                    data.data?.let { user ->
-                        user.lastLoginDate = Date.from(Instant.now())
-                        user.rememberMe = rememberMe
-                        updateLastLoginUser(userDataEntity = user)
-                        saveDataUseCase(userDataEntity = user)
-
-                        return true
-                    }
-                }
+        signInUserWithEmailAndPassword(email = email, password = password).let { user ->
+            if (user != null) {
+                user.lastLoginDate = Date.from(Instant.now())
+                user.rememberMe = rememberMe
+                updateLastLoginUser(userDataEntity = user)
+                saveDataUseCase(userDataEntity = user)
+                return true
+            } else {
+                _error.postValue(true)
+                _errorEmailOrPassIncorrect.postValue(true)
             }
         }
         return false
@@ -246,7 +248,12 @@ class LoginViewModel @Inject constructor(
      */
 
     private suspend fun addNewUser(userDataEntity: UserDataEntity): Boolean {
-        return newAccountUserUseCase(userDataEntity = userDataEntity)
+        return try {
+            newAccountUserUseCase(userDataEntity = userDataEntity)
+            true
+        } catch (ex: Exception) {
+            false
+        }
     }
 
     private fun updateLastLoginUser(userDataEntity: UserDataEntity) =
@@ -255,8 +262,7 @@ class LoginViewModel @Inject constructor(
     private suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
-    ): Resource<UserDataEntity> =
-        loginUserUseCase(email = email, password = password)
+    ): UserDataEntity? = loginUserUseCase(email = email, password = password)
 
 }
 

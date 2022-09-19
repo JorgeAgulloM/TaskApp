@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
 import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
@@ -60,7 +58,7 @@ class SplashViewModel @Inject constructor(
                             logInWithRememberMe(
                                 email = user.userEmail,
                                 pass = user.userPass
-                            ).data.let { userLogin ->
+                            ).let { userLogin ->
                                 if (userLogin != null) {
                                     isAutoLoginTime(user = userLogin)
 
@@ -79,7 +77,7 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private suspend fun logInWithRememberMe(email: String, pass: String): Resource<UserDataEntity> =
+    private suspend fun logInWithRememberMe(email: String, pass: String): UserDataEntity? =
         loginUserUseCase(email = email, password = pass)
 
     private suspend fun isAutoLoginTime(user: UserDataEntity) {

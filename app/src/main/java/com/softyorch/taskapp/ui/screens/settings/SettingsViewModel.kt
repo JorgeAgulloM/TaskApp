@@ -49,7 +49,7 @@ class SettingsViewModel @Inject constructor(
                 is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
                 is Resource.Success -> {
                     resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
-                        getUserEmailExistUseCase(email = data.userEmail).data.let { user ->
+                        getUserEmailExistUseCase(email = data.userEmail).let { user ->
                             _settings.postValue(user)
                             _isLoading.postValue(false)
                         }

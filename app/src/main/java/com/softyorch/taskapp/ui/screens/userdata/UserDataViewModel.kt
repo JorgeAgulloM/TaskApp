@@ -122,21 +122,7 @@ class UserDataViewModel @Inject constructor(
                 }
                 viewModelScope.launch(Dispatchers.IO) {
                     userDataEntityActive.value?.let { userData ->
-                        updateUserData(userDataEntity = userData).also { userNotExist ->
-                            if (!userNotExist){
-                                error.emailExists = true
-                                error.email = true
-                                error.error = true
-                                setErrorsData(error = error)
-                                _isLoading.postValue(false)
-                                _saveEnabled.postValue(false)
-                            } else {
-                                userDataEntityActive.value?.let { updateUserDataDatastore(userDataEntity = userData) }
-                                loadUserData()
-                                _isLoading.postValue(false)
-                                _saveEnabled.postValue(false)
-                            }
-                        }
+                        updateUserData(userDataEntity = userData)
                     }
                 }
             }
@@ -160,10 +146,10 @@ class UserDataViewModel @Inject constructor(
      * data
      */
 
-    private suspend fun getUserDataEmail(email: String): Resource<UserDataEntity> =
+    private suspend fun getUserDataEmail(email: String): UserDataEntity? =
         getUserEmailExistUseCase(email = email)
 
-    private suspend fun updateUserData(userDataEntity: UserDataEntity): Boolean =
+    private suspend fun updateUserData(userDataEntity: UserDataEntity) =
         updateUserUseCase(userDataEntity = userDataEntity)
 
     /**
@@ -181,24 +167,14 @@ class UserDataViewModel @Inject constructor(
                 is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
                 is Resource.Success -> {
                     resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
-                        getUserDataEmail(email = data.userEmail).let { userData ->
-                            when (userData) {
-                                is Resource.Error -> {
-                                    _errorLoadData.postValue(true)
-                                    _isLoading.postValue(false)
-                                }
-                                is Resource.Loading -> TODO()
-                                is Resource.Success -> {
-                                    userData.data?.let {user ->
-                                        _userDataEntityActive.postValue(user)
-                                        _name.postValue(user.username)
-                                        _email.postValue(user.userEmail)
-                                        _pass.postValue(user.userPass)
-                                        _image.postValue(user.userPicture)
-                                        _isLoading.postValue(false)
-                                    }
-                                }
-                            }
+                        /**REVISAR ESTO, SI REGRESA UN NULL NO PASARÁ NADA*/
+                        getUserDataEmail(email = data.userEmail)?.let { user ->
+                            _userDataEntityActive.postValue(user)
+                            _name.postValue(user.username)
+                            _email.postValue(user.userEmail)
+                            _pass.postValue(user.userPass)
+                            _image.postValue(user.userPicture)
+                            _isLoading.postValue(false)
                         }
                     }
                 }
