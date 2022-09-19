@@ -3,7 +3,6 @@ package com.softyorch.taskapp.data.database.tasks
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.softyorch.taskapp.domain.model.Task
 import com.softyorch.taskapp.utils.*
 import java.time.Instant
 import java.util.*
@@ -17,14 +16,4 @@ data class TaskEntity(
     @ColumnInfo(name = ENTRY_DATE) val entryDate: Date = Date.from(Instant.now()),
     @ColumnInfo(name = FINISH_DATE) var finishDate: Date? = null,
     @ColumnInfo(name = CHECK_STATE) var checkState: Boolean = false
-)
-
-fun Task.toDatabase() = TaskEntity(
-    id = id,
-    title = title,
-    description = description,
-    author = author,
-    entryDate = entryDate,
-    finishDate = finishDate,
-    checkState = checkState
 )

@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.R.string.history
-import com.softyorch.taskapp.ui.model.TaskModel
+import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.utils.*
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -54,7 +54,7 @@ private fun Content(
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
-    val taskEntities: List<TaskModel> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
 
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
     LazyColumn(
@@ -80,7 +80,7 @@ private fun Content(
 
 @Composable
 private fun TextHeadHistry(
-    taskEntity: TaskModel
+    taskEntity: TaskEntity
 ) {
     Text(
         modifier = Modifier.padding(end = 8.dp),
@@ -94,7 +94,7 @@ private fun TextHeadHistry(
 
 @Composable
 private fun TextContentHistory(
-    taskEntity: TaskModel
+    taskEntity: TaskEntity
 ) {
     Text(
         text = taskEntity.title,
