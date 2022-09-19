@@ -4,21 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.domain.taskUsesCase.GetAllTaskUseCase
+import com.softyorch.taskapp.ui.model.TaskModel
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val repository: TaskRepository
+    private val getAllTaskUseCase: GetAllTaskUseCase
 ) : ViewModel() {
-    private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
-    val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+    private val _taskEntityList = MutableLiveData<List<TaskModel>>()
+    val taskEntityList: LiveData<List<TaskModel>> = _taskEntityList
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -36,15 +36,14 @@ class HistoryViewModel @Inject constructor(
     private fun getTask() {
         try {
             _isLoading.value = true
-            viewModelScope.launch(Dispatchers.IO) {
-                repository.getAllTasks().distinctUntilChanged()
-                    .collect { listOfTasks ->
-                        if (listOfTasks.isEmpty()) {
-                            showError("Error, la lista está vacía")
-                        } else {
-                            _taskEntityList.postValue(listOfTasks)
-                        }
+            viewModelScope.launch() {
+                getAllTaskUseCase().flowOn(Dispatchers.IO).collect{ list ->
+                    if (list.isEmpty()) {
+                        showError("Error, la lista está vacía")
+                    } else {
+                        _taskEntityList.postValue(list)
                     }
+                }
             }
         } catch (e: Exception) {
             showError("" + e.message.toString())
