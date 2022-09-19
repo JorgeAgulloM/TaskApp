@@ -9,7 +9,7 @@ class GetTaskIdUseCase @Inject constructor(private val repository: TaskRepositor
     suspend operator fun invoke(taskId: String): Resource<TaskEntity> {
         val response = try {
             Resource.Loading(data = true)
-            repository.getTaskById2(idTask = taskId)
+            repository.getTaskById(idTask = taskId)
         } catch (exception: Exception) {
             Resource.Loading(data = false)
             return Resource.Error(data = null, message = exception.message.toString())

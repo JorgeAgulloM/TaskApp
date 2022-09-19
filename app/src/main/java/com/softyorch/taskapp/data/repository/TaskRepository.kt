@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDatabaseDao) {
     fun getAllTaskFromDatabase(): Flow<List<TaskEntity>> = taskDatabaseDao.getTasks()
 
-    suspend fun getTaskById2(idTask: String): TaskEntity = taskDatabaseDao.getTaskById(id = idTask)
+    suspend fun getTaskById(idTask: String): TaskEntity = taskDatabaseDao.getTaskById(id = idTask)
     suspend fun addTask(taskEntity: TaskEntity) = taskDatabaseDao.insert(taskEntity = taskEntity)
     suspend fun updateTask(taskEntity: TaskEntity) = taskDatabaseDao.update(taskEntity = taskEntity)
     suspend fun deleteTask(taskEntity: TaskEntity): Resource<Boolean> {
