@@ -11,6 +11,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -69,6 +70,7 @@ fun DetailScreen(
 
     Column(
         modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .offset { slideCheckBox }
             .graphicsLayer(alpha = alphaAnimation)
     ) {
@@ -126,10 +128,11 @@ private fun Content(
     } else {
         Column(
             modifier = Modifier.fillMaxSize()
-                .padding(
-                    top = 8.dp,
-                    start = 8.dp,
-                    end = 8.dp
+                .padding(8.dp)
+                .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = MaterialTheme.shapes.large
                 )
         ) {
 
@@ -295,6 +298,7 @@ private fun TextDescriptionDetails(
 ) {
     Text(
         text = taskEntity.description,
+        modifier = Modifier.padding(8.dp),
         color = MaterialTheme.colorScheme.onSurface
     )
 }
