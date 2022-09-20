@@ -35,10 +35,6 @@ const val emptyString = ""
 const val ID = "id"
 const val GALLERY_IMAGES = "image/*"
 
-/****** Tables *****************************/
-const val TASK_TBL = "tasks_tbl"
-const val USERDATA_TBL = "userdata_tbl"
-
 /** Tables -> Names of values -> tasks */
 const val TITLE = "task_title"
 const val DESCRIPTION = "task_description"
