@@ -199,7 +199,7 @@ private fun Content(
                         ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
                             /** OJO, se repite el código */
                             taskEntity.checkState = !taskEntity.checkState
-                            taskEntity.finishDate = Date.from(Instant.now())
+                            taskEntity.finishDate = null
                             viewModel.updateTask(taskEntity = taskEntity)
                             navController.popBackStack()
                             navController.navigate(AppScreensRoutes.DetailScreen.route + "/${taskEntity.id}")
@@ -303,7 +303,7 @@ private fun ShowTaskDetails(taskEntity: TaskEntity) {
         author = taskEntity.author,
         date = taskEntity.entryDate.toStringFormatted(),
         completedDate = taskEntity.finishDate?.toStringFormatted()
-            ?: stringResource(unknown),
+            ?: emptyString,
         paddingStart = 8.dp
     )
 }
