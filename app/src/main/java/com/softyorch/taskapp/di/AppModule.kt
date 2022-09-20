@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.softyorch.taskapp.data.database.datastore.DatastoreDataBase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase
+import com.softyorch.taskapp.data.database.tasks.TaskDatabase.Companion.TASK_DB_NAME
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataBase
+import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.utils.*
 import dagger.Module
@@ -21,7 +23,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTaskDao(taskDatabase: TaskDatabase): TaskDatabaseDao = taskDatabase.taskDao()
+    fun provideTaskDao(taskDatabase: TaskDatabase): TaskDatabaseDao = taskDatabase.taskDao
 
     @Singleton
     @Provides
@@ -29,7 +31,7 @@ object AppModule {
         Room.databaseBuilder(
             context,
             TaskDatabase::class.java,
-            TASK_TBL)
+            TASK_DB_NAME)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -43,7 +45,7 @@ object AppModule {
         Room.databaseBuilder(
             context,
             UserDataBase::class.java,
-            USERDATA_TBL)
+            USERDATA_DB_NAME)
             .fallbackToDestructiveMigration()
             .build()
 
