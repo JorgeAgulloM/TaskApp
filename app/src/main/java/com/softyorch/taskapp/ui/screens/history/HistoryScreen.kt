@@ -42,7 +42,6 @@ fun HistoryScreen(navController: NavHostController) {
     var exitDetails by remember { mutableStateOf(value = false) }
 
     coroutineScope.launch {
-        //viewModel.getTask(id = id)
         delay(100)
         if (!exitDetails) enterDetails = true
     }
