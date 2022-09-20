@@ -9,5 +9,9 @@ import com.softyorch.taskapp.utils.UUIDConverter
 @Database(entities = [TaskEntity::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, UUIDConverter::class)
 abstract class TaskDatabase: RoomDatabase() {
-    abstract fun taskDao(): TaskDatabaseDao
+    abstract val taskDao: TaskDatabaseDao
+
+    companion object {
+        const val TASK_DB_NAME = "tasks_tbl"
+    }
 }

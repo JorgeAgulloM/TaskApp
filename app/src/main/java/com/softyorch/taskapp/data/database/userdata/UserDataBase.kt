@@ -10,4 +10,8 @@ import com.softyorch.taskapp.utils.UUIDConverter
 @TypeConverters(DateConverter::class, UUIDConverter::class)
 abstract class UserDataBase: RoomDatabase() {
     abstract fun userDataDao(): UserDataBaseDao
+
+    companion object {
+        const val USERDATA_DB_NAME = "userdata_tbl"
+    }
 }
