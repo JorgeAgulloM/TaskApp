@@ -30,16 +30,16 @@ fun CheckCustom(
         targetValue = if (clickOnTask && animated) IntOffset(60, 0)
         else IntOffset(0, 0),
         animationSpec = tween(
-            durationMillis = 600,
-            delayMillis = 200,
+            durationMillis = 400,
+            delayMillis = 100,
             easing = FastOutLinearInEasing
         )
     )
     val alphaTask: Float by animateFloatAsState(
         targetValue = if (clickOnTask && animated) 0.2f else 1f,
         animationSpec = tween(
-            durationMillis = 400,
-            delayMillis = 200,
+            durationMillis = 300,
+            delayMillis = 100,
             easing = FastOutLinearInEasing
         ),
         finishedListener = { onClick.invoke() }
@@ -60,33 +60,16 @@ fun CheckCustom(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = horizontalArrangement
     ) {
-        /*var checkedChange by remember { mutableStateOf(value = false) }
-        var checkedOrNot by remember { mutableStateOf(value = checked) }
-        val alphaCheck: Float by animateFloatAsState(
-            targetValue = if (checkedChange && animated) 0.2f else 1f,
-            animationSpec = tween(
-                durationMillis = 400,
-                delayMillis = 200,
-                easing = FastOutLinearInEasing
-            ),
-            finishedListener = {
-                onCheckedChange.invoke(checkedOrNot)
-            }
-        )*/
+
         Checkbox(
-            //modifier = Modifier.graphicsLayer(alpha = alphaCheck),
-            checked = checked,//checkedOrNot,
-            onCheckedChange = {onCheckedChange(it) },/*
-                checkedOrNot = !checkedOrNot
-                checkedChange = true
-            },*/
+            checked = checked,
+            onCheckedChange = {onCheckedChange(it) },
             enabled = enabled,
             colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.secondary,
+                checkedColor = MaterialTheme.colorScheme.primary,
+                uncheckedColor = MaterialTheme.colorScheme.tertiary,
+                checkmarkColor = MaterialTheme.colorScheme.onTertiary
             )
-            /* uncheckedColor = MaterialTheme.colorScheme.secondary,
-             checkmarkColor = MaterialTheme.colorScheme.secondary
-         )*/
         )
         Text(
             text = text,
