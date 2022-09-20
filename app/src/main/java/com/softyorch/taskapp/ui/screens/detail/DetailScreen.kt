@@ -42,9 +42,6 @@ fun DetailScreen(
     id: String
 ) {
 
-    /** 16.09.2022
-     * -Transformar a componente para probar a que se coloque encima de la pantalla main*/
-
     val viewModel = hiltViewModel<DetailScreenViewModel>()
     val coroutineScope = rememberCoroutineScope()
     var enterDetails by remember { mutableStateOf(value = false) }
@@ -58,12 +55,7 @@ fun DetailScreen(
 
     val slideCheckBox by enterDetails.intOffsetAnimation {
         if (!enterDetails)
-            navController.navigate(AppScreensRoutes.MainScreen.route) {
-                popUpTo(AppScreensRoutes.DetailScreen.route) {
-                    inclusive = true
-                    navController.backQueue.clear()
-                }
-            }
+            navController.popBackStack()
     }
     val alphaAnimation: Float by exitDetails.alphaAnimation()
     val colorAnimation by exitDetails.containerColorAnimation()
