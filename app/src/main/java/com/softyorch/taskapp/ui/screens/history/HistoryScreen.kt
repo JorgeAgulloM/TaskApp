@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -85,7 +86,11 @@ fun HistoryScreen(navController: NavHostController) {
                     )
                 )
             }
-            RowInfo(text = "Historial", paddingStart = 30.dp, style = MaterialTheme.typography.titleLarge)
+            RowInfo(
+                text = "Historial",
+                paddingStart = 30.dp,
+                style = MaterialTheme.typography.titleLarge
+            )
         }
         Content(navController = navController, viewModel = viewModel)
     }
@@ -123,8 +128,11 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextHeadHistry(taskEntity = task)
-                TextContentHistory(taskEntity = task)
+                TextHeadHistry(
+                    entryDate = task.entryDate.toStringFormatDate(),
+                    isFinish = task.checkState
+                )
+                TextContentHistory(title = task.title)
             }
         }
     }
@@ -132,24 +140,33 @@ private fun Content(
 
 @Composable
 private fun TextHeadHistry(
-    taskEntity: TaskEntity
+    entryDate: String,
+    isFinish: Boolean
 ) {
-    Text(
-        modifier = Modifier.padding(horizontal = 8.dp),
-        text = taskEntity.entryDate.toStringFormatDate(),
-        color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.bodyLarge,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1
-    )
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+        if (isFinish) Icon(
+            imageVector = Icons.Rounded.Check,
+            contentDescription = "Task Finished",
+            tint = MaterialTheme.colorScheme.primary
+        )
+        else Box(modifier = Modifier.size(24.dp)){}
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = entryDate,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyLarge,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }
 }
 
 @Composable
 private fun TextContentHistory(
-    taskEntity: TaskEntity
+    title: String
 ) {
     Text(
-        text = taskEntity.title,
+        text = title,
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
