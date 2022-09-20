@@ -118,6 +118,8 @@ class UserDataViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     userDataEntityActive.value?.let { userData ->
                         updateUserData(userDataEntity = userData)
+                        updateUserDataDatastore(userDataEntity = userData)
+                        _saveEnabled.postValue(false)
                     }
                 }
             }
