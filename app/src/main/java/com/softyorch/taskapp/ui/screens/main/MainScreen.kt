@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -67,7 +69,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            /**.background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) */
+            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
@@ -122,7 +124,7 @@ private fun FillLazyColumnNoCheckeds(
 
     Column(
         modifier = Modifier
-            /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
+            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
@@ -197,7 +199,7 @@ private fun FillLazyColumnCheckeds(
 
     Column(
         modifier = Modifier
-            /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
+            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
