@@ -1,9 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
-import android.view.PixelCopy
 import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
@@ -11,12 +9,10 @@ import androidx.compose.animation.core.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.datastore.preferences.preferencesDataStore
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
