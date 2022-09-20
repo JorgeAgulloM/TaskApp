@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.AddNewTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
-    private val getDataUseCase: GetDataUseCase,
+    private val datastore: DatastoreUseCases,
     private val addNewTaskUseCase: AddNewTaskUseCase
 ) : ViewModel() {
     private val _user = MutableLiveData<String>()
@@ -30,7 +29,7 @@ class FABCustomViewModel @Inject constructor(
 
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
-            getDataUseCase().let { resource ->
+            datastore.getData().let { resource ->
                 when (resource) {
                     is Resource.Error -> {
                         _user.postValue("Error")

@@ -9,7 +9,11 @@ import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.data.repository.DatastoreRepository
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
+import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
+import com.softyorch.taskapp.domain.datastoreUseCase.GetData
+import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +35,8 @@ object AppModule {
         Room.databaseBuilder(
             context,
             TaskDatabase::class.java,
-            TASK_DB_NAME)
+            TASK_DB_NAME
+        )
             .fallbackToDestructiveMigration()
             .build()
 
@@ -45,7 +50,8 @@ object AppModule {
         Room.databaseBuilder(
             context,
             UserDataBase::class.java,
-            USERDATA_DB_NAME)
+            USERDATA_DB_NAME
+        )
             .fallbackToDestructiveMigration()
             .build()
 
@@ -53,4 +59,14 @@ object AppModule {
     @Provides
     fun providesDatastoreDataBase(@ApplicationContext context: Context): DatastoreDataBase =
         DatastoreDataBase(context = context)
+
+    @Singleton
+    @Provides
+    fun providesDatastoreUseCases(datastore: DatastoreRepository): DatastoreUseCases {
+        return DatastoreUseCases(
+            getData = GetData(repository = datastore),
+            saveData = SaveData(repository = datastore),
+            deleteData = DeleteData(repository = datastore)
+        )
+    }
 }

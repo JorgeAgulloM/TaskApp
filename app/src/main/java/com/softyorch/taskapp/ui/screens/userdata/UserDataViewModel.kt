@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.domain.datastoreUseCase.DeleteDataUseCase
-import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.GetUserEmailExistUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
 import com.softyorch.taskapp.ui.errors.ErrorInterface
@@ -23,9 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
-    private val getDataUseCase: GetDataUseCase,
-    private val saveDataUseCase: SaveDataUseCase,
-    private val deleteDataUseCase: DeleteDataUseCase,
+    private val datastore: DatastoreUseCases,
     private val getUserEmailExistUseCase: GetUserEmailExistUseCase,
     private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel(), ErrorInterface {
@@ -156,10 +151,10 @@ class UserDataViewModel @Inject constructor(
      * datastore
      */
 
-    fun logOut() = viewModelScope.launch(Dispatchers.IO) { deleteDataUseCase() }
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        getDataUseCase().let { resource ->
+        datastore.getData().let { resource ->
             when (resource) {
                 is Resource.Error -> {
                     TODO()
@@ -183,5 +178,5 @@ class UserDataViewModel @Inject constructor(
     }
 
     private suspend fun updateUserDataDatastore(userDataEntity: UserDataEntity) =
-        saveDataUseCase(userDataEntity = userDataEntity)
+        datastore.saveData(userDataEntity = userDataEntity)
 }

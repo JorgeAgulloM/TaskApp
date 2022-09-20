@@ -8,8 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.GetUserEmailExistUseCase
 import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val saveDataUseCase: SaveDataUseCase,
-    private val getDataUseCase: GetDataUseCase,
+    private val datastore: DatastoreUseCases,
     private val getUserEmailExistUseCase: GetUserEmailExistUseCase,
     private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel() {
@@ -41,7 +39,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        getDataUseCase().let { resource ->
+        datastore.getData().let { resource ->
             when (resource) {
                 is Resource.Error -> {
                     TODO()
@@ -86,7 +84,7 @@ class SettingsViewModel @Inject constructor(
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         updateUserUseCase(userDataEntity = userDataEntity)
     private suspend fun updateData(userDataEntity: UserDataEntity) =
-        saveDataUseCase(userDataEntity = userDataEntity)
+        datastore.saveData(userDataEntity = userDataEntity)
 
 }
 
