@@ -3,10 +3,11 @@ package com.softyorch.taskapp.data.database.userdata
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
-@Entity(tableName = USERDATA_TBL)
+@Entity(tableName = USERDATA_DB_NAME)
 data class UserDataEntity(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = USER_NAME) var username: String,
@@ -24,17 +25,4 @@ data class UserDataEntity(
     @ColumnInfo(name = AUTOMATIC_COLORS) var automaticColors: Boolean = false,
     @ColumnInfo(name = TIME_LIMIT_AUTOLOGIN) var timeLimitAutoLoading: Int = 1, //One week
     @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
-)
-
-fun UserDataEntity.toDatabase() = UserDataEntity(
-    username = username,
-    userEmail= userEmail,
-    userPass = userPass,
-    userPicture = userPicture,
-    lastLoginDate = lastLoginDate,
-    rememberMe = rememberMe,
-    lightDarkAutomaticTheme = lightDarkAutomaticTheme,
-    lightOrDarkTheme = lightOrDarkTheme,
-    automaticLanguage = automaticLanguage,
-    automaticColors = automaticColors
 )

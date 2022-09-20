@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.domain.taskUsesCase.GetAllTaskUseCase
-import com.softyorch.taskapp.domain.taskUsesCase.UpdateTaskUseCase
+import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -15,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getAllTaskUseCase: GetAllTaskUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val taskUseCase: TaskUseCases
 ) : ViewModel() {
     private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
     val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
@@ -34,7 +32,7 @@ class MainViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            getAllTaskUseCase().flowOn(Dispatchers.IO).collect { list ->
+            taskUseCase.getAllTask().flowOn(Dispatchers.IO).collect { list ->
                 _taskEntityList.postValue(list)
                 updateLists(list)
 
@@ -46,7 +44,7 @@ class MainViewModel @Inject constructor(
     suspend fun updateTask(taskEntity: TaskEntity) {
         _isLoading.value = true
         val state = viewModelScope.launch {
-            updateTaskUseCase(taskEntity = taskEntity)
+            taskUseCase.updateTask(taskEntity = taskEntity)
         }
         state.join()
 

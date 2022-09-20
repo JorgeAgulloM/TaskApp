@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.domain.taskUsesCase.GetAllTaskUseCase
+import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val getAllTaskUseCase: GetAllTaskUseCase
+    private val taskUseCase: TaskUseCases
 ) : ViewModel() {
     private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
     val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
@@ -37,7 +37,7 @@ class HistoryViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch() {
-                getAllTaskUseCase().flowOn(Dispatchers.IO).collect { list ->
+                taskUseCase.getAllTask().flowOn(Dispatchers.IO).collect { list ->
                     if (list.isEmpty()) {
                         showError("Error, la lista está vacía")
                     } else {

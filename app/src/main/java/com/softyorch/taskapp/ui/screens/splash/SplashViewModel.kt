@@ -7,9 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.domain.datastoreUseCase.GetDataUseCase
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
-import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val loginUserUseCase: LoginUserUseCase,
-    private val getDataUseCase: GetDataUseCase,
-    private val saveDataUseCase: SaveDataUseCase
+    private val userDataUseCases: UserDataUseCases,
+    private val datastore: DatastoreUseCases
 ) : ViewModel() {
 
     private val _goToAutologin = MutableLiveData<Boolean>()
@@ -40,7 +38,7 @@ class SplashViewModel @Inject constructor(
     private suspend fun loadData() = userActivated()
 
     private suspend fun userActivated() {
-        getDataUseCase().let { resource ->
+        datastore.getData().let { resource ->
             when (resource) {
                 is Resource.Error -> {
                     Log.d(
@@ -78,7 +76,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private suspend fun logInWithRememberMe(email: String, pass: String): UserDataEntity? =
-        loginUserUseCase(email = email, password = pass)
+        userDataUseCases.loginUser(email = email, password = pass)
 
     private suspend fun isAutoLoginTime(user: UserDataEntity) {
         val timeWeekInMillis =
@@ -87,7 +85,7 @@ class SplashViewModel @Inject constructor(
             val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
             timeWeekInMillis.compareTo(dif).let {
                 if (it == 1) {
-                    saveDataUseCase(userDataEntity = user)
+                    datastore.saveData(userDataEntity = user)
 
                     _goToAutologin.value = true
                     _isLoading.value = false

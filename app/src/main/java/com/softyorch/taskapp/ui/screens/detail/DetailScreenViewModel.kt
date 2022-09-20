@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.domain.taskUsesCase.DeleteTaskUseCase
-import com.softyorch.taskapp.domain.taskUsesCase.GetTaskIdUseCase
-import com.softyorch.taskapp.domain.taskUsesCase.UpdateTaskUseCase
+import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,9 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
-    private val getTaskIdUseCase: GetTaskIdUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val taskUseCase: TaskUseCases
 
 ) : ViewModel() {
     private val _taskEntityDetail = MutableLiveData<TaskEntity>()
@@ -68,7 +64,7 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private suspend fun getTaskId(id: String) {
-        when (val result = getTaskIdUseCase(taskId = id)) {
+        when (val result = taskUseCase.getTaskId(taskId = id)) {
             is Resource.Error -> showError(result.message.toString())
             is Resource.Loading -> _isLoading.value = true
             is Resource.Success -> _taskEntityDetail.postValue(result.data!!)
@@ -76,13 +72,13 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     fun updateTask(taskEntity: TaskEntity) = viewModelScope.launch(Dispatchers.IO) {
-        updateTaskUseCase(taskEntity = taskEntity)
+        taskUseCase.updateTask(taskEntity = taskEntity)
     }
 
     fun removeTask(taskEntity: TaskEntity) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            deleteTaskUseCase(taskEntity = taskEntity).also {
+            taskUseCase.deleteTask(taskEntity = taskEntity).also {
                 _isDeleted.postValue(true)
                 _isLoading.postValue(false)
             }

@@ -4,13 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveDataUseCase
-import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
-import com.softyorch.taskapp.domain.userdataUseCase.NewAccountUserUseCase
-import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
+import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.errors.ErrorInterface
 import com.softyorch.taskapp.ui.errors.ErrorUserInput
 import com.softyorch.taskapp.utils.emptyString
@@ -22,10 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val saveDataUseCase: SaveDataUseCase,
-    private val loginUserUseCase: LoginUserUseCase,
-    private val newAccountUserUseCase: NewAccountUserUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val datastore: DatastoreUseCases,
+    private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), ErrorInterface {
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
@@ -221,7 +215,7 @@ class LoginViewModel @Inject constructor(
                 user.lastLoginDate = Date.from(Instant.now())
                 user.rememberMe = rememberMe
                 updateLastLoginUser(userDataEntity = user)
-                saveDataUseCase(userDataEntity = user)
+                datastore.saveData(userDataEntity = user)
                 return true
             } else {
                 _error.postValue(true)
@@ -249,7 +243,7 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun addNewUser(userDataEntity: UserDataEntity): Boolean {
         return try {
-            newAccountUserUseCase(userDataEntity = userDataEntity)
+            userDataUseCases.newAccountUser(userDataEntity = userDataEntity)
             true
         } catch (ex: Exception) {
             false
@@ -257,12 +251,12 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun updateLastLoginUser(userDataEntity: UserDataEntity) =
-        viewModelScope.launch { updateUserUseCase(userDataEntity = userDataEntity) }
+        viewModelScope.launch { userDataUseCases.updateUser(userDataEntity = userDataEntity) }
 
     private suspend fun signInUserWithEmailAndPassword(
         email: String,
         password: String
-    ): UserDataEntity? = loginUserUseCase(email = email, password = password)
+    ): UserDataEntity? = userDataUseCases.loginUser(email = email, password = password)
 
 }
 
