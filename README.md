@@ -92,3 +92,11 @@ logic necessary to display such errors to the user via the UI.
 Version 1.2.5_Alpha01 - 13/09/2022
 - Fixed errors in login (rememberMe), settings, changed the screen detail layout and changed the new task height.
 
+<br>
+<br>
+
+### Version 1.3.6-Alpha01
+Version 1.3.6_Alpha01 - 20/09/2022
+- Refactor Architecture
+- Implements Use Cases
+- Fixed a bug in the animation of the checkBoxes.
