@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.ui.screens.history
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -92,7 +91,6 @@ fun HistoryScreen(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     navController: NavHostController,
@@ -118,7 +116,7 @@ private fun Content(
         items(taskEntities) { task ->
             Row(
                 modifier = Modifier
-                    .padding(start = 4.dp)
+                    .padding(start = 8.dp, bottom = 8.dp)
                     .clickable {
                         navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                     },

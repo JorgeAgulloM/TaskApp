@@ -75,7 +75,7 @@ fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> 
         targetValue = if (this) IntOffset(0, 0)
         else IntOffset(1500, 0),
         animationSpec = tween(
-            durationMillis = 400,
+            durationMillis = 200,
             delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         ),
