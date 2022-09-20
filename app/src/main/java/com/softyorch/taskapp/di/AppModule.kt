@@ -11,11 +11,13 @@ import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERD
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
 import com.softyorch.taskapp.domain.datastoreUseCase.GetData
 import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
 import com.softyorch.taskapp.domain.taskUsesCase.*
+import com.softyorch.taskapp.domain.userdataUseCase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -83,4 +85,26 @@ object AppModule {
             getTaskId = GetTaskId(repository = taskRepository),
             updateTask = UpdateTask(repository = taskRepository)
         )
+
+    @Singleton
+    @Provides
+    fun providesUserDataUseCases(userDataRepository: UserDataRepository): UserDataUseCases =
+        UserDataUseCases(
+            getUserEmailExist = GetUserEmailExist(repository = userDataRepository),
+            loginUser = LoginUser(repository = userDataRepository),
+            newAccountUser = NewAccountUser(repository = userDataRepository),
+            updateUser = UpdateUser(repository = userDataRepository)
+        )
 }
+
+
+
+
+
+
+
+
+
+
+
+

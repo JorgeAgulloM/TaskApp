@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.userdataUseCase.LoginUserUseCase
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val loginUserUseCase: LoginUserUseCase,
+    private val userDataUseCases: UserDataUseCases,
     private val datastore: DatastoreUseCases
 ) : ViewModel() {
 
@@ -76,7 +76,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private suspend fun logInWithRememberMe(email: String, pass: String): UserDataEntity? =
-        loginUserUseCase(email = email, password = pass)
+        userDataUseCases.loginUser(email = email, password = pass)
 
     private suspend fun isAutoLoginTime(user: UserDataEntity) {
         val timeWeekInMillis =

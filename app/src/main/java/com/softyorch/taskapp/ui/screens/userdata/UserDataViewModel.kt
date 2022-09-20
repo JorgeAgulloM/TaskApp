@@ -8,8 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.userdataUseCase.GetUserEmailExistUseCase
-import com.softyorch.taskapp.domain.userdataUseCase.UpdateUserUseCase
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.errors.ErrorInterface
 import com.softyorch.taskapp.ui.errors.ErrorUserInput
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
     private val datastore: DatastoreUseCases,
-    private val getUserEmailExistUseCase: GetUserEmailExistUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), ErrorInterface {
     private val _userDataEntityActive = MutableLiveData<UserDataEntity>()
     val userDataEntityActive: LiveData<UserDataEntity> = _userDataEntityActive
@@ -144,10 +142,10 @@ class UserDataViewModel @Inject constructor(
      */
 
     private suspend fun getUserDataEmail(email: String): UserDataEntity? =
-        getUserEmailExistUseCase(email = email)
+        userDataUseCases.getUserEmailExist(email = email)
 
     private suspend fun updateUserData(userDataEntity: UserDataEntity) =
-        updateUserUseCase(userDataEntity = userDataEntity)
+        userDataUseCases.updateUser(userDataEntity = userDataEntity)
 
     /**
      * datastore
