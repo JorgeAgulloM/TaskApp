@@ -69,7 +69,8 @@ fun DetailScreen(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
                 onClick = {
@@ -77,7 +78,7 @@ fun DetailScreen(
                     enterDetails = false
                 },
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(start = 8.dp, top = 8.dp)
                     .background(color = colorAnimation, shape = MaterialTheme.shapes.large),
                 //colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor)
             ) {
@@ -88,6 +89,7 @@ fun DetailScreen(
                     )
                 )
             }
+            RowInfo(text = "Detalles", paddingStart = 30.dp, style = MaterialTheme.typography.titleLarge)
         }
         Content(viewModel = viewModel, navController = navController)
     }
@@ -127,10 +129,10 @@ private fun Content(
                     shape = MaterialTheme.shapes.large
                 )
         ) {
-
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
             RowInfoDetail(text = stringResource(details))
             ShowTaskDetails(taskEntity = taskEntity)
-            Divider(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp))
+            Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 16.dp))
             RowInfoDetail(text = taskEntity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(top = 8.dp))
             TextDescriptionDetails(taskEntity = taskEntity)
@@ -290,7 +292,7 @@ private fun TextDescriptionDetails(
 ) {
     Text(
         text = taskEntity.description,
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(start = 16.dp),
         color = MaterialTheme.colorScheme.onSurface
     )
 }
@@ -302,7 +304,7 @@ private fun ShowTaskDetails(taskEntity: TaskEntity) {
         date = taskEntity.entryDate.toStringFormatted(),
         completedDate = taskEntity.finishDate?.toStringFormatted()
             ?: stringResource(unknown),
-        paddingStart = 0.dp
+        paddingStart = 8.dp
     )
 }
 
