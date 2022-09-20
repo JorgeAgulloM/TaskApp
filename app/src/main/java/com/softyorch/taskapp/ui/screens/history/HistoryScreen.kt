@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.history
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,11 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
-import com.softyorch.taskapp.R.string.history
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,7 +67,8 @@ fun HistoryScreen(navController: NavHostController) {
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
                 onClick = {
@@ -75,7 +76,7 @@ fun HistoryScreen(navController: NavHostController) {
                     enterDetails = false
                 },
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(start = 8.dp, top = 8.dp)
                     .background(color = colorAnimation, shape = MaterialTheme.shapes.large),
                 //colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor)
             ) {
@@ -86,11 +87,13 @@ fun HistoryScreen(navController: NavHostController) {
                     )
                 )
             }
+            RowInfo(text = "Historial", paddingStart = 30.dp, style = MaterialTheme.typography.titleLarge)
         }
         Content(navController = navController, viewModel = viewModel)
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     navController: NavHostController,
@@ -112,10 +115,11 @@ private fun Content(
             )
 
     ) {
+        item { Spacer(modifier = Modifier.padding(8.dp)) }
         items(taskEntities) { task ->
             Row(
                 modifier = Modifier
-                    .padding(top = 4.dp)
+                    .padding(start = 4.dp)
                     .clickable {
                         navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
                     },
