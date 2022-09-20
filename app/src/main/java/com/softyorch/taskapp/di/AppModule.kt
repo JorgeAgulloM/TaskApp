@@ -10,10 +10,12 @@ import com.softyorch.taskapp.data.database.userdata.UserDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.repository.DatastoreRepository
+import com.softyorch.taskapp.data.repository.TaskRepository
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
 import com.softyorch.taskapp.domain.datastoreUseCase.GetData
 import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
+import com.softyorch.taskapp.domain.taskUsesCase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,11 +64,23 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesDatastoreUseCases(datastore: DatastoreRepository): DatastoreUseCases {
-        return DatastoreUseCases(
-            getData = GetData(repository = datastore),
-            saveData = SaveData(repository = datastore),
-            deleteData = DeleteData(repository = datastore)
+    fun providesDatastoreUseCases(datastoreRepository: DatastoreRepository): DatastoreUseCases =
+        DatastoreUseCases(
+            getData = GetData(repository = datastoreRepository),
+            saveData = SaveData(repository = datastoreRepository),
+            deleteData = DeleteData(repository = datastoreRepository)
         )
-    }
+
+
+    @Singleton
+    @Provides
+    fun providesTaskUseCases(taskRepository: TaskRepository): TaskUseCases =
+        TaskUseCases(
+            addNewTask = AddNewTask(repository = taskRepository),
+            deleteTask = DeleteTask(repository = taskRepository),
+            deleteAllTask = DeleteAllTask(repository = taskRepository),
+            getAllTask = GetAllTask(repository = taskRepository),
+            getTaskId = GetTaskId(repository = taskRepository),
+            updateTask = UpdateTask(repository = taskRepository)
+        )
 }

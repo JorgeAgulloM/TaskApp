@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.taskUsesCase.AddNewTaskUseCase
+import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
     private val datastore: DatastoreUseCases,
-    private val addNewTaskUseCase: AddNewTaskUseCase
+    private val taskUseCase: TaskUseCases
 ) : ViewModel() {
     private val _user = MutableLiveData<String>()
     val user: LiveData<String> = _user
@@ -49,5 +49,5 @@ class FABCustomViewModel @Inject constructor(
     }
 
     fun addTask(taskEntity: TaskEntity) =
-        viewModelScope.launch(Dispatchers.IO) { addNewTaskUseCase(taskEntity = taskEntity) }
+        viewModelScope.launch(Dispatchers.IO) { taskUseCase.updateTask(taskEntity = taskEntity) }
 }
