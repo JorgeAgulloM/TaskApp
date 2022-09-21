@@ -26,23 +26,27 @@ fun CheckCustom(
 ) {
 
     var clickOnTask by remember { mutableStateOf(value = false) }
+    var clickOnCheck by remember { mutableStateOf(value = false) }
     val slideCheckBox = animateIntOffsetAsState(
         targetValue = if (clickOnTask && animated) IntOffset(60, 0)
         else IntOffset(0, 0),
         animationSpec = tween(
-            durationMillis = 400,
+            durationMillis = 300,
             delayMillis = 100,
-            easing = FastOutLinearInEasing
+            easing = LinearEasing
         )
     )
     val alphaTask: Float by animateFloatAsState(
-        targetValue = if (clickOnTask && animated) 0.2f else 1f,
+        targetValue = if ((clickOnTask || clickOnCheck) && animated) 0.2f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             delayMillis = 100,
-            easing = FastOutLinearInEasing
+            easing = LinearEasing
         ),
-        finishedListener = { onClick.invoke() }
+        finishedListener = {
+            clickOnCheck = false
+            if (clickOnTask) onClick.invoke()
+        }
     )
 
     Row(
@@ -63,7 +67,10 @@ fun CheckCustom(
 
         Checkbox(
             checked = checked,
-            onCheckedChange = {onCheckedChange(it) },
+            onCheckedChange = {
+                clickOnCheck = true
+                onCheckedChange(it)
+            },
             enabled = enabled,
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.primary,
