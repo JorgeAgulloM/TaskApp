@@ -335,7 +335,7 @@ private fun TextFieldCustomDataScreen(
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            textFieldCustom(
+            textFieldCustomInputData(
                 text = text,
                 label = label,
                 placeholder = stringResource(write_your_label) + label.lowercase(),

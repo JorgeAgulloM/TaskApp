@@ -198,12 +198,10 @@ private fun TextFieldCustomNewTaskName(
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomNewTask (
             text = text,
             label = stringResource(name_task),
             placeholder = stringResource(write_name),
-            icon = Icons.Rounded.Title,
-            contentDescription = stringResource(content_name),
             singleLine = true,
             newTask = true,
             isError = error,
@@ -222,12 +220,10 @@ private fun TextFieldCustomNewTaskDescription(
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomNewTask (
             text = text,
             label = stringResource(task_description),
             placeholder = stringResource(write_description),
-            icon = Icons.Rounded.Description,
-            contentDescription = stringResource(content_description),
             keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                 imeAction = ImeAction.Go
             ),

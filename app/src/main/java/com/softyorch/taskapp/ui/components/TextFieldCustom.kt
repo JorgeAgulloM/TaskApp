@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun textFieldCustom(
+fun textFieldCustomInputData(
     text: String = "",
     label: String = "",
     placeholder: String = "",
