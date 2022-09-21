@@ -3,9 +3,7 @@ package com.softyorch.taskapp.ui.widgets.newTask
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Title
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -48,8 +46,6 @@ fun newTask(
     var openDialog by remember { mutableStateOf(true) }
     val dateCreatedFormatted =
         taskEntityToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now()).toStringFormatDate()
-    val dateCompletedFormatted =
-        taskEntityToEdit?.finishDate?.toStringFormatDate() ?: stringResource(unknown)
 
     /** Error states */
     val errorTittle: Boolean by viewModel.errorTittle.observeAsState(initial = false)
@@ -82,8 +78,7 @@ fun newTask(
                     ) {
 
                         ShowTaskNewTask(
-                            userName = userName, dateFormatted = dateCreatedFormatted,
-                            dateCompletedFormatted = dateCompletedFormatted
+                            userName = userName, dateFormatted = dateCreatedFormatted
                         )
                         TextFieldCustomNewTaskName(text = title, error = errorTittle) {
                             viewModel.onTextFieldInputChanged(title = it, description = description)
@@ -239,12 +234,14 @@ private fun TextFieldCustomNewTaskDescription(
 @Composable
 private fun ShowTaskNewTask(
     userName: String,
-    dateFormatted: String,
-    dateCompletedFormatted: String
+    dateFormatted: String
 ) {
-    ShowTask(
-        author = userName,
-        date = dateFormatted,
-        completedDate = dateCompletedFormatted
-    )
+    Column {
+        ShowTask(
+            author = userName,
+            date = dateFormatted
+        )
+        Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp))
+    }
+
 }
