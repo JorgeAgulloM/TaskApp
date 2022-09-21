@@ -57,11 +57,11 @@ fun DetailScreen(
          enterDetails = true
     }
 
-    val slideCheckBox by enterDetails.intOffsetAnimation {
+    val slideCheckBox by enterDetails.intOffsetAnimationTransition {
         if (!enterDetails)
             navController.popBackStack()
     }
-    val alphaAnimation: Float by exitDetails.alphaAnimation()
+    val alphaAnimation: Float by exitDetails.alphaAnimation{}
     val colorAnimation by exitDetails.containerColorAnimation()
 
     Column(

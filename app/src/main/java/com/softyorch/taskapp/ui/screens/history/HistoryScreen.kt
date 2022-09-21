@@ -46,7 +46,7 @@ fun HistoryScreen(navController: NavHostController) {
         if (!exitDetails) enterDetails = true
     }
 
-    val slideCheckBox by enterDetails.intOffsetAnimation {
+    val slideCheckBox by enterDetails.intOffsetAnimationTransition {
         if (!enterDetails)
             navController.navigate(AppScreensRoutes.MainScreen.route) {
                 popUpTo(AppScreensRoutes.DetailScreen.route) {
@@ -55,7 +55,7 @@ fun HistoryScreen(navController: NavHostController) {
                 }
             }
     }
-    val alphaAnimation: Float by exitDetails.alphaAnimation()
+    val alphaAnimation: Float by exitDetails.alphaAnimation{}
     val colorAnimation by exitDetails.containerColorAnimation()
     Column(
         modifier = Modifier

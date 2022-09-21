@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.components
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,8 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.utils.alphaAnimation
+import com.softyorch.taskapp.utils.intOffsetAnimation
 
 @ExperimentalMaterial3Api
 @Composable
@@ -27,27 +27,12 @@ fun CheckCustom(
 
     var clickOnTask by remember { mutableStateOf(value = false) }
     var clickOnCheck by remember { mutableStateOf(value = false) }
-    val slideCheckBox = animateIntOffsetAsState(
-        targetValue = if (clickOnTask && animated) IntOffset(60, 0)
-        else IntOffset(0, 0),
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = 100,
-            easing = LinearEasing
-        )
-    )
-    val alphaTask: Float by animateFloatAsState(
-        targetValue = if ((clickOnTask || clickOnCheck) && animated) 0.2f else 1f,
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = 100,
-            easing = LinearEasing
-        ),
-        finishedListener = {
-            clickOnCheck = false
-            if (clickOnTask) onClick.invoke()
-        }
-    )
+
+    val slideCheckBox by animated.intOffsetAnimation(stateOne = clickOnTask)
+    val alphaTask by animated.alphaAnimation( stateOne = clickOnTask, stateTwo = clickOnCheck){
+        clickOnCheck = false
+        if (clickOnTask) onClick.invoke()
+    }
 
     Row(
         modifier = Modifier
@@ -56,7 +41,7 @@ fun CheckCustom(
             .height(35.dp)
             .graphicsLayer(alpha = alphaTask)
             .offset {
-                slideCheckBox.value
+                slideCheckBox
             }
             .clickable {
                 clickOnTask = true

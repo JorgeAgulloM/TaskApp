@@ -42,7 +42,7 @@ fun Context.toastError(message: String, onShow: () -> Unit) {
 
 /** Animations ***************************************************/
 
-@Composable
+/*@Composable
 fun Boolean.alphaAnimation(): State<Float> =
     animateFloatAsState(
         targetValue = if (this) 0.2f else 1f,
@@ -51,6 +51,20 @@ fun Boolean.alphaAnimation(): State<Float> =
             delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         )
+    )*/
+
+@Composable
+fun Boolean.alphaAnimation(
+    stateOne: Boolean = true, stateTwo: Boolean = true, finishedListener: () -> Unit?
+): State<Float> =
+    animateFloatAsState(
+        targetValue = if ((stateOne || stateTwo) && this) 0.2f else 1f,
+        animationSpec = tween(
+            durationMillis = 200,
+            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
     )
 
 @Composable
@@ -66,7 +80,20 @@ fun Boolean.containerColorAnimation(): State<Color> =
     )
 
 @Composable
-fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> =
+fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
+    animateIntOffsetAsState(
+        targetValue = if (stateOne && this) IntOffset(60, 0)
+        else IntOffset(0, 0),
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 100,
+            easing = LinearEasing
+        )
+    )
+
+@Composable
+fun Boolean.intOffsetAnimationTransition(finishedListener: () -> Unit?
+): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (this) IntOffset(0, 0)
         else IntOffset(1500, 0),
@@ -91,7 +118,8 @@ fun Boolean.contentColorAsStateAnimation(stateOne: Boolean, stateTwo: Boolean):
 
 @Composable
 fun Boolean.containerColorAsStateAnimation(
-    stateOne: Boolean, stateTwo: Boolean, stateThree: Boolean, finishListener: () -> Unit?):
+    stateOne: Boolean, stateTwo: Boolean, stateThree: Boolean, finishListener: () -> Unit?
+):
         State<Color> = animateColorAsState(
     targetValue =
     if (this) MaterialTheme.colorScheme.error
