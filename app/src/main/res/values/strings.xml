@@ -71,7 +71,7 @@
     <string name="create">Create</string>
     <string name="edit_text">Edit Task</string>
     <string name="name_task">Name of task</string>
-    <string name="write_name">write your name</string>
+    <string name="write_name">write a name</string>
     <string name="content_name">name</string>
     <string name="task_description">Task description</string>
     <string name="write_description">write a description</string>
