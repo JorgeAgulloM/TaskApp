@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -140,7 +141,7 @@ private fun FillLazyColumnNoCheckeds(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth(0.95f),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
@@ -170,31 +171,16 @@ private fun FillLazyColumnNoCheckeds(
                 }
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
-                //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
-
                 val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
-                val totalVisualItemsFilter by remember {
-                    derivedStateOf {
-                        if (itemsFilter > 1) {
-                            lazyState.layoutInfo.visibleItemsInfo.count()
 
-                        } else if (itemsFilter > 0) {
-                            lazyState.layoutInfo.visibleItemsInfo.count() - 1
-
-                        } else {
-                            lazyState.layoutInfo.visibleItemsInfo.count() - 2
-                        }
-                    }
-                }
-
-                if (showIcon) {
+                if (itemsFilter > 0) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        imageVector = if (showIcon) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                         contentDescription = stringResource(go_to_up),
                         modifier = Modifier
                             .padding(top = 4.dp, start = 8.dp)
                             .clickable {
-                                coroutineScope.launch { lazyState.animateScrollToItem(0) }
+                                if (showIcon) coroutineScope.launch { lazyState.animateScrollToItem(0) }
                             },
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -260,16 +246,16 @@ private fun FillLazyColumnCheckeds(
                 }
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
-                //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
+                val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
 
-                if (showIcon) {
+                if (itemsFilter > 0) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        imageVector = if (showIcon) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                         contentDescription = stringResource(go_to_up),
                         modifier = Modifier
                             .padding(top = 4.dp, start = 8.dp)
                             .clickable {
-                                coroutineScope.launch { lazyState.animateScrollToItem(0) }
+                                if (showIcon) coroutineScope.launch { lazyState.animateScrollToItem(0) }
                             },
                         tint = MaterialTheme.colorScheme.primary
                     )
