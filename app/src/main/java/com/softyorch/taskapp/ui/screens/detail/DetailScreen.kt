@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -89,7 +90,11 @@ fun DetailScreen(
                     )
                 )
             }
-            RowInfo(text = "Detalles", paddingStart = 30.dp, style = MaterialTheme.typography.titleLarge)
+            RowInfo(
+                text = "Detalles",
+                paddingStart = 30.dp,
+                style = MaterialTheme.typography.titleLarge
+            )
         }
         Content(viewModel = viewModel, navController = navController)
     }
@@ -132,8 +137,19 @@ private fun Content(
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             RowInfoDetail(text = stringResource(details))
             ShowTaskDetails(taskEntity = taskEntity)
-            Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 16.dp))
-            RowInfoDetail(text = taskEntity.title, style = MaterialTheme.typography.titleLarge)
+            Divider(
+                modifier = Modifier.padding(
+                    start = 8.dp,
+                    end = 8.dp,
+                    top = 8.dp,
+                    bottom = 16.dp
+                )
+            )
+            RowInfoDetail(
+                text = taskEntity.title,
+                isFinish = taskEntity.checkState,
+                style = MaterialTheme.typography.titleLarge
+            )
             Spacer(modifier = Modifier.padding(top = 8.dp))
             TextDescriptionDetails(taskEntity = taskEntity)
 
@@ -179,8 +195,6 @@ private fun Content(
                             taskEntity.checkState = !taskEntity.checkState
                             taskEntity.finishDate = Date.from(Instant.now())
                             viewModel.updateTask(taskEntity = taskEntity)
-                            navController.popBackStack()
-                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${taskEntity.id}")
                             openCompleteDialog = false
                         }
                     },
@@ -201,8 +215,6 @@ private fun Content(
                             taskEntity.checkState = !taskEntity.checkState
                             taskEntity.finishDate = null
                             viewModel.updateTask(taskEntity = taskEntity)
-                            navController.popBackStack()
-                            navController.navigate(AppScreensRoutes.DetailScreen.route + "/${taskEntity.id}")
                             openResetDialog = false
                         }
                     },
@@ -277,13 +289,26 @@ private fun ButtonCustomDetails(
 @Composable
 private fun RowInfoDetail(
     text: String,
+    isFinish: Boolean = false,
     style: TextStyle = MaterialTheme.typography.titleMedium
 ) {
-    RowInfo(
-        text = text,
-        paddingStart = 24.dp,
-        style = style
-    )
+    Row(
+        modifier = Modifier.padding(start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        if (isFinish) Icon(
+            imageVector = Icons.Rounded.Check,
+            contentDescription = "Task finished",
+            tint = MaterialTheme.colorScheme.primary
+        )
+        else Box(modifier = Modifier.size(24.dp)) {}
+        RowInfo(
+            text = text,
+            paddingStart = 4.dp,
+            style = style
+        )
+    }
 }
 
 @Composable
