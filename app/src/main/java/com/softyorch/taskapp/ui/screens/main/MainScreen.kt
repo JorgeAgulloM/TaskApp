@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.main
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -110,6 +111,7 @@ private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typograph
     RowInfo(text = text, paddingStart = 32.dp, style = style)
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 private fun FillLazyColumnNoCheckeds(
@@ -138,11 +140,12 @@ private fun FillLazyColumnNoCheckeds(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
+                    modifier = Modifier.fillMaxWidth(0.95f),
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
+
                     items(taskEntities) { task ->
                         var myCheck by remember { mutableStateOf(value = task.checkState) }
 
@@ -168,6 +171,21 @@ private fun FillLazyColumnNoCheckeds(
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
                 //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
+
+                val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
+                val totalVisualItemsFilter by remember {
+                    derivedStateOf {
+                        if (itemsFilter > 1) {
+                            lazyState.layoutInfo.visibleItemsInfo.count()
+
+                        } else if (itemsFilter > 0) {
+                            lazyState.layoutInfo.visibleItemsInfo.count() - 1
+
+                        } else {
+                            lazyState.layoutInfo.visibleItemsInfo.count() - 2
+                        }
+                    }
+                }
 
                 if (showIcon) {
                     Icon(
