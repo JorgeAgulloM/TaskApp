@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.screens.main.utils.OrderOptions
+import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.containerColorAnimation
 
 @ExperimentalMaterial3Api
@@ -35,6 +36,7 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            RowInfo(text = "Order by...", paddingStart = 8.dp , heightSize = 20.dp, style = MaterialTheme.typography.labelSmall)
             OrderOptions.listOrder.forEach { order ->
                 var onClick by remember { mutableStateOf(value = false) }
                 DropdownMenuItem(
@@ -57,7 +59,7 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
                         onchangeOrder(orderOption)
                         onClick = true
                     },
-                    modifier = Modifier.height(24.dp).padding(4.dp).background(
+                    modifier = Modifier.height(24.dp).padding(vertical = 4.dp).background(
                         color = onClick.containerColorAnimation {
                             if (onClick) {
                                 expanded = false

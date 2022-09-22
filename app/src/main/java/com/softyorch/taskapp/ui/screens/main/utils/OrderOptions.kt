@@ -24,12 +24,12 @@ sealed class OrderOptions {
 
     companion object {
         val listOrder = listOf(
-            "Create Ascending",
-            "Finish Ascending",
-            "Name Ascending",
-            "Create Descending",
-            "Finish Descending",
-            "Name Descending"
+            "Create ascending",
+            "Finish ascending",
+            "Name ascending",
+            "Create descending",
+            "Finish descending",
+            "Name descending"
         )
     }
 }
