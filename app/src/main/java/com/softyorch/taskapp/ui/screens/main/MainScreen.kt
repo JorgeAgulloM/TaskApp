@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -26,14 +28,18 @@ import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
+import com.softyorch.taskapp.domain.utils.TaskOrder
+import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
+import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import kotlin.reflect.KFunction1
 import kotlin.reflect.KSuspendFunction1
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -62,12 +68,17 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(
+        initial = emptyList()
+    )
+    val taskListsUnchecked: List<TaskEntity> by viewModel.tasksEntityListUnchecked.observeAsState(
+        initial = emptyList()
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            /**.background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)) */
+            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
@@ -80,21 +91,26 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         RowInfoMain(text = stringResource(my_tasks), style = MaterialTheme.typography.titleLarge)
         Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
 
-        FillLazyColumnNoCheckeds(
-            taskEntities = taskEntities.filter { !it.checkState },
+        LazyColumnChecks(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
+            taskEntities = taskListsUnchecked,
+            changeOrder = viewModel::changeOrderUncheckedTask,
             updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading,
+            enabled = !isLoading
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        FillLazyColumnCheckeds(
-            taskEntities = taskEntities.filter { it.checkState },
+        LazyColumnChecks(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
+            checkedOrNot = true,
+            taskEntities = taskListsChecked,
+            changeOrder = viewModel::changeOrderCheckedTask,
             updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading,
+            enabled = !isLoading
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
-        if (isLoading) CircularIndicatorCustom(
+        if (isLoading) CircularIndicatorCustomDialog(
             text = stringResource(loading_loading),
             modifier = Modifier
                 .safeContentPadding()
@@ -110,84 +126,29 @@ private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typograph
 
 @ExperimentalMaterial3Api
 @Composable
-private fun FillLazyColumnNoCheckeds(
-    taskEntities: List<TaskEntity>,
-    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
-    enabled: Boolean,
-    onClick: (UUID) -> Unit
+private fun RowInfoWithDropMenu(
+    text: String,
+    changeOrder: KFunction1<TaskOrder, Unit>
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
-    val lazyState = rememberLazyListState()
-
-    Column(
-        modifier = Modifier
-            /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
-            .background(
-                color = MaterialTheme.colorScheme.background,
-                shape = MaterialTheme.shapes.large
-            ),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
+    Row(
+        modifier = Modifier.fillMaxWidth(1f),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        RowInfoMain(text = stringResource(to_be_made))
-        if (taskEntities.any { !it.checkState })
-            Column(
-                verticalArrangement = Arrangement.spacedBy(space = 8.dp)
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
-                    state = lazyState,
-                    userScrollEnabled = true,
-                    flingBehavior = ScrollableDefaults.flingBehavior()
-                ) {
-                    items(taskEntities) { task ->
-                        var myCheck by remember { mutableStateOf(value = task.checkState) }
-
-                        CheckCustomMain(
-                            checked = myCheck,
-                            title = task.title,
-                            onCheckedChange = {
-                                myCheck = it
-                                task.checkState = it
-                                task.finishDate = if (it) Date.from(Instant.now()) else null
-                                coroutineScope.launch {
-                                    delay(400)
-                                    myCheck = !it
-                                    updateTaskEntity(task)
-                                }
-                            },
-                            enabled = enabled
-                        ) {
-                            onClick(task.id)
-                        }
-                    }
-                }
-
-                val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
-                //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
-
-                if (showIcon) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                        contentDescription = stringResource(go_to_up),
-                        modifier = Modifier
-                            .padding(top = 4.dp, start = 8.dp)
-                            .clickable {
-                                coroutineScope.launch { lazyState.animateScrollToItem(0) }
-                            },
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                } else Box(modifier = Modifier.height(28.dp)) {}
-            } else RowInfo(text = stringResource(add_new_task), paddingStart = 16.dp)
-        Divider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
+        RowInfo(text = text, paddingStart = 32.dp)
+        dropDawnMenuCustom {
+            changeOrder(it)
+        }
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun FillLazyColumnCheckeds(
+private fun LazyColumnChecks(
+    modifier: Modifier,
+    checkedOrNot: Boolean = false,
     taskEntities: List<TaskEntity>,
+    changeOrder: KFunction1<TaskOrder, Unit>,
     updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
@@ -197,7 +158,7 @@ private fun FillLazyColumnCheckeds(
 
     Column(
         modifier = Modifier
-            /**.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)*/
+            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
@@ -205,13 +166,18 @@ private fun FillLazyColumnCheckeds(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        RowInfoMain(text = stringResource(tasks_completed_last_days))
-        if (taskEntities.any { it.checkState })
+        RowInfoWithDropMenu(
+            text = if (checkedOrNot) stringResource(tasks_completed_last_days) else stringResource(
+                to_be_made
+            ),
+            changeOrder = changeOrder
+        )
+        if (taskEntities.isNotEmpty())
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
+                    modifier = modifier,
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
@@ -240,21 +206,30 @@ private fun FillLazyColumnCheckeds(
                 }
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
-                //val showIcon by remember { derivedStateOf { lazyState.layoutInfo.visibleItemsInfo.last().index < lazyState.layoutInfo.totalItemsCount  } }
+                val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
 
-                if (showIcon) {
+                if (itemsFilter > 0) {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp, //if (isLastItem) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        imageVector = if (showIcon) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                         contentDescription = stringResource(go_to_up),
                         modifier = Modifier
                             .padding(top = 4.dp, start = 8.dp)
                             .clickable {
-                                coroutineScope.launch { lazyState.animateScrollToItem(0) }
+                                if (showIcon) coroutineScope.launch {
+                                    lazyState.animateScrollToItem(
+                                        0
+                                    )
+                                }
                             },
                         tint = MaterialTheme.colorScheme.primary
                     )
                 } else Box(modifier = Modifier.height(28.dp)) {}
-            } else RowInfo(text = stringResource(not_yet_complet_any_task), paddingStart = 16.dp)
+            } else RowInfo(
+            text = if (checkedOrNot) stringResource(not_yet_complet_any_task) else stringResource(
+                add_new_task
+            ),
+            paddingStart = 16.dp
+        )
         Divider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
     }
 }

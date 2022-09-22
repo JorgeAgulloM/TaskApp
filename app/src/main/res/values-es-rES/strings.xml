@@ -73,7 +73,7 @@
     <string name="create">Crear</string>
     <string name="edit_text">Editar tarea</string>
     <string name="name_task">Nombre de tarea</string>
-    <string name="write_name">escribe tu nombre</string>
+    <string name="write_name">escribe un nombre</string>
     <string name="content_name">nombre</string>
     <string name="task_description">Descripción de la tarea</string>
     <string name="write_description">escribe una descripción</string>
