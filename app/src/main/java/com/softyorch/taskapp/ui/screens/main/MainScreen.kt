@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.List
+import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -28,9 +30,12 @@ import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.domain.utils.OrderType
+import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.screens.main.utils.OrderOptions
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import kotlinx.coroutines.delay
@@ -66,8 +71,12 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     //val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
-    val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(initial = emptyList())
-    val taskListsUnchecked: List<TaskEntity> by viewModel.tasksEntityListUnchecked.observeAsState(initial = emptyList())
+    val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(
+        initial = emptyList()
+    )
+    val taskListsUnchecked: List<TaskEntity> by viewModel.tasksEntityListUnchecked.observeAsState(
+        initial = emptyList()
+    )
 
     Column(
         modifier = Modifier
@@ -111,9 +120,73 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typography.titleMedium) {
-    RowInfo(text = text, paddingStart = 32.dp, style = style)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        orderDropDawnMenu()
+        RowInfo(text = text, paddingStart = 32.dp, style = style)
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun orderDropDawnMenu(): TaskOrder {
+    var expanded by remember { mutableStateOf(value = false) }
+    var orderOption: TaskOrder = TaskOrder.Create(OrderType.Descending)
+
+
+        IconButton(
+            onClick = {
+                expanded = true
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.List,
+                contentDescription = "Order of task",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        OrderOptions.listOrder.forEach { order ->
+            DropdownMenuItem(
+                text = {
+                    Text(text = order)
+                },
+                onClick = {
+                    orderOption =
+                        when (order) {
+                            OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
+                            OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
+                            OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
+                            OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
+                            OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
+                            OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
+                            else -> {
+                                OrderOptions.CreateAscending().order
+                            }
+                        }
+                    expanded = false
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Sort,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            )
+        }
+    }
+
+    return orderOption
 }
 
 @ExperimentalMaterial3Api
@@ -139,7 +212,11 @@ private fun LazyColumnChecks(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        RowInfoMain(text = if (checkedOrNot) stringResource(tasks_completed_last_days) else stringResource(to_be_made))
+        RowInfoMain(
+            text = if (checkedOrNot) stringResource(tasks_completed_last_days) else stringResource(
+                to_be_made
+            )
+        )
         if (taskEntities.isNotEmpty())
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
@@ -193,7 +270,9 @@ private fun LazyColumnChecks(
                     )
                 } else Box(modifier = Modifier.height(28.dp)) {}
             } else RowInfo(
-            text = if (checkedOrNot) stringResource( not_yet_complet_any_task ) else stringResource(add_new_task),
+            text = if (checkedOrNot) stringResource(not_yet_complet_any_task) else stringResource(
+                add_new_task
+            ),
             paddingStart = 16.dp
         )
         Divider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
