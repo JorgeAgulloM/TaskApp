@@ -63,7 +63,7 @@ fun newTask(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(1f)
-                    .fillMaxHeight(0.78f)
+                    .height(350.dp)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = MaterialTheme.shapes.large

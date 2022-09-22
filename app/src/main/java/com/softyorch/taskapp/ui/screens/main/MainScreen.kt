@@ -78,7 +78,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
