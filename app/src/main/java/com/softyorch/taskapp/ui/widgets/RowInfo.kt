@@ -20,7 +20,7 @@ fun RowInfo(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            //.fillMaxWidth(0.9f)
             .height(heightSize)
             .padding(start = paddingStart, top = 0.dp, bottom = 0.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

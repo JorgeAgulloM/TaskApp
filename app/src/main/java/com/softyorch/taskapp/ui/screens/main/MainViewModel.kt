@@ -35,18 +35,34 @@ class MainViewModel @Inject constructor(
     }
 
     private fun loadData(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
-        viewModelScope.launch{
-            _isLoading.postValue(true)
-            viewModelScope.launch {
-                taskUseCase.getUncheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
-                    .collect { list -> _tasksEntityListUnchecked.postValue(list) }
-            }
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            loadTaskUnchecked(taskOrder = taskOrder)
+            loadTaskChecked(taskOrder = taskOrder)
 
-            viewModelScope.launch {
-                taskUseCase.getCheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
-                    .collect { list -> _tasksEntityListChecked.postValue(list) }
-            }
             _isLoading.postValue(false)
+        }
+    }
+
+    private fun loadTaskUnchecked(taskOrder: TaskOrder) = viewModelScope.launch {
+        taskUseCase.getUncheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
+            .collect { list -> _tasksEntityListUnchecked.postValue(list) }
+    }
+
+    private fun loadTaskChecked(taskOrder: TaskOrder) = viewModelScope.launch {
+        taskUseCase.getCheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
+            .collect { list -> _tasksEntityListChecked.postValue(list) }
+    }
+
+    fun changeOrderUncheckedTask(taskOrder: TaskOrder) {
+        viewModelScope.launch {
+            loadTaskUnchecked(taskOrder = taskOrder)
+        }
+    }
+
+    fun changeOrderCheckedTask(taskOrder: TaskOrder) {
+        viewModelScope.launch {
+            loadTaskUnchecked(taskOrder = taskOrder)
         }
     }
 

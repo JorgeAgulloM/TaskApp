@@ -38,10 +38,12 @@ import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screens.main.utils.OrderOptions
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.containerColorAnimation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import kotlin.reflect.KFunction1
 import kotlin.reflect.KSuspendFunction1
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -70,7 +72,6 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    //val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
     val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(
         initial = emptyList()
     )
@@ -97,8 +98,9 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         LazyColumnChecks(
             modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
             taskEntities = taskListsUnchecked,//taskEntities.filter { !it.checkState },
+            changeOrder = viewModel::changeOrderUncheckedTask,
             updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading,
+            enabled = !isLoading
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
         Spacer(modifier = Modifier.padding(8.dp))
@@ -107,8 +109,9 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
             checkedOrNot = true,
             taskEntities = taskListsChecked,//taskEntities.filter { it.checkState },
+            changeOrder = viewModel::changeOrderCheckedTask,
             updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading,
+            enabled = !isLoading
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
         if (isLoading) CircularIndicatorCustomDialog(
@@ -120,71 +123,92 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     }
 }
 
-@ExperimentalMaterial3Api
 @Composable
 private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typography.titleMedium) {
+    RowInfo(text = text, paddingStart = 32.dp, style = style)
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun RowInfoWithDropMenu(
+    text: String,
+    changeOrder: KFunction1<TaskOrder, Unit>
+) {
+    //var order: TaskOrder = TaskOrder.Create(orderType = OrderType.Descending)
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.fillMaxWidth(1f),//.padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        orderDropDawnMenu()
-        RowInfo(text = text, paddingStart = 32.dp, style = style)
+        RowInfo(text = text, paddingStart = 32.dp)
+        orderDropDawnMenu {
+            changeOrder(it)
+        }
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun orderDropDawnMenu(): TaskOrder {
+private fun orderDropDawnMenu(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
     var expanded by remember { mutableStateOf(value = false) }
     var orderOption: TaskOrder = TaskOrder.Create(OrderType.Descending)
-
-
-        IconButton(
-            onClick = {
-                expanded = true
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.List,
-                contentDescription = "Order of task",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        OrderOptions.listOrder.forEach { order ->
-            DropdownMenuItem(
-                text = {
-                    Text(text = order)
-                },
-                onClick = {
-                    orderOption =
-                        when (order) {
-                            OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
-                            OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
-                            OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
-                            OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
-                            OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
-                            OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
-                            else -> {
-                                OrderOptions.CreateAscending().order
-                            }
-                        }
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Sort,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            )
+    var onClick by remember { mutableStateOf(value = false) }
+    val colorItem by onClick.containerColorAnimation {
+        if (onClick){
+            expanded = false
+            onClick = false
         }
     }
+
+    IconButton(
+        onClick = {
+            expanded = true
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.List,
+            contentDescription = "Order of task",
+            tint = MaterialTheme.colorScheme.primary
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            OrderOptions.listOrder.forEach { order ->
+                DropdownMenuItem(
+                    text = {
+                        Text(text = order, style = MaterialTheme.typography.labelSmall, color = colorItem)
+                    },
+                    onClick = {
+                        orderOption =
+                            when (order) {
+                                OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
+                                OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
+                                OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
+                                OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
+                                OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
+                                OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
+                                else -> {
+                                    OrderOptions.CreateAscending().order
+                                }
+                            }
+                        onchangeOrder(orderOption)
+                        onClick = true
+                    },
+                    modifier = Modifier.height(35.dp),//.background(color = colorItem),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Sort,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+
 
     return orderOption
 }
@@ -195,6 +219,7 @@ private fun LazyColumnChecks(
     modifier: Modifier,
     checkedOrNot: Boolean = false,
     taskEntities: List<TaskEntity>,
+    changeOrder: KFunction1<TaskOrder, Unit>,
     updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
@@ -212,10 +237,11 @@ private fun LazyColumnChecks(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        RowInfoMain(
+        RowInfoWithDropMenu(
             text = if (checkedOrNot) stringResource(tasks_completed_last_days) else stringResource(
                 to_be_made
-            )
+            ),
+            changeOrder = changeOrder
         )
         if (taskEntities.isNotEmpty())
             Column(

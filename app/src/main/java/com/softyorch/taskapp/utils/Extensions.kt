@@ -80,6 +80,19 @@ fun Boolean.containerColorAnimation(): State<Color> =
     )
 
 @Composable
+fun Boolean.containerColorAnimation(finishedListener: () -> Unit?): State<Color> =
+    animateColorAsState(
+        targetValue =
+        if (this) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.onBackground,
+        animationSpec = tween(
+            durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
 fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (stateOne && this) IntOffset(60, 0)
@@ -92,7 +105,8 @@ fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
     )
 
 @Composable
-fun Boolean.intOffsetAnimationTransition(finishedListener: () -> Unit?
+fun Boolean.intOffsetAnimationTransition(
+    finishedListener: () -> Unit?
 ): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (this) IntOffset(0, 0)
