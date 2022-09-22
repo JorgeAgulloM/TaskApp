@@ -31,8 +31,8 @@ fun ButtonCustom(
         stateOne = onClickButton, stateTwo = primary, stateThree = tertiary
     ){
         if (onClickButton) {
-            onClickButton = false
             onClick()
+            onClickButton = false
         }
     }
 
