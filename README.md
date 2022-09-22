@@ -100,3 +100,11 @@ Version 1.3.6_Alpha01 - 20/09/2022
 - Refactor Architecture
 - Implements Use Cases
 - Fixed a bug in the animation of the checkBoxes.
+
+<br>
+<br>
+
+### Version 1.3.20-Alpha01
+Version 1.3.20_Alpha01 - 22/09/2022
+- New features have been added 
+- Some bugs have been fixed.
