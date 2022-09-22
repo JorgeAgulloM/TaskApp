@@ -165,13 +165,13 @@ private fun Content(
         ) {
             ButtonCustomDataScreen(
                 text = stringResource(save),
-                enable = saveEnabled,
+                enable = saveEnabled || error,
                 primary = true,
                 error = error
             ) {
                 confirmDialog = true
             }
-            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled) {
+            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled || error) {
                 cancelDialog = true
             }
             Spacer(modifier = Modifier.padding(top = 16.dp))
