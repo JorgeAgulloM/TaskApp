@@ -93,7 +93,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
 
         LazyColumnChecks(
             modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
-            taskEntities = taskListsUnchecked,//taskEntities.filter { !it.checkState },
+            taskEntities = taskListsUnchecked,
             changeOrder = viewModel::changeOrderUncheckedTask,
             updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading
@@ -104,7 +104,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         LazyColumnChecks(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
             checkedOrNot = true,
-            taskEntities = taskListsChecked,//taskEntities.filter { it.checkState },
+            taskEntities = taskListsChecked,
             changeOrder = viewModel::changeOrderCheckedTask,
             updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading
@@ -131,7 +131,7 @@ private fun RowInfoWithDropMenu(
     changeOrder: KFunction1<TaskOrder, Unit>
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(1f),//.padding(horizontal = 8.dp),
+        modifier = Modifier.fillMaxWidth(1f),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
