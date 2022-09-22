@@ -84,7 +84,7 @@ fun Boolean.containerColorAnimation(finishedListener: () -> Unit?): State<Color>
     animateColorAsState(
         targetValue =
         if (this) MaterialTheme.colorScheme.primaryContainer
-        else MaterialTheme.colorScheme.onBackground,
+        else Color.Transparent,
         animationSpec = tween(
             durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
@@ -125,7 +125,7 @@ fun Boolean.contentColorAsStateAnimation(stateOne: Boolean, stateTwo: Boolean):
     targetValue =
     if (this) MaterialTheme.colorScheme.onError
     else if (stateOne) MaterialTheme.colorScheme.background
-    else if (stateTwo) MaterialTheme.colorScheme.onTertiary
+    else if (stateTwo) MaterialTheme.colorScheme.secondaryContainer
     else MaterialTheme.colorScheme.onBackground,
     animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
 )

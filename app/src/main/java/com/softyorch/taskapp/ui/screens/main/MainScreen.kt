@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.rounded.List
-import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -30,15 +28,13 @@ import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
+import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
-import com.softyorch.taskapp.ui.screens.main.utils.OrderOptions
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.containerColorAnimation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -82,7 +78,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .background(color = MaterialTheme.colorScheme.surfaceVariant)
             .padding(
                 top = it.calculateTopPadding() + 8.dp,
                 bottom = 8.dp,
@@ -134,83 +130,16 @@ private fun RowInfoWithDropMenu(
     text: String,
     changeOrder: KFunction1<TaskOrder, Unit>
 ) {
-    //var order: TaskOrder = TaskOrder.Create(orderType = OrderType.Descending)
     Row(
         modifier = Modifier.fillMaxWidth(1f),//.padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         RowInfo(text = text, paddingStart = 32.dp)
-        orderDropDawnMenu {
+        dropDawnMenuCustom {
             changeOrder(it)
         }
     }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-private fun orderDropDawnMenu(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
-    var expanded by remember { mutableStateOf(value = false) }
-    var orderOption: TaskOrder = TaskOrder.Create(OrderType.Descending)
-    var onClick by remember { mutableStateOf(value = false) }
-    val colorItem by onClick.containerColorAnimation {
-        if (onClick){
-            expanded = false
-            onClick = false
-        }
-    }
-
-    IconButton(
-        onClick = {
-            expanded = true
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.List,
-            contentDescription = "Order of task",
-            tint = MaterialTheme.colorScheme.primary
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            OrderOptions.listOrder.forEach { order ->
-                DropdownMenuItem(
-                    text = {
-                        Text(text = order, style = MaterialTheme.typography.labelSmall, color = colorItem)
-                    },
-                    onClick = {
-                        orderOption =
-                            when (order) {
-                                OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
-                                OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
-                                OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
-                                OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
-                                OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
-                                OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
-                                else -> {
-                                    OrderOptions.CreateAscending().order
-                                }
-                            }
-                        onchangeOrder(orderOption)
-                        onClick = true
-                    },
-                    modifier = Modifier.height(35.dp),//.background(color = colorItem),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Sort,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                )
-            }
-        }
-    }
-
-
-
-    return orderOption
 }
 
 @ExperimentalMaterial3Api

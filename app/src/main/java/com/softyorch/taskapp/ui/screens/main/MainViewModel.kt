@@ -62,7 +62,7 @@ class MainViewModel @Inject constructor(
 
     fun changeOrderCheckedTask(taskOrder: TaskOrder) {
         viewModelScope.launch {
-            loadTaskUnchecked(taskOrder = taskOrder)
+            loadTaskChecked(taskOrder = taskOrder)
         }
     }
 
