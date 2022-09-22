@@ -49,5 +49,5 @@ class FABCustomViewModel @Inject constructor(
     }
 
     fun addTask(taskEntity: TaskEntity) =
-        viewModelScope.launch(Dispatchers.IO) { taskUseCase.updateTask(taskEntity = taskEntity) }
+        viewModelScope.launch(Dispatchers.IO) { taskUseCase.addNewTask(taskEntity = taskEntity) }
 }
