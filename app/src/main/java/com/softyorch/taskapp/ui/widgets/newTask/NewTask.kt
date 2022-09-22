@@ -3,9 +3,7 @@ package com.softyorch.taskapp.ui.widgets.newTask
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Title
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -48,8 +46,6 @@ fun newTask(
     var openDialog by remember { mutableStateOf(true) }
     val dateCreatedFormatted =
         taskEntityToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now()).toStringFormatDate()
-    val dateCompletedFormatted =
-        taskEntityToEdit?.finishDate?.toStringFormatDate() ?: stringResource(unknown)
 
     /** Error states */
     val errorTittle: Boolean by viewModel.errorTittle.observeAsState(initial = false)
@@ -67,7 +63,7 @@ fun newTask(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(1f)
-                    .fillMaxHeight(0.78f)
+                    .height(350.dp)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = MaterialTheme.shapes.large
@@ -82,8 +78,7 @@ fun newTask(
                     ) {
 
                         ShowTaskNewTask(
-                            userName = userName, dateFormatted = dateCreatedFormatted,
-                            dateCompletedFormatted = dateCompletedFormatted
+                            userName = userName, dateFormatted = dateCreatedFormatted
                         )
                         TextFieldCustomNewTaskName(text = title, error = errorTittle) {
                             viewModel.onTextFieldInputChanged(title = it, description = description)
@@ -198,12 +193,10 @@ private fun TextFieldCustomNewTaskName(
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomNewTask (
             text = text,
             label = stringResource(name_task),
             placeholder = stringResource(write_name),
-            icon = Icons.Rounded.Title,
-            contentDescription = stringResource(content_name),
             singleLine = true,
             newTask = true,
             isError = error,
@@ -222,12 +215,10 @@ private fun TextFieldCustomNewTaskDescription(
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomNewTask (
             text = text,
             label = stringResource(task_description),
             placeholder = stringResource(write_description),
-            icon = Icons.Rounded.Description,
-            contentDescription = stringResource(content_description),
             keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                 imeAction = ImeAction.Go
             ),
@@ -243,12 +234,14 @@ private fun TextFieldCustomNewTaskDescription(
 @Composable
 private fun ShowTaskNewTask(
     userName: String,
-    dateFormatted: String,
-    dateCompletedFormatted: String
+    dateFormatted: String
 ) {
-    ShowTask(
-        author = userName,
-        date = dateFormatted,
-        completedDate = dateCompletedFormatted
-    )
+    Column {
+        ShowTask(
+            author = userName,
+            date = dateFormatted
+        )
+        Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp))
+    }
+
 }

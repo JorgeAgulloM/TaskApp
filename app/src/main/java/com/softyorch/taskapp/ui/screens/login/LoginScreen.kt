@@ -284,7 +284,7 @@ private fun TextFieldName(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomInputData(
             text = name,
             label = stringResource(R.string.name),
             placeholder = stringResource(type_your_name),
@@ -311,7 +311,7 @@ private fun TextFieldEmail(
 
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            textFieldCustom(
+            textFieldCustomInputData(
                 text = email,
                 label = stringResource(R.string.email),
                 placeholder = stringResource(type_your_email),
@@ -342,7 +342,7 @@ private fun TextFieldEmailRepeat(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomInputData(
             text = email,
             label = stringResource(R.string.email),
             placeholder = stringResource(repeat_your_email),
@@ -373,7 +373,7 @@ private fun TextFieldPass(
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            textFieldCustom(
+            textFieldCustomInputData(
                 text = pass,
                 label = stringResource(password),
                 placeholder = stringResource(type_your_password),
@@ -407,7 +407,7 @@ private fun TextFieldPassRepeat(
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustom(
+        textFieldCustomInputData(
             text = passRepeat,
             label = stringResource(password),
             placeholder = stringResource(repeat_your_password),

@@ -117,10 +117,10 @@ class UserDataViewModel @Inject constructor(
                     userDataEntityActive.value?.let { userData ->
                         updateUserData(userDataEntity = userData)
                         updateUserDataDatastore(userDataEntity = userData)
-                        _saveEnabled.postValue(false)
                     }
                 }
             }
+            _saveEnabled.postValue(false)
         }
     }
 

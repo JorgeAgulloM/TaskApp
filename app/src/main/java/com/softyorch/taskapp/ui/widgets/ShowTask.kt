@@ -30,7 +30,10 @@ fun ShowTask(
         ) {
             TextCustom(stringResource(created_by), description = true)
             TextCustom(stringResource(created_date), description = true)
-            TextCustom(stringResource(completed_date), description = true)
+            if (completedDate.isNotBlank()) TextCustom(
+                stringResource(completed_date),
+                description = true
+            )
         }
         Column(
             horizontalAlignment = Alignment.Start,
@@ -38,7 +41,7 @@ fun ShowTask(
         ) {
             TextCustom(text = author)
             TextCustom(text = date)
-            TextCustom(text = completedDate)
+            if (completedDate.isNotBlank()) TextCustom(text = completedDate)
         }
     }
 }

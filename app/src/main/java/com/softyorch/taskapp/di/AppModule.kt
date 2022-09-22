@@ -78,12 +78,14 @@ object AppModule {
     @Provides
     fun providesTaskUseCases(taskRepository: TaskRepository): TaskUseCases =
         TaskUseCases(
-            addNewTask = AddNewTask(repository = taskRepository),
-            deleteTask = DeleteTask(repository = taskRepository),
-            deleteAllTask = DeleteAllTask(repository = taskRepository),
             getAllTask = GetAllTask(repository = taskRepository),
+            getCheckedTask = GetCheckedTask(repository = taskRepository),
+            getUncheckedTask = GetUncheckedTask(repository = taskRepository),
             getTaskId = GetTaskId(repository = taskRepository),
-            updateTask = UpdateTask(repository = taskRepository)
+            addNewTask = AddNewTask(repository = taskRepository),
+            updateTask = UpdateTask(repository = taskRepository),
+            deleteTask = DeleteTask(repository = taskRepository),
+            deleteAllTask = DeleteAllTask(repository = taskRepository)
         )
 
     @Singleton
