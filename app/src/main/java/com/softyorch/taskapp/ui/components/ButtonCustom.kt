@@ -28,7 +28,7 @@ fun ButtonCustom(
     var onClickButton by remember { mutableStateOf(value = false) }
 
     val containerColor by error.containerColorAsStateAnimation(
-        stateOne = onClickButton, stateTwo = primary, stateThree = tertiary
+        actionButton = onClickButton, primary = primary, secondary = tertiary
     ){
         if (onClickButton) {
             onClick()
@@ -37,7 +37,7 @@ fun ButtonCustom(
     }
 
     val contentColor by error.contentColorAsStateAnimation(
-        stateOne = primary, stateTwo = tertiary
+        actionButton = primary, primary = tertiary
     )
 
     Button(

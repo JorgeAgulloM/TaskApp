@@ -120,26 +120,30 @@ fun Boolean.intOffsetAnimationTransition(
     )
 
 @Composable
-fun Boolean.contentColorAsStateAnimation(stateOne: Boolean, stateTwo: Boolean):
-        State<Color> = animateColorAsState(
+fun Boolean.contentColorAsStateAnimation(
+    actionButton: Boolean, primary: Boolean
+): State<Color> = animateColorAsState(
     targetValue =
     if (this) MaterialTheme.colorScheme.onError
-    else if (stateOne) MaterialTheme.colorScheme.background
-    else if (stateTwo) MaterialTheme.colorScheme.secondaryContainer
+    else if (actionButton) MaterialTheme.colorScheme.background
+    else if (primary) MaterialTheme.colorScheme.secondaryContainer
     else MaterialTheme.colorScheme.onBackground,
     animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
 )
 
 @Composable
 fun Boolean.containerColorAsStateAnimation(
-    stateOne: Boolean, stateTwo: Boolean, stateThree: Boolean, finishListener: () -> Unit?
-):
-        State<Color> = animateColorAsState(
+    actionButton: Boolean, primary: Boolean, secondary: Boolean, finishListener: () -> Unit?
+): State<Color> = animateColorAsState(
     targetValue =
     if (this) MaterialTheme.colorScheme.error
-    else if (stateOne) MaterialTheme.colorScheme.primaryContainer
-    else if (stateTwo) MaterialTheme.colorScheme.primary
-    else if (stateThree) MaterialTheme.colorScheme.tertiary
+    else if (actionButton) {
+        if (primary) MaterialTheme.colorScheme.onPrimary
+        else if (secondary) MaterialTheme.colorScheme.tertiaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant
+    }
+    else if (primary) MaterialTheme.colorScheme.primary
+    else if (secondary) MaterialTheme.colorScheme.tertiary
     else Color.Transparent,
     animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR),
     finishedListener = { finishListener() }
