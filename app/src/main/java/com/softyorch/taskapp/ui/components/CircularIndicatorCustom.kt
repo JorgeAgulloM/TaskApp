@@ -8,7 +8,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.softyorch.taskapp.utils.infiniteTransitionAnimateColor
+
+@Composable
+fun CircularIndicatorCustomDialog(
+    text: String,
+    modifier: Modifier = Modifier
+){
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    ) {
+        CircularIndicatorCustom(text = text, modifier = modifier)
+    }
+}
 
 @Composable
 fun CircularIndicatorCustom(
@@ -25,11 +40,6 @@ fun CircularIndicatorCustom(
         )
         Text(text = text, style = MaterialTheme.typography.bodyMedium)
     }
-    /*Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-    ) {
 
-    }*/
 }
 

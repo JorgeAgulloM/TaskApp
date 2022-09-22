@@ -165,13 +165,13 @@ private fun Content(
         ) {
             ButtonCustomDataScreen(
                 text = stringResource(save),
-                enable = saveEnabled,
+                enable = saveEnabled || error,
                 primary = true,
                 error = error
             ) {
                 confirmDialog = true
             }
-            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled) {
+            ButtonCustomDataScreen(text = stringResource(cancel), enable = saveEnabled || error) {
                 cancelDialog = true
             }
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -335,7 +335,7 @@ private fun TextFieldCustomDataScreen(
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            textFieldCustom(
+            textFieldCustomInputData(
                 text = text,
                 label = label,
                 placeholder = stringResource(write_your_label) + label.lowercase(),

@@ -1,9 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
-import android.view.PixelCopy
 import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
@@ -11,12 +9,10 @@ import androidx.compose.animation.core.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.datastore.preferences.preferencesDataStore
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 @SuppressLint("SimpleDateFormat")
@@ -46,7 +42,7 @@ fun Context.toastError(message: String, onShow: () -> Unit) {
 
 /** Animations ***************************************************/
 
-@Composable
+/*@Composable
 fun Boolean.alphaAnimation(): State<Float> =
     animateFloatAsState(
         targetValue = if (this) 0.2f else 1f,
@@ -55,6 +51,20 @@ fun Boolean.alphaAnimation(): State<Float> =
             delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         )
+    )*/
+
+@Composable
+fun Boolean.alphaAnimation(
+    stateOne: Boolean = true, stateTwo: Boolean = true, finishedListener: () -> Unit?
+): State<Float> =
+    animateFloatAsState(
+        targetValue = if ((stateOne || stateTwo) && this) 0.2f else 1f,
+        animationSpec = tween(
+            durationMillis = 200,
+            delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
     )
 
 @Composable
@@ -70,12 +80,39 @@ fun Boolean.containerColorAnimation(): State<Color> =
     )
 
 @Composable
-fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> =
+fun Boolean.containerColorAnimation(finishedListener: () -> Unit?): State<Color> =
+    animateColorAsState(
+        targetValue =
+        if (this) MaterialTheme.colorScheme.primaryContainer
+        else Color.Transparent,
+        animationSpec = tween(
+            durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
+fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
+    animateIntOffsetAsState(
+        targetValue = if (stateOne && this) IntOffset(60, 0)
+        else IntOffset(0, 0),
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 100,
+            easing = LinearEasing
+        )
+    )
+
+@Composable
+fun Boolean.intOffsetAnimationTransition(
+    finishedListener: () -> Unit?
+): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (this) IntOffset(0, 0)
         else IntOffset(1500, 0),
         animationSpec = tween(
-            durationMillis = 400,
+            durationMillis = 200,
             delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         ),
@@ -83,25 +120,30 @@ fun Boolean.intOffsetAnimation(finishedListener: () -> Unit?): State<IntOffset> 
     )
 
 @Composable
-fun Boolean.contentColorAsStateAnimation(stateOne: Boolean, stateTwo: Boolean):
-        State<Color> = animateColorAsState(
+fun Boolean.contentColorAsStateAnimation(
+    actionButton: Boolean, primary: Boolean
+): State<Color> = animateColorAsState(
     targetValue =
     if (this) MaterialTheme.colorScheme.onError
-    else if (stateOne) MaterialTheme.colorScheme.background
-    else if (stateTwo) MaterialTheme.colorScheme.onTertiary
+    else if (actionButton) MaterialTheme.colorScheme.background
+    else if (primary) MaterialTheme.colorScheme.secondaryContainer
     else MaterialTheme.colorScheme.onBackground,
     animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR)
 )
 
 @Composable
 fun Boolean.containerColorAsStateAnimation(
-    stateOne: Boolean, stateTwo: Boolean, stateThree: Boolean, finishListener: () -> Unit?):
-        State<Color> = animateColorAsState(
+    actionButton: Boolean, primary: Boolean, secondary: Boolean, finishListener: () -> Unit?
+): State<Color> = animateColorAsState(
     targetValue =
     if (this) MaterialTheme.colorScheme.error
-    else if (stateOne) MaterialTheme.colorScheme.primaryContainer
-    else if (stateTwo) MaterialTheme.colorScheme.primary
-    else if (stateThree) MaterialTheme.colorScheme.tertiary
+    else if (actionButton) {
+        if (primary) MaterialTheme.colorScheme.onPrimary
+        else if (secondary) MaterialTheme.colorScheme.tertiaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant
+    }
+    else if (primary) MaterialTheme.colorScheme.primary
+    else if (secondary) MaterialTheme.colorScheme.tertiary
     else Color.Transparent,
     animationSpec = tween(durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR),
     finishedListener = { finishListener() }
