@@ -65,7 +65,9 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    //val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(initial = emptyList())
+    val taskListsUnchecked: List<TaskEntity> by viewModel.tasksEntityListUnchecked.observeAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -85,7 +87,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
 
         LazyColumnChecks(
             modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
-            taskEntities = taskEntities.filter { !it.checkState },
+            taskEntities = taskListsUnchecked,//taskEntities.filter { !it.checkState },
             updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading,
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
@@ -95,7 +97,7 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         LazyColumnChecks(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
             checkedOrNot = true,
-            taskEntities = taskEntities.filter { it.checkState },
+            taskEntities = taskListsChecked,//taskEntities.filter { it.checkState },
             updateTaskEntity = viewModel::updateTask,
             enabled = !isLoading,
         ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }

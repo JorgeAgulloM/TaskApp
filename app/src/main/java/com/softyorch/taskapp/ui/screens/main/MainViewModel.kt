@@ -18,28 +18,35 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val taskUseCase: TaskUseCases
 ) : ViewModel() {
-    private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
-    val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+    //private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
+    //val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+
+    private val _tasksEntityListUnchecked = MutableLiveData<List<TaskEntity>>()
+    val tasksEntityListUnchecked: LiveData<List<TaskEntity>> = _tasksEntityListUnchecked
+
+    private val _tasksEntityListChecked = MutableLiveData<List<TaskEntity>>()
+    val tasksEntityListChecked: LiveData<List<TaskEntity>> = _tasksEntityListChecked
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _taskToDo = MutableLiveData(0)
-    private val _taskDone = MutableLiveData(0)
 
     init {
         loadData()
     }
 
     private fun loadData(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
-        _isLoading.value = true
-        viewModelScope.launch {
-            taskUseCase.getAllTask(taskOrder = taskOrder).flowOn(Dispatchers.IO).collect { list ->
-                _taskEntityList.postValue(list)
-                updateLists(list)
-
-                _isLoading.postValue(false)
+        viewModelScope.launch{
+            _isLoading.postValue(true)
+            viewModelScope.launch {
+                taskUseCase.getUncheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
+                    .collect { list -> _tasksEntityListUnchecked.postValue(list) }
             }
+
+            viewModelScope.launch {
+                taskUseCase.getCheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
+                    .collect { list -> _tasksEntityListChecked.postValue(list) }
+            }
+            _isLoading.postValue(false)
         }
     }
 
@@ -50,16 +57,7 @@ class MainViewModel @Inject constructor(
         }
         state.join()
 
-        updateLists()
         loadData()
     }
 
-    private fun updateLists(listOfTaskEntities: List<TaskEntity>? = _taskEntityList.value) {
-        listOfTaskEntities?.let { list ->
-            val listToDo = list.filter { task -> !task.checkState }.size
-            val listDone = list.filter { task -> task.checkState }.size
-            _taskToDo.postValue(listToDo)
-            _taskDone.postValue(listDone)
-        }
-    }
 }
