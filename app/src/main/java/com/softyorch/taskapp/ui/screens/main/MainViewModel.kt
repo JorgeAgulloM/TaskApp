@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
+import com.softyorch.taskapp.domain.utils.OrderType
+import com.softyorch.taskapp.domain.utils.TaskOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -26,13 +28,13 @@ class MainViewModel @Inject constructor(
     private val _taskDone = MutableLiveData(0)
 
     init {
-        _isLoading.value = true
         loadData()
     }
 
-    private fun loadData() {
+    private fun loadData(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
+        _isLoading.value = true
         viewModelScope.launch {
-            taskUseCase.getAllTask().flowOn(Dispatchers.IO).collect { list ->
+            taskUseCase.getAllTask(taskOrder = taskOrder).flowOn(Dispatchers.IO).collect { list ->
                 _taskEntityList.postValue(list)
                 updateLists(list)
 

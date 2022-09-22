@@ -20,8 +20,8 @@ class GetAllTask(private val repository: TaskRepository) {
                 }
                 is OrderType.Descending -> {
                     when (taskOrder){
-                        is TaskOrder.Create -> task.sortedBy { it.entryDate }
-                        is TaskOrder.Name -> task.sortedBy { it.title.lowercase() }
+                        is TaskOrder.Create -> task.sortedByDescending { it.entryDate }
+                        is TaskOrder.Name -> task.sortedByDescending { it.title.lowercase() }
                     }
                 }
             }

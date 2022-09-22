@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
+import com.softyorch.taskapp.domain.utils.OrderType
+import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,11 +35,11 @@ class HistoryViewModel @Inject constructor(
         getTask()
     }
 
-    private fun getTask() {
+    private fun getTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
         try {
             _isLoading.value = true
             viewModelScope.launch() {
-                taskUseCase.getAllTask().flowOn(Dispatchers.IO).collect { list ->
+                taskUseCase.getAllTask(taskOrder = taskOrder).flowOn(Dispatchers.IO).collect { list ->
                     if (list.isEmpty()) {
                         showError("Error, la lista está vacía")
                     } else {
