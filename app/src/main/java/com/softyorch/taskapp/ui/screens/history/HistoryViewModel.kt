@@ -39,18 +39,23 @@ class HistoryViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch() {
-                taskUseCase.getAllTask(taskOrder = taskOrder).flowOn(Dispatchers.IO).collect { list ->
-                    if (list.isEmpty()) {
-                        showError("Error, la lista está vacía")
-                    } else {
-                        _taskEntityList.postValue(list)
+                taskUseCase.getAllTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
+                    .collect { list ->
+                        if (list.isEmpty()) {
+                            showError("Error, la lista está vacía")
+                        } else {
+                            _taskEntityList.postValue(list)
+                        }
                     }
-                }
             }
         } catch (e: Exception) {
             showError("" + e.message.toString())
             _isLoading.value = false
         }
+    }
+
+    fun changeOrderTask(taskOrder: TaskOrder) {
+        getTask(taskOrder = taskOrder)
     }
 
     fun errorShown() {

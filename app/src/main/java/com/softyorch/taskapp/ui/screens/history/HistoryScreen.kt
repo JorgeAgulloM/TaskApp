@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.*
@@ -55,7 +56,7 @@ fun HistoryScreen(navController: NavHostController) {
                 }
             }
     }
-    val alphaAnimation: Float by exitDetails.alphaAnimation{}
+    val alphaAnimation: Float by exitDetails.alphaAnimation {}
     val colorAnimation by exitDetails.containerColorAnimation()
     Column(
         modifier = Modifier
@@ -96,6 +97,7 @@ fun HistoryScreen(navController: NavHostController) {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun Content(
     navController: NavHostController,
@@ -117,7 +119,16 @@ private fun Content(
             )
 
     ) {
-        item { Spacer(modifier = Modifier.padding(8.dp)) }
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                dropDawnMenuCustom {
+                    viewModel.changeOrderTask(it)
+                }
+            }
+        }
         items(taskEntities) { task ->
             Row(
                 modifier = Modifier
@@ -149,7 +160,7 @@ private fun TextHeadHistry(
             contentDescription = "Task Finished",
             tint = MaterialTheme.colorScheme.primary
         )
-        else Box(modifier = Modifier.size(24.dp)){}
+        else Box(modifier = Modifier.size(24.dp)) {}
         Text(
             modifier = Modifier.padding(horizontal = 8.dp),
             text = entryDate,
