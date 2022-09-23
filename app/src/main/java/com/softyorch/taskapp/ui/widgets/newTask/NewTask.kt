@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -37,7 +38,9 @@ fun newTask(
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val title: String by viewModel.title.observeAsState(initial = taskEntityToEdit?.title ?: emptyString)
+    val title: String by viewModel.title.observeAsState(
+        initial = taskEntityToEdit?.title ?: emptyString
+    )
     val description: String by viewModel.description.observeAsState(
         initial = taskEntityToEdit?.description ?: emptyString
     )
@@ -45,7 +48,10 @@ fun newTask(
 
     var openDialog by remember { mutableStateOf(true) }
     val dateCreatedFormatted =
-        taskEntityToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now()).toStringFormatDate()
+        taskEntityToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now())
+            .toStringFormatDate()
+
+    val titleDeedCounter: Int by viewModel.titleDeedCounter.observeAsState(initial = 0)
 
     /** Error states */
     val errorTittle: Boolean by viewModel.errorTittle.observeAsState(initial = false)
@@ -63,7 +69,7 @@ fun newTask(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(1f)
-                    .height(350.dp)
+                    .height(370.dp)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = MaterialTheme.shapes.large
@@ -80,7 +86,12 @@ fun newTask(
                         ShowTaskNewTask(
                             userName = userName, dateFormatted = dateCreatedFormatted
                         )
-                        TextFieldCustomNewTaskName(text = title, error = errorTittle) {
+                        TextFieldCustomNewTaskName(
+                            text = title,
+                            error = errorTittle,
+                            titleDeedCounter = titleDeedCounter,
+                            limitCharTittle = viewModel.limitCharTittle
+                        ) {
                             viewModel.onTextFieldInputChanged(title = it, description = description)
                         }
                         TextFieldCustomNewTaskDescription(
@@ -113,25 +124,27 @@ fun newTask(
                         ) {
 
                             ButtonCustomNewTask(
-                                taskEntityToEdit = taskEntityToEdit, enable = saveTaskEnable, error = error
+                                taskEntityToEdit = taskEntityToEdit,
+                                enable = saveTaskEnable,
+                                error = error
                             ) {
                                 viewModel.onTextInputSend(
                                     title = title,
                                     description = description
                                 ).also { error ->
-                                        if (error) {
-                                            showSnackBarErrors = true
-                                        } else {
-                                            addOrEditTaskEntityFunc(
-                                                taskToEditOrNewTask(
-                                                    taskEntityToEdit = taskEntityToEdit, title = title,
-                                                    description = description, userName = userName
-                                                )
+                                    if (error) {
+                                        showSnackBarErrors = true
+                                    } else {
+                                        addOrEditTaskEntityFunc(
+                                            taskToEditOrNewTask(
+                                                taskEntityToEdit = taskEntityToEdit, title = title,
+                                                description = description, userName = userName
                                             )
-                                            viewModel.onResetValues()
-                                            openDialog = false
-                                        }
+                                        )
+                                        viewModel.onResetValues()
+                                        openDialog = false
                                     }
+                                }
                             }
                             ButtonCustom(
                                 onClick = {
@@ -190,10 +203,12 @@ private fun ButtonCustomNewTask(
 private fun TextFieldCustomNewTaskName(
     text: String,
     error: Boolean,
+    titleDeedCounter: Int,
+    limitCharTittle: Int,
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustomNewTask (
+        textFieldCustomNewTask(
             text = text,
             label = stringResource(name_task),
             placeholder = stringResource(write_name),
@@ -202,6 +217,18 @@ private fun TextFieldCustomNewTaskName(
             isError = error,
             onTextFieldChanged = onCheckedChange
         )
+        if (titleDeedCounter > 15) Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text(
+                text = "Chars $titleDeedCounter/$limitCharTittle",
+                style = MaterialTheme.typography.labelSmall,
+                color =
+                if (titleDeedCounter < limitCharTittle) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.error
+            )
+        }
         if (error) IconError(errorText = stringResource(text_input_min_little))
     }
 }
@@ -215,7 +242,7 @@ private fun TextFieldCustomNewTaskDescription(
     onCheckedChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        textFieldCustomNewTask (
+        textFieldCustomNewTask(
             text = text,
             label = stringResource(task_description),
             placeholder = stringResource(write_description),
