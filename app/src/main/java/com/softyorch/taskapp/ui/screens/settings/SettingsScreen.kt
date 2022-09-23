@@ -20,7 +20,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
-import com.softyorch.taskapp.ui.components.switchCustom.SwitchCustom
+import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
@@ -65,7 +65,9 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             SwitchCustomSettings(
                 text = stringResource(light_dark_automatic_theme),
                 checked = settings.lightDarkAutomaticTheme,
-                enabled = enabled
+                enabled = enabled && viewModel.minSdk29,
+                description = if (viewModel.minSdk29) "La aplicación se adapta al tema del dispositivo"
+                else "Solo para vesiones de Android 10 o superior"
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
                 enabled = !enabled
@@ -75,7 +77,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
                 text = stringResource(manual_light_dark),
                 checked = settings.lightOrDarkTheme,
-                enabled = enabled
+                enabled = enabled,
+                description = "Cambia entre el tema claro y oscuro"
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
                 enabled = !enabled
@@ -86,7 +89,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             SwitchCustomSettings(
                 text = stringResource(automatic_language),
                 checked = settings.automaticLanguage,
-                enabled = enabled
+                enabled = enabled,
+                description = "Utiliza el idioma por defecto o elige uno."
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
                 enabled = !enabled
@@ -96,7 +100,9 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             SwitchCustomSettings(
                 text = stringResource(automatic_colors),
                 checked = settings.automaticColors,
-                enabled = enabled
+                enabled = enabled && viewModel.minSdk31,
+                description = if (viewModel.minSdk31) "La aplicación se adapta al color del dispositivo"
+                else "Solo para vesiones de Android 12 o superior"
             ) {
                 settings.automaticColors = !settings.automaticColors
                 enabled = !enabled
@@ -106,7 +112,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             SwitchCustomSettings(
                 text = stringResource(remember_me),
                 checked = settings.rememberMe,
-                enabled = enabled
+                enabled = enabled,
+                description = "No se pedirá login durante el tiempo seleccionado"
             ) {
                 settings.rememberMe = !settings.rememberMe
                 visible = !visible
@@ -190,11 +197,13 @@ private fun SwitchCustomSettings(
     text: String,
     checked: Boolean,
     enabled: Boolean,
+    description: String,
     onCheckedChange: () -> Unit
 ) = SwitchCustom(
     text = text,
     checked = checked,
     enable = enabled,
+    description = description,
     onCheckedChange = { onCheckedChange() }
 )
 
