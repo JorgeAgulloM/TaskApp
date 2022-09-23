@@ -23,6 +23,10 @@ class NewTaskViewModel @Inject constructor() : ViewModel(), ErrorInterface {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _titleDeedCounter = MutableLiveData<Int>(0)
+    val titleDeedCounter: LiveData<Int> = _titleDeedCounter
+    val limitCharTittle = 30
+
     private val _errorTittle = MutableLiveData<Boolean>()
     val errorTittle: LiveData<Boolean> = _errorTittle
 
@@ -35,9 +39,10 @@ class NewTaskViewModel @Inject constructor() : ViewModel(), ErrorInterface {
     private val _foundError = MutableLiveData<Boolean>()
 
     fun onTextFieldInputChanged(title: String, description: String): Boolean {
-        _title.value = title
+        _title.also { it.value = if (title.length <= limitCharTittle) title else it.value }
         _description.value = description
         _saveTaskEnabled.value = true
+        _titleDeedCounter.value = title.length
         if (_foundError.value == true) {
             withOutErrorsNewTask(title = title, description = description).let { error ->
                 setErrors(error = error)
