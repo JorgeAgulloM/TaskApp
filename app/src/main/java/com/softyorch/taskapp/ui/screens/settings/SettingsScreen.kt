@@ -86,7 +86,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
             }
 
 
-            SwitchCustomSettings(
+            /*SwitchCustomSettings(
                 text = stringResource(automatic_language),
                 checked = settings.automaticLanguage,
                 enabled = enabled,
@@ -95,7 +95,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 settings.automaticLanguage = !settings.automaticLanguage
                 enabled = !enabled
                 viewModel.applyChanges()
-            }
+            }*/
 
             SwitchCustomSettings(
                 text = stringResource(automatic_colors),
