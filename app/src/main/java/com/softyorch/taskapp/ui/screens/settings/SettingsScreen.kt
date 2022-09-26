@@ -66,8 +66,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 text = stringResource(light_dark_automatic_theme),
                 checked = settings.lightDarkAutomaticTheme,
                 enabled = enabled && viewModel.minSdk29,
-                description = if (viewModel.minSdk29) "La aplicación se adapta al tema del dispositivo"
-                else "Solo para vesiones de Android 10 o superior"
+                description = if (viewModel.minSdk29) stringResource(settings_app_adapts_theme)
+                else stringResource(settings_only_android_10)
             ) {
                 settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
                 enabled = !enabled
@@ -78,7 +78,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 text = stringResource(manual_light_dark),
                 checked = settings.lightOrDarkTheme,
                 enabled = enabled,
-                description = "Cambia entre el tema claro y oscuro"
+                description = stringResource(settings_switch_light_dark)
             ) {
                 settings.lightOrDarkTheme = !settings.lightOrDarkTheme
                 enabled = !enabled
@@ -90,7 +90,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 text = stringResource(automatic_language),
                 checked = settings.automaticLanguage,
                 enabled = enabled,
-                description = "Utiliza el idioma por defecto o elige uno."
+                description = stringResource(settings_default_language_or_choose)
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
                 enabled = !enabled
@@ -101,8 +101,8 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 text = stringResource(automatic_colors),
                 checked = settings.automaticColors,
                 enabled = enabled && viewModel.minSdk31,
-                description = if (viewModel.minSdk31) "La aplicación se adapta al color del dispositivo"
-                else "Solo para vesiones de Android 12 o superior"
+                description = if (viewModel.minSdk31) stringResource(settings_app_color_adapt)
+                else stringResource(settings_only_android_12)
             ) {
                 settings.automaticColors = !settings.automaticColors
                 enabled = !enabled
@@ -113,7 +113,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 text = stringResource(remember_me),
                 checked = settings.rememberMe,
                 enabled = enabled,
-                description = "No se pedirá login durante el tiempo seleccionado"
+                description = stringResource(settings_autologin_limit_time)
             ) {
                 settings.rememberMe = !settings.rememberMe
                 visible = !visible

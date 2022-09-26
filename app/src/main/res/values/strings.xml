@@ -76,7 +76,7 @@
     <string name="task_description">Task description</string>
     <string name="write_description">Write a description</string>
     <string name="content_description">Description</string>
-    <string name="created_by">Created By:</string>
+    <string name="created_by">Author:</string>
     <string name="created_date">Created date:</string>
     <string name="completed_date">Completed date:</string>
     <string name="one_day">One day</string>
@@ -98,5 +98,14 @@
     <string name="text_input_min_little">Minimum 3 characters.</string>
     <string name="error_email_exist">The entered email already exists.</string>
     <string name="error_email_or_pass">Incorrect email or password.</string>
+    <string name="task_deleted">The task has been deleted</string>
+    <string name="content_is_task_finished">Task finished</string>
+    <string name="settings_app_adapts_theme">The application adapts to the theme of the device</string>
+    <string name="settings_only_android_10">Only for Android 10 or higher versions</string>
+    <string name="settings_switch_light_dark">Switch between light and dark theme</string>
+    <string name="settings_default_language_or_choose">Use the default language or choose one.</string>
+    <string name="settings_app_color_adapt">The application adapts to the color of the device</string>
+    <string name="settings_only_android_12">Only for Android 12 or higher versions</string>
+    <string name="settings_autologin_limit_time">No login will be requested during the selected time</string>
 
 </resources>

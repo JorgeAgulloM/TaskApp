@@ -94,14 +94,14 @@ fun DetailScreen(
                 )
             }
             RowInfo(
-                text = "Detalles",
+                text = stringResource(details),
                 paddingStart = 30.dp,
                 style = MaterialTheme.typography.titleLarge
             )
         }
         if (isLoading || isDeleted) {
             CircularIndicatorCustomDialog(stringResource(loading_loading))
-            if (isDeleted) LocalContext.current.toastError("La tarea ha sido eliminada") {}
+            if (isDeleted) LocalContext.current.toastError(stringResource(task_deleted)) {}
         }
         Content(viewModel = viewModel, navController = navController)
     }
@@ -298,7 +298,7 @@ private fun RowInfoDetail(
     ) {
         if (isFinish) Icon(
             imageVector = Icons.Rounded.Check,
-            contentDescription = "Task finished",
+            contentDescription = stringResource(content_is_task_finished),
             tint = MaterialTheme.colorScheme.primary
         )
         else Box(modifier = Modifier.size(24.dp)) {}
