@@ -13,21 +13,26 @@ class GetAllTask(private val repository: TaskRepository) {
         return repository.getAllTaskFromDatabase().map { task ->
             when (taskOrder.orderType) {
                 is OrderType.Ascending -> {
-                    when (taskOrder){
+                    when (taskOrder) {
                         is TaskOrder.Create -> task.sortedBy { it.entryDate }
                         is TaskOrder.Name -> task.sortedBy { it.title.lowercase() }
                         is TaskOrder.Finish -> task.sortedBy { it.finishDate }
                     }
                 }
                 is OrderType.Descending -> {
-                    when (taskOrder){
+                    when (taskOrder) {
                         is TaskOrder.Create -> task.sortedByDescending { it.entryDate }
                         is TaskOrder.Name -> task.sortedByDescending { it.title.lowercase() }
                         is TaskOrder.Finish -> task.sortedByDescending { it.finishDate }
                     }
                 }
             }
-        }.map { it -> it.sortedBy { it.checkState } }
+        }.map { it ->
+            when (taskOrder.orderType) {
+                OrderType.Ascending -> it.sortedBy { it.checkState }
+                OrderType.Descending -> it.sortedByDescending { it.checkState }
+            }
+        }
     }
 }
 
