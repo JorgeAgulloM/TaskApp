@@ -27,7 +27,7 @@ class GetAllTask(private val repository: TaskRepository) {
                     }
                 }
             }
-        }
+        }.map { it -> it.sortedBy { it.checkState } }
     }
 }
 
