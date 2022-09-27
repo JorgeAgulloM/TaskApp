@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.history
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.ui.components.ContentStickyHeader
 import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
@@ -96,6 +98,7 @@ fun HistoryScreen(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 private fun Content(
@@ -106,6 +109,9 @@ private fun Content(
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
     val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskMap: Map<String, List<TaskEntity>> =
+        taskEntities.groupBy { it.entryDate.toStringFormatDate() }
+
 
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
     LazyColumn(
@@ -128,21 +134,28 @@ private fun Content(
                 }
             }
         }
-        items(taskEntities) { task ->
-            Row(
-                modifier = Modifier
-                    .padding(start = 8.dp, bottom = 8.dp)
-                    .clickable {
-                        navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextHeadHistry(
-                    entryDate = task.entryDate.toStringFormatDate(),
-                    isFinish = task.checkState
-                )
-                TextContentHistory(title = task.title)
+
+        taskMap.forEach { (published, taskEntityList) ->
+            stickyHeader {
+                ContentStickyHeader(published = published)
+            }
+
+            items(taskEntityList) { task ->
+                Row(
+                    modifier = Modifier
+                        .padding(start = 8.dp, bottom = 8.dp)
+                        .clickable {
+                            navController.navigate(AppScreens.DetailsScreen.name + "/${task.id}")
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    TextHeadHistry(
+                        entryDate = task.entryDate.toStringFormatDate(),
+                        isFinish = task.checkState
+                    )
+                    TextContentHistory(title = task.title)
+                }
             }
         }
     }
