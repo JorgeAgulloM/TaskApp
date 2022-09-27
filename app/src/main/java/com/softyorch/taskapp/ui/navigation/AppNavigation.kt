@@ -22,7 +22,7 @@ import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
 @Composable
 fun TaskAppNavigation(
     reloadComposable: () -> Unit,
-    getUserImage: Pair<() -> Unit, String?>
+    //getUserImage: Pair<() -> Unit, String?>
 ) {
     val navController = rememberNavController()
 
@@ -61,7 +61,7 @@ fun TaskAppNavigation(
             SettingsScreen(navController = navController, reloadComposable = reloadComposable)
         }
         composable(route = AppScreensRoutes.UserDataScreen.route) {
-            UserDataScreen(navController = navController, getUserImage = getUserImage)
+            UserDataScreen(navController = navController)//, getUserImage = getUserImage)
         }
     }
 }
