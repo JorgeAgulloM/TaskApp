@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">TaskApp</string>
     <string name="hello_word">Hola Mundo!</string>
-
-
     <string name="io_exception_save_bitmap">No se ha podido guardar el mapa de bits</string>
     <string name="io_exception_create_media_store_entry">No se ha podido crear la entrada de MediaStore</string>
     <string name="add_task">Añadir tarea</string>
@@ -34,13 +32,13 @@
     <string name="remember_me">Recuerdame</string>
     <string name="app_image">imagen de aplicación</string>
     <string name="name">Nombre</string>
-    <string name="type_your_name">escribe tu nombre</string>
+    <string name="type_your_name">Escribe tu nombre</string>
     <string name="email">Email</string>
-    <string name="type_your_email">escribe tu email</string>
-    <string name="repeat_your_email">repite tu email</string>
+    <string name="type_your_email">Escribe tu email</string>
+    <string name="repeat_your_email">Repite tu email</string>
     <string name="password">Contraseña</string>
-    <string name="type_your_password">escribe tu contraseña</string>
-    <string name="repeat_your_password">repite tu contraseña</string>
+    <string name="type_your_password">Escribe tu contraseña</string>
+    <string name="repeat_your_password">Repite tu contraseña</string>
     <string name="main">Inicio</string>
     <string name="my_tasks">Mis Tareas</string>
     <string name="to_be_made">Por hacer…</string>
@@ -73,12 +71,12 @@
     <string name="create">Crear</string>
     <string name="edit_text">Editar tarea</string>
     <string name="name_task">Nombre de tarea</string>
-    <string name="write_name">escribe un nombre</string>
-    <string name="content_name">nombre</string>
+    <string name="write_name">Escribe un nombre</string>
+    <string name="content_name">Nombre</string>
     <string name="task_description">Descripción de la tarea</string>
-    <string name="write_description">escribe una descripción</string>
-    <string name="content_description">description</string>
-    <string name="created_by">Creada por:</string>
+    <string name="write_description">Escribe una descripción</string>
+    <string name="content_description">Description</string>
+    <string name="created_by">Autor:</string>
     <string name="created_date">Creada el:</string>
     <string name="completed_date">Completada el:</string>
     <string name="one_day">Un día</string>
@@ -100,5 +98,14 @@
     <string name="text_input_min_little">Mínimo 3 caracteres.</string>
     <string name="error_email_exist">El email introducido ya esxite.</string>
     <string name="error_email_or_pass">Email o contraseña incorrectos.</string>
+    <string name="task_deleted">La tarea ha sido eliminada</string>
+    <string name="content_is_task_finished">Tarea finalizada</string>
+    <string name="settings_app_adapts_theme">La aplicación se adapta al tema del dispositivo</string>
+    <string name="settings_only_android_10">Solo para vesiones de Android 10 o superior</string>
+    <string name="settings_switch_light_dark">Cambia entre el tema claro y oscuro</string>
+    <string name="settings_default_language_or_choose">Utiliza el idioma por defecto o elige uno.</string>
+    <string name="settings_app_color_adapt">La aplicación se adapta al color del dispositivo</string>
+    <string name="settings_only_android_12">Solo para vesiones de Android 12 o superior</string>
+    <string name="settings_autologin_limit_time">No se pedirá login durante el tiempo seleccionado</string>
 
 </resources>

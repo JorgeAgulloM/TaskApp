@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,16 +19,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
-import com.softyorch.taskapp.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
-private val _newImageGallery = MutableLiveData<String>()
-val newImageGallery: LiveData<String> = _newImageGallery
+//private val _newImageGallery = MutableLiveData<String>()
+//val newImageGallery: LiveData<String> = _newImageGallery
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
@@ -56,9 +51,9 @@ class MainActivity : ComponentActivity() {
                 viewModel.reloadSettings()
                 this.recreate()
             }
-            val coroutineScope = rememberCoroutineScope()
-            var imageResult: String? = newImageGallery.observeAsState().value
-            val getImage: () -> Unit = {
+            //val coroutineScope = rememberCoroutineScope()
+            //var imageResult: String? = newImageGallery.observeAsState().value
+            /*val getImage: () -> Unit = {
                 coroutineScope.launch {
                     coroutineScope.launch {
                         getImageGallery.launch(GALLERY_IMAGES)
@@ -67,21 +62,21 @@ class MainActivity : ComponentActivity() {
                         imageResult = newImageGallery.value
                     }
                 }
-            }
+            }*/
 
-            val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
+            //val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
 
             TaskApp(
                 viewModel = viewModel,
                 reloadComposable = reloadComposable,
-                getUserImage = getUserImage
+                //getUserImage = getUserImage
             )
         }
     }
 
-    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
+/*    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
         if (uri != null) _newImageGallery.value = uri.toString()
-    }
+    }*/
 
     private fun updateOrRequestPermissions() {
         val hasReadPermission = ContextCompat.checkSelfPermission(
@@ -123,13 +118,13 @@ class MainActivity : ComponentActivity() {
 private fun TaskApp(
     viewModel: MainActivityViewModel,
     reloadComposable: () -> Unit,
-    getUserImage: Pair<() -> Unit, String?>
+    //getUserImage: Pair<() -> Unit, String?>
 ) {
 
     val darkSystem: Boolean by viewModel.darkSystem.observeAsState(initial = false)
     val lightOrDark: Boolean by viewModel.lightOrDark.observeAsState(initial = false)
     val colorSystem: Boolean by viewModel.colorSystem.observeAsState(initial = false)
-    val languageAuto: Boolean by viewModel.language.observeAsState(initial = false)
+    //val languageAuto: Boolean by viewModel.language.observeAsState(initial = false)
 
     TaskAppTheme(
         darkTheme = if (darkSystem) isSystemInDarkTheme()
@@ -139,7 +134,7 @@ private fun TaskApp(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation(reloadComposable = reloadComposable, getUserImage = getUserImage)
+            TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
         }
     }
 }

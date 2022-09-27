@@ -80,7 +80,7 @@ private fun LoginOrNewAccount(
     var goOrErrorNewAccount by remember { mutableStateOf(value = false) }
     var goOrErrorLogin by remember { mutableStateOf(value = false) }
 
-    if (isLoading) CircularIndicatorCustom(
+    if (isLoading) CircularIndicatorCustomDialog(
         text = if (!newAccount) stringResource(loading_login) else stringResource(
             loading_loading
         )
