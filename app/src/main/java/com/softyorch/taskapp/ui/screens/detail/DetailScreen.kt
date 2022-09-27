@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -143,15 +144,13 @@ private fun Content(
         ShowTaskDetails(taskEntity = taskEntity)
         Divider(modifier = Modifier.padding(8.dp))
 
-        val scrollState = rememberScrollState(initial = 0)
         Column(
             modifier = Modifier
-                .verticalScroll(state = scrollState)
                 .fillMaxWidth()
                 .fillMaxHeight(1f)
                 .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Top
         ) {
 
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
@@ -314,6 +313,7 @@ private fun RowInfoDetail(
             Icon(
                 modifier = Modifier
                     .padding(end = 16.dp)
+                    .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
                     .clickable { onClickEdit = true },
                 imageVector = Icons.Rounded.ModeEdit,
                 contentDescription = "Edit task",
@@ -322,6 +322,7 @@ private fun RowInfoDetail(
             Icon(
                 modifier = Modifier
                     .padding(end = 16.dp)
+                    .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
                     .clickable { onClickDelete = true },
                 imageVector = Icons.Rounded.Delete,
                 contentDescription = "Delete task",
@@ -335,8 +336,20 @@ private fun RowInfoDetail(
 private fun TextDescriptionDetails(
     description: String
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val columnStart = 0
+    val splitColumn = 4
+    val ratio = 20
+    val scrollState = rememberScrollState(initial = columnStart)
+    val showArrow by remember { derivedStateOf { scrollState.maxValue > columnStart } }
+    val arrowUp by remember { derivedStateOf { scrollState.value >= (scrollState.maxValue - ratio) } }
+    var onClickIcon by remember { mutableStateOf(value = false) }
+    val animatedTint by onClickIcon.editIconColorChangeOnClick {
+        onClickIcon = false
+    }
+
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -344,10 +357,38 @@ private fun TextDescriptionDetails(
             text = "${stringResource(task_description)}:",
             paddingStart = 24.dp
         )
-        Text(
-            text = description,
-            modifier = Modifier.padding(start = 16.dp),
-            color = MaterialTheme.colorScheme.onSurface
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxHeight(0.90f)
+                .verticalScroll(state = scrollState)
+        ) {
+            Text(
+                text = description,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        if (showArrow) Icon(
+            if (arrowUp) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+            contentDescription = stringResource(go_to_up),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
+                .padding(top = 8.dp)
+                .clickable {
+                    onClickIcon = true
+                    coroutineScope.launch {
+                        scrollState.animateScrollTo(
+                            if (arrowUp) columnStart
+                            else if ((scrollState.value + scrollState.maxValue / splitColumn) < scrollState.maxValue) {
+                                scrollState.value + scrollState.maxValue / splitColumn
+                            } else scrollState.maxValue
+                        )
+                    }
+                },
+            tint = animatedTint
         )
     }
 }
