@@ -41,7 +41,7 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
                 var onClick by remember { mutableStateOf(value = false) }
                 DropdownMenuItem(
                     text = {
-                        Text(text = order, style = MaterialTheme.typography.labelSmall)
+                        Text(text = order, style = MaterialTheme.typography.labelLarge)
                     },
                     onClick = {
                         orderOption =
@@ -59,7 +59,7 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
                         onchangeOrder(orderOption)
                         onClick = true
                     },
-                    modifier = Modifier.height(24.dp).padding(vertical = 4.dp).background(
+                    modifier = Modifier.height(40.dp).padding(4.dp).background(
                         color = onClick.containerColorAnimation {
                             if (onClick) {
                                 expanded = false

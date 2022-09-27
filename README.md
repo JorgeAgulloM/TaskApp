@@ -55,6 +55,8 @@ Target SDK 32
 ```text
 Demo 
 ```
+````text
+
 ### Version 1.0.0-Alpha01
 ## Create Task.
 https://www.youtube.com/embed/rOrmNMeZgoU
@@ -104,7 +106,7 @@ Version 1.3.6_Alpha01 - 20/09/2022
 <br>
 <br>
 
-### Version 1.3.20-Alpha01
-Version 1.3.20_Alpha01 - 22/09/2022
+### Version 1.3.28-Alpha01
+Version 1.3.20_Alpha01 - 27/09/2022
 - New features have been added 
-- Some bugs have been fixed.
+````
