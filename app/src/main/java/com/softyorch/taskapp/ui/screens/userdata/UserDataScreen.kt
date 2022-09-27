@@ -27,12 +27,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.ui.activities.newImageGallery
 import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
-import com.softyorch.taskapp.ui.widgets.LogoUserCapitalLetter
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
 
@@ -42,7 +40,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserDataScreen(
     navController: NavHostController,
-    getUserImage: Pair<() -> Unit, String?>
+    //getUserImage: Pair<() -> Unit, String?>
 ) {
     Scaffold(
         topBar = {
@@ -56,7 +54,7 @@ fun UserDataScreen(
         Content(
             it = it,
             navController = navController,
-            getUserImage = getUserImage
+            //getUserImage = getUserImage
         )
     }
 }
@@ -68,24 +66,24 @@ fun UserDataScreen(
 private fun Content(
     it: PaddingValues,
     navController: NavHostController,
-    getUserImage: Pair<() -> Unit, String?>
+    //getUserImage: Pair<() -> Unit, String?>
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
     if (isLoading) CircularIndicatorCustom(text = stringResource(loading_loading))
 
-    val mainImage: String by newImageGallery.observeAsState(initial = emptyString)
-    val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
+    //val mainImage: String by newImageGallery.observeAsState(initial = emptyString)
+    //val savingImage: Boolean by viewModel.savingImage.observeAsState(initial = false)
     val image: String by viewModel.image.observeAsState(initial = emptyString)
-    mainImage.let { new ->
+   /* mainImage.let { new ->
         image.let { old ->
             when (new != emptyString && old != new) {
                 true -> if (!savingImage) viewModel.onImageInputChange(new)
                 false -> if (savingImage) viewModel.resetSavingImage()
             }
         }
-    }
+    }*/
     val name: String by viewModel.name.observeAsState(initial = emptyString)
     val email: String by viewModel.email.observeAsState(initial = emptyString)
     val pass: String by viewModel.pass.observeAsState(initial = emptyString)
@@ -109,8 +107,8 @@ private fun Content(
         verticalArrangement = Arrangement.Top
     ) {
 
-        AsyncImageDataScreen(image = image, userName = name) { getUserImage.first() }
-        Spacer(modifier = Modifier.padding(top = 24.dp))
+        //AsyncImageDataScreen(image = image, userName = name) { getUserImage.first() }
+        //Spacer(modifier = Modifier.padding(top = 24.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -239,14 +237,14 @@ private fun Content(
 
 }
 
-@Composable
+/*@Composable
 private fun AsyncImageDataScreen(
     image: String,
     userName: String,
     getImage: () -> Unit
 ) {
 
-/*    var onError by rememberSaveable { mutableStateOf(value = false) }
+*//*    var onError by rememberSaveable { mutableStateOf(value = false) }
     if (onError) AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(image)
@@ -273,13 +271,13 @@ private fun AsyncImageDataScreen(
         },
         onError = {
             onError = true
-            *//*coroutineScope.launch {
+            *//**//*coroutineScope.launch {
                 delay(2000)
                 reload(image)
-            }*//*
+            }*//**//*
         },
     )
-    else*/
+    else*//*
     val context = LocalContext.current
     val text = stringResource(func_not_active)
 
@@ -295,7 +293,7 @@ private fun AsyncImageDataScreen(
             Toast.LENGTH_SHORT
         ).show()
     }
-}
+}*/
 
 @Composable
 private fun ButtonCustomDataScreen(

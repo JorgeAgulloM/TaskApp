@@ -3,6 +3,8 @@ package com.softyorch.taskapp.ui.screens.detail
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Check
@@ -54,14 +56,14 @@ fun DetailScreen(
     if (!exitDetails) coroutineScope.launch {
         viewModel.getTask(id = id)
         delay(100)
-         enterDetails = true
+        enterDetails = true
     }
 
     val slideCheckBox by enterDetails.intOffsetAnimationTransition {
         if (!enterDetails)
             navController.popBackStack()
     }
-    val alphaAnimation: Float by exitDetails.alphaAnimation{}
+    val alphaAnimation: Float by exitDetails.alphaAnimation {}
     val colorAnimation by exitDetails.containerColorAnimation()
 
     Column(
@@ -94,14 +96,14 @@ fun DetailScreen(
                 )
             }
             RowInfo(
-                text = "Detalles",
+                text = stringResource(details),
                 paddingStart = 30.dp,
                 style = MaterialTheme.typography.titleLarge
             )
         }
         if (isLoading || isDeleted) {
             CircularIndicatorCustomDialog(stringResource(loading_loading))
-            if (isDeleted) LocalContext.current.toastError("La tarea ha sido eliminada") {}
+            if (isDeleted) LocalContext.current.toastError(stringResource(task_deleted)) {}
         }
         Content(viewModel = viewModel, navController = navController)
     }
@@ -126,7 +128,8 @@ private fun Content(
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(8.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
@@ -135,29 +138,17 @@ private fun Content(
             )
     ) {
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        RowInfoDetail(text = stringResource(details))
+        Text(text = stringResource(details), modifier = Modifier.padding(start = 24.dp))
         ShowTaskDetails(taskEntity = taskEntity)
-        Divider(
-            modifier = Modifier.padding(
-                start = 8.dp,
-                end = 8.dp,
-                top = 8.dp,
-                bottom = 16.dp
-            )
-        )
-        RowInfoDetail(
-            text = taskEntity.title,
-            isFinish = taskEntity.checkState,
-            style = MaterialTheme.typography.titleLarge
-        )
-        Spacer(modifier = Modifier.padding(top = 8.dp))
-        TextDescriptionDetails(taskEntity = taskEntity)
+        Divider(modifier = Modifier.padding(8.dp))
 
+        val scrollState = rememberScrollState(initial = 0)
         Column(
             modifier = Modifier
+                .verticalScroll(state = scrollState)
                 .fillMaxWidth()
                 .fillMaxHeight(1f)
-                .padding(vertical = 16.dp),
+                .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -166,6 +157,14 @@ private fun Content(
             var openCompleteDialog by rememberSaveable { mutableStateOf(false) }
             var openResetDialog by rememberSaveable { mutableStateOf(false) }
             var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
+            RowInfoDetail(
+                text = taskEntity.title,
+                isFinish = taskEntity.checkState,
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.padding(top = 8.dp))
+            TextDescriptionDetails(taskEntity = taskEntity)
 
             ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
                 openEditDialog = true
@@ -292,13 +291,15 @@ private fun RowInfoDetail(
     style: TextStyle = MaterialTheme.typography.titleMedium
 ) {
     Row(
-        modifier = Modifier.padding(start = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
         if (isFinish) Icon(
             imageVector = Icons.Rounded.Check,
-            contentDescription = "Task finished",
+            contentDescription = stringResource(content_is_task_finished),
             tint = MaterialTheme.colorScheme.primary
         )
         else Box(modifier = Modifier.size(24.dp)) {}
