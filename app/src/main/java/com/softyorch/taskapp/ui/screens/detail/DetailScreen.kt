@@ -8,7 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -162,6 +162,7 @@ private fun Content(
             RowInfoDetail(
                 text = taskEntity.title,
                 isFinish = taskEntity.checkState,
+                onEdit = { openEditDialog = true },
                 onDelete = { openDeleteDialog = true }
             ) {
                 if (!taskEntity.checkState) openCompleteDialog = true
@@ -169,10 +170,6 @@ private fun Content(
             }
             Spacer(modifier = Modifier.padding(top = 8.dp))
             TextDescriptionDetails(description = taskEntity.description)
-
-            ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
-                openEditDialog = true
-            }
 
             /** Edit Dialog */
             if (openEditDialog) openEditDialog = newTaskDetails(
@@ -283,6 +280,7 @@ private fun ButtonCustomDetails(
 private fun RowInfoDetail(
     text: String,
     isFinish: Boolean = false,
+    onEdit: () -> Unit,
     onDelete: () -> Unit,
     onClick: () -> Unit
 ) {
@@ -293,6 +291,11 @@ private fun RowInfoDetail(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        var onClickEdit by remember { mutableStateOf(value = false) }
+        val colorStateEdit by onClickEdit.editIconColorChangeOnClick {
+            onClickEdit = false
+            onEdit()
+        }
         var onClickDelete by remember { mutableStateOf(value = false) }
         val colorStateDelete by onClickDelete.deleteIconColorChangeOnClick {
             onClickDelete = false
@@ -303,14 +306,28 @@ private fun RowInfoDetail(
             onCheckedChange = { onClick() },
             text = text
         ) {}
-        Icon(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .clickable { onClickDelete = true },
-            imageVector = Icons.Rounded.Delete,
-            contentDescription = "Delete task",
-            tint = colorStateDelete
-        )
+        Row(
+            modifier = Modifier.safeContentPadding(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .clickable { onClickEdit = true },
+                imageVector = Icons.Rounded.ModeEdit,
+                contentDescription = "Edit task",
+                tint = colorStateEdit
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .clickable { onClickDelete = true },
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = "Delete task",
+                tint = colorStateDelete
+            )
+        }
     }
 }
 
