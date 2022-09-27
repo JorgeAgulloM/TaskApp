@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.softyorch.taskapp.R
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
@@ -78,17 +78,16 @@ fun HistoryScreen(navController: NavHostController) {
                 modifier = Modifier
                     .padding(start = 8.dp, top = 8.dp)
                     .background(color = colorAnimation, shape = MaterialTheme.shapes.large),
-                //colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor)
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(
-                        R.string.go_to_home
+                        go_to_home
                     )
                 )
             }
             RowInfo(
-                text = "Historial",
+                text = stringResource(history),
                 paddingStart = 30.dp,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -157,7 +156,7 @@ private fun TextHeadHistry(
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
         if (isFinish) Icon(
             imageVector = Icons.Rounded.Check,
-            contentDescription = "Task Finished",
+            contentDescription = stringResource(content_is_task_finished),
             tint = MaterialTheme.colorScheme.primary
         )
         else Box(modifier = Modifier.size(24.dp)) {}

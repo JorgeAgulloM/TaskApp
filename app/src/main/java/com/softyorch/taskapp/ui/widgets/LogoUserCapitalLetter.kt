@@ -29,7 +29,7 @@ fun LogoUserCapitalLetter(capitalLetter: String, size: Dp, function: () -> Unit)
         modifier = Modifier
             .size(weight, size)
             .padding(horizontal = padding)
-            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.small)
             .background(
                 color = MaterialTheme.colorScheme.primary,
                 shape = MaterialTheme.shapes.small

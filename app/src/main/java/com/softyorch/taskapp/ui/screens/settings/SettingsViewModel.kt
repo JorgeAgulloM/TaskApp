@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.settings
 
 
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,6 +32,10 @@ class SettingsViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    //private val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    val minSdk31 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
     init {
         _isLoading.value = true
         loadUserData()
@@ -46,7 +51,16 @@ class SettingsViewModel @Inject constructor(
                 is Resource.Success -> {
                     resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
                         userDataUseCases.getUserEmailExist(email = data.userEmail).let { user ->
+                            var isNeedUpdate = false
+                            if (!minSdk29) {
+                                user?.lightDarkAutomaticTheme = false
+                                if (!minSdk31) {
+                                    user?.automaticColors = false
+                                    isNeedUpdate = true
+                                }
+                            }
                             _settings.postValue(user)
+                            if (isNeedUpdate) updatePreferences(userDataEntity = user!!)
                             _isLoading.postValue(false)
                         }
                     }
@@ -81,6 +95,7 @@ class SettingsViewModel @Inject constructor(
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity = userDataEntity)
+
     private suspend fun updateData(userDataEntity: UserDataEntity) =
         datastore.saveData(userDataEntity = userDataEntity)
 

@@ -35,6 +35,7 @@ import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.contentColorAsSateAnimation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -207,6 +208,7 @@ private fun LazyColumnChecks(
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
                 val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
+                var onClickIcon by remember { mutableStateOf(value = false) }
 
                 if (itemsFilter > 0) {
                     Icon(
@@ -215,13 +217,19 @@ private fun LazyColumnChecks(
                         modifier = Modifier
                             .padding(top = 4.dp, start = 8.dp)
                             .clickable {
-                                if (showIcon) coroutineScope.launch {
-                                    lazyState.animateScrollToItem(
-                                        0
-                                    )
+                                onClickIcon = true
+                                coroutineScope.launch {
+                                    lazyState.let {
+                                        lazyState.animateScrollToItem(
+                                            index = if (it.firstVisibleItemIndex > 0) 0
+                                            else it.layoutInfo.totalItemsCount
+                                        )
+                                    }
                                 }
                             },
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = onClickIcon.contentColorAsSateAnimation {
+                            onClickIcon = false
+                        }.value
                     )
                 } else Box(modifier = Modifier.height(28.dp)) {}
             } else RowInfo(

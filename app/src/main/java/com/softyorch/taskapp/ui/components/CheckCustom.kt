@@ -6,11 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.utils.alphaAnimation
 import com.softyorch.taskapp.utils.intOffsetAnimation
 
 @ExperimentalMaterial3Api
@@ -26,24 +24,18 @@ fun CheckCustom(
 ) {
 
     var clickOnTask by remember { mutableStateOf(value = false) }
-    var clickOnCheck by remember { mutableStateOf(value = false) }
-
     val slideCheckBox by animated.intOffsetAnimation(stateOne = clickOnTask)
-    val alphaTask by animated.alphaAnimation( stateOne = clickOnTask, stateTwo = clickOnCheck){
-        clickOnCheck = false
-        if (clickOnTask) onClick.invoke()
-    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth(1f)
             .padding(end = 8.dp)
             .height(35.dp)
-            .graphicsLayer(alpha = alphaTask)
             .offset {
                 slideCheckBox
             }
             .clickable {
+                onClick()
                 clickOnTask = true
             },
         verticalAlignment = Alignment.CenterVertically,
@@ -53,7 +45,7 @@ fun CheckCustom(
         Checkbox(
             checked = checked,
             onCheckedChange = {
-                clickOnCheck = true
+
                 onCheckedChange(it)
             },
             enabled = enabled,
