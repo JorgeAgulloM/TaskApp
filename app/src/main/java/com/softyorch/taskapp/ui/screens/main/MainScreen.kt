@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.main
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -30,12 +31,14 @@ import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
+import com.softyorch.taskapp.ui.components.ContentStickyHeader
 import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.contentColorAsSateAnimation
+import com.softyorch.taskapp.utils.toStringFormatDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -143,6 +146,7 @@ private fun RowInfoWithDropMenu(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 private fun LazyColumnChecks(
@@ -173,7 +177,10 @@ private fun LazyColumnChecks(
             ),
             changeOrder = changeOrder
         )
-        if (taskEntities.isNotEmpty())
+        if (taskEntities.isNotEmpty()) {
+            val taskMap: Map<String, List<TaskEntity>> =
+                taskEntities.groupBy { it.entryDate.toStringFormatDate() }
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
@@ -183,27 +190,36 @@ private fun LazyColumnChecks(
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
                 ) {
-                    items(taskEntities) { task ->
-                        var myCheck by remember { mutableStateOf(value = task.checkState) }
 
-                        CheckCustomMain(
-                            checked = myCheck,
-                            title = task.title,
-                            onCheckedChange = {
-                                myCheck = it
-                                task.checkState = it
-                                task.finishDate = if (it) Date.from(Instant.now()) else null
-                                coroutineScope.launch {
-                                    delay(400)
-                                    myCheck = !it
-                                    updateTaskEntity(task)
-                                }
-                            },
-                            enabled = enabled
-                        ) {
-                            onClick(task.id)
+                    taskMap.forEach { (published, taskEntityList) ->
+                        stickyHeader {
+                            ContentStickyHeader(published = published)
+                        }
+
+                        items(taskEntityList) { task ->
+                            var myCheck by remember { mutableStateOf(value = task.checkState) }
+
+                            CheckCustomMain(
+                                checked = myCheck,
+                                title = task.title,
+                                onCheckedChange = {
+                                    myCheck = it
+                                    task.checkState = it
+                                    task.finishDate = if (it) Date.from(Instant.now()) else null
+                                    coroutineScope.launch {
+                                        delay(400)
+                                        myCheck = !it
+                                        updateTaskEntity(task)
+                                    }
+                                },
+                                enabled = enabled
+                            ) {
+                                onClick(task.id)
+                            }
                         }
                     }
+
+
                 }
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
@@ -232,7 +248,8 @@ private fun LazyColumnChecks(
                         }.value
                     )
                 } else Box(modifier = Modifier.height(28.dp)) {}
-            } else RowInfo(
+            }
+        } else RowInfo(
             text = if (checkedOrNot) stringResource(not_yet_complet_any_task) else stringResource(
                 add_new_task
             ),
