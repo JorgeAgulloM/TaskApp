@@ -81,10 +81,13 @@ private fun Content(
     it: PaddingValues,
     viewModel: MainViewModel,
     navController: NavController,
-    configuration: Configuration) {
+    configuration: Configuration
+) {
 
+    val standardPadding = 8
     val maxHeight = configuration.screenHeightDp
     val maxWidth = configuration.screenWidthDp
+    val splitWidth = maxWidth / 2 - (standardPadding + (standardPadding / 2))
 
     val modifier = Modifier
         .fillMaxSize()
@@ -98,15 +101,16 @@ private fun Content(
 
     when (configuration.orientation) {
         ORIENTATION_LANDSCAPE -> {
+            val modifierForLazy = Modifier
+                .fillMaxHeight()
+                .width(splitWidth.dp)
             Row(
                 modifier = modifier,
                 verticalAlignment = Alignment.Top
             ) {
                 OrientableContent(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        //.heightIn(min = 20.dp, max = (maxHeight).dp - it.calculateTopPadding())
-                        .width((maxWidth / 2).dp),
+                    modifier = modifierForLazy,
+                    modifierForCheckedTasks = modifierForLazy,
                     viewModel,
                     navController
                 )
@@ -121,6 +125,9 @@ private fun Content(
                     modifier = Modifier
                         .heightIn(min = 20.dp, max = (maxHeight / 2).dp)
                         .width(maxWidth.dp),
+                    modifierForCheckedTasks = Modifier
+                        .heightIn(min = 20.dp, max = (maxHeight).dp)
+                        .width(maxWidth.dp),
                     viewModel,
                     navController
                 )
@@ -133,6 +140,7 @@ private fun Content(
 @Composable
 private fun OrientableContent(
     modifier: Modifier,
+    modifierForCheckedTasks: Modifier,
     viewModel: MainViewModel,
     navController: NavController
 ) {
@@ -150,8 +158,14 @@ private fun OrientableContent(
             .safeContentPadding()
     )
 
+    var maxHeight = 0.1f
+    taskListsUnchecked.count().let {
+        if (it > 0) maxHeight = if (it < 8) (0.1f * it) + 0.1f else 0.8f
+    }
+
     LazyColumnChecks(
         modifier = modifier,
+        maxHeight = maxHeight,
         taskEntities = taskListsUnchecked,
         changeOrder = viewModel::changeOrderUncheckedTask,
         updateTaskEntity = viewModel::updateTask,
@@ -161,7 +175,7 @@ private fun OrientableContent(
     Spacer(modifier = Modifier.padding(4.dp))
 
     LazyColumnChecks(
-        modifier = modifier,
+        modifier = modifierForCheckedTasks.fillMaxHeight(),
         checkedOrNot = true,
         taskEntities = taskListsChecked,
         changeOrder = viewModel::changeOrderCheckedTask,
@@ -193,6 +207,7 @@ private fun RowInfoWithDropMenu(
 @Composable
 private fun LazyColumnChecks(
     modifier: Modifier,
+    maxHeight: Float = 0.9f,
     checkedOrNot: Boolean = false,
     taskEntities: List<TaskEntity>,
     changeOrder: KFunction1<TaskOrder, Unit>,
@@ -210,7 +225,7 @@ private fun LazyColumnChecks(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
             ),
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.Start
     ) {
         RowInfoWithDropMenu(
@@ -224,11 +239,11 @@ private fun LazyColumnChecks(
                 taskEntities.groupBy { it.entryDate.toStringFormatDate() }
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxHeight(0.9f),
+                    modifier = Modifier.fillMaxHeight(maxHeight),
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
@@ -242,9 +257,8 @@ private fun LazyColumnChecks(
                         items(taskEntityList) { task ->
                             var myCheck by remember { mutableStateOf(value = task.checkState) }
 
-                            CheckCustomMain(
+                            CheckCustom(
                                 checked = myCheck,
-                                title = task.title,
                                 onCheckedChange = {
                                     myCheck = it
                                     task.checkState = it
@@ -255,7 +269,9 @@ private fun LazyColumnChecks(
                                         updateTaskEntity(task)
                                     }
                                 },
-                                enabled = enabled
+                                enabled = enabled,
+                                animated = true,
+                                text = task.title
                             ) {
                                 onClick(task.id)
                             }
@@ -263,15 +279,30 @@ private fun LazyColumnChecks(
                     }
                 }
 
-                val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
-                val itemsFilter by remember { derivedStateOf { lazyState.layoutInfo.totalItemsCount - lazyState.layoutInfo.visibleItemsInfo.count() } }
+                val arrowUp by remember {
+                    derivedStateOf {
+                        lazyState.firstVisibleItemIndex > 0
+                    }
+                }
+                val showIcon by remember {
+                    derivedStateOf {
+                        (lazyState.layoutInfo.visibleItemsInfo.count() <
+                                lazyState.layoutInfo.totalItemsCount ||
+                                lazyState.firstVisibleItemIndex > 0) ||
+                                arrowUp
+                    }
+                }
+
                 var onClickIcon by remember { mutableStateOf(value = false) }
 
-                if (itemsFilter > 0) {
+                if (showIcon) {
                     Icon(
-                        imageVector = if (showIcon) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        imageVector =
+                        if (arrowUp) Icons.Filled.KeyboardArrowUp
+                        else Icons.Filled.KeyboardArrowDown,
                         contentDescription = stringResource(go_to_up),
                         modifier = Modifier
+                            .size(25.dp)
                             .align(Alignment.CenterHorizontally)
                             .padding(start = 8.dp)
                             .clickable {
@@ -289,7 +320,7 @@ private fun LazyColumnChecks(
                             onClickIcon = false
                         }.value
                     )
-                } else Box(modifier = Modifier.height(28.dp)) {}
+                } else Box(modifier = Modifier.height(25.dp)) {}
             }
         } else RowInfo(
             text = if (checkedOrNot) stringResource(not_yet_complet_any_task) else stringResource(
@@ -297,28 +328,5 @@ private fun LazyColumnChecks(
             ),
             paddingStart = 16.dp
         )
-        //Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp))
     }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@ExperimentalMaterial3Api
-@Composable
-private fun CheckCustomMain(
-    checked: Boolean,
-    title: String,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    CheckCustom(
-        checked = checked,
-        onCheckedChange = {
-            onCheckedChange(it)
-        },
-        enabled = enabled,
-        animated = true,
-        text = title,
-        onClick = { onClick() }
-    )
 }
