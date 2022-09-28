@@ -1,6 +1,8 @@
 package com.softyorch.taskapp.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
+import android.content.res.Configuration.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,8 +21,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -54,7 +56,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
     Scaffold(
         topBar = {
             TopAppBarCustom(
-                title = stringResource(main),
+                title = stringResource(my_tasks),
                 isMainScreen = true,
                 nameScreen = AppScreens.MainScreen.name,
                 navController = navController,
@@ -64,13 +66,76 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
             FABCustom()
         },
     ) {
-        Content(it = it, viewModel = mainViewModel, navController = navController)
+        Content(
+            it = it,
+            viewModel = mainViewModel,
+            navController = navController,
+            configuration = LocalConfiguration.current
+        )
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: NavController) {
+private fun Content(
+    it: PaddingValues,
+    viewModel: MainViewModel,
+    navController: NavController,
+    configuration: Configuration) {
+
+    val maxHeight = configuration.screenHeightDp
+    val maxWidth = configuration.screenWidthDp
+
+    val modifier = Modifier
+        .fillMaxSize()
+        .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+        .padding(
+            top = it.calculateTopPadding() + 8.dp,
+            bottom = 8.dp,
+            start = 8.dp,
+            end = 8.dp
+        )
+
+    when (configuration.orientation) {
+        ORIENTATION_LANDSCAPE -> {
+            Row(
+                modifier = modifier,
+                verticalAlignment = Alignment.Top
+            ) {
+                OrientableContent(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        //.heightIn(min = 20.dp, max = (maxHeight).dp - it.calculateTopPadding())
+                        .width((maxWidth / 2).dp),
+                    viewModel,
+                    navController
+                )
+            }
+        }
+        else -> {
+            Column(
+                modifier = modifier,
+                verticalArrangement = Arrangement.Top
+            ) {
+                OrientableContent(
+                    modifier = Modifier
+                        .heightIn(min = 20.dp, max = (maxHeight / 2).dp)
+                        .width(maxWidth.dp),
+                    viewModel,
+                    navController
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun OrientableContent(
+    modifier: Modifier,
+    viewModel: MainViewModel,
+    navController: NavController
+) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(
         initial = emptyList()
@@ -79,53 +144,30 @@ private fun Content(it: PaddingValues, viewModel: MainViewModel, navController: 
         initial = emptyList()
     )
 
-    Column(
+    if (isLoading) CircularIndicatorCustomDialog(
+        text = stringResource(loading_loading),
         modifier = Modifier
-            .fillMaxSize(1f)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-            .padding(
-                top = it.calculateTopPadding() + 8.dp,
-                bottom = 8.dp,
-                start = 8.dp,
-                end = 8.dp
-            ),
-        verticalArrangement = Arrangement.Top
-    ) {
+            .safeContentPadding()
+    )
 
-        RowInfoMain(text = stringResource(my_tasks), style = MaterialTheme.typography.titleLarge)
-        Divider(modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 8.dp))
+    LazyColumnChecks(
+        modifier = modifier,
+        taskEntities = taskListsUnchecked,
+        changeOrder = viewModel::changeOrderUncheckedTask,
+        updateTaskEntity = viewModel::updateTask,
+        enabled = !isLoading
+    ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
-        LazyColumnChecks(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 20.dp, max = 260.dp),
-            taskEntities = taskListsUnchecked,
-            changeOrder = viewModel::changeOrderUncheckedTask,
-            updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading
-        ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
+    Spacer(modifier = Modifier.padding(4.dp))
 
-        Spacer(modifier = Modifier.padding(8.dp))
-
-        LazyColumnChecks(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.83f),
-            checkedOrNot = true,
-            taskEntities = taskListsChecked,
-            changeOrder = viewModel::changeOrderCheckedTask,
-            updateTaskEntity = viewModel::updateTask,
-            enabled = !isLoading
-        ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
-
-        if (isLoading) CircularIndicatorCustomDialog(
-            text = stringResource(loading_loading),
-            modifier = Modifier
-                .safeContentPadding()
-                .align(Alignment.CenterHorizontally)
-        )
-    }
-}
-
-@Composable
-private fun RowInfoMain(text: String, style: TextStyle = MaterialTheme.typography.titleMedium) {
-    RowInfo(text = text, paddingStart = 32.dp, style = style)
+    LazyColumnChecks(
+        modifier = modifier,
+        checkedOrNot = true,
+        taskEntities = taskListsChecked,
+        changeOrder = viewModel::changeOrderCheckedTask,
+        updateTaskEntity = viewModel::updateTask,
+        enabled = !isLoading
+    ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 }
 
 @ExperimentalMaterial3Api
@@ -162,7 +204,7 @@ private fun LazyColumnChecks(
     val lazyState = rememberLazyListState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
@@ -182,10 +224,11 @@ private fun LazyColumnChecks(
                 taskEntities.groupBy { it.entryDate.toStringFormatDate() }
 
             Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = modifier,
+                    modifier = Modifier.fillMaxHeight(0.9f),
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()
@@ -218,8 +261,6 @@ private fun LazyColumnChecks(
                             }
                         }
                     }
-
-
                 }
 
                 val showIcon by remember { derivedStateOf { lazyState.firstVisibleItemIndex > 0 } }
@@ -231,7 +272,8 @@ private fun LazyColumnChecks(
                         imageVector = if (showIcon) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                         contentDescription = stringResource(go_to_up),
                         modifier = Modifier
-                            .padding(top = 4.dp, start = 8.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(start = 8.dp)
                             .clickable {
                                 onClickIcon = true
                                 coroutineScope.launch {
@@ -255,7 +297,7 @@ private fun LazyColumnChecks(
             ),
             paddingStart = 16.dp
         )
-        Divider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
+        //Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp))
     }
 }
 
