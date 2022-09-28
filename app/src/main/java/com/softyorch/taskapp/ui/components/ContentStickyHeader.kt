@@ -25,7 +25,7 @@ fun ContentStickyHeader(published: String) {
         Text(
             text = "Publicación $published",
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.6f)
                 .padding(horizontal = 8.dp)
                 .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
                 .background(
