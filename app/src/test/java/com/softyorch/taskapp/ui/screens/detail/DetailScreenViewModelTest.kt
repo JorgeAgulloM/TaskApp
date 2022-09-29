@@ -29,7 +29,7 @@ class DetailScreenViewModelTest {
 
     private val id = UUID.randomUUID()
 
-    private val taskList = listOf(
+    private var taskList = listOf(
         TaskEntity(id = id, title = "test", description = "Testing", author = "jorge"),
         TaskEntity(
             id = UUID.randomUUID(),
@@ -39,7 +39,7 @@ class DetailScreenViewModelTest {
         )
     )
 
-    private val task: Resource<TaskEntity> = Resource.Success(
+    private var task: Resource<TaskEntity> = Resource.Success(
         data = taskList.first()
     )
 
@@ -63,35 +63,14 @@ class DetailScreenViewModelTest {
         runTest {
 
             //Given
-            coEvery { taskUseCase.getTaskId.invoke(taskId = id.toString()) } returns task
+            coEvery { taskUseCase.getTaskId.invoke(taskId = taskList.first().id.toString()) } returns task
 
             //When
-            detailScreenViewModel.getTask(id = id.toString())
+            detailScreenViewModel.getTask(id = taskList.first().id.toString())
 
             //then
             delay(500)
             assert(detailScreenViewModel.taskEntityDetail.value == task.data)
-        }
-
-    @Test
-    fun `cuando se realiza un update de la task mostrada`() =
-        runTest {
-            val taskUpdate = taskList.first().copy(title = "change title")
-
-            //Given
-            coEvery {
-                taskUseCase.getTaskId.invoke(taskId = id.toString())
-                taskUseCase.updateTask.invoke(taskEntity = taskUpdate)
-            }
-
-            //When
-            detailScreenViewModel.updateTask(taskEntity = taskUpdate)
-            delay(1000)
-            detailScreenViewModel.getTask(id = taskUpdate.id.toString())
-
-            //then
-            delay(500)
-            assert(detailScreenViewModel.taskEntityDetail.value == taskUpdate)
         }
 
 }
