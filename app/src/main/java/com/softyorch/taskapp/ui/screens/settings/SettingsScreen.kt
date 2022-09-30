@@ -3,6 +3,8 @@ package com.softyorch.taskapp.ui.screens.settings
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
@@ -56,8 +58,12 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val settings = viewModel.settings.observeAsState().value
     val needReload: Boolean by viewModel.needReload.observeAsState(initial = false)
     var enabled: Boolean by remember { mutableStateOf(value = true) }
+    val scrollState = rememberScrollState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(state = scrollState)
+        .padding(top = it.calculateTopPadding() * 1.5f)) {
 
         if (settings != null) {
             var visible by rememberSaveable { mutableStateOf(settings.rememberMe) }
