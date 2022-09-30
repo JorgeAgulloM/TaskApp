@@ -2,12 +2,13 @@ package com.softyorch.taskapp.ui.screens.detail
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,10 +16,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
@@ -142,15 +144,13 @@ private fun Content(
         ShowTaskDetails(taskEntity = taskEntity)
         Divider(modifier = Modifier.padding(8.dp))
 
-        val scrollState = rememberScrollState(initial = 0)
         Column(
             modifier = Modifier
-                .verticalScroll(state = scrollState)
                 .fillMaxWidth()
                 .fillMaxHeight(1f)
                 .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Top
         ) {
 
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
@@ -161,24 +161,14 @@ private fun Content(
             RowInfoDetail(
                 text = taskEntity.title,
                 isFinish = taskEntity.checkState,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.padding(top = 8.dp))
-            TextDescriptionDetails(taskEntity = taskEntity)
-
-            ButtonCustomDetails(text = stringResource(edit_task), primary = true) {
-                openEditDialog = true
-            }
-            ButtonCustomDetails(
-                text = if (!taskEntity.checkState) stringResource(complete) else stringResource(
-                    completed
-                ),
-                primary = true
+                onEdit = { openEditDialog = true },
+                onDelete = { openDeleteDialog = true }
             ) {
                 if (!taskEntity.checkState) openCompleteDialog = true
                 if (taskEntity.checkState) openResetDialog = true
             }
-            ButtonCustomDetails(text = stringResource(delete)) { openDeleteDialog = true }
+            Spacer(modifier = Modifier.padding(top = 8.dp))
+            TextDescriptionDetails(description = taskEntity.description)
 
             /** Edit Dialog */
             if (openEditDialog) openEditDialog = newTaskDetails(
@@ -284,42 +274,123 @@ private fun ButtonCustomDetails(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RowInfoDetail(
     text: String,
     isFinish: Boolean = false,
-    style: TextStyle = MaterialTheme.typography.titleMedium
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (isFinish) Icon(
-            imageVector = Icons.Rounded.Check,
-            contentDescription = stringResource(content_is_task_finished),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        else Box(modifier = Modifier.size(24.dp)) {}
-        RowInfo(
-            text = text,
-            paddingStart = 4.dp,
-            style = style
-        )
+        var onClickEdit by remember { mutableStateOf(value = false) }
+        val colorStateEdit by onClickEdit.editIconColorChangeOnClick {
+            onClickEdit = false
+            onEdit()
+        }
+        var onClickDelete by remember { mutableStateOf(value = false) }
+        val colorStateDelete by onClickDelete.deleteIconColorChangeOnClick {
+            onClickDelete = false
+            onDelete()
+        }
+        CheckCustom(
+            checked = isFinish,
+            onCheckedChange = { onClick() },
+            text = text
+        ) {}
+        Row(
+            modifier = Modifier.safeContentPadding(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
+                    .clickable { onClickEdit = true },
+                imageVector = Icons.Rounded.ModeEdit,
+                contentDescription = "Edit task",
+                tint = colorStateEdit
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
+                    .clickable { onClickDelete = true },
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = "Delete task",
+                tint = colorStateDelete
+            )
+        }
     }
 }
 
 @Composable
 private fun TextDescriptionDetails(
-    taskEntity: TaskEntity
+    description: String
 ) {
-    Text(
-        text = taskEntity.description,
-        modifier = Modifier.padding(start = 16.dp),
-        color = MaterialTheme.colorScheme.onSurface
-    )
+    val coroutineScope = rememberCoroutineScope()
+    val columnStart = 0
+    val splitColumn = 4
+    val ratio = 20
+    val scrollState = rememberScrollState(initial = columnStart)
+    val showArrow by remember { derivedStateOf { scrollState.maxValue > columnStart } }
+    val arrowUp by remember { derivedStateOf { scrollState.value >= (scrollState.maxValue - ratio) } }
+    var onClickIcon by remember { mutableStateOf(value = false) }
+    val animatedTint by onClickIcon.editIconColorChangeOnClick {
+        onClickIcon = false
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
+        RowInfo(
+            text = "${stringResource(task_description)}:",
+            paddingStart = 24.dp
+        )
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxHeight(0.90f)
+                .verticalScroll(state = scrollState)
+        ) {
+            Text(
+                text = description,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        if (showArrow) Icon(
+            if (arrowUp) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+            contentDescription = stringResource(go_to_up),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .background(color = Color.Transparent, shape = MaterialTheme.shapes.large)
+                .padding(top = 8.dp)
+                .clickable {
+                    onClickIcon = true
+                    coroutineScope.launch {
+                        scrollState.animateScrollTo(
+                            if (arrowUp) columnStart
+                            else if ((scrollState.value + scrollState.maxValue / splitColumn) < scrollState.maxValue) {
+                                scrollState.value + scrollState.maxValue / splitColumn
+                            } else scrollState.maxValue
+                        )
+                    }
+                },
+            tint = animatedTint
+        )
+    }
 }
 
 @Composable

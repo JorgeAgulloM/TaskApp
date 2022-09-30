@@ -80,6 +80,30 @@ fun Boolean.containerColorAnimation(): State<Color> =
     )
 
 @Composable
+fun Boolean.deleteIconColorChangeOnClick(finishedListener: () -> Unit): State<Color> =
+    animateColorAsState(
+        targetValue = if (this) MaterialTheme.colorScheme.error else
+            MaterialTheme.colorScheme.errorContainer,
+        animationSpec = tween(
+            durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
+fun Boolean.editIconColorChangeOnClick(finishedListener: () -> Unit): State<Color> =
+    animateColorAsState(
+        targetValue = if (this) MaterialTheme.colorScheme.primary else
+            MaterialTheme.colorScheme.primaryContainer,
+        animationSpec = tween(
+            durationMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
 fun Boolean.containerColorAnimation(finishedListener: () -> Unit?): State<Color> =
     animateColorAsState(
         targetValue =
