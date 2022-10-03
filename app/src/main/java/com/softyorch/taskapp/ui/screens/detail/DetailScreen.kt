@@ -140,7 +140,6 @@ private fun Content(
             )
     ) {
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        Text(text = stringResource(details), modifier = Modifier.padding(start = 24.dp))
         ShowTaskDetails(taskEntity = taskEntity)
         Divider(modifier = Modifier.padding(8.dp))
 
@@ -167,7 +166,7 @@ private fun Content(
                 if (!taskEntity.checkState) openCompleteDialog = true
                 if (taskEntity.checkState) openResetDialog = true
             }
-            Spacer(modifier = Modifier.padding(top = 8.dp))
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
             TextDescriptionDetails(description = taskEntity.description)
 
             /** Edit Dialog */
@@ -353,10 +352,6 @@ private fun TextDescriptionDetails(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        RowInfo(
-            text = "${stringResource(task_description)}:",
-            paddingStart = 24.dp
-        )
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
