@@ -21,7 +21,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
+import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
@@ -59,6 +59,11 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val needReload: Boolean by viewModel.needReload.observeAsState(initial = false)
     var enabled: Boolean by remember { mutableStateOf(value = true) }
     val scrollState = rememberScrollState()
+
+    if (isLoading || !enabled)
+        CircularIndicatorCustomDialog(
+            text = stringResource(loading_loading)
+        )
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -134,12 +139,6 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enabled = !enabled
                 viewModel.applyChanges()
             }
-
-            if (isLoading || !enabled)
-                CircularIndicatorCustom(
-                    text = stringResource(loading_loading),
-                    modifier = Modifier.padding(top = 16.dp).safeContentPadding().fillMaxWidth()
-                )
 
             if (needReload) {
                 reloadComposable()
