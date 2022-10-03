@@ -222,8 +222,20 @@ private fun sliderCustomSettingsAutoLoading(
     return sliderCustom(
         initValue = initValue,
         enable = enabled,
-        text = stringResource(time_automatic_login) + " " + timeLimitAutoLoginSelectText(initValue),
+        text = stringResource(time_automatic_login) + " " + getString(initValue),
         onValueChangeFinished = { onValueChangeFinished() }
     )
 }
+
+@Composable
+private fun getString(needString: Int): String =
+    when (needString) {
+        0 -> stringResource(limit_time_one_day)
+        1 -> stringResource(limit_time_one_week)
+        2 -> stringResource(limit_time_two_week)
+        3 -> stringResource(limit_time_one_month)
+        4 -> stringResource(limit_time_six_month)
+        5 -> stringResource(limit_time_one_year)
+        else -> stringResource(unknown)
+    }
 
