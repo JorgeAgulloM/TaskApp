@@ -23,7 +23,7 @@ import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SwitchCustom
-import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom
+import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
