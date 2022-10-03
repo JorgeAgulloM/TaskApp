@@ -129,9 +129,7 @@ private fun Content(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                dropDawnMenuCustom {
-                    viewModel.changeOrderTask(it)
-                }
+                dropDawnMenuCustom(isFinish = true) { viewModel.changeOrderTask(it) }
             }
         }
 

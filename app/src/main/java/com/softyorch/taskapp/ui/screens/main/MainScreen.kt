@@ -188,6 +188,7 @@ private fun OrientableContent(
 @Composable
 private fun RowInfoWithDropMenu(
     text: String,
+    isFinish: Boolean,
     changeOrder: KFunction1<TaskOrder, Unit>
 ) {
     Row(
@@ -196,9 +197,7 @@ private fun RowInfoWithDropMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RowInfo(text = text, paddingStart = 32.dp)
-        dropDawnMenuCustom {
-            changeOrder(it)
-        }
+        dropDawnMenuCustom(isFinish = isFinish) { changeOrder(it) }
     }
 }
 
@@ -232,6 +231,7 @@ private fun LazyColumnChecks(
             text = if (checkedOrNot) stringResource(tasks_completed_last_days) else stringResource(
                 to_be_made
             ),
+            isFinish = checkedOrNot,
             changeOrder = changeOrder
         )
         if (taskEntities.isNotEmpty()) {
