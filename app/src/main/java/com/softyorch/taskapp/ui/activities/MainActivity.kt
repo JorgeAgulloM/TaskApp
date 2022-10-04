@@ -19,12 +19,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 //private val _newImageGallery = MutableLiveData<String>()
 //val newImageGallery: LiveData<String> = _newImageGallery
+const val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
