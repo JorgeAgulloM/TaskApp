@@ -41,6 +41,12 @@ class SplashViewModel @Inject constructor(
     private val _getAuthor = MutableLiveData<String>()
     val getAuthor: LiveData<String> = _getAuthor
 
+    private val _getUrlAuthor = MutableLiveData<String>()
+    val getUrlAuthor: LiveData<String> = _getUrlAuthor
+
+    private val _isError = MutableLiveData<Boolean>()
+    //val isError: LiveData<Boolean> = _isError
+
     init {
         _isLoading.value = true
         viewModelScope.launch {
@@ -51,16 +57,16 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun loadData() = userActivated()
 
-    private suspend fun loadImage() {
+    private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
             if (data.data != null) {
                 _getImage.value = data.data!!.src.original
-                _getUrl.value = data.data!!.src.original
+                _getUrl.value = data.data!!.url
                 _getAuthor.value = data.data!!.photographer
-            } else if (data.e == null) {
-                /** setear un error para que la screen lance un Toast con un error conocido */
+                _getUrlAuthor.value = data.data!!.photographer_url
+                _isLoading.postValue(false)
             } else {
-                /** setear un error para que la screen lance un Toast con un error desconocido */
+                _isError.postValue(true)
             }
         }
     }
