@@ -52,9 +52,17 @@ class SplashViewModel @Inject constructor(
     private suspend fun loadData() = userActivated()
 
     private suspend fun loadImage() {
-        _getImage.value = pexelsUseCases.getImage.invoke().src.original
-        _getUrl.value = pexelsUseCases.getImage.invoke().src.original
-        _getAuthor.value = pexelsUseCases.getImage.invoke().photographer
+        pexelsUseCases.getImage.invoke().let { data ->
+            if (data.data != null) {
+                _getImage.value = data.data!!.src.original
+                _getUrl.value = data.data!!.src.original
+                _getAuthor.value = data.data!!.photographer
+            } else if (data.e == null) {
+                /** setear un error para que la screen lance un Toast con un error conocido */
+            } else {
+                /** setear un error para que la screen lance un Toast con un error desconocido */
+            }
+        }
     }
 
     private suspend fun userActivated() {
