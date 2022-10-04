@@ -153,6 +153,15 @@ fun Boolean.contentColorAsSateAnimation(finishedListener: () -> Unit): State<Col
     )
 
 @Composable
+fun Boolean.contentColorLabelAsStateAnimation(finishedListener: () -> Unit): State<Color> =
+    animateColorAsState(
+        targetValue = if (this) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        else MaterialTheme.colorScheme.background,
+        animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+        finishedListener = { finishedListener() }
+    )
+
+@Composable
 fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (stateOne && this) IntOffset(60, 0)
