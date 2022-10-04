@@ -1,6 +1,8 @@
 package com.softyorch.taskapp.di
 
-import com.softyorch.taskapp.data.network.pexels.PexelsClient
+import com.softyorch.taskapp.data.repository.PexelsRepository
+import com.softyorch.taskapp.domain.pexelUseCase.GetImage
+import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +17,15 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providesRetrofit():PexelsClient = Retrofit.Builder()
+    fun providesRetrofit():Retrofit = Retrofit.Builder()
         .baseUrl("https://api.pexels.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-        .create(PexelsClient::class.java)
+
+    @Singleton
+    @Provides
+    fun providesPexelsRepositoryToUseCases(repository: PexelsRepository): PexelsUseCases =
+        PexelsUseCases(
+            getImage = GetImage(repository)
+        )
 }
