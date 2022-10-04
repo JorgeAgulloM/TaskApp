@@ -3,7 +3,9 @@ package com.softyorch.taskapp.ui.screens.userdata
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Key
@@ -101,8 +103,13 @@ private fun Content(
     var cancelDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
 
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(state = scrollState)
+            .padding(top = it.calculateTopPadding() * 1.5f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {

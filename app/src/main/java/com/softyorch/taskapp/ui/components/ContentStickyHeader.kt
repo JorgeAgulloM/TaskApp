@@ -32,10 +32,10 @@ fun ContentStickyHeader(published: String) {
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = MaterialTheme.shapes.large
                 ),
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.labelSmall
                 .copy(color = MaterialTheme.colorScheme.secondary),
             textAlign = TextAlign.Center
         )
     }
-    Divider(modifier = Modifier.padding(start = 48.dp,end = 16.dp))
+    Divider(modifier = Modifier.padding(start = 48.dp,end = 16.dp), thickness = 0.5.dp)
 }

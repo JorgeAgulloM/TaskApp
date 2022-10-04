@@ -166,13 +166,14 @@ fun Boolean.intOffsetAnimation(stateOne: Boolean): State<IntOffset> =
 
 @Composable
 fun Boolean.intOffsetAnimationTransition(
+    durationMillis: Int = 200,
     finishedListener: () -> Unit?
 ): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue = if (this) IntOffset(0, 0)
-        else IntOffset(1500, 0),
+        else IntOffset(2500, 0),
         animationSpec = tween(
-            durationMillis = 200,
+            durationMillis = durationMillis,
             delayMillis = DURATION_MILLIS_BTN_CHANGE_COLOR,
             easing = FastOutSlowInEasing
         ),

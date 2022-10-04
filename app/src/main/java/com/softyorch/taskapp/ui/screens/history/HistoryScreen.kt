@@ -16,7 +16,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,12 +42,7 @@ fun HistoryScreen(navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     var enterDetails by remember { mutableStateOf(value = false) }
     var exitDetails by remember { mutableStateOf(value = false) }
-
-    coroutineScope.launch {
-        delay(100)
-        if (!exitDetails) enterDetails = true
-    }
-
+    val slideHead by enterDetails.intOffsetAnimationTransition(durationMillis = 100){}
     val slideCheckBox by enterDetails.intOffsetAnimationTransition {
         if (!enterDetails)
             navController.navigate(AppScreensRoutes.MainScreen.route) {
@@ -58,17 +52,20 @@ fun HistoryScreen(navController: NavHostController) {
                 }
             }
     }
-    val alphaAnimation: Float by exitDetails.alphaAnimation {}
-    val colorAnimation by exitDetails.containerColorAnimation()
+
+    coroutineScope.launch {
+        delay(100)
+        if (!exitDetails) enterDetails = true
+    }
+
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            //.padding(8.dp)
-            .offset { slideCheckBox }
-            .graphicsLayer(alpha = alphaAnimation)
+
     ) {
+        val colorAnimation by exitDetails.containerColorAnimation()
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().offset { slideHead },
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -94,7 +91,7 @@ fun HistoryScreen(navController: NavHostController) {
                 style = MaterialTheme.typography.titleLarge
             )
         }
-        Content(navController = navController, viewModel = viewModel)
+        Content(navController = navController, viewModel = viewModel, modifier = Modifier.offset { slideCheckBox })
     }
 }
 
@@ -103,19 +100,18 @@ fun HistoryScreen(navController: NavHostController) {
 @Composable
 private fun Content(
     navController: NavHostController,
-    viewModel: HistoryViewModel
+    viewModel: HistoryViewModel,
+    modifier: Modifier
 ) {
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
-
     val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
     val taskMap: Map<String, List<TaskEntity>> =
         taskEntities.groupBy { it.entryDate.toStringFormatDate() }
 
-
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .padding(8.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
@@ -129,9 +125,7 @@ private fun Content(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                dropDawnMenuCustom {
-                    viewModel.changeOrderTask(it)
-                }
+                dropDawnMenuCustom(isFinish = true) { viewModel.changeOrderTask(it) }
             }
         }
 

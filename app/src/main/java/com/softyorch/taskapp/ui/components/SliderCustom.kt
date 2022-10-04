@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.components.sliderCustom
+package com.softyorch.taskapp.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -25,27 +25,20 @@ fun sliderCustom(
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
 
     Column(
-        modifier = Modifier.padding(start = 34.dp, end = 32.dp, bottom = 8.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(start = 34.dp, end = 32.dp, top = 16.dp, bottom = 8.dp)
+            .height(56.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            RowInfo(text = text, paddingStart = 32.dp, style = style)
+            RowInfo(text = text, style = style)
             Slider(
                 value = selection,
                 onValueChange = { selection = it },
-                modifier = Modifier.height(16.dp),
                 enabled = enable,
                 valueRange = valueRange,
                 steps = steps,
-                onValueChangeFinished = { onValueChangeFinished.invoke() },
-               /* colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.tertiary,
-                    disabledThumbColor = MaterialTheme.colorScheme.tertiary.copy(0.5f),
-                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                    inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
-                    activeTickColor = MaterialTheme.colorScheme.secondary,
-                    inactiveTickColor = MaterialTheme.colorScheme.secondary.copy(0.5f),
-                )*/
+                onValueChangeFinished = { onValueChangeFinished.invoke() }
             )
         }
     )

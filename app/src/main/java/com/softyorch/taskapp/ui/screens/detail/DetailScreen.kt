@@ -60,7 +60,7 @@ fun DetailScreen(
         delay(100)
         enterDetails = true
     }
-
+    val slideHead by enterDetails.intOffsetAnimationTransition(durationMillis = 100) {}
     val slideCheckBox by enterDetails.intOffsetAnimationTransition {
         if (!enterDetails)
             navController.popBackStack()
@@ -71,12 +71,11 @@ fun DetailScreen(
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .offset { slideCheckBox }
             .graphicsLayer(alpha = alphaAnimation)
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().offset { slideHead },
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -107,7 +106,7 @@ fun DetailScreen(
             CircularIndicatorCustomDialog(stringResource(loading_loading))
             if (isDeleted) LocalContext.current.toastError(stringResource(task_deleted)) {}
         }
-        Content(viewModel = viewModel, navController = navController)
+        Content(viewModel, navController, Modifier.offset { slideCheckBox })
     }
 }
 
@@ -115,7 +114,8 @@ fun DetailScreen(
 @Composable
 private fun Content(
     viewModel: DetailScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier
 ) {
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
@@ -130,7 +130,7 @@ private fun Content(
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(8.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
@@ -140,7 +140,6 @@ private fun Content(
             )
     ) {
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        Text(text = stringResource(details), modifier = Modifier.padding(start = 24.dp))
         ShowTaskDetails(taskEntity = taskEntity)
         Divider(modifier = Modifier.padding(8.dp))
 
@@ -167,7 +166,7 @@ private fun Content(
                 if (!taskEntity.checkState) openCompleteDialog = true
                 if (taskEntity.checkState) openResetDialog = true
             }
-            Spacer(modifier = Modifier.padding(top = 8.dp))
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
             TextDescriptionDetails(description = taskEntity.description)
 
             /** Edit Dialog */
@@ -353,10 +352,6 @@ private fun TextDescriptionDetails(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        RowInfo(
-            text = "${stringResource(task_description)}:",
-            paddingStart = 24.dp
-        )
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
