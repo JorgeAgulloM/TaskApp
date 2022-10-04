@@ -107,5 +107,11 @@
     <string name="settings_app_color_adapt">La aplicación se adapta al color del dispositivo</string>
     <string name="settings_only_android_12">Solo para vesiones de Android 12 o superior</string>
     <string name="settings_autologin_limit_time">No se pedirá login durante el tiempo seleccionado</string>
+    <string name="limit_time_one_day">Un día</string>
+    <string name="limit_time_one_week">Una semana</string>
+    <string name="limit_time_two_week">Dos semanas</string>
+    <string name="limit_time_one_month">Un mes</string>
+    <string name="limit_time_six_month">Seis meses</string>
+    <string name="limit_time_one_year">un año</string>
 
 </resources>

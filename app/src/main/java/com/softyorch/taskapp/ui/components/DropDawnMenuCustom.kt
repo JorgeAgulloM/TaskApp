@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Sort
+import androidx.compose.material.icons.rounded.ViewList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
@@ -18,7 +20,7 @@ import com.softyorch.taskapp.utils.containerColorAnimation
 
 @ExperimentalMaterial3Api
 @Composable
-fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
+fun dropDawnMenuCustom(isFinish: Boolean, onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
     var expanded by remember { mutableStateOf(value = false) }
     var orderOption: TaskOrder = TaskOrder.Create(OrderType.Descending)
 
@@ -28,7 +30,7 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
         }
     ) {
         Icon(
-            imageVector = Icons.Rounded.List,
+            imageVector = if (expanded) Icons.Rounded.ViewList else Icons.Rounded.List,
             contentDescription = "Order of task",
             tint = MaterialTheme.colorScheme.primary
         )
@@ -36,47 +38,73 @@ fun dropDawnMenuCustom(onchangeOrder: (TaskOrder) -> Unit): TaskOrder {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            RowInfo(text = "Order by...", paddingStart = 8.dp , heightSize = 20.dp, style = MaterialTheme.typography.labelSmall)
-            OrderOptions.listOrder.forEach { order ->
-                var onClick by remember { mutableStateOf(value = false) }
-                DropdownMenuItem(
-                    text = {
-                        Text(text = order, style = MaterialTheme.typography.labelLarge)
-                    },
-                    onClick = {
-                        orderOption =
-                            when (order) {
-                                OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
-                                OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
-                                OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
-                                OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
-                                OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
-                                OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
-                                else -> {
-                                    OrderOptions.CreateAscending().order
+            RowInfo(
+                text = "Order by...",
+                paddingStart = 8.dp,
+                heightSize = 20.dp,
+                style = MaterialTheme.typography.labelSmall
+            )
+            OrderOptions.let { order ->
+                order.listOrder.forEach { orderText ->
+                    if (!isFinish && (orderText == order.listOrder[1] || orderText == order.listOrder[4])) {
+                        /** The option is not shown because it is not necessary*/
+                    } else {
+                        var onClick by remember { mutableStateOf(value = false) }
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = orderText,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            },
+                            onClick = {
+                                orderOption =
+                                    when (orderText) {
+                                        order.listOrder[0] -> OrderOptions.CreateAscending().order
+                                        order.listOrder[1] -> OrderOptions.FinishAscending().order
+                                        order.listOrder[2] -> OrderOptions.NameAscending().order
+                                        order.listOrder[3] -> OrderOptions.CreateDescending().order
+                                        order.listOrder[4] -> OrderOptions.FinishDescending().order
+                                        order.listOrder[5] -> OrderOptions.NameDescending().order
+                                        else -> {
+                                            OrderOptions.CreateAscending().order
+                                        }
+                                    }
+                                onchangeOrder(orderOption)
+                                onClick = true
+                            },
+                            modifier = Modifier.height(40.dp).padding(4.dp).background(
+                                color = onClick.containerColorAnimation {
+                                    if (onClick) {
+                                        expanded = false
+                                        onClick = false
+                                    }
+                                }.value,
+                                shape = MaterialTheme.shapes.large
+                            ),
+                            leadingIcon = {
+                                val degrees = when (orderText) {
+                                    order.listOrder[3] -> 0f
+                                    order.listOrder[4] -> 0f
+                                    order.listOrder[5] -> 0f
+                                    else -> {
+                                        180f
+                                    }
                                 }
+                                Icon(
+                                    imageVector = Icons.Rounded.Sort,
+                                    contentDescription = null,
+                                    modifier = Modifier.graphicsLayer(
+                                        rotationY = degrees,
+                                        rotationZ = degrees
+                                    ),
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
                             }
-                        onchangeOrder(orderOption)
-                        onClick = true
-                    },
-                    modifier = Modifier.height(40.dp).padding(4.dp).background(
-                        color = onClick.containerColorAnimation {
-                            if (onClick) {
-                                expanded = false
-                                onClick = false
-                            }
-                        }.value,
-                        shape = MaterialTheme.shapes.large
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Sort,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary
                         )
+                        Divider(modifier = Modifier.padding(start = 32.dp, end = 8.dp))
                     }
-                )
-                Divider(modifier = Modifier.padding(start = 32.dp, end = 8.dp))
+                }
             }
         }
     }
