@@ -26,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 //private val _newImageGallery = MutableLiveData<String>()
 //val newImageGallery: LiveData<String> = _newImageGallery
-val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
+const val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
 
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
