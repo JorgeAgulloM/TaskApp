@@ -2,7 +2,7 @@ package com.softyorch.taskapp.domain.pexelUseCase
 
 import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.response.Media
-import com.softyorch.taskapp.data.repository.PexelsRepository
+import com.softyorch.taskapp.data.repository.pexels.PexelsRepository
 
 class GetImage(private val repository: PexelsRepository) {
     suspend operator fun invoke(): DataOrError<Media, String> {

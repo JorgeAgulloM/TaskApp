@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data.repository
+package com.softyorch.taskapp.data.repository.pexels
 
 import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.PexelsService
