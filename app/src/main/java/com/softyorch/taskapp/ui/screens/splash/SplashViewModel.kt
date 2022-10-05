@@ -1,11 +1,9 @@
 package com.softyorch.taskapp.ui.screens.splash
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
@@ -88,38 +86,28 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun userActivated() {
         datastore.getData().let { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    Log.d(
-                        "Resource",
-                        "Resource.userActivated() -> error"
-                    )
-                }
-                is Resource.Loading -> Log.d(
-                    "Resource",
-                    "Resource.userActivated() -> loading..."
-                )
-                is Resource.Success -> {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
-                        if (user.rememberMe) {
-                            logInWithRememberMe(
-                                email = user.userEmail,
-                                pass = user.userPass
-                            ).let { userLogin ->
-                                if (userLogin != null) {
-                                    isAutoLoginTime(user = userLogin)
+            if (resource.data != null) {
+                resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                    if (user.rememberMe) {
+                        logInWithRememberMe(
+                            email = user.userEmail,
+                            pass = user.userPass
+                        ).let { userLogin ->
+                            if (userLogin != null) {
+                                isAutoLoginTime(user = userLogin)
 
-                                } else {
-                                    _goToAutologin.postValue(false)
-                                    _isLoading.postValue(false)
-                                }
+                            } else {
+                                _goToAutologin.postValue(false)
+                                _isLoading.postValue(false)
                             }
-                        } else {
-                            _goToAutologin.postValue(false)
-                            _isLoading.postValue(false)
                         }
+                    } else {
+                        _goToAutologin.postValue(false)
+                        _isLoading.postValue(false)
                     }
                 }
+            } else {
+                //TODO
             }
         }
     }

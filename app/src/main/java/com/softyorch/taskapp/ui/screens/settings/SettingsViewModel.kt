@@ -2,12 +2,10 @@ package com.softyorch.taskapp.ui.screens.settings
 
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
@@ -43,28 +41,24 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().let { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    TODO()
-                }
-                is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
-                is Resource.Success -> {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
-                        userDataUseCases.getUserEmailExist(email = data.userEmail).let { user ->
-                            var isNeedUpdate = false
-                            if (!minSdk29) {
-                                user?.lightDarkAutomaticTheme = false
-                                if (!minSdk31) {
-                                    user?.automaticColors = false
-                                    isNeedUpdate = true
-                                }
+            if (resource.data != null) {
+                resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
+                    userDataUseCases.getUserEmailExist(email = data.userEmail).let { user ->
+                        var isNeedUpdate = false
+                        if (!minSdk29) {
+                            user?.lightDarkAutomaticTheme = false
+                            if (!minSdk31) {
+                                user?.automaticColors = false
+                                isNeedUpdate = true
                             }
-                            _settings.postValue(user)
-                            if (isNeedUpdate) updatePreferences(userDataEntity = user!!)
-                            _isLoading.postValue(false)
                         }
+                        _settings.postValue(user)
+                        if (isNeedUpdate) updatePreferences(userDataEntity = user!!)
+                        _isLoading.postValue(false)
                     }
                 }
+            } else {
+                //TODO
             }
         }
     }
