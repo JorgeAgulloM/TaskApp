@@ -26,6 +26,10 @@ class SplashViewModel @Inject constructor(
     private val pexelsUseCases: PexelsUseCases
 ) : ViewModel() {
 
+    private val errorImageUrl = "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
+    private val errorAuthor = "Polina Kovaleva"
+    private val errorAuthorUrl = "https://www.pexels.com/@polina-kovaleva/"
+
     private val _goToAutologin = MutableLiveData<Boolean>()
     val goToAutologin: LiveData<Boolean> = _goToAutologin
 
@@ -71,10 +75,9 @@ class SplashViewModel @Inject constructor(
             } else {
                 _isError.value = true
                 _errorMessage.value = data.error
-                _getUrl.value =
-                    "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
-                _getAuthor.value = "Polina Kovaleva"
-                _getUrlAuthor.value = "https://www.pexels.com/@polina-kovaleva/"
+                _getUrl.value = errorImageUrl
+                _getAuthor.value = errorAuthor
+                _getUrlAuthor.value = errorAuthorUrl
 
             }
         }
