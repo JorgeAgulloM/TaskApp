@@ -70,7 +70,7 @@ class SplashViewModel @Inject constructor(
                 _getImage.value = data.data!!.src.original
                 _getUrl.value = data.data!!.url
                 _getAuthor.value = data.data!!.photographer
-                _getUrlAuthor.value = data.data!!.photographer_url
+                _getUrlAuthor.value = data.data!!.photographerUrl
                 _isLoading.postValue(false)
             } else {
                 _isError.value = true

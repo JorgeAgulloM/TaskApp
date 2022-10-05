@@ -1,22 +1,24 @@
 package com.softyorch.taskapp.data.network.pexels.response
 
+import com.google.gson.annotations.SerializedName
+
 data class Media(
-    val avg_color: String,
-    val duration: Int,
-    val full_res: Any,
-    val height: Int,
-    val id: Int,
-    val image: String,
-    val liked: Boolean,
-    val photographer: String,
-    val photographer_id: Int,
-    val photographer_url: String,
-    val src: Src,
-    val tags: List<Any>,
-    val type: String,
-    val url: String,
-    val user: User,
-    val video_files: List<VideoFile>,
-    val video_pictures: List<VideoPicture>,
-    val width: Int
+    @SerializedName("avg_color") val avgColor: String,
+    @SerializedName("duration") val duration: Int,
+    @SerializedName("full_res") val fullRes: Any,
+    @SerializedName("height") val height: Int,
+    @SerializedName("id") val id: Int,
+    @SerializedName("image") val image: String,
+    @SerializedName("liked") val liked: Boolean,
+    @SerializedName("photographer") val photographer: String,
+    @SerializedName("photographer_id") val photographerId: Int,
+    @SerializedName("photographer_url") val photographerUrl: String,
+    @SerializedName("src") val src: Src,
+    @SerializedName("tags") val tags: List<Any>,
+    @SerializedName("type") val type: String,
+    @SerializedName("url") val url: String,
+    @SerializedName("user") val user: User,
+    @SerializedName("video_files") val videoFiles: List<VideoFile>,
+    @SerializedName("video_pictures") val videoPictures: List<VideoPicture>,
+    @SerializedName("width") val width: Int
 )
