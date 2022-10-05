@@ -9,7 +9,8 @@ import javax.inject.Inject
 
 class PexelsService @Inject constructor(private val retrofit: Retrofit) {
     suspend fun getMediaList(): DataOrError<List<Media>, String> {
-        DataOrError.listResponse.let { response ->
+        val listResponse = DataOrError<List<Media>, String>()
+        listResponse.let { response ->
             withContext(Dispatchers.IO) {
                 retrofit.create(PexelsClient::class.java).getPhotoCollections().let { request ->
                     if (request.isSuccessful) {
@@ -26,6 +27,6 @@ class PexelsService @Inject constructor(private val retrofit: Retrofit) {
             }
         }
 
-        return DataOrError.listResponse
+        return listResponse
     }
 }

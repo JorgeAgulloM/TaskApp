@@ -5,7 +5,8 @@ import com.softyorch.taskapp.data.repository.pexels.PexelsRepository
 
 class GetImage(private val repository: PexelsRepository) {
     suspend operator fun invoke(): DataOrError<MediaModelDomain, String> {
-        DataOrError.mediaModelDomain.let { response ->
+        val mediaModelDomain = DataOrError<MediaModelDomain, String>()
+        mediaModelDomain.let { response ->
             try {
                 repository.getRandomImage().data?.let { media ->
                     response.data = media.mapToMediaModelDomain()
@@ -15,6 +16,6 @@ class GetImage(private val repository: PexelsRepository) {
             }
         }
 
-        return DataOrError.mediaModelDomain
+        return mediaModelDomain
     }
 }

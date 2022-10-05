@@ -12,7 +12,8 @@ import javax.inject.Singleton
 class PexelsRepository @Inject constructor(private val api: PexelsService) {
 
     suspend fun getRandomImage(): DataOrError<MediaModel, String> {
-        DataOrError.mediaModelResponse.let { response ->
+        val mediaModelResponse = DataOrError<MediaModel, String>()
+        mediaModelResponse.let { response ->
             try {
                 api.getMediaList().data?.let { list ->
                     val randomImage = SecureRandom()
@@ -25,6 +26,6 @@ class PexelsRepository @Inject constructor(private val api: PexelsService) {
             }
         }
 
-        return DataOrError.mediaModelResponse
+        return mediaModelResponse
     }
 }
