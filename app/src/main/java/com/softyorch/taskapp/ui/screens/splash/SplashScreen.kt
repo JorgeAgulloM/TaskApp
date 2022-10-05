@@ -43,8 +43,9 @@ fun SplashScreen(
 ) {
 
     val goToAutoLogin by viewModel.goToAutologin.observeAsState(initial = false)
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
-    val isError: Boolean by viewModel.isError.observeAsState(initial = true)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val isError: Boolean by viewModel.isError.observeAsState(initial = false)
+    val errorMessage: String by viewModel.errorMessage.observeAsState(initial = emptyString)
     val getImage: String by viewModel.getImage.observeAsState(initial = emptyString)
     val getUrl: String by viewModel.getUrl.observeAsState(initial = emptyString)
     val getAuthor: String by viewModel.getAuthor.observeAsState(initial = emptyString)
@@ -60,8 +61,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = true, block = {
         scale.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 800, easing = {
-                //OvershootInterpolator(16f).getInterpolation(it)
+            animationSpec = tween(durationMillis = 1000, easing = {
                 LinearEasing.transform(16f)
             })
         )
@@ -93,11 +93,11 @@ fun SplashScreen(
             if (isLoading) {
                 CircularIndicatorCustomDialog(stringResource(loading_loading))
             } else {
-                imageBackground(image = imageReq)
-                bodyScreen(getAuthor, getUrl, getUrlAuthor)
+                ImageBackground(image = imageReq)
+                BodyScreen(getAuthor, getUrl, getUrlAuthor)
                 if (isError) {
                     viewModel.isShowError()
-                    Toast.makeText(LocalContext.current, "Error to load image", Toast.LENGTH_LONG)
+                    Toast.makeText(LocalContext.current, errorMessage, Toast.LENGTH_LONG)
                         .show()
                 }
             }
@@ -106,18 +106,18 @@ fun SplashScreen(
 }
 
 @Composable
-private fun imageBackground(image: ImageRequest) {
+private fun ImageBackground(image: ImageRequest) {
     AsyncImage(
         model = image,
-        contentDescription = "Random Image",
+        contentDescription = stringResource(content_random_img),
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxHeight()
     )
 }
 
 @Composable
-private fun bodyScreen(getAuthor: String, getUrl: String, getUrlAuthor: String) {
-    val pexelsUrl = "https://www.pexels.com/"
+private fun BodyScreen(getAuthor: String, getUrl: String, getUrlAuthor: String) {
+    val pexelsUrl = stringResource(pexels_web)
     Column(
         modifier = Modifier.fillMaxSize().padding(vertical = 8.dp),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -131,9 +131,9 @@ private fun bodyScreen(getAuthor: String, getUrl: String, getUrlAuthor: String) 
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            DetailsImageFromPexels(text = "Courtesy of Pexels.com") { uriHandler.openUri(pexelsUrl) }
-            DetailsImageFromPexels(text = "Author: $getAuthor") { uriHandler.openUri(getUrlAuthor) }
-            DetailsImageFromPexels(text = "Click to view image") { uriHandler.openUri(getUrl) }
+            DetailsImageFromPexels(text = stringResource(pexels_courtesy)) { uriHandler.openUri(pexelsUrl) }
+            DetailsImageFromPexels(text = stringResource(author) + getAuthor) { uriHandler.openUri(getUrlAuthor) }
+            DetailsImageFromPexels(text = stringResource(click_to_view)) { uriHandler.openUri(getUrl) }
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.R
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
@@ -43,10 +42,13 @@ class SplashViewModel @Inject constructor(
     val getAuthor: LiveData<String> = _getAuthor
 
     private val _getUrlAuthor = MutableLiveData<String>()
+    private val _isError = MutableLiveData<Boolean>()
+
+    val isError: LiveData<Boolean> = _isError
     val getUrlAuthor: LiveData<String> = _getUrlAuthor
 
-    private val _isError = MutableLiveData<Boolean>()
-    val isError: LiveData<Boolean> = _isError
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
 
     init {
         _isLoading.value = true
@@ -67,10 +69,13 @@ class SplashViewModel @Inject constructor(
                 _getUrlAuthor.value = data.data!!.photographer_url
                 _isLoading.postValue(false)
             } else {
-                _isError.postValue(true)
-                _getUrl.value = "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
+                _isError.value = true
+                _errorMessage.value = data.error
+                _getUrl.value =
+                    "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
                 _getAuthor.value = "Polina Kovaleva"
                 _getUrlAuthor.value = "https://www.pexels.com/@polina-kovaleva/"
+
             }
         }
     }
@@ -135,7 +140,7 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    fun isShowError(){
+    fun isShowError() {
         _isError.value = false
     }
 }
