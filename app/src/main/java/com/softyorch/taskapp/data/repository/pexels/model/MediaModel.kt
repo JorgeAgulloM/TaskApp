@@ -11,7 +11,7 @@ data class MediaModel(
 
 fun Media.mapToMediaModel() = MediaModel(
     imageOriginalSrc = src.original,
-    imageUrl = image,
+    imageUrl = url,
     photographer = photographer,
     photographerUrl = photographerUrl
 )
