@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softyorch.taskapp.R
 import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
@@ -45,7 +46,7 @@ class SplashViewModel @Inject constructor(
     val getUrlAuthor: LiveData<String> = _getUrlAuthor
 
     private val _isError = MutableLiveData<Boolean>()
-    //val isError: LiveData<Boolean> = _isError
+    val isError: LiveData<Boolean> = _isError
 
     init {
         _isLoading.value = true
@@ -67,6 +68,9 @@ class SplashViewModel @Inject constructor(
                 _isLoading.postValue(false)
             } else {
                 _isError.postValue(true)
+                _getUrl.value = "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
+                _getAuthor.value = "Polina Kovaleva"
+                _getUrlAuthor.value = "https://www.pexels.com/@polina-kovaleva/"
             }
         }
     }
@@ -129,5 +133,9 @@ class SplashViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun isShowError(){
+        _isError.value = false
     }
 }
