@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.utils.emptyString
@@ -64,10 +63,12 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private suspend fun getTaskId(id: String) {
-        when (val result = taskUseCase.getTaskId(taskId = id)) {
-            is Resource.Error -> showError(result.message.toString())
-            is Resource.Loading -> _isLoading.value = true
-            is Resource.Success -> _taskEntityDetail.postValue(result.data!!)
+        taskUseCase.getTaskId(taskId = id).let { data ->
+            if (data.data != null) {
+                _taskEntityDetail.postValue(data.data!!)
+            } else {
+                showError(data.error.toString())
+            }
         }
     }
 
