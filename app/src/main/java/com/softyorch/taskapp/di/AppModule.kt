@@ -10,7 +10,7 @@ import com.softyorch.taskapp.data.database.userdata.UserDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.repository.DatastoreRepository
-import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.data.repository.task.TaskRepository
 import com.softyorch.taskapp.data.repository.UserDataRepository
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData

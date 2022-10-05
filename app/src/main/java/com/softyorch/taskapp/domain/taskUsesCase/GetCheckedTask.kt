@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.domain.taskUsesCase
 
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.data.repository.task.TaskRepository
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.utils.TimeLimitAutoLogin

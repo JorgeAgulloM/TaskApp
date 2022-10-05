@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data.repository
+package com.softyorch.taskapp.data.repository.task
 
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
