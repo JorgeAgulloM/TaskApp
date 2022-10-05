@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.data.network.pexels
 
-import com.softyorch.taskapp.data.network.pexels.responseMyCollection.PexelsMyCollections
+import com.softyorch.taskapp.data.network.pexels.response.PexelsMyCollections
 import com.softyorch.taskapp.ui.activities.KEY_API_PEXELS
 import retrofit2.Response
 import retrofit2.http.GET

@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data.network.pexels.responseMyCollection
+package com.softyorch.taskapp.data.network.pexels.response
 
 data class VideoFile(
     val file_type: String,

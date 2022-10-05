@@ -2,7 +2,7 @@ package com.softyorch.taskapp.data.repository
 
 import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.PexelsService
-import com.softyorch.taskapp.data.network.pexels.responseMyCollection.Media
+import com.softyorch.taskapp.data.network.pexels.response.Media
 import java.security.SecureRandom
 import javax.inject.Inject
 import javax.inject.Singleton

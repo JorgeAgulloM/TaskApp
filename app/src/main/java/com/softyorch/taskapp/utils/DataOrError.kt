@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.utils
 
-import com.softyorch.taskapp.data.network.pexels.responseMyCollection.*
+import com.softyorch.taskapp.data.network.pexels.response.*
 
 class DataOrError<T, E> {
     var data: T? = null
