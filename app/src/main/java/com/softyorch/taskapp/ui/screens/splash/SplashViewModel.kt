@@ -10,6 +10,7 @@ import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.ui.screens.splash.model.mapToMediaModelVM
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -66,19 +67,21 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
-            if (data.data != null) {
-                _getImage.value = data.data!!.src.original
-                _getUrl.value = data.data!!.url
-                _getAuthor.value = data.data!!.photographer
-                _getUrlAuthor.value = data.data!!.photographerUrl
-                _isLoading.postValue(false)
-            } else {
-                _isError.value = true
-                _errorMessage.value = data.error
-                _getUrl.value = errorImageUrl
-                _getAuthor.value = errorAuthor
-                _getUrlAuthor.value = errorAuthorUrl
+            data.data?.mapToMediaModelVM()?.let { media ->
+                if (data.data != null) {
+                    _getImage.value = media.image
+                    _getUrl.value = media.imageUrl
+                    _getAuthor.value = media.author
+                    _getUrlAuthor.value = media.authorUrl
+                    _isLoading.postValue(false)
+                } else {
+                    _isError.value = true
+                    _errorMessage.value = data.error
+                    _getUrl.value = errorImageUrl
+                    _getAuthor.value = errorAuthor
+                    _getUrlAuthor.value = errorAuthorUrl
 
+                }
             }
         }
     }
