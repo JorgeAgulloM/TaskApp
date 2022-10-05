@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.data.network.pexels
 
-import com.softyorch.taskapp.data.DataOrError
+import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.responseMyCollection.Media
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

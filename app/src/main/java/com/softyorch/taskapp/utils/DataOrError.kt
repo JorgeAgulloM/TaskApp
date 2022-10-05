@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.data
+package com.softyorch.taskapp.utils
 
 import com.softyorch.taskapp.data.network.pexels.responseMyCollection.*
 

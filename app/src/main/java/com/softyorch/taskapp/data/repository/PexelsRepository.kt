@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.data.repository
 
-import com.softyorch.taskapp.data.DataOrError
+import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.PexelsService
 import com.softyorch.taskapp.data.network.pexels.responseMyCollection.Media
 import java.security.SecureRandom

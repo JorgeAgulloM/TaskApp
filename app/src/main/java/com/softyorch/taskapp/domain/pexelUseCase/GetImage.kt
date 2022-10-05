@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.domain.pexelUseCase
 
-import com.softyorch.taskapp.data.DataOrError
+import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.data.network.pexels.responseMyCollection.Media
 import com.softyorch.taskapp.data.repository.PexelsRepository
 
