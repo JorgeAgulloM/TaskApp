@@ -1,11 +1,13 @@
 package com.softyorch.taskapp.data.network.pexels.response
 
+import com.google.gson.annotations.SerializedName
+
 data class PexelsMyCollections(
-    val id: String,
-    val media: List<Media>,
-    val next_page: String,
-    val page: Int,
-    val per_page: Int,
-    val prev_page: String,
-    val total_results: Int
+    @SerializedName("id") val id: String,
+    @SerializedName("media") val media: List<Media>,
+    @SerializedName("next_page") val nextPage: String,
+    @SerializedName("page") val page: Int,
+    @SerializedName("per_page") val perPage: Int,
+    @SerializedName("prev_page") val prevPage: String,
+    @SerializedName("total_results") val totalResults: Int
 )
