@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,7 +37,6 @@ import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
-import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.contentColorAsSateAnimation
 import com.softyorch.taskapp.utils.toStringFormatDate
 import kotlinx.coroutines.delay
@@ -172,7 +170,7 @@ private fun OrientableContent(
         enabled = !isLoading
     ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
-    Spacer(modifier = Modifier.padding(4.dp))
+    Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 24.dp))
 
     LazyColumnChecks(
         modifier = modifierForCheckedTasks.fillMaxHeight(),
@@ -218,12 +216,12 @@ private fun LazyColumnChecks(
     val lazyState = rememberLazyListState()
 
     Column(
-        modifier = modifier
-            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
+        modifier = modifier,
+            /*.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
-            ),
+            ),*/
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.Start
     ) {
