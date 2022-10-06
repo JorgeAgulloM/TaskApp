@@ -33,7 +33,7 @@ import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
-import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
+import com.softyorch.taskapp.ui.components.dropDawnMenuCustom.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
