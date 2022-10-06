@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
-import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
+import com.softyorch.taskapp.ui.components.dropDawnMenuCustom.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.*
