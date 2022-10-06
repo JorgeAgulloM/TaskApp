@@ -24,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.navigation.AppScreens
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
 import com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
@@ -105,8 +104,8 @@ private fun Content(
 ) {
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
-    val taskEntities: List<TaskEntity> by viewModel.taskEntityList.observeAsState(initial = emptyList())
-    val taskMap: Map<String, List<TaskEntity>> =
+    val taskEntities: List<TaskModelHistory> by viewModel.taskEntityList.observeAsState(initial = emptyList())
+    val taskMap: Map<String, List<TaskModelHistory>> =
         taskEntities.groupBy { it.entryDate.toStringFormatDate() }
 
     if (error) LocalContext.current.toastError(messageError) { viewModel.errorShown() }
@@ -129,12 +128,12 @@ private fun Content(
             }
         }
 
-        taskMap.forEach { (published, taskEntityList) ->
+        taskMap.forEach { (published, taskList) ->
             stickyHeader {
                 ContentStickyHeader(published = published)
             }
 
-            items(taskEntityList) { task ->
+            items(taskList) { task ->
                 Row(
                     modifier = Modifier
                         .padding(start = 8.dp, bottom = 8.dp)
