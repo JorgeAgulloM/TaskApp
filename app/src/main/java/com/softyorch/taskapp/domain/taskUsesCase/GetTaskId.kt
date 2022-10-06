@@ -15,4 +15,15 @@ class GetTaskId (private val repository: TaskRepository) {
 
         return response
     }
+
+    suspend fun invoke2(taskId: String): DataOrError<TaskModelUseCase, String> {
+        val response = DataOrError<TaskModelUseCase, String>()
+        try {
+            response.data = TaskMapper().from(task = repository.getTaskById2(idTask = taskId))
+        } catch (ex: Exception) {
+            response.error = ex.message.toString()
+        }
+
+        return response
+    }
 }

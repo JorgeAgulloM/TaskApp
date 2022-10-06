@@ -30,6 +30,35 @@ class GetUncheckedTask(private val repository: TaskRepository) {
             }
         }
     }
+
+    fun invoke2(
+        taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
+    ): Flow<List<TaskModelUseCase>> {
+        val taskListResponse = repository.getAllTaskFromDatabase2().map { list ->
+            list.map { taskModel -> TaskMapper().from(task = taskModel) }
+        }
+
+        return taskListResponse.map { task ->
+            val tasksUnchecked = task.filter { !it.checkState }
+            when (taskOrder.orderType) {
+                is OrderType.Ascending -> {
+                    when (taskOrder) {
+                        is TaskOrder.Create -> tasksUnchecked.sortedBy { it.entryDate }
+                        is TaskOrder.Name -> tasksUnchecked.sortedBy { it.title.lowercase() }
+                        is TaskOrder.Finish -> tasksUnchecked.sortedBy { it.finishDate }
+                    }
+                }
+                is OrderType.Descending -> {
+                    when (taskOrder) {
+                        is TaskOrder.Create -> tasksUnchecked.sortedByDescending { it.entryDate }
+                        is TaskOrder.Name -> tasksUnchecked.sortedByDescending { it.title.lowercase() }
+                        is TaskOrder.Finish -> tasksUnchecked.sortedByDescending { it.finishDate }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 

@@ -41,6 +41,42 @@ class GetCheckedTask(private val repository: TaskRepository) {
             }
         }
     }
+
+    fun invoke2(
+        taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
+    ): Flow<List<TaskModelUseCase>> {
+        val taskListResponse = repository.getAllTaskFromDatabase2().map { list ->
+            list.map { taskModel -> TaskMapper().from(task = taskModel) }
+        }
+
+        return taskListResponse.map { task ->
+            val tasksChecked = task
+                .filter { it.checkState }
+                .filter { it ->
+                    val timeWeekInMillis = TimeLimitAutoLogin.OneWeek().time
+                    val finish = it.finishDate?.time
+                    val dif = finish?.let { Date.from(Instant.now()).time.minus(it) }
+                    dif?.let { timeWeekInMillis.compareTo(it) } == 1
+                }
+
+            when (taskOrder.orderType) {
+                is OrderType.Ascending -> {
+                    when (taskOrder) {
+                        is TaskOrder.Create -> tasksChecked.sortedBy { it.entryDate }
+                        is TaskOrder.Name -> tasksChecked.sortedBy { it.title.lowercase() }
+                        is TaskOrder.Finish -> tasksChecked.sortedBy { it.finishDate }
+                    }
+                }
+                is OrderType.Descending -> {
+                    when (taskOrder) {
+                        is TaskOrder.Create -> tasksChecked.sortedByDescending { it.entryDate }
+                        is TaskOrder.Name -> tasksChecked.sortedByDescending { it.title.lowercase() }
+                        is TaskOrder.Finish -> tasksChecked.sortedByDescending { it.finishDate }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
