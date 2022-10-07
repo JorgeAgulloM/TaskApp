@@ -1,11 +1,9 @@
 package com.softyorch.taskapp.ui.screens.userdata
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
@@ -155,24 +153,20 @@ class UserDataViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().let { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    TODO()
-                }
-                is Resource.Loading -> Log.d("Resource", "Resource.getUserData() -> loading...")
-                is Resource.Success -> {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
-                        /**REVISAR ESTO, SI REGRESA UN NULL NO PASARÁ NADA*/
-                        getUserDataEmail(email = data.userEmail)?.let { user ->
-                            _userDataEntityActive.postValue(user)
-                            _name.postValue(user.username)
-                            _email.postValue(user.userEmail)
-                            _pass.postValue(user.userPass)
-                            _image.postValue(user.userPicture)
-                            _isLoading.postValue(false)
-                        }
+            if (resource.data != null) {
+                resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
+                    /**REVISAR ESTO, SI REGRESA UN NULL NO PASARÁ NADA*/
+                    getUserDataEmail(email = data.userEmail)?.let { user ->
+                        _userDataEntityActive.postValue(user)
+                        _name.postValue(user.username)
+                        _email.postValue(user.userEmail)
+                        _pass.postValue(user.userPass)
+                        _image.postValue(user.userPicture)
+                        _isLoading.postValue(false)
                     }
                 }
+            } else {
+                //TODO
             }
         }
     }

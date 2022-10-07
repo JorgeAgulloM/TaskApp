@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.di
 
-import com.softyorch.taskapp.data.repository.PexelsRepository
+import com.softyorch.taskapp.data.repository.pexels.PexelsRepository
 import com.softyorch.taskapp.domain.pexelUseCase.GetImage
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import dagger.Module

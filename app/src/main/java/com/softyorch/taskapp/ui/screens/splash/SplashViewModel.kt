@@ -1,11 +1,9 @@
 package com.softyorch.taskapp.ui.screens.splash
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
@@ -26,6 +24,10 @@ class SplashViewModel @Inject constructor(
     private val pexelsUseCases: PexelsUseCases
 ) : ViewModel() {
 
+    private val errorImageUrl = "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
+    private val errorAuthor = "Polina Kovaleva"
+    private val errorAuthorUrl = "https://www.pexels.com/@polina-kovaleva/"
+
     private val _goToAutologin = MutableLiveData<Boolean>()
     val goToAutologin: LiveData<Boolean> = _goToAutologin
 
@@ -42,10 +44,13 @@ class SplashViewModel @Inject constructor(
     val getAuthor: LiveData<String> = _getAuthor
 
     private val _getUrlAuthor = MutableLiveData<String>()
+    private val _isError = MutableLiveData<Boolean>()
+
+    val isError: LiveData<Boolean> = _isError
     val getUrlAuthor: LiveData<String> = _getUrlAuthor
 
-    private val _isError = MutableLiveData<Boolean>()
-    //val isError: LiveData<Boolean> = _isError
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
 
     init {
         _isLoading.value = true
@@ -59,52 +64,49 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
-            if (data.data != null) {
-                _getImage.value = data.data!!.src.original
-                _getUrl.value = data.data!!.url
-                _getAuthor.value = data.data!!.photographer
-                _getUrlAuthor.value = data.data!!.photographer_url
-                _isLoading.postValue(false)
-            } else {
-                _isError.postValue(true)
+            data.data?.mapToMediaModelVM()?.let { media ->
+                if (data.data != null) {
+                    _getImage.value = media.image
+                    _getUrl.value = media.imageUrl
+                    _getAuthor.value = media.author
+                    _getUrlAuthor.value = media.authorUrl
+                    _isLoading.postValue(false)
+                } else {
+                    _isError.value = true
+                    _errorMessage.value = data.error
+                    _getUrl.value = errorImageUrl
+                    _getAuthor.value = errorAuthor
+                    _getUrlAuthor.value = errorAuthorUrl
+
+                }
             }
         }
     }
 
     private suspend fun userActivated() {
         datastore.getData().let { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    Log.d(
-                        "Resource",
-                        "Resource.userActivated() -> error"
-                    )
-                }
-                is Resource.Loading -> Log.d(
-                    "Resource",
-                    "Resource.userActivated() -> loading..."
-                )
-                is Resource.Success -> {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
-                        if (user.rememberMe) {
-                            logInWithRememberMe(
-                                email = user.userEmail,
-                                pass = user.userPass
-                            ).let { userLogin ->
-                                if (userLogin != null) {
-                                    isAutoLoginTime(user = userLogin)
+            if (resource.data != null) {
+                resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                    if (user.rememberMe) {
+                        logInWithRememberMe(
+                            email = user.userEmail,
+                            pass = user.userPass
+                        ).let { userLogin ->
+                            if (userLogin != null) {
+                                isAutoLoginTime(user = userLogin)
 
-                                } else {
-                                    _goToAutologin.postValue(false)
-                                    _isLoading.postValue(false)
-                                }
+                            } else {
+                                _goToAutologin.postValue(false)
+                                _isLoading.postValue(false)
                             }
-                        } else {
-                            _goToAutologin.postValue(false)
-                            _isLoading.postValue(false)
                         }
+                    } else {
+                        _goToAutologin.postValue(false)
+                        _isLoading.postValue(false)
                     }
                 }
+            } else {
+                //TODO
             }
         }
     }
@@ -129,5 +131,9 @@ class SplashViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun isShowError() {
+        _isError.value = false
     }
 }

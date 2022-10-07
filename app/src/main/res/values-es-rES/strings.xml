@@ -112,6 +112,11 @@
     <string name="limit_time_two_week">Dos semanas</string>
     <string name="limit_time_one_month">Un mes</string>
     <string name="limit_time_six_month">Seis meses</string>
-    <string name="limit_time_one_year">un año</string>
+    <string name="limit_time_one_year">Un año</string>
+    <string name="content_random_img">Imagen aleatoria de Pexels.com</string>
+    <string name="pexels_web">https://www.pexels.com/</string>
+    <string name="pexels_courtesy">Por cortesia de Pexels.com</string>
+    <string name="author">\"Autor: \"</string>
+    <string name="click_to_view">Click para ver la imagen</string>
 
 </resources>

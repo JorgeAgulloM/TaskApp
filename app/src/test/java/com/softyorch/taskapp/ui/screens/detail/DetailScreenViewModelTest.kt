@@ -1,9 +1,9 @@
 package com.softyorch.taskapp.ui.screens.detail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
+import com.softyorch.taskapp.utils.DataOrError
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
@@ -39,10 +39,6 @@ class DetailScreenViewModelTest {
         )
     )
 
-    private var task: Resource<TaskEntity> = Resource.Success(
-        data = taskList.first()
-    )
-
     @get:Rule
     var rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -61,7 +57,8 @@ class DetailScreenViewModelTest {
     @Test
     fun `cuando el viewmodel carga los datos desde el repositorio al livedata buscando una task`() =
         runTest {
-
+            val task = DataOrError<TaskEntity, String>()
+            task.data = taskList.first()
             //Given
             coEvery { taskUseCase.getTaskId.invoke(taskId = taskList.first().id.toString()) } returns task
 

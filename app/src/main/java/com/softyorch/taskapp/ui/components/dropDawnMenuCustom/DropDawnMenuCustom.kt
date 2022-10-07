@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.components
+package com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
-import com.softyorch.taskapp.ui.screens.main.utils.OrderOptions
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.containerColorAnimation
 
@@ -45,8 +44,8 @@ fun dropDawnMenuCustom(isFinish: Boolean, onchangeOrder: (TaskOrder) -> Unit): T
                 style = MaterialTheme.typography.labelSmall
             )
             OrderOptions.let { order ->
-                order.listOrder.forEach { orderText ->
-                    if (!isFinish && (orderText == order.listOrder[1] || orderText == order.listOrder[4])) {
+                OrderOptions.listOrder.forEach { orderText ->
+                    if (!isFinish && (orderText == OrderOptions.listOrder[2] || orderText == OrderOptions.listOrder[5])) {
                         /** The option is not shown because it is not necessary*/
                     } else {
                         var onClick by remember { mutableStateOf(value = false) }
@@ -60,12 +59,12 @@ fun dropDawnMenuCustom(isFinish: Boolean, onchangeOrder: (TaskOrder) -> Unit): T
                             onClick = {
                                 orderOption =
                                     when (orderText) {
-                                        order.listOrder[0] -> OrderOptions.CreateAscending().order
-                                        order.listOrder[1] -> OrderOptions.FinishAscending().order
-                                        order.listOrder[2] -> OrderOptions.NameAscending().order
-                                        order.listOrder[3] -> OrderOptions.CreateDescending().order
-                                        order.listOrder[4] -> OrderOptions.FinishDescending().order
-                                        order.listOrder[5] -> OrderOptions.NameDescending().order
+                                        OrderOptions.listOrder[0] -> OrderOptions.CreateAscending().order
+                                        OrderOptions.listOrder[1] -> OrderOptions.FinishAscending().order
+                                        OrderOptions.listOrder[2] -> OrderOptions.NameAscending().order
+                                        OrderOptions.listOrder[3] -> OrderOptions.CreateDescending().order
+                                        OrderOptions.listOrder[4] -> OrderOptions.FinishDescending().order
+                                        OrderOptions.listOrder[5] -> OrderOptions.NameDescending().order
                                         else -> {
                                             OrderOptions.CreateAscending().order
                                         }
@@ -84,9 +83,9 @@ fun dropDawnMenuCustom(isFinish: Boolean, onchangeOrder: (TaskOrder) -> Unit): T
                             ),
                             leadingIcon = {
                                 val degrees = when (orderText) {
-                                    order.listOrder[3] -> 0f
-                                    order.listOrder[4] -> 0f
-                                    order.listOrder[5] -> 0f
+                                    OrderOptions.listOrder[3] -> 0f
+                                    OrderOptions.listOrder[4] -> 0f
+                                    OrderOptions.listOrder[5] -> 0f
                                     else -> {
                                         180f
                                     }
