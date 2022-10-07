@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
@@ -19,8 +18,8 @@ import javax.inject.Inject
 class HistoryViewModel @Inject constructor(
     private val taskUseCase: TaskUseCases
 ) : ViewModel() {
-    private val _taskEntityList = MutableLiveData<List<TaskEntity>>()
-    val taskEntityList: LiveData<List<TaskEntity>> = _taskEntityList
+    private val _taskEntityList = MutableLiveData<List<TaskModelHistory>>()
+    val taskEntityList: LiveData<List<TaskModelHistory>> = _taskEntityList
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -44,7 +43,9 @@ class HistoryViewModel @Inject constructor(
                         if (list.isEmpty()) {
                             showError("Error, la lista está vacía")
                         } else {
-                            _taskEntityList.postValue(list)
+                            _taskEntityList.postValue(list.map { taskModelUseCase ->
+                                taskModelUseCase.mapToTaskModelHistory()
+                            })
                         }
                     }
             }

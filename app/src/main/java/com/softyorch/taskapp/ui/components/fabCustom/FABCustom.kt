@@ -21,30 +21,9 @@ fun FABCustom() {
     val userName: String by viewModel.user.observeAsState(initial = "")
 
     var openDialog by remember { mutableStateOf(false) }
-/*    FloatingActionButton(
-        onClick = {
-            openDialog = true
-        },
-        modifier = Modifier.size(50.dp),
-        //contentColor = MaterialTheme.colorScheme.secondary,
-        //containerColor = MaterialTheme.colorScheme.tertiary,
-        content = {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = Icons.Rounded.Add,
-                contentDescription = stringResource(add_task)
-            )
-        }
-    )*/
 
-
-    //Material you version
     ExtendedFloatingActionButton(
-        onClick = { openDialog = true },
-        //modifier = Modifier.size(50.dp),
-        //contentColor = MaterialTheme.colorScheme.secondary,
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        //shape = MaterialTheme.shapes.medium,
+        text = { Text(text = stringResource(add_task)) },
         icon = {
             Icon(
                 modifier = Modifier.size(32.dp),
@@ -52,14 +31,14 @@ fun FABCustom() {
                 contentDescription = stringResource(add_task)
             )
         },
-        text = { Text(text = stringResource(add_task)) }
+        onClick = { openDialog = true }
     )
 
     if (openDialog) {
         openDialog = newTask(
-            addOrEditTaskEntityFunc = viewModel::addTask,
+            addOrEditTaskFunc = viewModel::addTask,
             userName = userName,
-            taskEntityToEdit = null
+            taskToEdit = null
         )
     }
 }

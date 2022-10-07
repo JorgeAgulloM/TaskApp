@@ -3,6 +3,8 @@ package com.softyorch.taskapp.ui.screens.settings
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
@@ -19,9 +21,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
+import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.components.SwitchCustom
-import com.softyorch.taskapp.ui.components.sliderCustom.sliderCustom
+import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.utils.*
@@ -56,8 +58,17 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val settings = viewModel.settings.observeAsState().value
     val needReload: Boolean by viewModel.needReload.observeAsState(initial = false)
     var enabled: Boolean by remember { mutableStateOf(value = true) }
+    val scrollState = rememberScrollState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding() * 1.5f)) {
+    if (isLoading || !enabled)
+        CircularIndicatorCustomDialog(
+            text = stringResource(loading_loading)
+        )
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(state = scrollState)
+        .padding(top = it.calculateTopPadding() * 1.5f)) {
 
         if (settings != null) {
             var visible by rememberSaveable { mutableStateOf(settings.rememberMe) }
@@ -128,12 +139,6 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
                 enabled = !enabled
                 viewModel.applyChanges()
             }
-
-            if (isLoading || !enabled)
-                CircularIndicatorCustom(
-                    text = stringResource(loading_loading),
-                    modifier = Modifier.padding(top = 16.dp).safeContentPadding().fillMaxWidth()
-                )
 
             if (needReload) {
                 reloadComposable()
@@ -216,8 +221,20 @@ private fun sliderCustomSettingsAutoLoading(
     return sliderCustom(
         initValue = initValue,
         enable = enabled,
-        text = stringResource(time_automatic_login) + " " + timeLimitAutoLoginSelectText(initValue),
+        text = stringResource(time_automatic_login) + " " + getString(initValue),
         onValueChangeFinished = { onValueChangeFinished() }
     )
 }
+
+@Composable
+private fun getString(needString: Int): String =
+    when (needString) {
+        0 -> stringResource(limit_time_one_day)
+        1 -> stringResource(limit_time_one_week)
+        2 -> stringResource(limit_time_two_week)
+        3 -> stringResource(limit_time_one_month)
+        4 -> stringResource(limit_time_six_month)
+        5 -> stringResource(limit_time_one_year)
+        else -> stringResource(unknown)
+    }
 

@@ -28,7 +28,6 @@ fun CheckCustom(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth(1f)
             .padding(end = 8.dp)
             .height(35.dp)
             .offset {

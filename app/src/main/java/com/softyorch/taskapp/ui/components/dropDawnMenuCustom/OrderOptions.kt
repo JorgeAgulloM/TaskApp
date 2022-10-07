@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.screens.main.utils
+package com.softyorch.taskapp.ui.components.dropDawnMenuCustom
 
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
@@ -25,11 +25,11 @@ sealed class OrderOptions {
     companion object {
         val listOrder = listOf(
             "Create ascending",
-            "Finish ascending",
             "Name ascending",
+            "Finish ascending",
             "Create descending",
-            "Finish descending",
-            "Name descending"
+            "Name descending",
+            "Finish descending"
         )
     }
 }
