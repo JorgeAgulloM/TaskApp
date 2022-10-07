@@ -7,8 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
-import com.softyorch.taskapp.ui.models.TaskMapperMain
 import com.softyorch.taskapp.ui.models.TaskModelUiMain
+import com.softyorch.taskapp.ui.models.mapToTaskModelUiMain
+import com.softyorch.taskapp.ui.models.mapToTaskModelUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -48,14 +49,14 @@ class MainViewModel @Inject constructor(
     private fun loadTaskUnchecked(taskOrder: TaskOrder) = viewModelScope.launch {
         taskUseCase.getUncheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
             .collect { list -> _tasksEntityListUnchecked.postValue(list.map { taskModelUseCase ->
-                TaskMapperMain().from(taskModelUseCase)
+                taskModelUseCase.mapToTaskModelUiMain()
             }) }
     }
 
     private fun loadTaskChecked(taskOrder: TaskOrder) = viewModelScope.launch {
         taskUseCase.getCheckedTask(taskOrder = taskOrder).flowOn(Dispatchers.IO)
             .collect { list -> _tasksEntityListChecked.postValue(list.map { taskModelUseCase ->
-                TaskMapperMain().from(taskModelUseCase)
+                taskModelUseCase.mapToTaskModelUiMain()
             }) }
     }
 
@@ -74,7 +75,7 @@ class MainViewModel @Inject constructor(
     suspend fun updateTask(taskModelUiMain: TaskModelUiMain) {
         _isLoading.value = true
         val state = viewModelScope.launch {
-            taskUseCase.updateTask(taskModelUseCase = TaskMapperMain().to(task = taskModelUiMain))
+            taskUseCase.updateTask(taskModelUseCase = taskModelUiMain.mapToTaskModelUseCase())
         }
         state.join()
 

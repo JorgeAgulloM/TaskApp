@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.ui.models
 
 import com.softyorch.taskapp.domain.taskUsesCase.TaskModelUseCase
-import com.softyorch.taskapp.utils.Mapper
 import com.softyorch.taskapp.utils.emptyString
 import java.time.Instant
 import java.util.*
@@ -16,25 +15,22 @@ data class TaskModelUi(
     var checkState: Boolean = false
 )
 
-class TaskMapper: Mapper<TaskModelUseCase, TaskModelUi> {
+fun TaskModelUi.mapToTaskModelUseCase() = TaskModelUseCase(
+    id = this.id!!,
+    title = this.title,
+    description = this.description,
+    author = this.author,
+    entryDate = this.entryDate,
+    finishDate = this.finishDate,
+    checkState = this.checkState
+)
 
-    override fun from(task: TaskModelUseCase): TaskModelUi = TaskModelUi(
-        id = task.id,
-        title = task.title,
-        description = task.description,
-        author = task.author,
-        entryDate = task.entryDate,
-        finishDate = task.finishDate,
-        checkState = task.checkState
-    )
-    override fun to(task: TaskModelUi): TaskModelUseCase = TaskModelUseCase(
-        id = task.id!!,
-        title = task.title,
-        description = task.description,
-        author = task.author,
-        entryDate = task.entryDate,
-        finishDate = task.finishDate,
-        checkState = task.checkState
-    )
-
-}
+fun TaskModelUseCase.mapToTaskModelUI() = TaskModelUi(
+    id = this.id!!,
+    title = this.title,
+    description = this.description,
+    author = this.author,
+    entryDate = this.entryDate,
+    finishDate = this.finishDate,
+    checkState = this.checkState
+)

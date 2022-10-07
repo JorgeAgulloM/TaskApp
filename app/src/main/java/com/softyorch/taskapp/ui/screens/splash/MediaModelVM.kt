@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.screens.splash.model
+package com.softyorch.taskapp.ui.screens.splash
 
 import com.softyorch.taskapp.domain.pexelUseCase.MediaModelDomain
 

@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.ui.screens.history
 
 import com.softyorch.taskapp.domain.taskUsesCase.TaskModelUseCase
-import com.softyorch.taskapp.utils.Mapper
 import com.softyorch.taskapp.utils.emptyString
 import java.time.Instant
 import java.util.*
@@ -13,18 +12,16 @@ data class TaskModelHistory(
     var checkState: Boolean = false
 )
 
-class TaskMapper: Mapper<TaskModelUseCase, TaskModelHistory> {
+fun TaskModelUseCase.mapToTaskModelHistory() = TaskModelHistory(
+    id = this.id,
+    title = this.title,
+    entryDate = this.entryDate,
+    checkState = this.checkState
+)
 
-    override fun from(task: TaskModelUseCase): TaskModelHistory = TaskModelHistory(
-        id = task.id,
-        title = task.title,
-        entryDate = task.entryDate,
-        checkState = task.checkState
-    )
-    override fun to(task: TaskModelHistory): TaskModelUseCase = TaskModelUseCase(
-        id = task.id!!,
-        title = task.title,
-        entryDate = task.entryDate,
-        checkState = task.checkState
-    )
-}
+fun TaskModelHistory.mapToTaskModelUseCase() = TaskModelUseCase(
+    id = this.id!!,
+    title = this.title,
+    entryDate = this.entryDate,
+    checkState = this.checkState
+)

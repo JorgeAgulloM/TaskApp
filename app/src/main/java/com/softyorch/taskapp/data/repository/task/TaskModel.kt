@@ -15,25 +15,21 @@ data class TaskModel(
     var checkState: Boolean = false
 )
 
-class TaskMapper: Mapper<TaskEntity, TaskModel> {
+fun TaskEntity.mapToTaskModel() = TaskModel(
+    id = this.id,
+    title = this.title,
+    description = this.description,
+    author = this.author,
+    entryDate = this.entryDate,
+    finishDate = this.finishDate,
+    checkState = this.checkState
+)
 
-    override fun from(task: TaskEntity): TaskModel = TaskModel(
-        id = task.id,
-        title = task.title,
-        description = task.description,
-        author = task.author,
-        entryDate = task.entryDate,
-        finishDate = task.finishDate,
-        checkState = task.checkState
-    )
-    override fun to(task: TaskModel): TaskEntity = TaskEntity(
-        id = task.id!!,
-        title = task.title,
-        description = task.description,
-        author = task.author,
-        entryDate = task.entryDate,
-        finishDate = task.finishDate,
-        checkState = task.checkState
-    )
-
-}
+fun TaskModel.mapToTaskEntity() = TaskEntity(
+    title = this.title,
+    description = this.description,
+    author = this.author,
+    entryDate = this.entryDate,
+    finishDate = this.finishDate,
+    checkState = this.checkState
+)

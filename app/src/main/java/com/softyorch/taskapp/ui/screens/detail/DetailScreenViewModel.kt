@@ -5,8 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
-import com.softyorch.taskapp.ui.models.TaskMapper
 import com.softyorch.taskapp.ui.models.TaskModelUi
+import com.softyorch.taskapp.ui.models.mapToTaskModelUI
+import com.softyorch.taskapp.ui.models.mapToTaskModelUseCase
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +67,7 @@ class DetailScreenViewModel @Inject constructor(
     private suspend fun getTaskId(id: String) {
         taskUseCase.getTaskId(taskId = id).let { data ->
             if (data.data != null) {
-                _taskEntityDetail.postValue(TaskMapper().from(task = data.data!!))
+                _taskEntityDetail.postValue(data.data!!.mapToTaskModelUI())
             } else {
                 showError(data.error.toString())
             }
@@ -74,13 +75,13 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     fun updateTask(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
-        taskUseCase.updateTask(taskModelUseCase = TaskMapper().to(task = taskModelUi))
+        taskUseCase.updateTask(taskModelUseCase = taskModelUi.mapToTaskModelUseCase())
     }
 
     fun removeTask(taskModelUi: TaskModelUi) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            taskUseCase.deleteTask(taskModelUseCase = TaskMapper().to(task = taskModelUi)).also {
+            taskUseCase.deleteTask(taskModelUseCase = taskModelUi.mapToTaskModelUseCase()).also {
                 _isDeleted.postValue(true)
                 _isLoading.postValue(false)
             }

@@ -9,11 +9,7 @@ class GetUncheckedTask(private val repository: TaskRepository) {
     operator fun invoke(
         taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
     ): Flow<List<TaskModelUseCase>> {
-        val taskListResponse = repository.getAllTaskFromDatabase2().map { list ->
-            list.map { taskModel -> TaskMapper().from(task = taskModel) }
-        }
-
-        return taskListResponse.map { task ->
+        return repository.getAllTaskFromDatabase2().map { task ->
             val tasksUnchecked = task.filter { !it.checkState }
             when (taskOrder.orderType) {
                 is OrderType.Ascending -> {
@@ -31,7 +27,7 @@ class GetUncheckedTask(private val repository: TaskRepository) {
                     }
                 }
             }
-        }
+        }.map { list -> list.map { taskModel -> taskModel.mapToTaskModelUseCase() } }
     }
 
 }

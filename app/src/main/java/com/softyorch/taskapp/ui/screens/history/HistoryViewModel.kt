@@ -44,7 +44,7 @@ class HistoryViewModel @Inject constructor(
                             showError("Error, la lista está vacía")
                         } else {
                             _taskEntityList.postValue(list.map { taskModelUseCase ->
-                                TaskMapper().from(task = taskModelUseCase)
+                                taskModelUseCase.mapToTaskModelHistory()
                             })
                         }
                     }

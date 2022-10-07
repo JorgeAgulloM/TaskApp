@@ -9,11 +9,7 @@ class GetAllTask(private val repository: TaskRepository) {
     operator fun invoke(
         taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
     ): Flow<List<TaskModelUseCase>> {
-        val taskListResponse = repository.getAllTaskFromDatabase2().map { list ->
-            list.map { taskModel -> TaskMapper().from(task = taskModel) }
-        }
-
-        return taskListResponse.map { list ->
+        return repository.getAllTaskFromDatabase2().map { list ->
             when (taskOrder.orderType) {
                 is OrderType.Ascending -> {
                     when (taskOrder) {
@@ -35,7 +31,7 @@ class GetAllTask(private val repository: TaskRepository) {
                 OrderType.Ascending -> it.sortedBy { it.checkState }
                 OrderType.Descending -> it.sortedByDescending { it.checkState }
             }
-        }
+        }.map { list -> list.map { taskModel -> taskModel.mapToTaskModelUseCase() } }
     }
 }
 

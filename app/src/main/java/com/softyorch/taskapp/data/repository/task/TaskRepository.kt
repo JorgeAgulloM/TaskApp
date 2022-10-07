@@ -17,21 +17,21 @@ class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDataba
         taskDatabaseDao.deleteTask(taskEntity = taskEntity)
 
 
-
     fun getAllTaskFromDatabase2(): Flow<List<TaskModel>> = taskDatabaseDao.getTasks().let { flow ->
-        flow.map { list -> list.map { TaskMapper().from(task = it) } }
+        flow.map { list -> list.map { it.mapToTaskModel() } }
     }
+
     suspend fun getTaskById2(idTask: String): TaskModel =
-        taskDatabaseDao.getTaskById(id = idTask).let { TaskMapper().from(task = it) }
+        taskDatabaseDao.getTaskById(id = idTask).mapToTaskModel()
+
     suspend fun addTask2(taskModel: TaskModel) =
-        taskDatabaseDao.insert(taskEntity = TaskMapper().to(task = taskModel))
+        taskDatabaseDao.insert(taskModel.mapToTaskEntity())
+
     suspend fun updateTask2(taskModel: TaskModel) =
-        taskDatabaseDao.update(taskEntity = TaskMapper().to(task = taskModel))
+        taskDatabaseDao.update(taskModel.mapToTaskEntity())
+
     suspend fun deleteTask2(taskModel: TaskModel) =
-        taskDatabaseDao.deleteTask(taskEntity = TaskMapper().to(task = taskModel))
-
-
-
+        taskDatabaseDao.deleteTask(taskModel.mapToTaskEntity())
 
 
     suspend fun deleteAllTask() = taskDatabaseDao.deleteAll()
