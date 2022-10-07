@@ -4,8 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
+import com.softyorch.taskapp.ui.models.TaskMapper
+import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,8 +18,8 @@ class DetailScreenViewModel @Inject constructor(
     private val taskUseCase: TaskUseCases
 
 ) : ViewModel() {
-    private val _taskEntityDetail = MutableLiveData<TaskEntity>()
-    val taskEntityDetail: LiveData<TaskEntity> = _taskEntityDetail
+    private val _taskEntityDetail = MutableLiveData<TaskModelUi>()
+    val taskEntityDetail: LiveData<TaskModelUi> = _taskEntityDetail
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -43,11 +44,11 @@ class DetailScreenViewModel @Inject constructor(
         _isLoading.postValue(false)
     }
 
-    fun updateAndRefreshTask(taskEntity: TaskEntity) = viewModelScope.launch(Dispatchers.IO) {
+    fun updateAndRefreshTask(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
         _isLoading.postValue(true)
-        var result = updateTask(taskEntity = taskEntity)
+        var result = updateTask(taskModelUi = taskModelUi)
         result.join()
-        result = getTask(id = taskEntity.id.toString())
+        result = getTask(id = taskModelUi.id.toString())
         result.join()
         _isLoading.postValue(false)
     }
@@ -65,21 +66,21 @@ class DetailScreenViewModel @Inject constructor(
     private suspend fun getTaskId(id: String) {
         taskUseCase.getTaskId(taskId = id).let { data ->
             if (data.data != null) {
-                _taskEntityDetail.postValue(data.data!!)
+                _taskEntityDetail.postValue(TaskMapper().from(task = data.data!!))
             } else {
                 showError(data.error.toString())
             }
         }
     }
 
-    fun updateTask(taskEntity: TaskEntity) = viewModelScope.launch(Dispatchers.IO) {
-        taskUseCase.updateTask(taskEntity = taskEntity)
+    fun updateTask(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
+        taskUseCase.updateTask(taskModelUseCase = TaskMapper().to(task = taskModelUi))
     }
 
-    fun removeTask(taskEntity: TaskEntity) {
+    fun removeTask(taskModelUi: TaskModelUi) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            taskUseCase.deleteTask(taskEntity = taskEntity).also {
+            taskUseCase.deleteTask(taskModelUseCase = TaskMapper().to(task = taskModelUi)).also {
                 _isDeleted.postValue(true)
                 _isLoading.postValue(false)
             }

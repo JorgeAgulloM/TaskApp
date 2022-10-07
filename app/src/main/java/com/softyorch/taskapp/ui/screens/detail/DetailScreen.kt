@@ -26,9 +26,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
+import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.ui.widgets.ShowTask
@@ -120,8 +120,8 @@ private fun Content(
     val error: Boolean by viewModel.error.observeAsState(initial = false)
     val messageError: String by viewModel.messageError.observeAsState(initial = emptyString)
 
-    val taskEntity: TaskEntity by viewModel.taskEntityDetail.observeAsState(
-        initial = TaskEntity(
+    val task: TaskModelUi by viewModel.taskEntityDetail.observeAsState(
+        initial = TaskModelUi(
             title = emptyString,
             description = emptyString,
             author = emptyString
@@ -140,7 +140,7 @@ private fun Content(
             )
     ) {
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        ShowTaskDetails(taskEntity = taskEntity)
+        ShowTaskDetails(task = task)
         Divider(modifier = Modifier.padding(8.dp))
 
         Column(
@@ -158,20 +158,20 @@ private fun Content(
             var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
             RowInfoDetail(
-                text = taskEntity.title,
-                isFinish = taskEntity.checkState,
+                text = task.title,
+                isFinish = task.checkState,
                 onEdit = { openEditDialog = true },
                 onDelete = { openDeleteDialog = true }
             ) {
-                if (!taskEntity.checkState) openCompleteDialog = true
-                if (taskEntity.checkState) openResetDialog = true
+                if (!task.checkState) openCompleteDialog = true
+                if (task.checkState) openResetDialog = true
             }
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            TextDescriptionDetails(description = taskEntity.description)
+            TextDescriptionDetails(description = task.description)
 
             /** Edit Dialog */
             if (openEditDialog) openEditDialog = newTaskDetails(
-                viewModel = viewModel, taskEntity = taskEntity
+                viewModel = viewModel, task = task
             )
 
             /** Complete Dialog */
@@ -180,9 +180,9 @@ private fun Content(
             },
                 confirmButton = {
                     ButtonCustomDetails(text = stringResource(complete), primary = true) {
-                        taskEntity.checkState = !taskEntity.checkState
-                        taskEntity.finishDate = Date.from(Instant.now())
-                        viewModel.updateTask(taskEntity = taskEntity)
+                        task.checkState = !task.checkState
+                        task.finishDate = Date.from(Instant.now())
+                        viewModel.updateTask(taskModelUi = task)
                         openCompleteDialog = false
                     }
                 },
@@ -200,9 +200,9 @@ private fun Content(
                 confirmButton = {
                     ButtonCustomDetails(text = stringResource(yes_modify_it), primary = true) {
                         /** OJO, se repite el código */
-                        taskEntity.checkState = !taskEntity.checkState
-                        taskEntity.finishDate = null
-                        viewModel.updateTask(taskEntity = taskEntity)
+                        task.checkState = !task.checkState
+                        task.finishDate = null
+                        viewModel.updateTask(taskModelUi = task)
                         openResetDialog = false
                     }
                 },
@@ -226,7 +226,7 @@ private fun Content(
                 confirmButton = {
                     ButtonCustomDetails(text = stringResource(delete_it), primary = true) {
                         openDeleteDialog = false
-                        viewModel.removeTask(taskEntity = taskEntity)
+                        viewModel.removeTask(taskModelUi = task)
                         navController.navigate(AppScreensRoutes.MainScreen.route) {
                             navController.backQueue.clear()
                         }
@@ -253,11 +253,11 @@ private fun Content(
 @Composable
 private fun newTaskDetails(
     viewModel: DetailScreenViewModel,
-    taskEntity: TaskEntity,
+    task: TaskModelUi,
 ): Boolean = newTask(
-    addOrEditTaskEntityFunc = viewModel::updateAndRefreshTask,
-    userName = taskEntity.author,
-    taskEntityToEdit = taskEntity
+    addOrEditTaskFunc = viewModel::updateAndRefreshTask,
+    userName = task.author,
+    taskToEdit = task
 )
 
 @Composable
@@ -389,11 +389,11 @@ private fun TextDescriptionDetails(
 }
 
 @Composable
-private fun ShowTaskDetails(taskEntity: TaskEntity) {
+private fun ShowTaskDetails(task: TaskModelUi) {
     ShowTask(
-        author = taskEntity.author,
-        date = taskEntity.entryDate.toStringFormatted(),
-        completedDate = taskEntity.finishDate?.toStringFormatted()
+        author = task.author,
+        date = task.entryDate.toStringFormatted(),
+        completedDate = task.finishDate?.toStringFormatted()
             ?: emptyString,
         paddingStart = 8.dp
     )

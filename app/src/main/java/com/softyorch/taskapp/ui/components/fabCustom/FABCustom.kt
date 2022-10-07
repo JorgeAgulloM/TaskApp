@@ -36,9 +36,9 @@ fun FABCustom() {
 
     if (openDialog) {
         openDialog = newTask(
-            addOrEditTaskEntityFunc = viewModel::addTask,
+            addOrEditTaskFunc = viewModel::addTask,
             userName = userName,
-            taskEntityToEdit = null
+            taskToEdit = null
         )
     }
 }

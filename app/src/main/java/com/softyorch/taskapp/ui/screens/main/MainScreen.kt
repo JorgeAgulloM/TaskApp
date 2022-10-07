@@ -29,11 +29,11 @@ import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
 import com.softyorch.taskapp.ui.components.dropDawnMenuCustom.dropDawnMenuCustom
+import com.softyorch.taskapp.ui.models.TaskModelUiMain
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
@@ -143,10 +143,10 @@ private fun OrientableContent(
     navController: NavController
 ) {
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val taskListsChecked: List<TaskEntity> by viewModel.tasksEntityListChecked.observeAsState(
+    val taskListsChecked: List<TaskModelUiMain> by viewModel.tasksEntityListChecked.observeAsState(
         initial = emptyList()
     )
-    val taskListsUnchecked: List<TaskEntity> by viewModel.tasksEntityListUnchecked.observeAsState(
+    val taskListsUnchecked: List<TaskModelUiMain> by viewModel.tasksEntityListUnchecked.observeAsState(
         initial = emptyList()
     )
 
@@ -164,9 +164,9 @@ private fun OrientableContent(
     LazyColumnChecks(
         modifier = modifier,
         maxHeight = maxHeight,
-        taskEntities = taskListsUnchecked,
+        taskList = taskListsUnchecked,
         changeOrder = viewModel::changeOrderUncheckedTask,
-        updateTaskEntity = viewModel::updateTask,
+        updateTask = viewModel::updateTask,
         enabled = !isLoading
     ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 
@@ -175,9 +175,9 @@ private fun OrientableContent(
     LazyColumnChecks(
         modifier = modifierForCheckedTasks.fillMaxHeight(),
         checkedOrNot = true,
-        taskEntities = taskListsChecked,
+        taskList = taskListsChecked,
         changeOrder = viewModel::changeOrderCheckedTask,
-        updateTaskEntity = viewModel::updateTask,
+        updateTask = viewModel::updateTask,
         enabled = !isLoading
     ) { navController.navigate(AppScreensRoutes.DetailScreen.route + "/${it}") }
 }
@@ -206,9 +206,9 @@ private fun LazyColumnChecks(
     modifier: Modifier,
     maxHeight: Float = 0.9f,
     checkedOrNot: Boolean = false,
-    taskEntities: List<TaskEntity>,
+    taskList: List<TaskModelUiMain>,
     changeOrder: KFunction1<TaskOrder, Unit>,
-    updateTaskEntity: KSuspendFunction1<TaskEntity, Unit>,
+    updateTask: KSuspendFunction1<TaskModelUiMain, Unit>,
     enabled: Boolean,
     onClick: (UUID) -> Unit
 ) {
@@ -232,9 +232,9 @@ private fun LazyColumnChecks(
             isFinish = checkedOrNot,
             changeOrder = changeOrder
         )
-        if (taskEntities.isNotEmpty()) {
-            val taskMap: Map<String, List<TaskEntity>> =
-                taskEntities.groupBy { it.entryDate.toStringFormatDate() }
+        if (taskList.isNotEmpty()) {
+            val taskMap: Map<String, List<TaskModelUiMain>> =
+                taskList.groupBy { it.entryDate.toStringFormatDate() }
 
             Column(
                 modifier = modifier,
@@ -264,14 +264,14 @@ private fun LazyColumnChecks(
                                     coroutineScope.launch {
                                         delay(400)
                                         myCheck = !it
-                                        updateTaskEntity(task)
+                                        updateTask(task)
                                     }
                                 },
                                 enabled = enabled,
                                 animated = true,
                                 text = task.title
                             ) {
-                                onClick(task.id)
+                                onClick(task.id!!)
                             }
                         }
                     }

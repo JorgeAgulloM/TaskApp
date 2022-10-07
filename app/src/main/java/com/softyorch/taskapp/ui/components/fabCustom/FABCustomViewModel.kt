@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
+import com.softyorch.taskapp.ui.models.TaskMapper
+import com.softyorch.taskapp.ui.models.TaskModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -39,6 +40,8 @@ class FABCustomViewModel @Inject constructor(
         }
     }
 
-    fun addTask(taskEntity: TaskEntity) =
-        viewModelScope.launch(Dispatchers.IO) { taskUseCase.addNewTask(taskEntity = taskEntity) }
+    fun addTask(taskModelUi: TaskModelUi) =
+        viewModelScope.launch(Dispatchers.IO) {
+            taskUseCase.addNewTask(taskModelUseCase = TaskMapper().to(task = taskModelUi))
+        }
 }

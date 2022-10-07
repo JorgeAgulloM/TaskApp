@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
 import com.softyorch.taskapp.ui.components.*
+import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
@@ -31,24 +31,24 @@ import kotlin.reflect.KFunction1
 @ExperimentalMaterial3Api
 @Composable
 fun newTask(
-    addOrEditTaskEntityFunc: KFunction1<TaskEntity, Job>,
+    addOrEditTaskFunc: KFunction1<TaskModelUi, Job>,
     userName: String,
-    taskEntityToEdit: TaskEntity?
+    taskToEdit: TaskModelUi?
 ): Boolean {
 
     val viewModel = hiltViewModel<NewTaskViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val title: String by viewModel.title.observeAsState(
-        initial = taskEntityToEdit?.title ?: emptyString
+        initial = taskToEdit?.title ?: emptyString
     )
     val description: String by viewModel.description.observeAsState(
-        initial = taskEntityToEdit?.description ?: emptyString
+        initial = taskToEdit?.description ?: emptyString
     )
-    val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = taskEntityToEdit != null)
+    val saveTaskEnable: Boolean by viewModel.saveTaskEnable.observeAsState(initial = taskToEdit != null)
 
     var openDialog by remember { mutableStateOf(true) }
     val dateCreatedFormatted =
-        taskEntityToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now())
+        taskToEdit?.entryDate?.toStringFormatDate() ?: Date.from(Instant.now())
             .toStringFormatDate()
 
     val titleDeedCounter: Int by viewModel.titleDeedCounter.observeAsState(initial = 0)
@@ -100,9 +100,9 @@ fun newTask(
                                 onGo = {
                                     /**Revisar esto, duplica el código*/
                                     if (saveTaskEnable) {
-                                        addOrEditTaskEntityFunc(
+                                        addOrEditTaskFunc(
                                             taskToEditOrNewTask(
-                                                taskEntityToEdit = taskEntityToEdit, title = title,
+                                                taskToEdit = taskToEdit, title = title,
                                                 description = description, userName = userName
                                             )
                                         )
@@ -124,7 +124,7 @@ fun newTask(
                         ) {
 
                             ButtonCustomNewTask(
-                                taskEntityToEdit = taskEntityToEdit,
+                                taskToEdit = taskToEdit,
                                 enable = saveTaskEnable,
                                 error = error
                             ) {
@@ -135,9 +135,9 @@ fun newTask(
                                     if (error) {
                                         showSnackBarErrors = true
                                     } else {
-                                        addOrEditTaskEntityFunc(
+                                        addOrEditTaskFunc(
                                             taskToEditOrNewTask(
-                                                taskEntityToEdit = taskEntityToEdit, title = title,
+                                                taskToEdit = taskToEdit, title = title,
                                                 description = description, userName = userName
                                             )
                                         )
@@ -169,14 +169,14 @@ fun newTask(
 }
 
 private fun taskToEditOrNewTask(
-    taskEntityToEdit: TaskEntity?,
+    taskToEdit: TaskModelUi?,
     title: String,
     description: String,
     userName: String
-): TaskEntity = (taskEntityToEdit?.copy(
+): TaskModelUi = (taskToEdit?.copy(
     title = title,
     description = description
-) ?: TaskEntity(
+) ?: TaskModelUi(
     title = title,
     description = description,
     author = userName
@@ -184,13 +184,13 @@ private fun taskToEditOrNewTask(
 
 @Composable
 private fun ButtonCustomNewTask(
-    taskEntityToEdit: TaskEntity?,
+    taskToEdit: TaskModelUi?,
     enable: Boolean,
     error: Boolean = false,
     onClick: () -> Unit
 ) {
     ButtonCustom(
-        text = if (taskEntityToEdit == null) stringResource(create) else stringResource(edit_text),
+        text = if (taskToEdit == null) stringResource(create) else stringResource(edit_text),
         enable = enable,
         primary = true,
         error = error,
