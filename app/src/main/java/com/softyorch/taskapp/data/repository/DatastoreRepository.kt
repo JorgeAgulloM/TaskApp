@@ -1,8 +1,8 @@
 package com.softyorch.taskapp.data.repository
 
-import com.softyorch.taskapp.data.Resource
 import com.softyorch.taskapp.data.database.datastore.DatastoreDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
+import com.softyorch.taskapp.utils.DataOrError
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class DatastoreRepository @Inject constructor(
     private val repository: DatastoreDataBase
 ) {
-    fun getData(): Resource<Flow<UserDataEntity>> = repository.getData()
+    fun getData(): DataOrError<Flow<UserDataEntity>, String> = repository.getData()
     suspend fun saveData(userDataEntity: UserDataEntity) = repository.saveData(userDataEntity = userDataEntity)
     suspend fun deleteData() = repository.deleteData()
 }

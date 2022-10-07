@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.domain.taskUsesCase
 
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
-import com.softyorch.taskapp.data.repository.TaskRepository
+import com.softyorch.taskapp.data.repository.task.TaskRepository
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.utils.TimeLimitAutoLogin
@@ -12,8 +11,8 @@ import java.util.*
 class GetCheckedTask(private val repository: TaskRepository) {
     operator fun invoke(
         taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
-    ): Flow<List<TaskEntity>> {
-        return repository.getAllTaskFromDatabase().map { task ->
+    ): Flow<List<TaskModelUseCase>> {
+        return repository.getAllTaskFromDatabase2().map { task ->
             val tasksChecked = task
                 .filter { it.checkState }
                 .filter { it ->
@@ -39,7 +38,7 @@ class GetCheckedTask(private val repository: TaskRepository) {
                     }
                 }
             }
-        }
+        }.map { list -> list.map { taskModel -> taskModel.mapToTaskModelUseCase() } }
     }
 }
 
