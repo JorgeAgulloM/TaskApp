@@ -13,16 +13,20 @@ class PexelsRepository @Inject constructor(private val api: PexelsService) {
 
     suspend fun getRandomImage(): DataOrError<MediaModel, String> {
         val mediaModelResponse = DataOrError<MediaModel, String>()
-        mediaModelResponse.let { response ->
+        mediaModelResponse.let { dataOrError ->
             try {
-                api.getMediaList().data?.let { list ->
-                    val randomImage = SecureRandom()
-                    randomImage.setSeed(randomImage.generateSeed(list.size))
-                    val random = randomImage.nextInt(list.size - 1)
-                    response.data = list[random].mapToMediaModel()
+                val responseApi = api.getMediaList()
+                responseApi.let {
+                    it.data?.let { list ->
+                        val randomImage = SecureRandom()
+                        randomImage.setSeed(randomImage.generateSeed(list.size))
+                        val random = randomImage.nextInt(list.size - 1)
+                        dataOrError.data = list[random].mapToMediaModel()
+                    }
+                    it.error = dataOrError.error
                 }
             } catch (ex: Exception) {
-                response.error = ex.message.toString()
+                dataOrError.error = ex.message.toString()
             }
         }
 
