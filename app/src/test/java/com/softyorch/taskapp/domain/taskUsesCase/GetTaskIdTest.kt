@@ -1,6 +1,6 @@
 package com.softyorch.taskapp.domain.taskUsesCase
 
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.data.repository.task.TaskModel
 import com.softyorch.taskapp.data.repository.task.TaskRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -18,7 +18,7 @@ class GetTaskIdTest {
 
     lateinit var getTaskId: GetTaskId
 
-    private val myTask = TaskEntity(
+    private val myTask = TaskModel(
         id = UUID.randomUUID(),
         title = "Test",
         description = "Testing",
@@ -35,14 +35,14 @@ class GetTaskIdTest {
     @Test
     fun `cuando se llame al caso de uso para que devuelva una task`() = runBlocking {
         //Given
-        coEvery { repository.getTaskById(idTask = myTask.id.toString()) } returns myTask
+        coEvery { repository.getTaskById2(idTask = myTask.id.toString()) } returns myTask
 
         //When
         val result = getTaskId.invoke(taskId = myTask.id.toString())
 
         //Then
-        coVerify(exactly = 1) { repository.getTaskById(any()) }
-        assert(result.data == myTask)
+        coVerify(exactly = 1) { repository.getTaskById2(any()) }
+        assert(result.data == myTask.mapToTaskModelUseCase())
     }
 
 }
