@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.softyorch.taskapp.domain.taskUsesCase.TaskModelUseCase
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.ui.models.mapToTaskModelUI
-import com.softyorch.taskapp.utils.DataOrError
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
@@ -58,8 +57,7 @@ class DetailScreenViewModelTest {
     @Test
     fun `cuando el viewmodel carga los datos desde el repositorio al livedata buscando una task`() =
         runTest {
-            val task = DataOrError<TaskModelUseCase, String>()
-            task.data = taskList.first()
+            val task = taskList.first()
             //Given
             coEvery { taskUseCase.getTaskId.invoke(taskId = taskList.first().id.toString()) } returns task
 
@@ -68,7 +66,7 @@ class DetailScreenViewModelTest {
 
             //then
             delay(500)
-            assert(detailScreenViewModel.taskEntityDetail.value == task.data?.mapToTaskModelUI())
+            assert(detailScreenViewModel.taskEntityDetail.value == task.mapToTaskModelUI())
         }
 
 }

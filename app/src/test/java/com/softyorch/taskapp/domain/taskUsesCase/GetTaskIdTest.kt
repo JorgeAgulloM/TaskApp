@@ -42,7 +42,7 @@ class GetTaskIdTest {
 
         //Then
         coVerify(exactly = 1) { repository.getTaskById(any()) }
-        assert(result.data == myTask.mapToTaskModelUseCase())
+        assert(result == myTask.mapToTaskModelUseCase())
     }
 
 }
