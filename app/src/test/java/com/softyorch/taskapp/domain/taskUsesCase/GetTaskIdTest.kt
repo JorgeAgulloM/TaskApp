@@ -33,7 +33,7 @@ class GetTaskIdTest {
     }
 
     @Test
-    fun `cuando se llame al caso de uso para que devuelva una task`() = runBlocking {
+    fun `when the use case is called upon to return a task`() = runBlocking {
         //Given
         coEvery { repository.getTaskById(idTask = myTask.id.toString()) } returns myTask
 

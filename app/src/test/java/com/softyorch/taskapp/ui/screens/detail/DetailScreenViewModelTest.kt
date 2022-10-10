@@ -55,7 +55,7 @@ class DetailScreenViewModelTest {
     }
 
     @Test
-    fun `cuando el viewmodel carga los datos desde el repositorio al livedata buscando una task`() =
+    fun `A task is requested from the viewModel`() =
         runTest {
             val task = taskList.first()
             //Given
