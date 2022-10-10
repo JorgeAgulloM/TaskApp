@@ -33,7 +33,7 @@ class GetImageTest {
     }
 
     @Test
-    fun `cuando se realiza una peticion de imagen`() = runBlocking {
+    fun `when an image request is made`() = runBlocking {
         val imageDOE = emptyMedia
 
         //Given
