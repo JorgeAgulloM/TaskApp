@@ -29,8 +29,8 @@ class FABCustomViewModel @Inject constructor(
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
             datastore.getData().let { resource ->
-                if (resource.data != null) {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                if (resource != null) {
+                    resource.flowOn(Dispatchers.IO).collect { user ->
                         _user.postValue(user.username)
                     }
                 } else {
