@@ -12,8 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.R
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable
@@ -23,7 +25,7 @@ fun ContentStickyHeader(published: String) {
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End
     ) {
         Text(
-            text = "Publicación $published",
+            text = stringResource(R.string.text_create_at) + published,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .padding(horizontal = 8.dp)
