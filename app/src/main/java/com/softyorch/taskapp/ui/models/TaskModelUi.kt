@@ -16,7 +16,7 @@ data class TaskModelUi(
 )
 
 fun TaskModelUi.mapToTaskModelUseCase() = TaskModelUseCase(
-    id = this.id!!,
+    id = this.id ?: UUID.randomUUID(),
     title = this.title,
     description = this.description,
     author = this.author,
