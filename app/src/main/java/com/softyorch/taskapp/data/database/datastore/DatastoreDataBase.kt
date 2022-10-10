@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.utils.DataOrError
 import com.softyorch.taskapp.utils.NameOfSettings.*
 import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString
@@ -27,14 +26,17 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
             setting[stringPreferencesKey(Email.name)] = userDataEntity.userEmail
             setting[stringPreferencesKey(Pass.name)] = userDataEntity.userPass
             setting[stringPreferencesKey(Picture.name)] = userDataEntity.userPicture
-            setting[stringPreferencesKey(LastLoginDate.name)] = userDataEntity.lastLoginDate.toString()
+            setting[stringPreferencesKey(LastLoginDate.name)] =
+                userDataEntity.lastLoginDate.toString()
             setting[booleanPreferencesKey(RememberMe.name)] = userDataEntity.rememberMe
             setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)] =
                 userDataEntity.lightDarkAutomaticTheme
             setting[booleanPreferencesKey(LightOrDarkTheme.name)] = userDataEntity.lightOrDarkTheme
-            setting[booleanPreferencesKey(AutomaticLanguage.name)] = userDataEntity.automaticLanguage
+            setting[booleanPreferencesKey(AutomaticLanguage.name)] =
+                userDataEntity.automaticLanguage
             setting[booleanPreferencesKey(AutomaticColors.name)] = userDataEntity.automaticColors
-            setting[intPreferencesKey(TimeLimitAutoLoading.name)] = userDataEntity.timeLimitAutoLoading
+            setting[intPreferencesKey(TimeLimitAutoLoading.name)] =
+                userDataEntity.timeLimitAutoLoading
             setting[intPreferencesKey(TextSize.name)] = userDataEntity.textSize
         }
     }
@@ -56,7 +58,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
         }
     }
 
-    fun getData(): DataOrError<Flow<UserDataEntity>, String> {
+/*    fun getData(): DataOrError<Flow<UserDataEntity>, String> {
         val userData = DataOrError<Flow<UserDataEntity>, String>()
          try {
             userData.data = context.datastore.data.map { setting ->
@@ -91,11 +93,11 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
             userData.error = e.message.toString()
         }
         return userData
-    }
+    }*/
 
-/*    fun getData(): Resource<Flow<UserDataEntity>> {
+    fun getData(): Flow<UserDataEntity>? {
         return try {
-            Resource.Success(data = context.datastore.data.map { setting ->
+            context.datastore.data.map { setting ->
                 UserDataEntity(
                     username = setting[stringPreferencesKey(Name.name)].orEmpty(),
                     userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
@@ -104,7 +106,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
                     lastLoginDate = if (setting[stringPreferencesKey(LastLoginDate.name)].isNullOrEmpty()) {
                         null
                     } else {
-                        if (setting[stringPreferencesKey(LastLoginDate.name)] == "null"){
+                        if (setting[stringPreferencesKey(LastLoginDate.name)] == "null") {
                             Date.from(Instant.now())
                         } else {
                             setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
@@ -122,10 +124,10 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
                         ?: 0,
                     textSize = setting[intPreferencesKey(TextSize.name)] ?: 0
                 )
-            })
+            }
         } catch (e: Exception) {
-            Resource.Error(data = null, message = e.message.toString())
+            null
         }
+    }
 
-    }*/
 }

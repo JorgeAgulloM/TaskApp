@@ -72,8 +72,8 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun userActivated() {
         datastore.getData().let { resource ->
-            if (resource.data != null) {
-                resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+            if (resource != null) {
+                resource.flowOn(Dispatchers.IO).collect { user ->
                     if (user.rememberMe) {
                         logInWithRememberMe(
                             email = user.userEmail,

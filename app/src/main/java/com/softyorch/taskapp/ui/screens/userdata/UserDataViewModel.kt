@@ -153,8 +153,8 @@ class UserDataViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().let { resource ->
-            if (resource.data != null) {
-                resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
+            if (resource != null) {
+                resource.flowOn(Dispatchers.IO).collect { data ->
                     /**REVISAR ESTO, SI REGRESA UN NULL NO PASARÁ NADA*/
                     getUserDataEmail(email = data.userEmail)?.let { user ->
                         _userDataEntityActive.postValue(user)
