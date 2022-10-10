@@ -35,13 +35,13 @@ class GetTaskIdTest {
     @Test
     fun `cuando se llame al caso de uso para que devuelva una task`() = runBlocking {
         //Given
-        coEvery { repository.getTaskById2(idTask = myTask.id.toString()) } returns myTask
+        coEvery { repository.getTaskById(idTask = myTask.id.toString()) } returns myTask
 
         //When
         val result = getTaskId.invoke(taskId = myTask.id.toString())
 
         //Then
-        coVerify(exactly = 1) { repository.getTaskById2(any()) }
+        coVerify(exactly = 1) { repository.getTaskById(any()) }
         assert(result.data == myTask.mapToTaskModelUseCase())
     }
 

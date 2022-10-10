@@ -7,7 +7,7 @@ class GetTaskId(private val repository: TaskRepository) {
     suspend operator fun invoke(taskId: String): DataOrError<TaskModelUseCase, String> {
         val response = DataOrError<TaskModelUseCase, String>()
         try {
-            response.data = repository.getTaskById2(idTask = taskId).mapToTaskModelUseCase()
+            response.data = repository.getTaskById(idTask = taskId).mapToTaskModelUseCase()
         } catch (ex: Exception) {
             response.error = ex.message.toString()
         }
