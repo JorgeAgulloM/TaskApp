@@ -109,4 +109,18 @@ Version 1.3.6_Alpha01 - 20/09/2022
 ### Version 1.3.28-Alpha01
 Version 1.3.20_Alpha01 - 27/09/2022
 - New features have been added 
+
+<br>
+<br>
+
+### Version 1.4.30-Alpha02
+Version 1.4.30-Alpha02 - 04/10/2022
+- New feature get random images of Pexels.com has been added at splash screen
+
+<br>
+<br>
+
+### Version 1.4.30-Alpha02
+Version 1.4.30-Alpha02 - 04/10/2022
+- New tests added and refactor code.
 ````
