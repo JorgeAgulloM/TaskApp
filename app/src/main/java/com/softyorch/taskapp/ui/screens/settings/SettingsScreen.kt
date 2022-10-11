@@ -26,8 +26,8 @@ import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreens
-import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

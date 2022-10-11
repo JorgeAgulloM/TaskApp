@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.NameOfSettings.*
-import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.toDate
+import com.softyorch.taskapp.utils.extensions.datastore
+import com.softyorch.taskapp.utils.extensions.toDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant

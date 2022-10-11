@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.domain.utils.OrderType
 import com.softyorch.taskapp.domain.utils.TaskOrder
 import com.softyorch.taskapp.ui.widgets.RowInfo
-import com.softyorch.taskapp.utils.containerColorAnimation
+import com.softyorch.taskapp.utils.extensions.containerColorAnimation
 
 @ExperimentalMaterial3Api
 @Composable

@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.infiniteTransitionAnimateColor
+import com.softyorch.taskapp.utils.extensions.infiniteTransitionAnimateColor
+
 
 @Composable
 fun CircularIndicatorCustomDialog(

@@ -33,6 +33,7 @@ import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
 import kotlinx.coroutines.delay
 
 @SuppressLint("CoroutineCreationDuringComposition")
