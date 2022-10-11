@@ -26,6 +26,7 @@ fun TaskEntity.mapToTaskModel() = TaskModel(
 )
 
 fun TaskModel.mapToTaskEntity() = TaskEntity(
+    id = this.id ?: UUID.randomUUID(),
     title = this.title,
     description = this.description,
     author = this.author,

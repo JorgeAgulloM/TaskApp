@@ -38,8 +38,8 @@ class MainActivityViewModel @Inject constructor(
     private fun getUserDataSettings() {
         viewModelScope.launch(Dispatchers.IO) {
             datastore.getData().let { resource ->
-                if (resource.data != null) {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect{ user ->
+                if (resource != null) {
+                    resource.flowOn(Dispatchers.IO).collect{ user ->
                         _darkSystem.postValue(user.lightDarkAutomaticTheme)
                         _lightOrDark.postValue(user.lightOrDarkTheme)
                         _colorSystem.postValue(user.automaticColors)

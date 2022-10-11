@@ -41,7 +41,7 @@ class GetAllTaskTest {
     }
 
     @Test
-    fun `solicitar todas las tareas`() = runBlocking {
+    fun `all tasks are requested`() = runBlocking {
         //Given
         coEvery { repository.getAllTaskFromDatabase() } returns emptyFlow()
 
