@@ -2,27 +2,46 @@ package com.softyorch.taskapp.ui.screensBeta.login
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
+import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,64 +55,58 @@ import kotlinx.coroutines.launch
 fun LoginScreenBeta(navController: NavController = NavController(context = LocalContext.current)) {
 
     val viewModel = hiltViewModel<LoginViewModelBeta>()
+    val showLogin by viewModel.showLogin.observeAsState(initial = false)
 
     TaskAppTheme {
         Surface(Modifier.fillMaxSize()) {
-            Background()
-            Body(viewModel)
+            Background {
+                viewModel.showLogin()
+            }
+            if (!showLogin) {
+                CircularIndicatorCustom(stringResource(R.string.loading_loading))
+            } else {
+                Body(viewModel = viewModel)
+            }
         }
     }
 }
 
 @Composable
-fun Background() {
+fun Background(onLoadImage: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Image(
-            painter = rememberAsyncImagePainter(
-                model = R.drawable.pexels_polina_kovaleva_5717421,
-                contentScale = ContentScale.Crop
-            ),
+        AsyncImage(
+            model = R.drawable.pexels_polina_kovaleva_5717421,
             contentDescription = "Fondo",
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            onSuccess = { onLoadImage() }
         )
     }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun Body(viewModel: LoginViewModelBeta) {
-    val showLogin by viewModel.showLogin.observeAsState(initial = false)
-    val scope = rememberCoroutineScope()
-
-    scope.launch {
-        delay(3000L)
-
-        viewModel.showLogin()
-    }
-
-    if (showLogin) LoginBody()
-
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LoginBody() {
-    val scale = remember { Animatable(0f) }
-    LaunchedEffect(key1 = true, block = {
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 1000, easing = {
-                LinearEasing.transform(0.1f)
-            })
-        )
-    })
+fun Body(viewModel: LoginViewModelBeta) {
+    val newAccount by viewModel.showNewAccount.observeAsState(initial = false)
+    val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
+    var height = 0.dp
+    LocalConfiguration.current.screenHeightDp.let { height = (it / 2).dp }
     val scope = rememberCoroutineScope()
-
     val sheetState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessVeryLow
+            dampingRatio = Spring.DampingRatioLowBouncy
+        )
+    )
+    scope.launch {
+        delay(2000)
+        sheetState.show()
+    }
+
+    val colorGradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondaryContainer
         )
     )
 
@@ -104,105 +117,152 @@ fun LoginBody() {
             bottomEnd = CornerSize(0.dp)
         ),
         sheetContent = {
-            Box(
+            Column(
                 modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary
-                    )
                     .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
+                    .safeContentPadding()
+                    .height(height)
+                    .background(colorGradient),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Bottom sheet", fontSize = 60.sp)
+                LoginHead()
+                LoginContent(loginModel)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ButtonCustom(
+                        text = stringResource(R.string.login),
+                        primary = true,
+                        enable = true,
+                        error = false
+                    ) {
+
+                    }
+                }
             }
         }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = {
-                scope.launch {
-                    sheetState.apply {
-                        if (isVisible) hide() else show()
-                    }
-                }
-            }) {
-                Text(
-                    text = "Bottom sheet fraction -> ${sheetState.progress.fraction}",
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
     }
 
-/*    val bottomSheetState = rememberBottomSheetState(
-        initialValue = BottomSheetValue.Collapsed,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy//DampingRatioLowBouncy//DampingRatioHighBouncy
-        )
-    )
-    val bottomSheetScaffoldState =
-        rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
+}
 
-
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Bottom sheet", fontSize = 60.sp)
-            }
-        },
-        sheetBackgroundColor = Color.Green
+@Composable
+private fun LoginHead() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = {
-                scope.launch {
-                    bottomSheetState.apply {
-                        if (isCollapsed) expand() else collapse()
-                    }
-                }
-            }) {
-                Text(
-                    text = "Bottom sheet fraction -> ${bottomSheetState.progress.fraction}",
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = "¿No tiene cuenta? ",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            modifier = Modifier.padding(top = 4.dp).clickable { },
+            text = "Crea una nueva cuenta",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.tertiary
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LoginContent(
+    loginModel: LoginModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextFieldEmail(loginModel.userEmail, false, false, false) {
+
         }
-    }*/
+        TextFieldPass(loginModel.userPass, false, keyboardActions = KeyboardActions(
+            onGo = {
+                //if (!newAccount) goOrErrorLogin = true
+            }
+        ), false, false) {
 
+        }
 
-/*BottomSheetScaffold(
-        modifier = Modifier.padding(24.dp),
-        scaffoldState = scaffoldState,
-        sheetContent = {
-            Text("Hola desde sheetContent")
-        },
-        sheetPeekHeight = 100.dp,
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = {Text("Text Button")},
-                onClick = {
-                    scope.launch {
-                        scaffoldState.bottomSheetState.apply {
-                            if (isCollapsed) expand() else collapse()
-                        }
-                    }
-                }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun TextFieldEmail(
+    email: String,
+    error: Boolean,
+    errorAccount: Boolean,
+    errorEmailExist: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
+
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            OutlinedTextFieldCustom(
+                text = email,
+                label = stringResource(R.string.email),
+                placeholder = stringResource(R.string.type_your_email),
+                icon = Icons.Rounded.Email,
+                contentDescription = stringResource(R.string.type_your_email),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = KeyboardCapitalization.None,
+                    keyboardType = KeyboardType.Email
+                ),
+                isError = error || errorAccount || errorEmailExist,
+                onTextFieldChanged = onTextFieldChanged
             )
         }
-    ){
-        Text("Hola desde lambda")
-    }*/
+        if (error && !errorAccount) IconError(
+            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
+            else stringResource(R.string.input_error_email)
+        )
+    }
+}
 
+@ExperimentalMaterial3Api
+@Composable
+private fun TextFieldPass(
+    pass: String,
+    newAccount: Boolean,
+    keyboardActions: KeyboardActions,
+    error: Boolean,
+    errorAccount: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            OutlinedTextFieldCustom(
+                text = pass,
+                label = stringResource(R.string.password),
+                placeholder = stringResource(R.string.type_your_password),
+                icon = Icons.Rounded.Key,
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+                ),
+                keyboardActions = keyboardActions,
+                contentDescription = stringResource(R.string.type_your_password),
+                isError = error || errorAccount,
+                password = true,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
+        if (error) IconError(
+            errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
+            else stringResource(R.string.input_error_pass)
+        )
+    }
 }
