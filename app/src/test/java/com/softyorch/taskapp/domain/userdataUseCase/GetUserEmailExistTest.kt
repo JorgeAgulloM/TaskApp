@@ -25,7 +25,7 @@ class GetUserEmailExistTest {
     }
 
     @Test
-    fun `cuando se solicita un email que no existe`() = runBlocking {
+    fun `when requesting an email that does not exist`() = runBlocking {
 
         val user = UserDataEntity(
             username = emptyString,
@@ -45,7 +45,7 @@ class GetUserEmailExistTest {
     }
 
     @Test
-    fun `cuando se solicita un email que si existe`() = runBlocking {
+    fun `when requesting an email that exists`() = runBlocking {
 
         val user = UserDataEntity(
             username = "Jorge",

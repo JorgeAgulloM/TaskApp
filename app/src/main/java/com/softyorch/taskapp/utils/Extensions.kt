@@ -12,6 +12,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.datastore.preferences.preferencesDataStore
+import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,6 +39,12 @@ val Context.datastore by preferencesDataStore(name = USER_DATA)
 
 fun Context.toastError(message: String, onShow: () -> Unit) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show().also { onShow() }
+}
+
+fun Int.random(): Int {
+    val random = SecureRandom()
+    random.setSeed(random.generateSeed(this))
+    return random.nextInt(this - 1)
 }
 
 /** Animations ***************************************************/
@@ -199,6 +206,7 @@ fun MaterialTheme.infiniteTransitionAnimateColor(): State<Color> =
             repeatMode = RepeatMode.Reverse
         )
     )
+
 
 
 

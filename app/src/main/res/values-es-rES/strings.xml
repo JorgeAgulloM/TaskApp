@@ -118,5 +118,6 @@
     <string name="pexels_courtesy">Por cortesia de Pexels.com</string>
     <string name="author">\"Autor: \"</string>
     <string name="click_to_view">Click para ver la imagen</string>
+    <string name="text_create_at">\"Creado en \"</string>
 
 </resources>

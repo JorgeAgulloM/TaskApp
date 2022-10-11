@@ -33,7 +33,7 @@ class LoginUserTest {
     }
 
     @Test
-    fun `cuando el usuario intorduce incorrectamente un pass`() = runBlocking {
+    fun `when the user incorrectly enters a password`() = runBlocking {
 
         //Given
         coEvery {
@@ -52,7 +52,7 @@ class LoginUserTest {
     }
 
     @Test
-    fun `cuando el usuario intorduce incorrectamente un email`() = runBlocking {
+    fun `when the user incorrectly enters an incorrect email address`() = runBlocking {
 
         //Given
         coEvery {
@@ -71,7 +71,7 @@ class LoginUserTest {
     }
 
     @Test
-    fun `cuando el usuario intorduce correctamente un email y un pass`() = runBlocking {
+    fun `when the user correctly enters an email address and a password`() = runBlocking {
 
         //Given
         coEvery {

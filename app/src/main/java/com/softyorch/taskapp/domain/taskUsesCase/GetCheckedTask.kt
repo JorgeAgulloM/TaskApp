@@ -12,7 +12,7 @@ class GetCheckedTask(private val repository: TaskRepository) {
     operator fun invoke(
         taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
     ): Flow<List<TaskModelUseCase>> {
-        return repository.getAllTaskFromDatabase2().map { task ->
+        return repository.getAllTaskFromDatabase().map { task ->
             val tasksChecked = task
                 .filter { it.checkState }
                 .filter { it ->

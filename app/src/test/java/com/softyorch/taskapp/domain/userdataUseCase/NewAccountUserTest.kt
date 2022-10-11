@@ -31,7 +31,7 @@ class NewAccountUserTest {
     }
 
     @Test
-    fun `cuando se crea una nueva cuenta correctamente`() = runBlocking {
+    fun `create a new user account`() = runBlocking {
 
         //Given
         //coEvery { repository.addUserData(userDataEntity = user) }

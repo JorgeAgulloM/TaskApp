@@ -66,10 +66,10 @@ class DetailScreenViewModel @Inject constructor(
 
     private suspend fun getTaskId(id: String) {
         taskUseCase.getTaskId(taskId = id).let { data ->
-            if (data.data != null) {
-                _taskEntityDetail.postValue(data.data!!.mapToTaskModelUI())
+            if (data != null) {
+                _taskEntityDetail.postValue(data.mapToTaskModelUI())
             } else {
-                showError(data.error.toString())
+                showError("Error")
             }
         }
     }

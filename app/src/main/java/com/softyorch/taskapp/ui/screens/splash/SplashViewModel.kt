@@ -24,10 +24,6 @@ class SplashViewModel @Inject constructor(
     private val pexelsUseCases: PexelsUseCases
 ) : ViewModel() {
 
-    private val errorImageUrl = "https://www.pexels.com/photo/white-notebook-in-close-up-photography-5717421/"
-    private val errorAuthor = "Polina Kovaleva"
-    private val errorAuthorUrl = "https://www.pexels.com/@polina-kovaleva/"
-
     private val _goToAutologin = MutableLiveData<Boolean>()
     val goToAutologin: LiveData<Boolean> = _goToAutologin
 
@@ -64,29 +60,20 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
-            data.data?.mapToMediaModelVM()?.let { media ->
-                if (data.data != null) {
-                    _getImage.value = media.image
-                    _getUrl.value = media.imageUrl
-                    _getAuthor.value = media.author
-                    _getUrlAuthor.value = media.authorUrl
-                    _isLoading.postValue(false)
-                } else {
-                    _isError.value = true
-                    _errorMessage.value = data.error
-                    _getUrl.value = errorImageUrl
-                    _getAuthor.value = errorAuthor
-                    _getUrlAuthor.value = errorAuthorUrl
-
-                }
+            data.mapToMediaModelVM().let { media ->
+                _getImage.value = media.image
+                _getUrl.value = media.imageUrl
+                _getAuthor.value = media.author
+                _getUrlAuthor.value = media.authorUrl
+                _isLoading.postValue(false)
             }
         }
     }
 
     private suspend fun userActivated() {
         datastore.getData().let { resource ->
-            if (resource.data != null) {
-                resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+            if (resource != null) {
+                resource.flowOn(Dispatchers.IO).collect { user ->
                     if (user.rememberMe) {
                         logInWithRememberMe(
                             email = user.userEmail,

@@ -41,8 +41,8 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         datastore.getData().let { resource ->
-            if (resource.data != null) {
-                resource.data?.flowOn(Dispatchers.IO)?.collect { data ->
+            if (resource != null) {
+                resource.flowOn(Dispatchers.IO).collect { data ->
                     userDataUseCases.getUserEmailExist(email = data.userEmail).let { user ->
                         var isNeedUpdate = false
                         if (!minSdk29) {
