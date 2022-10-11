@@ -3,9 +3,7 @@ package com.softyorch.taskapp.ui.screens.main
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.content.res.Configuration.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -216,12 +214,12 @@ private fun LazyColumnChecks(
     val lazyState = rememberLazyListState()
 
     Column(
-        modifier = modifier,
+        modifier = modifier
             /*.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.large
-            ),*/
+            )*/,
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.Start
     ) {
@@ -241,7 +239,10 @@ private fun LazyColumnChecks(
                 verticalArrangement = Arrangement.spacedBy(space = 8.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxHeight(maxHeight),
+                    modifier = Modifier.fillMaxHeight(maxHeight).border(
+                        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.secondaryContainer),
+                        shape = MaterialTheme.shapes.large
+                    ),
                     state = lazyState,
                     userScrollEnabled = true,
                     flingBehavior = ScrollableDefaults.flingBehavior()

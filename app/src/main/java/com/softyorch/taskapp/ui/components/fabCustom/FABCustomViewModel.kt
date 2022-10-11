@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.components.fabCustom
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,8 +30,8 @@ class FABCustomViewModel @Inject constructor(
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
             datastore.getData().let { resource ->
-                if (resource.data != null) {
-                    resource.data?.flowOn(Dispatchers.IO)?.collect { user ->
+                if (resource != null) {
+                    resource.flowOn(Dispatchers.IO).collect { user ->
                         _user.postValue(user.username)
                     }
                 } else {
@@ -42,6 +43,7 @@ class FABCustomViewModel @Inject constructor(
 
     fun addTask(taskModelUi: TaskModelUi) =
         viewModelScope.launch(Dispatchers.IO) {
-            taskUseCase.addNewTask(taskModelUseCase = taskModelUi.mapToTaskModelUseCase())
+            Log.d("TASK_ID", "FAB addTask -> ${taskModelUi.id}")
+            taskUseCase.addNewTask.invoke(taskModelUseCase = taskModelUi.mapToTaskModelUseCase())
         }
 }

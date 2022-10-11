@@ -1,9 +1,9 @@
 package com.softyorch.taskapp.ui.screens.detail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.softyorch.taskapp.data.database.tasks.TaskEntity
+import com.softyorch.taskapp.domain.taskUsesCase.TaskModelUseCase
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
-import com.softyorch.taskapp.utils.DataOrError
+import com.softyorch.taskapp.ui.models.mapToTaskModelUI
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
@@ -30,8 +30,8 @@ class DetailScreenViewModelTest {
     private val id = UUID.randomUUID()
 
     private var taskList = listOf(
-        TaskEntity(id = id, title = "test", description = "Testing", author = "jorge"),
-        TaskEntity(
+        TaskModelUseCase(id = id, title = "test", description = "Testing", author = "jorge"),
+        TaskModelUseCase(
             id = UUID.randomUUID(),
             title = "test2",
             description = "Testing, second part",
@@ -55,10 +55,9 @@ class DetailScreenViewModelTest {
     }
 
     @Test
-    fun `cuando el viewmodel carga los datos desde el repositorio al livedata buscando una task`() =
+    fun `A task is requested from the viewModel`() =
         runTest {
-            val task = DataOrError<TaskEntity, String>()
-            task.data = taskList.first()
+            val task = taskList.first()
             //Given
             coEvery { taskUseCase.getTaskId.invoke(taskId = taskList.first().id.toString()) } returns task
 
@@ -67,7 +66,7 @@ class DetailScreenViewModelTest {
 
             //then
             delay(500)
-            assert(detailScreenViewModel.taskEntityDetail.value == task.data)
+            assert(detailScreenViewModel.taskEntityDetail.value == task.mapToTaskModelUI())
         }
 
 }
