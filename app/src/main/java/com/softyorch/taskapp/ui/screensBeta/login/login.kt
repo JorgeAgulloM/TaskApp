@@ -16,12 +16,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -37,14 +39,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
+import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 
 /**
@@ -104,6 +109,8 @@ fun Body(
     newAccount: Boolean,
     pexelsImage: MediaModel
 ) {
+    val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
+    val errorLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
 
     val scope = rememberCoroutineScope()
     val sheetState = rememberBottomSheetState(
@@ -127,6 +134,9 @@ fun Body(
         )
     )
 
+    var onGo by remember { mutableStateOf(value = false) }
+    val focusManager = LocalFocusManager.current
+
     BottomSheetScaffold(
         modifier = Modifier.background(Color.Transparent),
         scaffoldState = scaffoldState,
@@ -148,14 +158,50 @@ fun Body(
                     Head(text1 = "¿No tienes cuenta? ", text2 = "Crea una nueva") {
                         viewModel.showNewAccount()
                     }
-                    LoginContent(viewModel)
-                    Footer(text = stringResource(R.string.login)) {}
+                    LoginContent(
+                        loginModel,
+                        errorLoginModel,
+                        onGo = { onGo = it },
+                        viewModel::onLoginInputChange
+                    )
+                    Footer(stringResource(R.string.login), error = errorLoginModel.error) {
+                        onGo = true
+                    }
                 } else {
                     Head(text1 = "¿Ya tienes cuenta? ", text2 = "Inicia sesión") {
                         viewModel.showNewAccount()
                     }
                     NewAccountContent(viewModel)
-                    Footer(text = stringResource(R.string.new_account)) {}
+                    Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {}
+                }
+
+                var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
+                if (onGo) {
+                    focusManager.clearFocus()
+                    scope.launch {
+                        viewModel.onLoginDataSend(loginModel).also {
+                            if (it) showSnackBarErrors = true
+                            else {
+                                sheetState.collapse()
+                                withContext(Dispatchers.Default){
+                                    delay(500)
+                                    /** TODO navigation **/
+                                }
+                            }
+                        }
+                        delay(500)
+                        onGo = false
+                    }
+                }
+
+                if (!errorLoginModel.error) showSnackBarErrors = false
+
+                if (showSnackBarErrors) SnackBarError(
+                    errorText = if (errorLoginModel.errorResultSignIn) stringResource(R.string.error_email_exist)
+                    else if (errorLoginModel.email || errorLoginModel.pass) stringResource(R.string.error_email_or_pass)
+                    else stringResource(R.string.snack_input_error)
+                ) {
+                    showSnackBarErrors = false
                 }
             }
         }
@@ -191,9 +237,75 @@ private fun Head(text1: String, text2: String, onClick: () -> Unit) {
         Text(
             modifier = Modifier.padding(top = 4.dp).clickable { click = true },
             text = text2,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.copy(
+                textDecoration = TextDecoration.Underline
+            ),
             color = colorText
         )
+    }
+}
+
+@Composable
+private fun LoginContent(
+    loginModel: LoginModel,
+    errorLoginModel: ErrorLoginModel,
+    onGo: (Boolean) -> Unit,
+    onLoginInputChange: (LoginModel) -> Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        TextFieldEmail(
+            email = loginModel.userEmail,
+            error = errorLoginModel.email,
+            errorAccount = errorLoginModel.errorResultSignIn
+        ) {
+            onLoginInputChange(
+                LoginModel(
+                    userEmail = it.trim(),
+                    userPass = loginModel.userPass,
+                    rememberMe = loginModel.rememberMe
+                )
+            )
+        }
+
+        TextFieldPass(
+            pass = loginModel.userPass,
+            keyboardActions = KeyboardActions(onGo = { onGo(true) }),
+            error = errorLoginModel.pass,
+            errorAccount = errorLoginModel.errorResultSignIn
+        ) {
+            onLoginInputChange(
+                LoginModel(
+                    userEmail = loginModel.userEmail,
+                    userPass = it.trim(),
+                    rememberMe = loginModel.rememberMe
+                )
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            CheckerRememberMe(
+                rememberMe = loginModel.rememberMe
+            ) {
+                onLoginInputChange(
+                    LoginModel(
+                        userEmail = loginModel.userEmail,
+                        userPass = loginModel.userPass,
+                        rememberMe = it
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -214,7 +326,7 @@ fun NewAccountContent(viewModel: LoginViewModelBeta) {
         TextFieldEmailRepeat(newAccountModel.userEmail, false, false, false) {
 
         }
-        TextFieldPass(newAccountModel.userPass, false, keyboardActions = KeyboardActions(
+        TextFieldPass(newAccountModel.userPass, true, keyboardActions = KeyboardActions(
             onGo = {
                 //if (!newAccount) goOrErrorLogin = true
             }
@@ -228,44 +340,8 @@ fun NewAccountContent(viewModel: LoginViewModelBeta) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LoginContent(viewModel: LoginViewModelBeta) {
-    val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
-    var checkState by remember { mutableStateOf(value = false) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextFieldEmail(loginModel.userEmail, false, false, false) {
-
-        }
-        TextFieldPass(loginModel.userPass, false, keyboardActions = KeyboardActions(
-            onGo = {
-                //if (!newAccount) goOrErrorLogin = true
-            }
-        ), false, false) {
-
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            CheckCustom(
-                checked = checkState,
-                onCheckedChange = { checkState = it },
-                text = stringResource(R.string.remember_me),
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Composable
-private fun Footer(text: String, onClick: () -> Unit) {
+private fun Footer(text: String, error: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
         contentAlignment = Alignment.Center
@@ -274,7 +350,7 @@ private fun Footer(text: String, onClick: () -> Unit) {
             text = text,
             primary = true,
             enable = true,
-            error = false
+            error = error
         ) {
             onClick()
         }
@@ -319,11 +395,10 @@ private fun TextFieldName(
 private fun TextFieldEmail(
     email: String,
     error: Boolean,
-    errorAccount: Boolean,
-    errorEmailExist: Boolean,
+    errorAccount: Boolean = false,
+    errorEmailExist: Boolean = false,
     onTextFieldChanged: (String) -> Unit
 ) {
-
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
             outlinedTextFieldCustom(
@@ -384,7 +459,7 @@ private fun TextFieldEmailRepeat(
 @Composable
 private fun TextFieldPass(
     pass: String,
-    newAccount: Boolean,
+    newAccount: Boolean = false,
     keyboardActions: KeyboardActions,
     error: Boolean,
     errorAccount: Boolean,
@@ -450,6 +525,21 @@ private fun TextFieldPassRepeat(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CheckerRememberMe(
+    rememberMe: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    CheckCustom(
+        checked = rememberMe,
+        onCheckedChange = onCheckedChange,
+        text = stringResource(R.string.remember_me),
+        horizontalArrangement = Arrangement.End,
+        onClick = {}
+    )
+}
+
 @Composable
 private fun BodyScreen(pexelsImage: MediaModel) {
     val pexelsUrl = stringResource(R.string.pexels_web)
@@ -495,7 +585,7 @@ private fun AppTitle() {
                 shape = MaterialTheme.shapes.large
             ),
     ) {
-        androidx.compose.material3.Text(
+        Text(
             modifier = Modifier
                 .padding(8.dp),
             text = stringResource(R.string.app_name),

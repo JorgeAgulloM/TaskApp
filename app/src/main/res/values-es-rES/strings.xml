@@ -115,7 +115,7 @@
     <string name="limit_time_one_year">Un año</string>
     <string name="content_random_img">Imagen aleatoria de Pexels.com</string>
     <string name="pexels_web">https://www.pexels.com/</string>
-    <string name="pexels_courtesy">Por cortesia de Pexels.com</string>
+    <string name="pexels_courtesy">Imagen por cortesia de Pexels.com</string>
     <string name="author">\"Autor: \"</string>
     <string name="click_to_view">Click para ver la imagen</string>
     <string name="text_create_at">\"Creado en \"</string>
