@@ -155,3 +155,13 @@ fun Boolean.intOffsetAnimationTransition(
         ),
         finishedListener = { finishedListener() }
     )
+
+@Composable
+fun Boolean.upDownIntegerAnimated(extended: Int, collapse: Int): State<Int> =
+    animateIntAsState(
+        targetValue = if (this) extended else collapse,
+        animationSpec = tween(
+            durationMillis = 500,
+            easing = FastOutSlowInEasing
+        )
+    )
