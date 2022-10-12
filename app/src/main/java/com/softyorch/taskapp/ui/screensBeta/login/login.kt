@@ -22,10 +22,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -76,13 +80,18 @@ fun LoginScreenBeta() {
 
 @Composable
 fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    var showInfo by remember { mutableStateOf(value = false) }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         AsyncImage(
             model = pexelsImage.image,
             contentDescription = "Fondo",
             contentScale = ContentScale.Crop,
-            onSuccess = { onLoadImage() }
+            onSuccess = {
+                onLoadImage()
+                showInfo = true
+            }
         )
+        if (showInfo) BodyScreen(pexelsImage)
     }
 }
 
@@ -152,9 +161,8 @@ fun Body(
         }
     ) {
         Background(pexelsImage) {
-/*            scope.launch {
-                delay(2000)
-                sheetState.expand()
+            /*scope.launch {
+                delay(1000)
             }*/
         }
     }
@@ -438,6 +446,104 @@ private fun TextFieldPassRepeat(
         if (error) IconError(
             errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
             else stringResource(R.string.input_error_pass)
+        )
+    }
+}
+
+@Composable
+private fun BodyScreen(pexelsImage: MediaModel) {
+    val pexelsUrl = stringResource(R.string.pexels_web)
+    Column(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val uriHandler = LocalUriHandler.current
+
+        AppTitle()
+        Column(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 40.dp),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DetailsImageFromPexels(text = stringResource(R.string.pexels_courtesy)) {
+                uriHandler.openUri(pexelsUrl)
+            }
+            DetailsImageFromPexels(text = stringResource(R.string.author) + pexelsImage.author) {
+                uriHandler.openUri(pexelsImage.authorUrl)
+            }
+            DetailsImageFromPexels(text = stringResource(R.string.click_to_view)) {
+                uriHandler.openUri(pexelsImage.imageUrl)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppTitle() {
+    val colorGradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+        )
+    )
+    Box(
+        modifier = Modifier
+            .padding(bottom = 4.dp)
+            .background(
+                brush = colorGradient,
+                shape = MaterialTheme.shapes.large
+            ),
+    ) {
+        androidx.compose.material3.Text(
+            modifier = Modifier
+                .padding(8.dp),
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontStyle = FontStyle.Italic,
+                fontFamily = FontFamily.Cursive
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun DetailsImageFromPexels(
+    text: String,
+    onClick: () -> Unit
+) {
+    var click by remember { mutableStateOf(value = false) }
+    val clickColor by click.contentColorLabelAsStateAnimation {
+        if (click) {
+            onClick()
+            click = false
+        }
+    }
+    val colorGradient = Brush.verticalGradient(
+        colors = listOf(
+            clickColor.copy(alpha = 0.8f),
+            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .padding(bottom = 4.dp)
+            .background(
+                brush = colorGradient,
+                shape = MaterialTheme.shapes.large
+            ).clickable {
+                click = true
+            },
+    ) {
+        androidx.compose.material3.Text(
+            modifier = Modifier.padding(8.dp),
+            text = text,
+            style = MaterialTheme.typography.labelLarge.copy(
+                textDecoration = TextDecoration.Underline
+            ),
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
