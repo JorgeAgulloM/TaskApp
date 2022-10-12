@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
+import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -136,7 +137,8 @@ private fun TaskApp(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
+            LoginScreenBeta()
+            //TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
         }
     }
 }
