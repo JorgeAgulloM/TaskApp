@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OutlinedTextFieldCustom(
+fun outlinedTextFieldCustom(
     text: String = "",
     label: String = "",
     placeholder: String = "",
@@ -57,7 +57,7 @@ fun OutlinedTextFieldCustom(
         exit = ANIMATED_EXIT_TEXT_FIELDS
     ) {
 
-        val focusedColor = MaterialTheme.colorScheme.primary
+        val focusedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         val unFocusedColor = MaterialTheme.colorScheme.secondary
         val textColor = MaterialTheme.colorScheme.onSurface
         val placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -113,7 +113,7 @@ fun OutlinedTextFieldCustom(
                 unfocusedLabelColor = unFocusedColor,
                 unfocusedLeadingIconColor = unFocusedColor,
                 focusedLeadingIconColor = focusedColor,
-                containerColor = Color.Transparent,//MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = focusedColor,
                 unfocusedIndicatorColor = unFocusedColor,
                 cursorColor = focusedColor
