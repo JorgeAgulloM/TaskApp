@@ -1,13 +1,15 @@
-package com.softyorch.taskapp.ui.screensBeta.login
+package com.softyorch.taskapp.ui.screensBeta.login.model
 
 import com.softyorch.taskapp.utils.emptyString
 
-data class LoginModel(
+data class NewAccountModel(
+    var userName: String,
     var userEmail: String,
     var userPass: String,
 ) {
     companion object {
-        val loginModelEmpty = LoginModel(
+        val newAccountModel = NewAccountModel(
+            userName = emptyString,
             userEmail = emptyString,
             userPass = emptyString
         )

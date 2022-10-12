@@ -13,37 +13,35 @@ import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
-import com.softyorch.taskapp.ui.theme.TaskAppTheme
-import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
+import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
+import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 /**
  * Task-App
@@ -52,30 +50,35 @@ import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenBeta(navController: NavController = NavController(context = LocalContext.current)) {
+fun LoginScreenBeta() {
 
+    val scope = rememberCoroutineScope()
     val viewModel = hiltViewModel<LoginViewModelBeta>()
     val showLogin by viewModel.showLogin.observeAsState(initial = false)
+    val newAccount by viewModel.showNewAccount.observeAsState(initial = false)
+    val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
+    val screenHeightMid = LocalConfiguration.current.screenHeightDp / 2
+    val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 3) * 2
+    val height by newAccount.upDownIntegerAnimated(screenHeightTwoThird, screenHeightMid)
 
-    TaskAppTheme {
-        Surface(Modifier.fillMaxSize()) {
-            Background {
-                viewModel.showLogin()
-            }
-            if (!showLogin) {
-                CircularIndicatorCustom(stringResource(R.string.loading_loading))
-            } else {
-                Body(viewModel = viewModel)
-            }
+    Background(pexelsImage) {
+        scope.launch {
+            delay(1000)
+            viewModel.showLogin()
         }
+    }
+    if (!showLogin) {
+        CircularIndicatorCustom(stringResource(R.string.loading_loading))
+    } else {
+        Body(viewModel, height.absoluteValue.dp, newAccount, pexelsImage)
     }
 }
 
 @Composable
-fun Background(onLoadImage: () -> Unit) {
+fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         AsyncImage(
-            model = R.drawable.pexels_polina_kovaleva_5717421,
+            model = pexelsImage.image,
             contentDescription = "Fondo",
             contentScale = ContentScale.Crop,
             onSuccess = { onLoadImage() }
@@ -86,21 +89,26 @@ fun Background(onLoadImage: () -> Unit) {
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Body(viewModel: LoginViewModelBeta) {
-    val newAccount by viewModel.showNewAccount.observeAsState(initial = false)
-    val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
-    var height = 0.dp
-    LocalConfiguration.current.screenHeightDp.let { height = (it / 2).dp }
+fun Body(
+    viewModel: LoginViewModelBeta,
+    height: Dp,
+    newAccount: Boolean,
+    pexelsImage: MediaModel
+) {
+
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(
-        ModalBottomSheetValue.Hidden,
+    val sheetState = rememberBottomSheetState(
+        initialValue = BottomSheetValue.Collapsed,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy
         )
     )
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = sheetState
+    )
     scope.launch {
-        delay(2000)
-        sheetState.show()
+        delay(500)
+        sheetState.expand()
     }
 
     val colorGradient = Brush.verticalGradient(
@@ -110,8 +118,9 @@ fun Body(viewModel: LoginViewModelBeta) {
         )
     )
 
-    ModalBottomSheetLayout(
-        sheetState = sheetState,
+    BottomSheetScaffold(
+        modifier = Modifier.background(Color.Transparent),
+        scaffoldState = scaffoldState,
         sheetShape = MaterialTheme.shapes.large.copy(
             bottomStart = CornerSize(0.dp),
             bottomEnd = CornerSize(0.dp)
@@ -126,32 +135,39 @@ fun Body(viewModel: LoginViewModelBeta) {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoginHead()
-                LoginContent(loginModel)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ButtonCustom(
-                        text = stringResource(R.string.login),
-                        primary = true,
-                        enable = true,
-                        error = false
-                    ) {
-
+                if (!newAccount) {
+                    Head(text1 = "¿No tienes cuenta? ", text2 = "Crea una nueva") {
+                        viewModel.showNewAccount()
                     }
+                    LoginContent(viewModel)
+                    Footer(text = stringResource(R.string.login)) {}
+                } else {
+                    Head(text1 = "¿Ya tienes cuenta? ", text2 = "Inicia sesión") {
+                        viewModel.showNewAccount()
+                    }
+                    NewAccountContent(viewModel)
+                    Footer(text = stringResource(R.string.new_account)) {}
                 }
             }
         }
     ) {
+        Background(pexelsImage) {
+/*            scope.launch {
+                delay(2000)
+                sheetState.expand()
+            }*/
+        }
     }
 
 }
 
 @Composable
-private fun LoginHead() {
+private fun Head(text1: String, text2: String, onClick: () -> Unit) {
+    var click by remember { mutableStateOf(value = false) }
+    val colorText by click.contentColorLabelAsStateAnimation {
+        onClick()
+        click = false
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -160,24 +176,55 @@ private fun LoginHead() {
     ) {
         Text(
             modifier = Modifier.padding(top = 4.dp),
-            text = "¿No tiene cuenta? ",
+            text = text1,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            modifier = Modifier.padding(top = 4.dp).clickable { },
-            text = "Crea una nueva cuenta",
+            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
+            text = text2,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.tertiary
+            color = colorText
         )
+    }
+}
+
+@Composable
+fun NewAccountContent(viewModel: LoginViewModelBeta) {
+    val newAccountModel by viewModel.newAccountModel.observeAsState(initial = NewAccountModel.newAccountModel)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextFieldName(newAccountModel.userName, false, false, false) {}
+        TextFieldEmail(newAccountModel.userEmail, false, false, false) {
+
+        }
+        TextFieldEmailRepeat(newAccountModel.userEmail, false, false, false) {
+
+        }
+        TextFieldPass(newAccountModel.userPass, false, keyboardActions = KeyboardActions(
+            onGo = {
+                //if (!newAccount) goOrErrorLogin = true
+            }
+        ), false, false) {}
+        TextFieldPassRepeat(newAccountModel.userPass, false, keyboardActions = KeyboardActions(
+            onGo = {
+                //if (!newAccount) goOrErrorLogin = true
+            }
+        ), false, false) {}
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LoginContent(
-    loginModel: LoginModel
-) {
+private fun LoginContent(viewModel: LoginViewModelBeta) {
+    val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
+    var checkState by remember { mutableStateOf(value = false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,11 +242,71 @@ private fun LoginContent(
         ), false, false) {
 
         }
-
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            CheckCustom(
+                checked = checkState,
+                onCheckedChange = { checkState = it },
+                text = stringResource(R.string.remember_me),
+                onClick = {}
+            )
+        }
     }
 }
 
-@ExperimentalMaterial3Api
+@Composable
+private fun Footer(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        ButtonCustom(
+            text = text,
+            primary = true,
+            enable = true,
+            error = false
+        ) {
+            onClick()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TextFieldName(
+    name: String,
+    error: Boolean,
+    errorAccount: Boolean,
+    errorEmailExist: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
+
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            outlinedTextFieldCustom(
+                text = name,
+                label = stringResource(R.string.email),
+                placeholder = stringResource(R.string.type_your_email),
+                icon = Icons.Rounded.Email,
+                contentDescription = stringResource(R.string.type_your_email),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = KeyboardCapitalization.None,
+                    keyboardType = KeyboardType.Email
+                ),
+                isError = error || errorAccount || errorEmailExist,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
+        if (error && !errorAccount) IconError(
+            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
+            else stringResource(R.string.input_error_email)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextFieldEmail(
     email: String,
@@ -211,7 +318,7 @@ private fun TextFieldEmail(
 
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            OutlinedTextFieldCustom(
+            outlinedTextFieldCustom(
                 text = email,
                 label = stringResource(R.string.email),
                 placeholder = stringResource(R.string.type_your_email),
@@ -232,7 +339,40 @@ private fun TextFieldEmail(
     }
 }
 
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TextFieldEmailRepeat(
+    email: String,
+    error: Boolean,
+    errorAccount: Boolean,
+    errorEmailExist: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
+
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            outlinedTextFieldCustom(
+                text = email,
+                label = stringResource(R.string.email),
+                placeholder = stringResource(R.string.type_your_email),
+                icon = Icons.Rounded.Email,
+                contentDescription = stringResource(R.string.type_your_email),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = KeyboardCapitalization.None,
+                    keyboardType = KeyboardType.Email
+                ),
+                isError = error || errorAccount || errorEmailExist,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
+        if (error && !errorAccount) IconError(
+            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
+            else stringResource(R.string.input_error_email)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextFieldPass(
     pass: String,
@@ -244,7 +384,42 @@ private fun TextFieldPass(
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            OutlinedTextFieldCustom(
+            outlinedTextFieldCustom(
+                text = pass,
+                label = stringResource(R.string.password),
+                placeholder = stringResource(R.string.type_your_password),
+                icon = Icons.Rounded.Key,
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+                ),
+                keyboardActions = keyboardActions,
+                contentDescription = stringResource(R.string.type_your_password),
+                isError = error || errorAccount,
+                password = true,
+                onTextFieldChanged = onTextFieldChanged
+            )
+        }
+        if (error) IconError(
+            errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
+            else stringResource(R.string.input_error_pass)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TextFieldPassRepeat(
+    pass: String,
+    newAccount: Boolean,
+    keyboardActions: KeyboardActions,
+    error: Boolean,
+    errorAccount: Boolean,
+    onTextFieldChanged: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            outlinedTextFieldCustom(
                 text = pass,
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.type_your_password),
