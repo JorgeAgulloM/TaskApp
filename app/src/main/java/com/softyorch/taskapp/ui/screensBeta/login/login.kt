@@ -6,14 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,13 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -39,11 +27,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
+import com.softyorch.taskapp.ui.screensBeta.login.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
-import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
-import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +59,7 @@ fun LoginScreenBeta() {
 
     Background(pexelsImage) {
         scope.launch {
-            delay(1000)
+            delay(2000)
             viewModel.showLogin()
         }
     }
@@ -100,10 +87,40 @@ fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
     }
 }
 
+@Composable
+private fun Head(text1: String, text2: String, onClick: () -> Unit) {
+    var click by remember { mutableStateOf(value = false) }
+    val colorText by click.contentColorLabelAsStateAnimation {
+        onClick()
+        click = false
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = text1,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
+            text = text2,
+            style = MaterialTheme.typography.labelSmall.copy(
+                textDecoration = TextDecoration.Underline
+            ),
+            color = colorText
+        )
+    }
+}
+
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Body(
+private fun Body(
     viewModel: LoginViewModelBeta,
     height: Dp,
     newAccount: Boolean,
@@ -158,7 +175,7 @@ fun Body(
                     Head(text1 = "¿No tienes cuenta? ", text2 = "Crea una nueva") {
                         viewModel.showNewAccount()
                     }
-                    LoginContent(
+                    ContentLogin(
                         loginModel,
                         errorLoginModel,
                         onGo = { onGo = it },
@@ -171,7 +188,7 @@ fun Body(
                     Head(text1 = "¿Ya tienes cuenta? ", text2 = "Inicia sesión") {
                         viewModel.showNewAccount()
                     }
-                    NewAccountContent(viewModel)
+                    ContentNewAccount(viewModel)
                     Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {}
                 }
 
@@ -216,131 +233,6 @@ fun Body(
 }
 
 @Composable
-private fun Head(text1: String, text2: String, onClick: () -> Unit) {
-    var click by remember { mutableStateOf(value = false) }
-    val colorText by click.contentColorLabelAsStateAnimation {
-        onClick()
-        click = false
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.padding(top = 4.dp),
-            text = text1,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
-            text = text2,
-            style = MaterialTheme.typography.labelSmall.copy(
-                textDecoration = TextDecoration.Underline
-            ),
-            color = colorText
-        )
-    }
-}
-
-@Composable
-private fun LoginContent(
-    loginModel: LoginModel,
-    errorLoginModel: ErrorLoginModel,
-    onGo: (Boolean) -> Unit,
-    onLoginInputChange: (LoginModel) -> Unit
-) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        TextFieldEmail(
-            email = loginModel.userEmail,
-            error = errorLoginModel.email,
-            errorAccount = errorLoginModel.errorResultSignIn
-        ) {
-            onLoginInputChange(
-                LoginModel(
-                    userEmail = it.trim().lowercase(),
-                    userPass = loginModel.userPass,
-                    rememberMe = loginModel.rememberMe
-                )
-            )
-        }
-
-        TextFieldPass(
-            pass = loginModel.userPass,
-            keyboardActions = KeyboardActions(onGo = { onGo(true) }),
-            error = errorLoginModel.pass,
-            errorAccount = errorLoginModel.errorResultSignIn
-        ) {
-            onLoginInputChange(
-                LoginModel(
-                    userEmail = loginModel.userEmail,
-                    userPass = it.trim(),
-                    rememberMe = loginModel.rememberMe
-                )
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            CheckerRememberMe(
-                rememberMe = loginModel.rememberMe
-            ) {
-                onLoginInputChange(
-                    LoginModel(
-                        userEmail = loginModel.userEmail,
-                        userPass = loginModel.userPass,
-                        rememberMe = it
-                    )
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun NewAccountContent(viewModel: LoginViewModelBeta) {
-    val newAccountModel by viewModel.newAccountModel.observeAsState(initial = NewAccountModel.newAccountModel)
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextFieldName(newAccountModel.userName, false, false, false) {}
-        TextFieldEmail(newAccountModel.userEmail, false, false, false) {
-
-        }
-        TextFieldEmailRepeat(newAccountModel.userEmail, false, false, false) {
-
-        }
-        TextFieldPass(newAccountModel.userPass, true, keyboardActions = KeyboardActions(
-            onGo = {
-                //if (!newAccount) goOrErrorLogin = true
-            }
-        ), false, false) {}
-        TextFieldPassRepeat(newAccountModel.userPass, false, keyboardActions = KeyboardActions(
-            onGo = {
-                //if (!newAccount) goOrErrorLogin = true
-            }
-        ), false, false) {}
-
-    }
-}
-
-@Composable
 private fun Footer(text: String, error: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
@@ -354,286 +246,5 @@ private fun Footer(text: String, error: Boolean, onClick: () -> Unit) {
         ) {
             onClick()
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TextFieldName(
-    name: String,
-    error: Boolean,
-    errorAccount: Boolean,
-    errorEmailExist: Boolean,
-    onTextFieldChanged: (String) -> Unit
-) {
-
-    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
-                text = name,
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.type_your_email),
-                icon = Icons.Rounded.Email,
-                contentDescription = stringResource(R.string.type_your_email),
-                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Email
-                ),
-                isError = error || errorAccount || errorEmailExist,
-                onTextFieldChanged = onTextFieldChanged
-            )
-        }
-        if (error && !errorAccount) IconError(
-            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
-            else stringResource(R.string.input_error_email)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TextFieldEmail(
-    email: String,
-    error: Boolean,
-    errorAccount: Boolean = false,
-    errorEmailExist: Boolean = false,
-    onTextFieldChanged: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
-                text = email,
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.type_your_email),
-                icon = Icons.Rounded.Email,
-                contentDescription = stringResource(R.string.type_your_email),
-                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Email
-                ),
-                isError = error || errorAccount || errorEmailExist,
-                onTextFieldChanged = onTextFieldChanged
-            )
-        }
-        if (error && !errorAccount) IconError(
-            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
-            else stringResource(R.string.input_error_email)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TextFieldEmailRepeat(
-    email: String,
-    error: Boolean,
-    errorAccount: Boolean,
-    errorEmailExist: Boolean,
-    onTextFieldChanged: (String) -> Unit
-) {
-
-    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
-                text = email,
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.type_your_email),
-                icon = Icons.Rounded.Email,
-                contentDescription = stringResource(R.string.type_your_email),
-                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Email
-                ),
-                isError = error || errorAccount || errorEmailExist,
-                onTextFieldChanged = onTextFieldChanged
-            )
-        }
-        if (error && !errorAccount) IconError(
-            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
-            else stringResource(R.string.input_error_email)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TextFieldPass(
-    pass: String,
-    newAccount: Boolean = false,
-    keyboardActions: KeyboardActions,
-    error: Boolean,
-    errorAccount: Boolean,
-    onTextFieldChanged: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
-                text = pass,
-                label = stringResource(R.string.password),
-                placeholder = stringResource(R.string.type_your_password),
-                icon = Icons.Rounded.Key,
-                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
-                ),
-                keyboardActions = keyboardActions,
-                contentDescription = stringResource(R.string.type_your_password),
-                isError = error || errorAccount,
-                password = true,
-                onTextFieldChanged = onTextFieldChanged
-            )
-        }
-        if (error) IconError(
-            errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
-            else stringResource(R.string.input_error_pass)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TextFieldPassRepeat(
-    pass: String,
-    newAccount: Boolean,
-    keyboardActions: KeyboardActions,
-    error: Boolean,
-    errorAccount: Boolean,
-    onTextFieldChanged: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
-                text = pass,
-                label = stringResource(R.string.password),
-                placeholder = stringResource(R.string.type_your_password),
-                icon = Icons.Rounded.Key,
-                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
-                ),
-                keyboardActions = keyboardActions,
-                contentDescription = stringResource(R.string.type_your_password),
-                isError = error || errorAccount,
-                password = true,
-                onTextFieldChanged = onTextFieldChanged
-            )
-        }
-        if (error) IconError(
-            errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
-            else stringResource(R.string.input_error_pass)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CheckerRememberMe(
-    rememberMe: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    CheckCustom(
-        checked = rememberMe,
-        onCheckedChange = onCheckedChange,
-        text = stringResource(R.string.remember_me),
-        horizontalArrangement = Arrangement.End,
-        onClick = {}
-    )
-}
-
-@Composable
-private fun BodyScreen(pexelsImage: MediaModel) {
-    val pexelsUrl = stringResource(R.string.pexels_web)
-    Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(vertical = 8.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        AppTitle()
-        Column(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 40.dp),
-            verticalArrangement = Arrangement.SpaceAround,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            DetailsImageFromPexels(text = stringResource(R.string.pexels_courtesy)) {
-                uriHandler.openUri(pexelsUrl)
-            }
-            DetailsImageFromPexels(text = stringResource(R.string.author) + pexelsImage.author) {
-                uriHandler.openUri(pexelsImage.authorUrl)
-            }
-            DetailsImageFromPexels(text = stringResource(R.string.click_to_view)) {
-                uriHandler.openUri(pexelsImage.imageUrl)
-            }
-        }
-    }
-}
-
-@Composable
-private fun AppTitle() {
-    val colorGradient = Brush.verticalGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
-            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-        )
-    )
-    Box(
-        modifier = Modifier
-            .padding(bottom = 4.dp)
-            .background(
-                brush = colorGradient,
-                shape = MaterialTheme.shapes.large
-            ),
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(8.dp),
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontStyle = FontStyle.Italic,
-                fontFamily = FontFamily.Cursive
-            ),
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-private fun DetailsImageFromPexels(
-    text: String,
-    onClick: () -> Unit
-) {
-    var click by remember { mutableStateOf(value = false) }
-    val clickColor by click.contentColorLabelAsStateAnimation {
-        if (click) {
-            onClick()
-            click = false
-        }
-    }
-    val colorGradient = Brush.verticalGradient(
-        colors = listOf(
-            clickColor.copy(alpha = 0.8f),
-            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-        )
-    )
-
-    Box(
-        modifier = Modifier
-            .padding(bottom = 4.dp)
-            .background(
-                brush = colorGradient,
-                shape = MaterialTheme.shapes.large
-            ).clickable {
-                click = true
-            },
-    ) {
-        androidx.compose.material3.Text(
-            modifier = Modifier.padding(8.dp),
-            text = text,
-            style = MaterialTheme.typography.labelLarge.copy(
-                textDecoration = TextDecoration.Underline
-            ),
-            color = MaterialTheme.colorScheme.primary
-        )
     }
 }
