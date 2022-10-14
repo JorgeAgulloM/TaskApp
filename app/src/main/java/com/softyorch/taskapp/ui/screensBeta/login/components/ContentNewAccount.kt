@@ -32,9 +32,7 @@ fun ContentNewAccount(
         }
         TextFieldEmail(
             newAccountModel.userEmail,
-            errors.email,
-            errors.let { it.email || it.pass },
-            errors.emailRepeat
+            errors.email
         ) {
             onNewAccountDataChange(newAccountModel.copy(userEmail = it.trim().lowercase()))
         }
@@ -43,9 +41,8 @@ fun ContentNewAccount(
         }
         TextFieldPass(
             newAccountModel.userPass,
-            true,
+            newAccount = true,
             errors.pass,
-            errors.emailExists,
             keyboardActions = KeyboardActions(onGo = { onGo(true) })
         ) {
             onNewAccountDataChange(newAccountModel.copy(userPass = it.trim()))

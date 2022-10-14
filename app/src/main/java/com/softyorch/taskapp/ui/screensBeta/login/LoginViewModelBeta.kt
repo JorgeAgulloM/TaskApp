@@ -5,15 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
+import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
+import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -24,7 +25,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), NewAccountInterface, WithOutErrorsLogin {
+) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -46,16 +47,16 @@ class LoginViewModelBeta @Inject constructor(
     val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
     private val _foundError = MutableLiveData<Boolean>()
 
-    override val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
+    private val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
     val newAccountModel: LiveData<NewAccountModel> = newAccountModelInterface
 
-    override val errorsNewAccountInterface = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
+    private val errorsNewAccountInterface = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
     val errorsNewAccount: LiveData<ErrorNewAccountModel> = errorsNewAccountInterface
 
-    override val isLoadingNewAccountInterface = MutableLiveData(false)
+    private val isLoadingNewAccountInterface = MutableLiveData(false)
     val isLoadingNewAccount: LiveData<Boolean> = isLoadingNewAccountInterface
 
-    override val foundErrorNewAccountInterface = MutableLiveData(false)
+    private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
         loadImage()
@@ -130,17 +131,68 @@ class LoginViewModelBeta @Inject constructor(
         return false
     }
 
-    private suspend fun updateDatastore(userDataEntity: UserDataEntity) {
-        datastore.saveData(userDataEntity)
+    /** New Account */
+
+    fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
+        newAccountModelInterface.value = newAccountModel
+        if (foundErrorNewAccountInterface.value == true) {
+            setErrorsNewAccount(withOutErrorsNewAccount(newAccountModel))
+        }
     }
+
+    private fun setErrorsNewAccount(errors: ErrorNewAccountModel) {
+        if (foundErrorNewAccountInterface.value != true) foundErrorNewAccountInterface.postValue(true)
+        errorsNewAccountInterface.postValue(errors)
+    }
+
+    suspend fun onNewAccountDataSend(
+        newAccountModel: NewAccountModel
+    ): Boolean {
+        isLoadingNewAccountInterface.postValue(true)
+        withOutErrorsNewAccount(newAccountModel).let { errors ->
+            if (!errors.error) {
+                addNewUser(
+                    newAccountModel
+                ).also { isError ->
+                    errors.apply {
+                        name = !isError
+                        email = !isError
+                        emailRepeat = !isError
+                        emailExists = !isError
+                        pass = !isError
+                        passRepeat = !isError
+                        error = !isError
+                    }
+                    setErrorsNewAccount(errors)
+
+                    isLoadingNewAccountInterface.postValue(false)
+                    return errors.error
+                }
+            } else {
+                setErrorsNewAccount(errors)
+
+                isLoadingNewAccountInterface.postValue(false)
+                return errors.error
+            }
+        }
+    }
+
+    /** Data */
 
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
 
-    /** New Account */
+    private suspend fun updateDatastore(userDataEntity: UserDataEntity) {
+        datastore.saveData(userDataEntity)
+    }
 
-    fun onNewAccount(newAccountModel: NewAccountModel) = viewModelScope.launch(Dispatchers.IO) {
-        onNewAccountDataSend(newAccountModel, userDataUseCases::updateUser)
+    private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean  {
+        return try {
+            userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
+            true
+        } catch (ex: Exception) {
+            false
+        }
     }
 
 }

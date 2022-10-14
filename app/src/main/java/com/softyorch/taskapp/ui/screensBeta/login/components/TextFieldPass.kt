@@ -27,7 +27,7 @@ fun TextFieldPass(
     pass: String,
     newAccount: Boolean = false,
     error: Boolean,
-    errorAccount: Boolean,
+    errorAccount: Boolean = false,
     keyboardActions: KeyboardActions,
     onTextFieldChanged: (String) -> Unit
 ) {

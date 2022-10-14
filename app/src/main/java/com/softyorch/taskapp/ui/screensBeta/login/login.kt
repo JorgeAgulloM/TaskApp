@@ -200,20 +200,35 @@ private fun Body(
                         onGo = { onGo = it },
                         viewModel::onNewAccountInputChange
                     )
-                    Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {}
+                    Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {
+                        onGo = true
+                    }
                 }
 
                 var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
                 if (onGo) {
                     focusManager.clearFocus()
                     scope.launch {
-                        viewModel.onLoginDataSend(loginModel).also {
-                            if (it) showSnackBarErrors = true
-                            else {
-                                sheetState.collapse()
-                                withContext(Dispatchers.Default) {
-                                    delay(500)
-                                    /** TODO navigation **/
+                        if (!newAccount){
+                            viewModel.onLoginDataSend(loginModel).also {
+                                if (it) showSnackBarErrors = true
+                                else {
+                                    sheetState.collapse()
+                                    withContext(Dispatchers.Default) {
+                                        delay(500)
+                                        /** TODO navigation **/
+                                    }
+                                }
+                            }
+                        } else {
+                            viewModel.onNewAccountDataSend(newAccountModel).also {
+                                if (it) showSnackBarErrors = true
+                                else {
+                                    sheetState.collapse()
+                                    withContext(Dispatchers.Default) {
+                                        delay(500)
+                                        /** TODO navigation **/
+                                    }
                                 }
                             }
                         }
