@@ -25,33 +25,28 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 @Composable
 fun TextFieldPassRepeat(
     pass: String,
-    newAccount: Boolean,
-    keyboardActions: KeyboardActions,
     error: Boolean,
-    errorAccount: Boolean,
+    keyboardActions: KeyboardActions,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
             outlinedTextFieldCustom(
                 text = pass,
-                label = stringResource(R.string.password),
-                placeholder = stringResource(R.string.type_your_password),
+                label = stringResource(R.string.repeat_your_password),
+                placeholder = stringResource(R.string.repeat_your_password),
                 icon = Icons.Rounded.Key,
                 keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                     keyboardType = KeyboardType.Password,
-                    imeAction = if (newAccount) ImeAction.Next else ImeAction.Go
+                    imeAction = ImeAction.Go
                 ),
                 keyboardActions = keyboardActions,
-                contentDescription = stringResource(R.string.type_your_password),
-                isError = error || errorAccount,
+                contentDescription = stringResource(R.string.repeat_your_password),
+                isError = error,
                 password = true,
                 onTextFieldChanged = onTextFieldChanged
             )
         }
-        if (error) IconError(
-            errorText = if (errorAccount) stringResource(R.string.error_email_or_pass)
-            else stringResource(R.string.input_error_pass)
-        )
+        if (error) IconError(stringResource(R.string.input_error_repeat_pass))
     }
 }

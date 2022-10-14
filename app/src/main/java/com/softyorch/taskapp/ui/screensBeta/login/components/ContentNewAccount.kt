@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.ui.screensBeta.login.LoginViewModelBeta
+import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 
 @Composable
-fun ContentNewAccount(viewModel: LoginViewModelBeta) {
-    val newAccountModel by viewModel.newAccountModel.observeAsState(initial = NewAccountModel.newAccountModel)
+fun ContentNewAccount(
+    newAccountModel: NewAccountModel,
+    errors: ErrorNewAccountModel,
+    onGo: (Boolean) -> Unit,
+    onNewAccountDataChange: (NewAccountModel) -> Unit
+) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -24,23 +27,36 @@ fun ContentNewAccount(viewModel: LoginViewModelBeta) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextFieldName(newAccountModel.userName, false, false, false) {}
-        TextFieldEmail(newAccountModel.userEmail, false, false, false) {
-
+        TextFieldName(newAccountModel.userName, errors.name) {
+            onNewAccountDataChange(newAccountModel.copy(userName = it.trim()))
         }
-        TextFieldEmailRepeat(newAccountModel.userEmail, false, false, false) {
-
+        TextFieldEmail(
+            newAccountModel.userEmail,
+            errors.email,
+            errors.let { it.email || it.pass },
+            errors.emailRepeat
+        ) {
+            onNewAccountDataChange(newAccountModel.copy(userEmail = it.trim().lowercase()))
         }
-        TextFieldPass(newAccountModel.userPass, true, keyboardActions = KeyboardActions(
-            onGo = {
-                //if (!newAccount) goOrErrorLogin = true
-            }
-        ), false, false) {}
-        TextFieldPassRepeat(newAccountModel.userPass, false, keyboardActions = KeyboardActions(
-            onGo = {
-                //if (!newAccount) goOrErrorLogin = true
-            }
-        ), false, false) {}
+        TextFieldEmailRepeat(newAccountModel.userEmailRepeat, errors.emailRepeat) {
+            onNewAccountDataChange(newAccountModel.copy(userEmailRepeat = it.trim().lowercase()))
+        }
+        TextFieldPass(
+            newAccountModel.userPass,
+            true,
+            errors.pass,
+            errors.emailExists,
+            keyboardActions = KeyboardActions(onGo = { onGo(true) })
+        ) {
+            onNewAccountDataChange(newAccountModel.copy(userPass = it.trim()))
+        }
+        TextFieldPassRepeat(
+            newAccountModel.userPassRepeat,
+            errors.passRepeat,
+            keyboardActions = KeyboardActions(onGo = { onGo(true) })
+        ) {
+            onNewAccountDataChange(newAccountModel.copy(userPassRepeat = it.trim()))
+        }
 
     }
 }

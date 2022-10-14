@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.IconError
@@ -25,8 +24,6 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 fun TextFieldName(
     name: String,
     error: Boolean,
-    errorAccount: Boolean,
-    errorEmailExist: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
 
@@ -34,21 +31,17 @@ fun TextFieldName(
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
             outlinedTextFieldCustom(
                 text = name,
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.type_your_email),
+                label = stringResource(R.string.name),
+                placeholder = stringResource(R.string.type_your_name),
                 icon = Icons.Rounded.Email,
-                contentDescription = stringResource(R.string.type_your_email),
+                contentDescription = stringResource(R.string.type_your_name),
                 keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Email
+                    capitalization = KeyboardCapitalization.Words
                 ),
-                isError = error || errorAccount || errorEmailExist,
+                isError = error,
                 onTextFieldChanged = onTextFieldChanged
             )
         }
-        if (error && !errorAccount) IconError(
-            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
-            else stringResource(R.string.input_error_email)
-        )
+        if (error) IconError(errorText = stringResource(R.string.input_error_name))
     }
 }

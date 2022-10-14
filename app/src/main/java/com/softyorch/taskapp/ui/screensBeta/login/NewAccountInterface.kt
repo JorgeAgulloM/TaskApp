@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
@@ -12,42 +11,35 @@ import kotlin.reflect.KProperty0
 
 interface NewAccountInterface : WithOutErrorsNewAccount {
 
-    private val _newAccountModel: MutableLiveData<NewAccountModel>
+    val newAccountModelInterface: MutableLiveData<NewAccountModel>
         get() = MutableLiveData<NewAccountModel>(NewAccountModel.newAccountModel)
-    val newAccountModel: LiveData<NewAccountModel>
-        get() = _newAccountModel
 
-    private val _errorsNewAccount: MutableLiveData<ErrorNewAccountModel>
+    val errorsNewAccountInterface: MutableLiveData<ErrorNewAccountModel>
         get() = MutableLiveData<ErrorNewAccountModel>(ErrorNewAccountModel.errorNewAccountModel)
-    val errorsNewAccount: LiveData<ErrorNewAccountModel>
-        get() = _errorsNewAccount
 
-    private val _foundErrorNewAccount: MutableLiveData<Boolean>
+    val isLoadingNewAccountInterface: MutableLiveData<Boolean>
         get() = MutableLiveData(false)
 
-    private val _isLoadingNewAccount: MutableLiveData<Boolean>
+    val foundErrorNewAccountInterface: MutableLiveData<Boolean>
         get() = MutableLiveData(false)
-    val isLoadingNewAccount: LiveData<Boolean>
-        get() = _isLoadingNewAccount
-
 
     fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
-        _newAccountModel.value = newAccountModel
-        if (_foundErrorNewAccount.value == true) {
+        newAccountModelInterface.value = newAccountModel
+        if (foundErrorNewAccountInterface.value == true) {
             setErrorsNewAccount(withOutErrorsNewAccount(newAccountModel))
         }
     }
 
     fun setErrorsNewAccount(errors: ErrorNewAccountModel) {
-        if (_foundErrorNewAccount.value != true) _foundErrorNewAccount.value = true
-        _errorsNewAccount.value = errors
+        if (foundErrorNewAccountInterface.value != true) foundErrorNewAccountInterface.value = true
+        errorsNewAccountInterface.value = errors
     }
 
     suspend fun onNewAccountDataSend(
         newAccountModel: NewAccountModel,
         updateUser: KProperty0<UpdateUser>
     ): Boolean {
-        _isLoadingNewAccount.value = true
+        isLoadingNewAccountInterface.value = true
         withOutErrorsNewAccount(newAccountModel).let { errors ->
             if (!errors.error) {
                 addNewUser(
@@ -65,13 +57,13 @@ interface NewAccountInterface : WithOutErrorsNewAccount {
                     }
                     setErrorsNewAccount(errors)
 
-                    _isLoadingNewAccount.value = false
+                    isLoadingNewAccountInterface.value = false
                     return errors.error
                 }
             } else {
                 setErrorsNewAccount(errors)
 
-                _isLoadingNewAccount.value = false
+                isLoadingNewAccountInterface.value = false
                 return errors.error
             }
         }

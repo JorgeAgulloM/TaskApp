@@ -32,6 +32,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.Dispatchers
@@ -130,6 +131,7 @@ private fun Body(
     val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
     val errorLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
 
+    val newAccountModel by viewModel.newAccountModel.observeAsState(NewAccountModel.newAccountModel)
     val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewAccountModel.errorNewAccountModel)
 
 
@@ -192,7 +194,12 @@ private fun Body(
                     Head(text1 = "¿Ya tienes cuenta? ", text2 = "Inicia sesión") {
                         viewModel.showNewAccount()
                     }
-                    ContentNewAccount(viewModel)
+                    ContentNewAccount(
+                        newAccountModel,
+                        errorsNewAccount,
+                        onGo = { onGo = it },
+                        viewModel::onNewAccountInputChange
+                    )
                     Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {}
                 }
 
@@ -204,7 +211,7 @@ private fun Body(
                             if (it) showSnackBarErrors = true
                             else {
                                 sheetState.collapse()
-                                withContext(Dispatchers.Default){
+                                withContext(Dispatchers.Default) {
                                     delay(500)
                                     /** TODO navigation **/
                                 }

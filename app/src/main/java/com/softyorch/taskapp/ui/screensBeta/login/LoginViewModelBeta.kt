@@ -10,6 +10,7 @@ import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,25 +26,36 @@ class LoginViewModelBeta @Inject constructor(
     private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), NewAccountInterface, WithOutErrorsLogin {
 
-    private val _isLoading = MutableLiveData<Boolean>(true)
+    private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _showLogin = MutableLiveData<Boolean>(false)
+    private val _showLogin = MutableLiveData(false)
     val showLogin: LiveData<Boolean> = _showLogin
 
-    private val _showNewAccount = MutableLiveData<Boolean>(false)
+    private val _showNewAccount = MutableLiveData(false)
     val showNewAccount: LiveData<Boolean> = _showNewAccount
 
     private val _loginModel = MutableLiveData<LoginModel>()
     val loginModel: LiveData<LoginModel> = _loginModel
 
-    private val _pexelsImage = MutableLiveData<MediaModel>(MediaModel.MediaModelEmpty)
+    private val _pexelsImage = MutableLiveData(MediaModel.MediaModelEmpty)
+
     val pexelsImage: LiveData<MediaModel> = _pexelsImage
-
     private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
-    val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
 
+    val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
     private val _foundError = MutableLiveData<Boolean>()
+
+    override val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
+    val newAccountModel: LiveData<NewAccountModel> = newAccountModelInterface
+
+    override val errorsNewAccountInterface = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
+    val errorsNewAccount: LiveData<ErrorNewAccountModel> = errorsNewAccountInterface
+
+    override val isLoadingNewAccountInterface = MutableLiveData(false)
+    val isLoadingNewAccount: LiveData<Boolean> = isLoadingNewAccountInterface
+
+    override val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
         loadImage()

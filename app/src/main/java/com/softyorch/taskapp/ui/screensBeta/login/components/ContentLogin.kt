@@ -41,9 +41,9 @@ fun ContentLogin(
 
         TextFieldPass(
             pass = loginModel.userPass,
-            keyboardActions = KeyboardActions(onGo = { onGo(true) }),
             error = errorLoginModel.pass,
-            errorAccount = errorLoginModel.errorResultSignIn
+            errorAccount = errorLoginModel.errorResultSignIn,
+            keyboardActions = KeyboardActions(onGo = { onGo(true) })
         ) {
             onLoginInputChange(
                 LoginModel(

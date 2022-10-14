@@ -25,8 +25,6 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 fun TextFieldEmailRepeat(
     email: String,
     error: Boolean,
-    errorAccount: Boolean,
-    errorEmailExist: Boolean,
     onTextFieldChanged: (String) -> Unit
 ) {
 
@@ -34,21 +32,18 @@ fun TextFieldEmailRepeat(
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
             outlinedTextFieldCustom(
                 text = email,
-                label = stringResource(R.string.email),
-                placeholder = stringResource(R.string.type_your_email),
+                label = stringResource(R.string.repeat_your_email),
+                placeholder = stringResource(R.string.repeat_your_email),
                 icon = Icons.Rounded.Email,
-                contentDescription = stringResource(R.string.type_your_email),
+                contentDescription = stringResource(R.string.repeat_your_email),
                 keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                     capitalization = KeyboardCapitalization.None,
                     keyboardType = KeyboardType.Email
                 ),
-                isError = error || errorAccount || errorEmailExist,
-                onTextFieldChanged = onTextFieldChanged
+                isError = error,
+                onTextFieldChanged = { onTextFieldChanged(it) }
             )
         }
-        if (error && !errorAccount) IconError(
-            errorText = if (errorEmailExist) stringResource(R.string.error_email_exist)
-            else stringResource(R.string.input_error_email)
-        )
+        if (error) IconError(errorText = stringResource(R.string.input_error_repeat_email))
     }
 }

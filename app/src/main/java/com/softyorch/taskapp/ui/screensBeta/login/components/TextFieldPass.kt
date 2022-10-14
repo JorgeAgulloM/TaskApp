@@ -26,9 +26,9 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 fun TextFieldPass(
     pass: String,
     newAccount: Boolean = false,
-    keyboardActions: KeyboardActions,
     error: Boolean,
     errorAccount: Boolean,
+    keyboardActions: KeyboardActions,
     onTextFieldChanged: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
