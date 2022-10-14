@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.screensBeta.login.model
+package com.softyorch.taskapp.ui.screensBeta.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,8 +7,9 @@ import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 
-interface NewAccount : WithOutErrorsNewAccount {
+interface NewAccountInterface : WithOutErrorsNewAccount {
 
     private val _newAccountModel: MutableLiveData<NewAccountModel>
         get() = MutableLiveData<NewAccountModel>(NewAccountModel.newAccountModel)

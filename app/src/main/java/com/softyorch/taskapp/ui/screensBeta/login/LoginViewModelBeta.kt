@@ -11,9 +11,9 @@ import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
-import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -24,7 +24,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), NewAccount, WithOutErrorsLogin, WithOutErrorsNewAccount {
+) : ViewModel(), NewAccountInterface, WithOutErrorsLogin, WithOutErrorsNewAccount {
 
     private val _isLoading = MutableLiveData<Boolean>(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -131,5 +131,11 @@ class LoginViewModelBeta @Inject constructor(
 
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
+
+    /** New Account */
+
+    fun onNewAccount(newAccountModel: NewAccountModel) = viewModelScope.launch(Dispatchers.IO) {
+        onNewAccountDataSend(newAccountModel, userDataUseCases)
+    }
 
 }
