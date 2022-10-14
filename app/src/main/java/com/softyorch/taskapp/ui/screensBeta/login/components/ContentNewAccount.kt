@@ -28,11 +28,14 @@ fun ContentNewAccount(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextFieldName(newAccountModel.userName, errors.name) {
-            onNewAccountDataChange(newAccountModel.copy(userName = it.trim()))
+            onNewAccountDataChange(newAccountModel.copy(userName = it.trim().replaceFirstChar {
+                char -> char.uppercase()
+            }))
         }
         TextFieldEmail(
             newAccountModel.userEmail,
-            errors.email
+            error = errors.email,
+            errorAccount = errors.emailExists
         ) {
             onNewAccountDataChange(newAccountModel.copy(userEmail = it.trim().lowercase()))
         }

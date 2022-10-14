@@ -30,13 +30,7 @@ fun ContentLogin(
             error = errorLoginModel.email,
             errorAccount = errorLoginModel.errorResultSignIn
         ) {
-            onLoginInputChange(
-                LoginModel(
-                    userEmail = it.trim().lowercase(),
-                    userPass = loginModel.userPass,
-                    rememberMe = loginModel.rememberMe
-                )
-            )
+            onLoginInputChange(loginModel.copy(userEmail = it.trim().lowercase()))
         }
 
         TextFieldPass(
@@ -45,13 +39,7 @@ fun ContentLogin(
             errorAccount = errorLoginModel.errorResultSignIn,
             keyboardActions = KeyboardActions(onGo = { onGo(true) })
         ) {
-            onLoginInputChange(
-                LoginModel(
-                    userEmail = loginModel.userEmail,
-                    userPass = it.trim(),
-                    rememberMe = loginModel.rememberMe
-                )
-            )
+            onLoginInputChange(loginModel.copy(userPass = it.trim()))
         }
 
         Row(
@@ -61,13 +49,7 @@ fun ContentLogin(
             CheckerRememberMe(
                 rememberMe = loginModel.rememberMe
             ) {
-                onLoginInputChange(
-                    LoginModel(
-                        userEmail = loginModel.userEmail,
-                        userPass = loginModel.userPass,
-                        rememberMe = it
-                    )
-                )
+                onLoginInputChange(loginModel.copy(rememberMe = it))
             }
         }
     }

@@ -56,7 +56,7 @@ fun LoginScreenBeta() {
     val newAccount by viewModel.showNewAccount.observeAsState(initial = false)
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
     val screenHeightMid = LocalConfiguration.current.screenHeightDp / 2
-    val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 3) * 2
+    val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 5) * 4
     val height by newAccount.upDownIntegerAnimated(screenHeightTwoThird, screenHeightMid)
 
     Background(pexelsImage) {
@@ -209,7 +209,7 @@ private fun Body(
                 if (onGo) {
                     focusManager.clearFocus()
                     scope.launch {
-                        if (!newAccount){
+                        if (!newAccount) {
                             viewModel.onLoginDataSend(loginModel).also {
                                 if (it) showSnackBarErrors = true
                                 else {
@@ -239,11 +239,7 @@ private fun Body(
 
                 if (!errorLoginModel.error) showSnackBarErrors = false
 
-                if (showSnackBarErrors) SnackBarError(
-                    errorText = if (errorLoginModel.errorResultSignIn) stringResource(R.string.error_email_exist)
-                    else if (errorLoginModel.email || errorLoginModel.pass) stringResource(R.string.error_email_or_pass)
-                    else stringResource(R.string.snack_input_error)
-                ) {
+                if (showSnackBarErrors) SnackBarErrorLoginNewAccount(newAccount) {
                     showSnackBarErrors = false
                 }
             }
@@ -256,6 +252,19 @@ private fun Body(
         }
     }
 
+}
+
+@Composable
+fun SnackBarErrorLoginNewAccount(
+    newAccount: Boolean,
+    onClick: () -> Unit
+) {
+    SnackBarError(
+        errorText = if (newAccount) stringResource(R.string.error_email_exist)
+        else stringResource(R.string.error_email_or_pass)
+    ) {
+        onClick()
+    }
 }
 
 @Composable

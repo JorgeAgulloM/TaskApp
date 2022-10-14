@@ -53,9 +53,6 @@ class LoginViewModelBeta @Inject constructor(
     private val errorsNewAccountInterface = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
     val errorsNewAccount: LiveData<ErrorNewAccountModel> = errorsNewAccountInterface
 
-    private val isLoadingNewAccountInterface = MutableLiveData(false)
-    val isLoadingNewAccount: LiveData<Boolean> = isLoadingNewAccountInterface
-
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
@@ -148,30 +145,25 @@ class LoginViewModelBeta @Inject constructor(
     suspend fun onNewAccountDataSend(
         newAccountModel: NewAccountModel
     ): Boolean {
-        isLoadingNewAccountInterface.postValue(true)
+        _isLoading.postValue(true)
         withOutErrorsNewAccount(newAccountModel).let { errors ->
             if (!errors.error) {
                 addNewUser(
                     newAccountModel
-                ).also { isError ->
+                ).also { isError -> //When true returned, the user has been created else, this email exist now.
                     errors.apply {
-                        name = !isError
-                        email = !isError
-                        emailRepeat = !isError
                         emailExists = !isError
-                        pass = !isError
-                        passRepeat = !isError
                         error = !isError
                     }
                     setErrorsNewAccount(errors)
 
-                    isLoadingNewAccountInterface.postValue(false)
+                    _isLoading.postValue(false)
                     return errors.error
                 }
             } else {
                 setErrorsNewAccount(errors)
 
-                isLoadingNewAccountInterface.postValue(false)
+                _isLoading.postValue(false)
                 return errors.error
             }
         }
@@ -186,13 +178,7 @@ class LoginViewModelBeta @Inject constructor(
         datastore.saveData(userDataEntity)
     }
 
-    private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean  {
-        return try {
-            userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
-            true
-        } catch (ex: Exception) {
-            false
-        }
-    }
+    private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean =
+        userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
 
 }
