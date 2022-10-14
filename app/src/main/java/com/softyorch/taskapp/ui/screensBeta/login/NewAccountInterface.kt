@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
-import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.UpdateUser
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
+import kotlin.reflect.KProperty0
 
 interface NewAccountInterface : WithOutErrorsNewAccount {
 
@@ -44,14 +45,14 @@ interface NewAccountInterface : WithOutErrorsNewAccount {
 
     suspend fun onNewAccountDataSend(
         newAccountModel: NewAccountModel,
-        userDataUseCases: UserDataUseCases
+        updateUser: KProperty0<UpdateUser>
     ): Boolean {
         _isLoadingNewAccount.value = true
         withOutErrorsNewAccount(newAccountModel).let { errors ->
             if (!errors.error) {
                 addNewUser(
                     newAccountModel.mapToUserDataEntity(),
-                    userDataUseCases
+                    updateUser
                 ).also { isError ->
                     errors.apply {
                         name = !isError
@@ -78,10 +79,10 @@ interface NewAccountInterface : WithOutErrorsNewAccount {
 
     private suspend fun addNewUser(
         userDataEntity: UserDataEntity,
-        userDataUseCases: UserDataUseCases
+        updateUser: KProperty0<UpdateUser>
     ): Boolean {
         return try {
-            userDataUseCases.newAccountUser(userDataEntity = userDataEntity)
+            updateUser().invoke(userDataEntity) /**OJO A ESTO*/
             true
         } catch (ex: Exception) {
             false

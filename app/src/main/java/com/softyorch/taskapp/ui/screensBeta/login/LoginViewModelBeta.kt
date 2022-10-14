@@ -9,7 +9,6 @@ import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
-import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), NewAccountInterface, WithOutErrorsLogin, WithOutErrorsNewAccount {
+) : ViewModel(), NewAccountInterface, WithOutErrorsLogin {
 
     private val _isLoading = MutableLiveData<Boolean>(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -38,17 +37,11 @@ class LoginViewModelBeta @Inject constructor(
     private val _loginModel = MutableLiveData<LoginModel>()
     val loginModel: LiveData<LoginModel> = _loginModel
 
-/*    private val _newAccountModel = MutableLiveData<NewAccountModel>()
-    val newAccountModel: LiveData<NewAccountModel> = _newAccountModel*/
-
     private val _pexelsImage = MutableLiveData<MediaModel>(MediaModel.MediaModelEmpty)
     val pexelsImage: LiveData<MediaModel> = _pexelsImage
 
     private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
     val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
-
-/*    private val _errorsNewAccount = MutableLiveData<ErrorNewAccountModel>()
-    val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount*/
 
     private val _foundError = MutableLiveData<Boolean>()
 
@@ -135,7 +128,7 @@ class LoginViewModelBeta @Inject constructor(
     /** New Account */
 
     fun onNewAccount(newAccountModel: NewAccountModel) = viewModelScope.launch(Dispatchers.IO) {
-        onNewAccountDataSend(newAccountModel, userDataUseCases)
+        onNewAccountDataSend(newAccountModel, userDataUseCases::updateUser)
     }
 
 }
