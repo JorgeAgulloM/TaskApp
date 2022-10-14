@@ -268,7 +268,7 @@ private fun LoginContent(
         ) {
             onLoginInputChange(
                 LoginModel(
-                    userEmail = it.trim(),
+                    userEmail = it.trim().lowercase(),
                     userPass = loginModel.userPass,
                     rememberMe = loginModel.rememberMe
                 )

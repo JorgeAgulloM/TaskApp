@@ -9,7 +9,8 @@ import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
-import com.softyorch.taskapp.ui.screensBeta.login.errors.ErrorLoginManager
+import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
+import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
@@ -21,14 +22,13 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), ErrorLoginManager {
+) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount {
 
     private val _isLoading = MutableLiveData<Boolean>(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -83,13 +83,13 @@ class LoginViewModelBeta @Inject constructor(
     fun onLoginInputChange(loginModel: LoginModel){
         _loginModel.value = loginModel
         if (_foundError.value == true) {
-            _errorsLogin.postValue(withOutErrors(loginModel))
+            _errorsLogin.postValue(withOutErrorsLogin(loginModel))
         }
     }
 
     suspend fun onLoginDataSend(loginModel: LoginModel): Boolean {
         _isLoading.value = true
-        withOutErrors(loginModel).let { errors ->
+        withOutErrorsLogin(loginModel).let { errors ->
             if (!errors.error) {
                 loginAndUpdateData(loginModel).also {
                     errors.email = !it
