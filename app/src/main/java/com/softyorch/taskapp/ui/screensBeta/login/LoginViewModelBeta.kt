@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,10 +12,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
-import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
-import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
-import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
-import com.softyorch.taskapp.ui.screensBeta.login.model.mapToMediaModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -28,7 +24,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount {
+) : ViewModel(), NewAccount, WithOutErrorsLogin, WithOutErrorsNewAccount {
 
     private val _isLoading = MutableLiveData<Boolean>(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -42,8 +38,8 @@ class LoginViewModelBeta @Inject constructor(
     private val _loginModel = MutableLiveData<LoginModel>()
     val loginModel: LiveData<LoginModel> = _loginModel
 
-    private val _newAccountModel = MutableLiveData<NewAccountModel>()
-    val newAccountModel: LiveData<NewAccountModel> = _newAccountModel
+/*    private val _newAccountModel = MutableLiveData<NewAccountModel>()
+    val newAccountModel: LiveData<NewAccountModel> = _newAccountModel*/
 
     private val _pexelsImage = MutableLiveData<MediaModel>(MediaModel.MediaModelEmpty)
     val pexelsImage: LiveData<MediaModel> = _pexelsImage
@@ -51,8 +47,8 @@ class LoginViewModelBeta @Inject constructor(
     private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
     val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
 
-    private val _errorsNewAccount = MutableLiveData<ErrorNewAccountModel>()
-    val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount
+/*    private val _errorsNewAccount = MutableLiveData<ErrorNewAccountModel>()
+    val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount*/
 
     private val _foundError = MutableLiveData<Boolean>()
 
@@ -76,7 +72,6 @@ class LoginViewModelBeta @Inject constructor(
             }
         }
     }
-
 
     /** Login **/
 
@@ -134,11 +129,7 @@ class LoginViewModelBeta @Inject constructor(
         datastore.saveData(userDataEntity)
     }
 
-    private suspend fun signIn(loginModel: LoginModel): UserDataEntity? {
-        Log.d("LOGIN", "login -> $loginModel")
-        val user = userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
-        Log.d("LOGIN", "login -> $user")
-        return user
-    }
+    private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
+        userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
 
 }

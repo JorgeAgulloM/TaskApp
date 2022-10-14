@@ -6,5 +6,11 @@ import com.softyorch.taskapp.data.repository.UserDataRepository
 class LoginUser(private val repository: UserDataRepository) {
     suspend operator fun invoke(email: String, password: String): UserDataEntity? =
         repository.singInUser(email = email, password = password)
+
+    /**
+     * Aquí impolementaré el update del login, se actualizará el valor LastLogin y el rememberMe,
+     * y devolverá el usuario actualizado para que este se actualice en el datastore
+     * */
+
 }
 

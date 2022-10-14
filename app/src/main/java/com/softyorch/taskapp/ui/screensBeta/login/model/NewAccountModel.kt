@@ -5,13 +5,17 @@ import com.softyorch.taskapp.utils.emptyString
 data class NewAccountModel(
     var userName: String,
     var userEmail: String,
+    var userEmailRepeat: String,
     var userPass: String,
+    var userPassRepeat: String,
 ) {
     companion object {
         val newAccountModel = NewAccountModel(
             userName = emptyString,
             userEmail = emptyString,
-            userPass = emptyString
+            userEmailRepeat = emptyString,
+            userPass = emptyString,
+            userPassRepeat = emptyString
         )
     }
 }

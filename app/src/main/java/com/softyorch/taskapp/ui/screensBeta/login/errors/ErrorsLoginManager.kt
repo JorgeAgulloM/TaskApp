@@ -4,6 +4,7 @@ import android.util.Patterns
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
+import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import java.util.regex.Pattern
 
@@ -24,14 +25,16 @@ interface WithOutErrorsNewAccount :
     IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat {
 
     fun withOutErrorsNewAccount(
-        name: String, email: String, emailRepeat: String, pass: String, passRepeat: String
+        newAccountModel: NewAccountModel
     ): ErrorNewAccountModel {
         val errors = ErrorNewAccountModel()
-        !isValidName(name = name).also { errors.name = !it }
-        !isValidEmail(email = email).also { errors.email = !it }
-        !isValidEmail(email = email, emailRepeat = emailRepeat).also { errors.emailRepeat = !it }
-        !isValidPass(pass = pass).also { errors.pass = !it }
-        !isValidPass(pass = pass, passRepeat = passRepeat).also { errors.passRepeat = !it }
+        newAccountModel.apply {
+            !isValidName(name = userName).also { errors.name = !it }
+            !isValidEmail(email = userEmail).also { errors.email = !it }
+            !isValidEmail(email = userEmail, emailRepeat = userEmailRepeat).also { errors.emailRepeat = !it }
+            !isValidPass(pass = userPass).also { errors.pass = !it }
+            !isValidPass(pass = userPass, passRepeat = userPassRepeat).also { errors.passRepeat = !it }
+        }
 
         errors.let {
             it.error = (it.name || it.email || it.emailRepeat || it.pass || it.passRepeat)

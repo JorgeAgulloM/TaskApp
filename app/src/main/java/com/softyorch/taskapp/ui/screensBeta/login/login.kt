@@ -29,6 +29,7 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
 import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
@@ -128,6 +129,9 @@ private fun Body(
 ) {
     val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
     val errorLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
+
+    val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewAccountModel.errorNewAccountModel)
+
 
     val scope = rememberCoroutineScope()
     val sheetState = rememberBottomSheetState(
