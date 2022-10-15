@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,19 +73,35 @@ fun LoginScreenBeta() {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
     var showInfo by remember { mutableStateOf(value = false) }
+    var isSuccess by remember { mutableStateOf(value = false) }
+    var counter by remember { mutableStateOf( value = 0) }
+    val scope = rememberCoroutineScope()
+
+    scope.launch {
+        while (counter < 5 || !isSuccess) {
+            delay(1000)
+            counter += 1
+        }
+    }
+
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         AsyncImage(
             model = pexelsImage.image,
-            contentDescription = "Fondo",
+            contentDescription = stringResource(R.string.pexels_courtesy),
             contentScale = ContentScale.Crop,
-            onSuccess = {
-                onLoadImage()
-                showInfo = true
-            }
+            error = painterResource(R.drawable.pexels_polina_kovaleva_5717421),
+            onSuccess = { isSuccess = true}
         )
+
+        if (isSuccess || counter >= 5) {
+            onLoadImage()
+            showInfo = true
+        }
+
         if (showInfo) BodyScreen(pexelsImage)
     }
 }
