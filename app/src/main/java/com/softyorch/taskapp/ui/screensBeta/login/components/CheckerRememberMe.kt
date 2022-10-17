@@ -15,7 +15,7 @@ fun CheckerRememberMe(
 ) {
     CheckCustom(
         checked = rememberMe,
-        onCheckedChange = onCheckedChange,
+        onCheckedChange = { onCheckedChange(it) },
         text = stringResource(R.string.remember_me),
         horizontalArrangement = Arrangement.End,
         onClick = {}

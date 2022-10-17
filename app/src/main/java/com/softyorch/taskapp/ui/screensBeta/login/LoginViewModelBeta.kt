@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -60,10 +59,7 @@ class LoginViewModelBeta @Inject constructor(
     init {
         viewModelScope.launch {
             loadImage()
-            Log.d("LOGIN", "isLogin?")
-            autologin(datastore, userDataUseCases::loginUser).apply{
-                Log.d("LOGIN", "Login -> $this")
-            }
+            autologin(datastore, userDataUseCases::loginUser)
         }
     }
 
@@ -126,6 +122,7 @@ class LoginViewModelBeta @Inject constructor(
             if (user != null) {
                 user.lastLoginDate = Date.from(Instant.now())
                 user.rememberMe = loginModel.rememberMe
+                updateUser(user)
                 updateDatastore(user)
                 return true
             } else {
@@ -201,5 +198,9 @@ class LoginViewModelBeta @Inject constructor(
 
     private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean =
         userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
+
+    private suspend fun updateUser(userDataEntity: UserDataEntity) {
+        userDataUseCases.updateUser(userDataEntity)
+    }
 
 }
