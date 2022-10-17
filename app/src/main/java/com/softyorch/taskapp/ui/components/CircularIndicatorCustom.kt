@@ -43,27 +43,28 @@ fun CircularIndicatorCustom(
         )
     )
 
-    Row(
-        modifier = modifier
-            .padding(4.dp)
-            .shadow(elevation = ELEVATION_DP * 2, shape = CircleShape)
-            .background(
-                brush = colorGradient,
-                shape = CircleShape
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+    Box(
+        contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(
-            modifier = Modifier.padding(8.dp).size(35.dp),
-            color = MaterialTheme.infiniteTransitionAnimateColor().value
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(end = 8.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Row(
+            modifier = modifier
+                .padding(4.dp)
+                .shadow(elevation = ELEVATION_DP * 2, shape = CircleShape)
+                .background(brush = colorGradient, shape = CircleShape),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.padding(8.dp).size(35.dp),
+                color = MaterialTheme.infiniteTransitionAnimateColor().value
+            )
+            Text(
+                text = text,
+                modifier = Modifier.padding(end = 8.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
