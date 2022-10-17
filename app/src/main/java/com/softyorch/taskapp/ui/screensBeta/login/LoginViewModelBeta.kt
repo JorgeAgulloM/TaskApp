@@ -9,6 +9,7 @@ import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.ui.screensBeta.login.errors.IsActivatedButton
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
@@ -25,7 +26,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount {
+) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -40,18 +41,18 @@ class LoginViewModelBeta @Inject constructor(
     val loginModel: LiveData<LoginModel> = _loginModel
 
     private val _pexelsImage = MutableLiveData(MediaModel.MediaModelEmpty)
-
     val pexelsImage: LiveData<MediaModel> = _pexelsImage
-    private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
 
+    private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
     val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
+
     private val _foundError = MutableLiveData<Boolean>()
 
     private val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
     val newAccountModel: LiveData<NewAccountModel> = newAccountModelInterface
 
-    private val errorsNewAccountInterface = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
-    val errorsNewAccount: LiveData<ErrorNewAccountModel> = errorsNewAccountInterface
+    private val _errorsNewAccount = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
+    val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount
 
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
@@ -64,6 +65,7 @@ class LoginViewModelBeta @Inject constructor(
     }
 
     fun showNewAccount() {
+        resetErrors()
         _showNewAccount.value = !showNewAccount.value!!
     }
 
@@ -78,11 +80,13 @@ class LoginViewModelBeta @Inject constructor(
 
     /** Login **/
 
-    fun onLoginInputChange(loginModel: LoginModel){
+    fun onLoginInputChange(loginModel: LoginModel) {
         _loginModel.value = loginModel
         if (_foundError.value == true) {
             _errorsLogin.postValue(withOutErrorsLogin(loginModel))
-        }
+        } else _errorsLogin.postValue(
+            ErrorLoginModel(isActivatedButton = isActivatedButton(loginModel))
+        )
     }
 
     suspend fun onLoginDataSend(loginModel: LoginModel): Boolean {
@@ -128,18 +132,27 @@ class LoginViewModelBeta @Inject constructor(
         return false
     }
 
+    private fun resetErrors() {
+        _errorsLogin.value = ErrorLoginModel.errorLoginModel
+        _errorsNewAccount.value = ErrorNewAccountModel.errorNewAccountModel
+    }
+
     /** New Account */
 
     fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
         newAccountModelInterface.value = newAccountModel
         if (foundErrorNewAccountInterface.value == true) {
             setErrorsNewAccount(withOutErrorsNewAccount(newAccountModel))
-        }
+        } else _errorsNewAccount.postValue(
+            ErrorNewAccountModel(isActivatedButton = isActivatedButton(newAccountModel))
+        )
     }
 
     private fun setErrorsNewAccount(errors: ErrorNewAccountModel) {
-        if (foundErrorNewAccountInterface.value != true) foundErrorNewAccountInterface.postValue(true)
-        errorsNewAccountInterface.postValue(errors)
+        if (foundErrorNewAccountInterface.value != true) foundErrorNewAccountInterface.postValue(
+            true
+        )
+        _errorsNewAccount.postValue(errors)
     }
 
     suspend fun onNewAccountDataSend(

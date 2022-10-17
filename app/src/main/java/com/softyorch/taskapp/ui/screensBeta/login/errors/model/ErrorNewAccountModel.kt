@@ -8,6 +8,7 @@ data class ErrorNewAccountModel(
     var pass: Boolean = false,
     var passRepeat: Boolean = false,
     var error: Boolean = false,
+    var isActivatedButton: Boolean = false
 ) {
     companion object {
         val errorNewAccountModel = ErrorNewAccountModel()

@@ -5,6 +5,7 @@ data class ErrorLoginModel(
     var pass: Boolean = false,
     var errorResultSignIn: Boolean = false,
     var error: Boolean = false,
+    var isActivatedButton: Boolean = false
 ) {
     companion object {
         val errorLoginModel = ErrorLoginModel()

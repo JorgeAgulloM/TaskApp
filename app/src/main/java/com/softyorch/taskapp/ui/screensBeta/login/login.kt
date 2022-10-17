@@ -78,7 +78,7 @@ fun LoginScreenBeta() {
 fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
     var showInfo by remember { mutableStateOf(value = false) }
     var isSuccess by remember { mutableStateOf(value = false) }
-    var counter by remember { mutableStateOf( value = 0) }
+    var counter by remember { mutableStateOf(value = 0) }
     val scope = rememberCoroutineScope()
 
     scope.launch {
@@ -94,7 +94,7 @@ fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
             contentDescription = stringResource(R.string.pexels_courtesy),
             contentScale = ContentScale.Crop,
             error = painterResource(R.drawable.pexels_polina_kovaleva_5717421),
-            onSuccess = { isSuccess = true}
+            onSuccess = { isSuccess = true }
         )
 
         if (isSuccess || counter >= 5) {
@@ -204,7 +204,11 @@ private fun Body(
                         onGo = { onGo = it },
                         viewModel::onLoginInputChange
                     )
-                    Footer(stringResource(R.string.login), error = errorLoginModel.error) {
+                    Footer(
+                        text = stringResource(R.string.login),
+                        enable = errorLoginModel.isActivatedButton,
+                        error = errorLoginModel.error
+                    ) {
                         onGo = true
                     }
                 } else {
@@ -217,7 +221,11 @@ private fun Body(
                         onGo = { onGo = it },
                         viewModel::onNewAccountInputChange
                     )
-                    Footer(text = stringResource(R.string.new_account), errorLoginModel.error) {
+                    Footer(
+                        text = stringResource(R.string.new_account),
+                        enable = errorsNewAccount.isActivatedButton,
+                        error = errorsNewAccount.error
+                    ) {
                         onGo = true
                     }
                 }
@@ -285,7 +293,7 @@ fun SnackBarErrorLoginNewAccount(
 }
 
 @Composable
-private fun Footer(text: String, error: Boolean, onClick: () -> Unit) {
+private fun Footer(text: String, enable: Boolean, error: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
         contentAlignment = Alignment.Center
@@ -293,7 +301,7 @@ private fun Footer(text: String, error: Boolean, onClick: () -> Unit) {
         ButtonCustom(
             text = text,
             primary = true,
-            enable = true,
+            enable = enable,
             error = error
         ) {
             onClick()

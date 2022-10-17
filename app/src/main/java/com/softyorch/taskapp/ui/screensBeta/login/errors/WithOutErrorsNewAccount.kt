@@ -4,18 +4,20 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountMo
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 
 interface WithOutErrorsNewAccount :
-    IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat {
+    IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat,
+    IsActivatedButton {
 
     fun withOutErrorsNewAccount(
         newAccountModel: NewAccountModel
     ): ErrorNewAccountModel {
         val errors = ErrorNewAccountModel()
         newAccountModel.apply {
-            !isValidName(name = userName).also { errors.name = !it }
-            !isValidEmail(email = userEmail).also { errors.email = !it }
-            !isValidEmail(email = userEmail, emailRepeat = userEmailRepeat).also { errors.emailRepeat = !it }
-            !isValidPass(pass = userPass).also { errors.pass = !it }
-            !isValidPass(pass = userPass, passRepeat = userPassRepeat).also { errors.passRepeat = !it }
+            !isValidName(userName).also { errors.name = !it }
+            !isValidEmail(userEmail).also { errors.email = !it }
+            !isValidEmail(userEmail, userEmailRepeat).also { errors.emailRepeat = !it }
+            !isValidPass(userPass).also { errors.pass = !it }
+            !isValidPass(userPass, userPassRepeat).also { errors.passRepeat = !it }
+            isActivatedButton(newAccountModel).also { errors.isActivatedButton = it }
         }
 
         errors.let {
