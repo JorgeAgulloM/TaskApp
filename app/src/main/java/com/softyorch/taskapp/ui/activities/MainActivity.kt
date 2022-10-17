@@ -137,8 +137,8 @@ private fun TaskApp(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            LoginScreenBeta()
-            //TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
+            //LoginScreenBeta()
+            TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
         }
     }
 }
