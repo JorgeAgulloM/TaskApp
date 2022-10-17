@@ -7,11 +7,11 @@ import java.io.InvalidClassException
 
 class NewAccountUser(private val repository: UserDataRepository) {
     suspend operator fun invoke(userDataEntity: UserDataEntity): Boolean = try {
-        repository.getUserDataEmail(userDataEntity.userEmail)?.let {
-            repository.addUserData(userDataEntity = userDataEntity)
-            true
-        }.let {
-            false
+        repository.getUserDataEmail(userDataEntity.userEmail).let {
+            if (it == null){
+                repository.addUserData(userDataEntity = userDataEntity)
+                true
+            } else false
         }
     } catch (ex: IOException) {
         throw InvalidClassException(

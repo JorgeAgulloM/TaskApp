@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,7 +27,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
+) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -57,7 +58,13 @@ class LoginViewModelBeta @Inject constructor(
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
-        loadImage()
+        viewModelScope.launch {
+            loadImage()
+            Log.d("LOGIN", "isLogin?")
+            autologin(datastore, userDataUseCases::loginUser).apply{
+                Log.d("LOGIN", "Login -> $this")
+            }
+        }
     }
 
     fun showLogin() {
@@ -69,7 +76,7 @@ class LoginViewModelBeta @Inject constructor(
         _showNewAccount.value = !showNewAccount.value!!
     }
 
-    private fun loadImage() = viewModelScope.launch {
+    private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
             data.mapToMediaModel().let { media ->
                 _pexelsImage.value = media
@@ -77,6 +84,7 @@ class LoginViewModelBeta @Inject constructor(
             }
         }
     }
+
 
     /** Login **/
 
