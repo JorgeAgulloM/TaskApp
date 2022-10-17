@@ -21,13 +21,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screensBeta.login.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
@@ -47,14 +48,15 @@ import kotlin.math.absoluteValue
  * File created by Jorge Agulló on 11/November/2022
  */
 
-@Preview(showBackground = true)
+
 @Composable
-fun LoginScreenBeta() {
+fun LoginScreenBeta(navController: NavController) {
 
     val scope = rememberCoroutineScope()
     val viewModel = hiltViewModel<LoginViewModelBeta>()
-    val showLogin by viewModel.showLogin.observeAsState(initial = false)
-    val newAccount by viewModel.showNewAccount.observeAsState(initial = false)
+    val showLogin: Boolean by viewModel.showLogin.observeAsState(initial = false)
+    val newAccount: Boolean by viewModel.showNewAccount.observeAsState(initial = false)
+    val autoLogin: Boolean by viewModel.autologin.observeAsState(initial = false)
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
     val screenHeightMid = LocalConfiguration.current.screenHeightDp / 2
     val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 5) * 4
@@ -63,9 +65,13 @@ fun LoginScreenBeta() {
     Background(pexelsImage) {
         scope.launch {
             delay(2000)
-            viewModel.showLogin()
+            if (!autoLogin) viewModel.showLogin() else {
+                navigationTo(navController)
+            }
         }
     }
+
+
     if (!showLogin) {
         CircularIndicatorCustom(stringResource(R.string.loading_loading))
     } else {
@@ -306,5 +312,14 @@ private fun Footer(text: String, enable: Boolean, error: Boolean, onClick: () ->
         ) {
             onClick()
         }
+    }
+}
+
+private fun navigationTo(navController: NavController) {
+    navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
+        navController.backQueue.clear()
+        /*popUpTo(AppScreensRoutes.LoginScreenBeta.route) {
+            inclusive = true
+        }*/
     }
 }

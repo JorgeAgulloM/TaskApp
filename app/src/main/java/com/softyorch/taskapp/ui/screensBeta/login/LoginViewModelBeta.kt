@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +16,10 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
+import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -36,6 +40,9 @@ class LoginViewModelBeta @Inject constructor(
 
     private val _showNewAccount = MutableLiveData(false)
     val showNewAccount: LiveData<Boolean> = _showNewAccount
+
+    private val _autoLogin = MutableLiveData<Boolean>(false)
+    val autologin: LiveData<Boolean> = _autoLogin
 
     private val _loginModel = MutableLiveData<LoginModel>()
     val loginModel: LiveData<LoginModel> = _loginModel
@@ -64,13 +71,48 @@ class LoginViewModelBeta @Inject constructor(
     }
 
     fun showLogin() {
-        _showLogin.value = true
+        autoLogin()
+        _showLogin.value != autologin.value
     }
 
     fun showNewAccount() {
         resetErrors()
         _showNewAccount.value = !showNewAccount.value!!
     }
+
+    private fun autoLogin() = viewModelScope.launch {
+        datastore.getData.invoke().let { data ->
+            data!!.flowOn(Dispatchers.IO).collect { user ->
+                if (user.rememberMe) {
+                    userDataUseCases.loginUser.invoke(user.userEmail, user.userPass)
+                        .let { userLogin ->
+                            if (userLogin != null) {
+                                val timeWeekInMillis =
+                                    timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
+                                user.lastLoginDate?.time?.let { autoLoginLimit ->
+                                    val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
+                                    timeWeekInMillis.compareTo(dif).let {
+                                        if (it == 1) {
+                                            datastore.saveData(userDataEntity = user)
+                                            Log.d("LOGIN", "Autologin")
+
+                                            _autoLogin.postValue(true)
+                                        } else {
+                                            _isLoading.postValue(false)
+                                        }
+                                    }
+                                }
+                            } else {
+                                _isLoading.postValue(false)
+                            }
+                        }
+                } else {
+                    _isLoading.postValue(false)
+                }
+            }
+        }
+    }
+
 
     private suspend fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->

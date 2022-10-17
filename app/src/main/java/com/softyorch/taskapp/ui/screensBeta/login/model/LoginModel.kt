@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login.model
 
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.emptyString
 
 data class LoginModel(
@@ -15,3 +16,9 @@ data class LoginModel(
         )
     }
 }
+
+fun UserDataEntity.mapToLoginModel() = LoginModel(
+    userEmail = this.userEmail,
+    userPass = this.userPass,
+    rememberMe = this.rememberMe
+)

@@ -3,8 +3,9 @@ package com.softyorch.taskapp.ui.navigation
 enum class AppScreens {
     SplashScreen,
     LoginScreen,
-    LoginBeta,
+    LoginScreenBeta,
     MainScreen,
+    MainScreenBeta,
     DetailsScreen,
     HistoryScreen,
     SettingsScreen,

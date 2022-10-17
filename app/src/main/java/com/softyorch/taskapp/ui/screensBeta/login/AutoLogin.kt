@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.login.model
+package com.softyorch.taskapp.ui.screensBeta.login
 
 import android.util.Log
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
@@ -23,15 +23,10 @@ interface AutoLogin {
     ): Boolean {
         var isAuto = false
         datastoreUseCases.getData().let { data ->
-            Log.d("LOGIN", "InData")
             data!!.flowOn(Dispatchers.IO).collect { user ->
-                Log.d("LOGIN", "InFlow")
                 if (user.rememberMe) {
-                    Log.d("LOGIN", "Remember")
                     logIn()(user.userEmail, user.userPass).let { userLogin ->
-                        Log.d("LOGIN", "UserLogin")
                         if (userLogin != null) {
-                            Log.d("LOGIN", "UserExist")
                             isAuto = isTimeOk(datastoreUseCases::saveData, userLogin)
                             Log.d("LOGIN", "login? -> $isAuto")
                         }
