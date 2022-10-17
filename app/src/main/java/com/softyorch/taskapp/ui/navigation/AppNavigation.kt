@@ -17,6 +17,7 @@ import com.softyorch.taskapp.ui.screens.settings.SettingsScreen
 import com.softyorch.taskapp.ui.screens.splash.SplashScreen
 import com.softyorch.taskapp.ui.screens.splash.SplashViewModel
 import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
+import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
 
 @ExperimentalMaterial3Api
 @Composable
@@ -26,7 +27,9 @@ fun TaskAppNavigation(
 ) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
+    //startDestination = AppScreens.SplashScreen.name
+    //startDestination = AppScreensRoutes.LoginBeta.route
+    NavHost(navController = navController, startDestination = AppScreensRoutes.LoginBeta.route) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
             val splashViewModel = hiltViewModel<SplashViewModel>()
             SplashScreen(
@@ -36,6 +39,9 @@ fun TaskAppNavigation(
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {
             LoginScreen(navController = navController)
+        }
+        composable(route = AppScreensRoutes.LoginBeta.route){
+            LoginScreenBeta(navController = navController)
         }
         composable(route = AppScreensRoutes.MainScreen.route) {
             val mainViewModel = hiltViewModel<MainViewModel>()
