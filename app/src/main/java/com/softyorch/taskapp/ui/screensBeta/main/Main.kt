@@ -6,7 +6,7 @@ package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -16,12 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
 import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -29,15 +32,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreenBeta(navController: NavController) {
     var index by remember { mutableStateOf(value = 0) }
+    val items = BottomNavItem.items
 
     Scaffold(
-        topBar = { SmallTopAppBarCustom(true, emptyString, navController) },
+        topBar = { SmallTopAppBarCustom(true, items[index].name, navController) },
         bottomBar = {
             BottomFakeNavigationBar(
                 index = index,
-                items = BottomNavItem.items,
+                items = items,
                 onItemClick = { itemButton ->
-                    BottomNavItem.items.forEach { item ->
+                    items.forEach { item ->
                         if (item.indexId == itemButton.indexId)
                             index = item.indexId
                     }
@@ -47,11 +51,15 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButton = { FABCustom() },
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
-    ) { Body(it, index) }
+    ) {
+        Body(it, index)
+    }
 }
 
 @Composable
 fun Body(paddingValues: PaddingValues, index: Int) {
+
+
     val toDoSheetVisibility = index == 0
     val finishedSheetVisibility = index == 1
     val historyVisibility = index == 2
@@ -112,14 +120,75 @@ fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: St
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text = text)
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    CardCustom(true)
+                    CardCustom(true)
+                    CardCustom(false)
+                    CardCustom(true)
+                    CardCustom(false)
+                    CardCustom(false)
+                    CardCustom(true)
+                    CardCustom(false)
+                    CardCustom(false)
+                    CardCustom(false)
+                    CardCustom(false)
+                    CardCustom(true)
+                    Box(modifier = Modifier.fillMaxWidth().height(150.dp)){}
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CardCustom(
+    isChecked: Boolean
+) {
+    val description =
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    var isOpen by remember { mutableStateOf(false) }
+    val height by isOpen.upDownIntegerAnimated(200, 65)
+
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .height(height.dp),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = ELEVATION_DP),
+        border = BorderStroke(0.5.dp, color = MaterialTheme.colorScheme.primary)
+    ) {
+        Column(
+            modifier = Modifier.clickable {
+                isOpen = !isOpen
+            },
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            CheckCustom(
+                checked = isChecked,
+                onCheckedChange = {},
+                enabled = true,
+                animated = false,
+                text = "Prueba de tareas",
+            ) {}
+            Column(modifier = Modifier.verticalScroll(rememberScrollState(), enabled = isOpen)) {
+                Text(
+                    text = description,
+                    overflow = if (isOpen) TextOverflow.Visible else TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        }
+    }
+}
 
 data class BottomNavItem(
     var indexId: Int,

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -22,14 +23,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable
 fun SmallTopAppBarCustom(
     isMainScreen: Boolean = false,
-    nameScreen: String,
+    title: String,
     navController: NavController,
 ) {
 
@@ -39,7 +39,13 @@ fun SmallTopAppBarCustom(
             .height(35.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
         backgroundColor = MaterialTheme.colorScheme.onSecondary,
-        title = {},
+        title = {
+            Text(
+                text = title, style = MaterialTheme.typography.labelLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        },
         navigationIcon = {
             if (!isMainScreen) IconButtonTABC(
                 imageVector = Icons.Rounded.ArrowBack,
@@ -51,13 +57,13 @@ fun SmallTopAppBarCustom(
             }
         },
         actions = {
-            if (nameScreen != AppScreens.SettingsScreen.name) IconButtonTABC(
+            IconButtonTABC(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
                 navController.navigate(AppScreensRoutes.SettingsScreen.route)
             }
 
-            if (nameScreen != AppScreens.UserDataScreen.name) IconButtonTABC(
+            IconButtonTABC(
                 imageVector = Icons.Rounded.Person,
                 text = stringResource(R.string.content_image_user)
             ) {
