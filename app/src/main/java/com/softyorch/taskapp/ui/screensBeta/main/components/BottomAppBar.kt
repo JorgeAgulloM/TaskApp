@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.ui.screensBeta.main.BottomNavItem
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import kotlinx.coroutines.selects.select
 
 
 @Composable
-fun BottomAppBarCustom(
+fun BottomFakeNavigationBar(
+    index: Int,
     items: List<BottomNavItem>,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -35,7 +35,7 @@ fun BottomAppBarCustom(
     ) {
         items.forEach { item ->
             BottomNavigationItem(
-                selected = item.selected,
+                selected = item.indexId == index,
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(
@@ -59,7 +59,7 @@ fun BottomAppBarCustom(
                         } else {
                             Icon(imageVector = item.icon, contentDescription = item.name)
                         }
-                        if (item.selected) {
+                        if (item.indexId == index) {
                             Text(
                                 text = item.name,
                                 style = MaterialTheme.typography.labelSmall.copy(
