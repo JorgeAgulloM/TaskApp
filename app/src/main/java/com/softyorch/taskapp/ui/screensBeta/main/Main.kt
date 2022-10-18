@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -53,6 +52,9 @@ fun MainScreenBeta(navController: NavController) {
 
 @Composable
 fun Body(paddingValues: PaddingValues, index: Int) {
+    val toDoSheetVisibility = index == 0
+    val finishedSheetVisibility = index == 1
+    val historyVisibility = index == 2
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
             MaterialTheme.colorScheme.background,
@@ -66,41 +68,32 @@ fun Body(paddingValues: PaddingValues, index: Int) {
                 brush = contentBrush, shape = MaterialTheme.shapes.large
             )
             .padding(
-                top = paddingValues.calculateTopPadding(),
                 start = 4.dp,
                 end = 4.dp
             ),
         contentAlignment = Alignment.BottomCenter
     ) {
-        BottomSheetCustom(paddingValues)
+        BottomSheetCustom(paddingValues, toDoSheetVisibility, "toDo")
+        BottomSheetCustom(paddingValues, finishedSheetVisibility, "finished")
+        BottomSheetCustom(paddingValues, historyVisibility, "history")
     }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun BottomSheetCustom(paddingValues: PaddingValues) {
-    val offSet: Offset
-/*    val scale = remember { Animatable(0f) }
+fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: String) {
 
-    LaunchedEffect(key1 = true, block = {
-
-
-
-
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 500,
-                easing = LinearEasing
-            )
-        )
-    }
-    )*/
     var visible by remember { mutableStateOf(value = false) }
+    val sheetBrush = Brush.verticalGradient(
+        listOf(
+            MaterialTheme.colorScheme.onSecondary,
+            MaterialTheme.colorScheme.secondaryContainer
+        )
+    )
 
     rememberCoroutineScope().launch {
-        delay(100)
-        visible = true
+        delay(200)
+        visible = isVisible
     }
     AnimatedVisibility(
         visible = visible,
@@ -109,14 +102,21 @@ fun BottomSheetCustom(paddingValues: PaddingValues) {
     ) {
         Column(
             modifier = Modifier
-                .padding(top = (paddingValues.calculateTopPadding() / 2))
+                .padding(top = paddingValues.calculateTopPadding())
                 .background(
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    brush = sheetBrush,
                     shape = MaterialTheme.shapes.large
                 )
                 .fillMaxWidth()
                 .fillMaxHeight()
-        ) { }
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = text)
+            }
+        }
     }
 }
 

@@ -33,7 +33,7 @@ fun BottomFakeNavigationBar(
                 bottomEnd = CornerSize(0.dp)
             )
         ).shadow(
-            ELEVATION_DP, shape = MaterialTheme.shapes.large.copy(
+            elevation = ELEVATION_DP * 2, shape = MaterialTheme.shapes.large.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp)
             )

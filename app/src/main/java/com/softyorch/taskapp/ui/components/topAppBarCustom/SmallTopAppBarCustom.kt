@@ -63,7 +63,8 @@ fun SmallTopAppBarCustom(
             ) {
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
-        }
+        },
+        elevation = ELEVATION_DP
     )
 
 }
