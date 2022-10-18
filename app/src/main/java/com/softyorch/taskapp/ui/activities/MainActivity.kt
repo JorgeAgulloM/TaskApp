@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
-import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,10 +49,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val viewModel = hiltViewModel<MainActivityViewModel>()
-            val reloadComposable: () -> Unit = {
-                viewModel.reloadSettings()
-                this.recreate()
-            }
             //val coroutineScope = rememberCoroutineScope()
             //var imageResult: String? = newImageGallery.observeAsState().value
             /*val getImage: () -> Unit = {
@@ -70,8 +65,7 @@ class MainActivity : ComponentActivity() {
             //val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
 
             TaskApp(
-                viewModel = viewModel,
-                reloadComposable = reloadComposable,
+                viewModel = viewModel
                 //getUserImage = getUserImage
             )
         }
@@ -120,7 +114,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun TaskApp(
     viewModel: MainActivityViewModel,
-    reloadComposable: () -> Unit,
     //getUserImage: Pair<() -> Unit, String?>
 ) {
 
@@ -138,7 +131,9 @@ private fun TaskApp(
             modifier = Modifier.fillMaxSize()
         ) {
             //LoginScreenBeta()
-            TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
+            TaskAppNavigation {
+                viewModel.reloadSettings()
+            }//, getUserImage = getUserImage)
         }
     }
 }

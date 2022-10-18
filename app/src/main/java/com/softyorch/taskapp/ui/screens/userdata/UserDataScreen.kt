@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screens.userdata
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -37,7 +36,7 @@ import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
+
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
@@ -64,7 +63,6 @@ fun UserDataScreen(
 
 
 @ExperimentalMaterial3Api
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun Content(
     it: PaddingValues,

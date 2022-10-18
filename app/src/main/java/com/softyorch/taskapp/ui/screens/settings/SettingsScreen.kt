@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screens.settings
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +21,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
+import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
@@ -31,7 +30,7 @@ import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("CoroutineCreationDuringComposition")
+
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
@@ -50,7 +49,7 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
+
 @Composable
 private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 
@@ -62,7 +61,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
     val scrollState = rememberScrollState()
 
     if (isLoading || !enabled)
-        CircularIndicatorCustomDialog(
+        CircularIndicatorCustom(
             text = stringResource(loading_loading)
         )
 

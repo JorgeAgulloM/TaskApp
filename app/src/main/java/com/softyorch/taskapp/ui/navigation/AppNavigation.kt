@@ -22,10 +22,7 @@ import com.softyorch.taskapp.ui.screensBeta.main.MainScreenBeta
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(
-    reloadComposable: () -> Unit,
-    //getUserImage: Pair<() -> Unit, String?>
-) {
+fun TaskAppNavigation(reloadComposable: () -> Unit) {
     val navController = rememberNavController()
 
     //startDestination = AppScreens.SplashScreen.name
