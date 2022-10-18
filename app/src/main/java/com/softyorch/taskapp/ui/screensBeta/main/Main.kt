@@ -6,6 +6,8 @@ package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,12 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.ui.components.CheckCustom
+import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
+import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
 
@@ -159,7 +165,6 @@ fun BottomSheetCustom(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardCustom(
     task: TaskModelUi,
@@ -186,25 +191,75 @@ fun CardCustom(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            CheckCustom(
-                checked = task.checkState,
-                onCheckedChange = {
-                    onCheckedChange(it)
-                },
-                enabled = true,
-                animated = false,
-                text = task.title,
-            ) {}
-            Column(modifier = Modifier.verticalScroll(rememberScrollState(), enabled = isOpen)) {
-                Text(
-                    text = task.description,
-                    overflow = if (isOpen) TextOverflow.Visible else TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(4.dp)
-                )
+            DetailsTask(task, isOpen) {
+                onCheckedChange(it)
             }
         }
     }
+}
+
+@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DetailsTask(
+    task: TaskModelUi,
+    isOpen: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    val scrollString = rememberScrollState()
+    val scope = rememberCoroutineScope()
+    if (!isOpen) scope.launch {
+        scrollString.animateScrollTo(
+            value = 0,
+            animationSpec = tween(200,0, FastOutLinearInEasing)
+        )
+    }
+
+    AnimatedVisibility(
+        visible = isOpen,
+        enter = SHEET_TRANSITION_ENTER,
+        exit = SHEET_TRANSITION_EXIT
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ShowTaskDetails(task)
+            DividerCustom(16.dp, 4.dp)
+        }
+    }
+    CheckCustom(
+        checked = task.checkState,
+        onCheckedChange = {
+            onCheckedChange(it)
+        },
+        enabled = true,
+        animated = false,
+        text = task.title,
+    ) {}
+    Column(
+        modifier = Modifier
+            .padding(start = 4.dp)
+            .verticalScroll(scrollString, enabled = isOpen)
+    ) {
+        Text(
+            text = task.description,
+            overflow = if (isOpen) TextOverflow.Visible else TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
+
+@Composable
+private fun ShowTaskDetails(task: TaskModelUi) {
+    ShowTask(
+        author = task.author,
+        date = task.entryDate.toStringFormatted(),
+        completedDate = task.finishDate?.toStringFormatted()
+            ?: emptyString,
+        paddingStart = 8.dp
+    )
 }
 
 data class BottomNavItem(
