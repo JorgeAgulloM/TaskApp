@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.components.topAppBarCustom
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -34,17 +35,16 @@ fun TopAppBarCustom(
     val userPicture: String by viewModel.imageUser.observeAsState(initial = emptyString)
     val userName: String by viewModel.userName.observeAsState(initial = emptyString)
 
-    SmallTopAppBar(
+    TopAppBar(
+        title = {
+            TextTABC(title = title)
+        },
         modifier = Modifier.shadow(
             elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large.copy(
                 topStart = CornerSize(0.dp),
                 topEnd = CornerSize(0.dp)
             )
         ),
-        title = {
-            TextTABC(title = title)
-        },
-        colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.secondary),
         navigationIcon = {
             if (!isMainScreen) IconButtonTABC(
                 imageVector = Icons.Rounded.ArrowBack,
@@ -81,7 +81,8 @@ fun TopAppBarCustom(
             ) {
                 navController.navigate(AppScreensRoutes.UserDataScreen.route)
             }
-        }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.secondary)
     )
 }
 
@@ -116,42 +117,9 @@ private fun IconButtonTABCUser(
     userName: String,
     onClick: () -> Unit
 ) {
-    //var onError by rememberSaveable { mutableStateOf(value = false) }
-
-    /*if (!onError) IconButton(onClick = { onClick() }) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(image)
-                .error(R.drawable.ic_error_outline_24)
-                .build(),
-            contentDescription = stringResource(image_of_user),
-            placeholder = painterResource(R.drawable.ic_person_24),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = MaterialTheme.shapes.large
-                ),
-            onLoading = {
-            },
-            onSuccess = {
-                onError = false
-            },
-            onError = {
-                onError = true
-                *//*coroutineScope.launch {
-                    delay(2000)
-                    reload(image)
-                }*//*
-            },
-        )
-    }
-    else*/
-
     LogoUserCapitalLetter(
         capitalLetter = (
-        if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
+                if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
         size = 30.dp
     ) {
         onClick()

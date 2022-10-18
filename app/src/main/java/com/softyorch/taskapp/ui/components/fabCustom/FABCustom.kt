@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.widgets.newTask.newTask
+import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @ExperimentalMaterial3Api
 @Composable
@@ -31,6 +32,7 @@ fun FABCustom() {
                 contentDescription = stringResource(add_task)
             )
         },
+        shape = MaterialTheme.shapes.large,
         onClick = { openDialog = true }
     )
 

@@ -5,6 +5,7 @@
 package com.softyorch.taskapp.ui.screensBeta.main.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
@@ -22,16 +23,14 @@ import com.softyorch.taskapp.utils.ELEVATION_DP
 fun BottomFakeNavigationBar(
     index: Int,
     items: List<BottomNavItem>,
-    navController: NavController,
-    modifier: Modifier = Modifier,
     onItemClick: (BottomNavItem) -> Unit
 ) {
 
-    BottomNavigation (
-        modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.onBackground,
-        //cutoutShape = MaterialTheme.shapes.large,
-        elevation = ELEVATION_DP
+    BottomAppBar (
+        modifier = Modifier,
+        backgroundColor = MaterialTheme.colorScheme.onSecondary,
+        cutoutShape = MaterialTheme.shapes.large,
+        elevation = ELEVATION_DP * 2
     ) {
         items.forEach { item ->
             BottomNavigationItem(
@@ -69,8 +68,8 @@ fun BottomFakeNavigationBar(
                         }
                     }
                 },
-                selectedContentColor = MaterialTheme.colorScheme.primary,
-                unselectedContentColor = MaterialTheme.colorScheme.secondary
+                selectedContentColor = MaterialTheme.colorScheme.tertiary,
+                unselectedContentColor = MaterialTheme.colorScheme.tertiaryContainer
             )
         }
     }

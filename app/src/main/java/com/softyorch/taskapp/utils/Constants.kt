@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
@@ -64,6 +65,7 @@ const val USER_DATA = "user_data"
 
 const val TIME_IN_MILLIS_OF_DELAY: Long = 100
 const val DURATION_MILLIS_BTN_CHANGE_COLOR: Int = 300
+
 @OptIn(ExperimentalAnimationApi::class)
 //val ANIMATED_ENTER: EnterTransition = scaleIn(animationSpec = tween(500))
 val ANIMATED_ENTER: EnterTransition = expandHorizontally(expandFrom = Alignment.Start)
@@ -75,14 +77,33 @@ val ANIMATED_EXIT: ExitTransition = shrinkHorizontally(shrinkTowards = Alignment
 //val EXIT_SCALE_OUT_TWEEN_500: ExitTransition = scaleOut(animationSpec = tween(500))
 
 val ANIMATED_ENTER_TEXT_FIELDS: EnterTransition =
-    //fadeIn(animationSpec = tween(5000))
-    //slideInHorizontally(animationSpec = tween(500)) +
-    //expandHorizontally(animationSpec = tween(500),expandFrom = Alignment.End)
+//fadeIn(animationSpec = tween(5000))
+//slideInHorizontally(animationSpec = tween(500)) +
+//expandHorizontally(animationSpec = tween(500),expandFrom = Alignment.End)
     //slideInVertically(animationSpec = tween(1000)) +
-    expandVertically(animationSpec = tween(200,100, easing = LinearEasing), expandFrom = Alignment.Bottom)
+    expandVertically(
+        animationSpec = tween(200, 100, easing = LinearEasing),
+        expandFrom = Alignment.Bottom
+    )
 val ANIMATED_EXIT_TEXT_FIELDS: ExitTransition =
     //slideOutHorizontally(animationSpec = tween(500))
-    shrinkVertically(animationSpec = tween(200,100, easing = LinearEasing), shrinkTowards = Alignment.Top)
+    shrinkVertically(
+        animationSpec = tween(200, 100, easing = LinearEasing),
+        shrinkTowards = Alignment.Top
+    )
+
+val SHEET_TRANSITION_ENTER: EnterTransition =
+    expandVertically(
+        animationSpec = tween( 500, 0, easing = FastOutSlowInEasing),
+        expandFrom = Alignment.Bottom
+    )
+
+val SHEET_TRANSITION_EXIT: ExitTransition =
+    shrinkVertically(
+        animationSpec = tween(500, 0, easing = FastOutSlowInEasing),
+        shrinkTowards = Alignment.Top
+    )
+
 
 /*enter = if (newTask) slideInVertically {
             with(density) { -500.dp.roundToPx() }
