@@ -38,7 +38,7 @@ fun BottomFakeNavigationBar(
                 bottomEnd = CornerSize(0.dp)
             )
         ),
-        backgroundColor = MaterialTheme.colorScheme.onSecondary,
+        backgroundColor = MaterialTheme.colorScheme.background,
         cutoutShape = MaterialTheme.shapes.large,
         elevation = ELEVATION_DP * 2
     ) {

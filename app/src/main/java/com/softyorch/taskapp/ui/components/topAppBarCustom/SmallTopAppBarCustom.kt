@@ -38,11 +38,11 @@ fun SmallTopAppBarCustom(
             .padding(2.dp)
             .height(35.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
-        backgroundColor = MaterialTheme.colorScheme.onSecondary,
+        backgroundColor = MaterialTheme.colorScheme.background,
         title = {
             Text(
                 text = title, style = MaterialTheme.typography.labelLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.surface
                 )
             )
         },
@@ -83,7 +83,7 @@ private fun IconButtonTABC(
         Icon(
             imageVector = imageVector,
             contentDescription = text,
-            tint = MaterialTheme.colorScheme.tertiaryContainer
+            tint = MaterialTheme.colorScheme.tertiary
         )
     }
 }

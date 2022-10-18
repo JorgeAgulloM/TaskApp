@@ -88,16 +88,14 @@ fun Body(
 
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.background,
-            MaterialTheme.colorScheme.onTertiary
+            MaterialTheme.colorScheme.onSecondary,
+            MaterialTheme.colorScheme.secondaryContainer
         )
     )
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = contentBrush, shape = MaterialTheme.shapes.large
-            )
+            .background(brush = contentBrush)
             .padding(
                 start = 4.dp,
                 end = 4.dp
@@ -119,8 +117,8 @@ fun BottomSheetCustom(
     val lazyState = rememberLazyListState()
     val sheetBrush = Brush.verticalGradient(
         listOf(
-            MaterialTheme.colorScheme.onSecondary,
-            MaterialTheme.colorScheme.secondaryContainer
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondary
         )
     )
 
@@ -180,7 +178,7 @@ fun CardCustom(
             .height(height.dp),
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = ELEVATION_DP),
-        border = BorderStroke(0.5.dp, color = MaterialTheme.colorScheme.primary)
+        border = BorderStroke(0.5.dp, color = MaterialTheme.colorScheme.onPrimaryContainer)
     ) {
         Column(
             modifier = Modifier
