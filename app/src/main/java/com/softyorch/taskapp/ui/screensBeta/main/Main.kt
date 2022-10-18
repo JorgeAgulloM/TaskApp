@@ -8,31 +8,47 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
+import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenBeta(navController: NavController) {
-    var index by remember { mutableStateOf(value = 0) }
+    val viewModel = hiltViewModel<MainViewModel>()
     val items = BottomNavItem.items
+    var index by remember { mutableStateOf(value = 0) }
+    when (index) {
+        0 -> viewModel.load(TaskLoad.UncheckedTask)
+        1 -> viewModel.load(TaskLoad.CheckedTask)
+        2 -> viewModel.load(TaskLoad.AllTask)
+    }
+    val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
+    val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
 
     Scaffold(
         topBar = { SmallTopAppBarCustom(true, items[index].name, navController) },
@@ -52,17 +68,18 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(it, index)
+        Body(taskList, isVisible, it) { task -> viewModel.updateTask(task) }
     }
 }
 
 @Composable
-fun Body(paddingValues: PaddingValues, index: Int) {
+fun Body(
+    taskList: List<TaskModelUi>,
+    isVisible: Boolean,
+    pv: PaddingValues,
+    onCheckedChange: (TaskModelUi) -> Unit
+) {
 
-
-    val toDoSheetVisibility = index == 0
-    val finishedSheetVisibility = index == 1
-    val historyVisibility = index == 2
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
             MaterialTheme.colorScheme.background,
@@ -81,17 +98,19 @@ fun Body(paddingValues: PaddingValues, index: Int) {
             ),
         contentAlignment = Alignment.BottomCenter
     ) {
-        BottomSheetCustom(paddingValues, toDoSheetVisibility, "toDo")
-        BottomSheetCustom(paddingValues, finishedSheetVisibility, "finished")
-        BottomSheetCustom(paddingValues, historyVisibility, "history")
+        BottomSheetCustom(taskList, isVisible, pv) { onCheckedChange(it) }
     }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: String) {
-
-    var visible by remember { mutableStateOf(value = false) }
+fun BottomSheetCustom(
+    taskList: List<TaskModelUi>,
+    isVisible: Boolean,
+    paddingValues: PaddingValues,
+    onCheckedChange: (TaskModelUi) -> Unit
+) {
+    val lazyState = rememberLazyListState()
     val sheetBrush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.onSecondary,
@@ -99,12 +118,8 @@ fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: St
         )
     )
 
-    rememberCoroutineScope().launch {
-        delay(200)
-        visible = isVisible
-    }
     AnimatedVisibility(
-        visible = visible,
+        visible = isVisible,
         enter = SHEET_TRANSITION_ENTER,
         exit = SHEET_TRANSITION_EXIT
     ) {
@@ -122,24 +137,23 @@ fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: St
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
-                Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                LazyColumn(
+                    modifier = Modifier,
+                    state = lazyState,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    CardCustom(true)
-                    CardCustom(true)
-                    CardCustom(false)
-                    CardCustom(true)
-                    CardCustom(false)
-                    CardCustom(false)
-                    CardCustom(true)
-                    CardCustom(false)
-                    CardCustom(false)
-                    CardCustom(false)
-                    CardCustom(false)
-                    CardCustom(true)
-                    Box(modifier = Modifier.fillMaxWidth().height(150.dp)){}
+                    items(taskList) { task ->
+                        CardCustom(task) {
+                            onCheckedChange(
+                                task.copy(
+                                    checkState = it,
+                                    finishDate = Date.from(Instant.now())
+                                )
+                            )
+                        }
+                    }
                 }
+                Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {}
             }
         }
     }
@@ -148,10 +162,9 @@ fun BottomSheetCustom(paddingValues: PaddingValues, isVisible: Boolean, text: St
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardCustom(
-    isChecked: Boolean
+    task: TaskModelUi,
+    onCheckedChange: (Boolean) -> Unit
 ) {
-    val description =
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
     var isOpen by remember { mutableStateOf(false) }
     val height by isOpen.upDownIntegerAnimated(200, 65)
 
@@ -165,22 +178,26 @@ fun CardCustom(
         border = BorderStroke(0.5.dp, color = MaterialTheme.colorScheme.primary)
     ) {
         Column(
-            modifier = Modifier.clickable {
-                isOpen = !isOpen
-            },
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    isOpen = !isOpen
+                },
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             CheckCustom(
-                checked = isChecked,
-                onCheckedChange = {},
+                checked = task.checkState,
+                onCheckedChange = {
+                    onCheckedChange(it)
+                },
                 enabled = true,
                 animated = false,
-                text = "Prueba de tareas",
+                text = task.title,
             ) {}
             Column(modifier = Modifier.verticalScroll(rememberScrollState(), enabled = isOpen)) {
                 Text(
-                    text = description,
+                    text = task.description,
                     overflow = if (isOpen) TextOverflow.Visible else TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(4.dp)
