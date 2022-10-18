@@ -44,6 +44,7 @@
     <string name="to_be_made">Por hacer…</string>
     <string name="add_new_task">Añadir nueva tarea…</string>
     <string name="tasks_completed_last_days">Completadas en los últimos 7 días</string>
+    <string name="tasks_completed">Completadas</string>
     <string name="not_yet_complet_any_task">Todavía no has completado ninguna tarea</string>
     <string name="go_to_up">Ir arriba</string>
     <string name="light_dark_automatic_theme">Tema automático Claro/Oscuro</string>

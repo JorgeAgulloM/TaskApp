@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,27 +29,31 @@ fun SmallTopAppBarCustom(
     isMainScreen: Boolean = false,
     title: String,
     navController: NavController,
+    icon: ImageVector
 ) {
 
     TopAppBar(
         modifier = Modifier
-            .padding(2.dp)
+            .padding(4.dp)
             .height(35.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
         backgroundColor = MaterialTheme.colorScheme.background,
         title = {
             Text(
-                text = title, style = MaterialTheme.typography.labelLarge.copy(
-                    color = MaterialTheme.colorScheme.surface
+                text = if (title == stringResource(R.string.complete))
+                    stringResource(R.string.tasks_completed_last_days)
+                else title,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
         navigationIcon = {
-            if (!isMainScreen) IconButtonTABC(
-                imageVector = Icons.Rounded.ArrowBack,
+            IconButtonTABC(
+                imageVector = icon,
                 text = stringResource(R.string.go_to_home),
             ) {
-                navController.navigate(AppScreensRoutes.MainScreen.route) {
+                if (!isMainScreen) navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
                     navController.backQueue.clear()
                 }
             }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
@@ -30,8 +31,7 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.*
-import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
@@ -46,10 +46,11 @@ fun UserDataScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBarCustom(
+            SmallTopAppBarCustom(
+                isMainScreen = false,
                 title = stringResource(user_data),
-                nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
+                icon = Icons.Rounded.Home
             )
         }
     ) {

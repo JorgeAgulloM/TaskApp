@@ -41,9 +41,10 @@
     <string name="repeat_your_password">Repeat your password</string>
     <string name="main">Main</string>
     <string name="my_tasks">My Tasks</string>
-    <string name="to_be_made">To be made…</string>
+    <string name="to_be_made">To do…</string>
     <string name="add_new_task">Add new task…</string>
     <string name="tasks_completed_last_days">Completed in the last 7 days</string>
+    <string name="tasks_completed">Completed</string>
     <string name="not_yet_complet_any_task">You have not yet completed any task</string>
     <string name="go_to_up">Go to Up</string>
     <string name="light_dark_automatic_theme">Light/Dark Automatic Theme</string>

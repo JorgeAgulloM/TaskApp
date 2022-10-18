@@ -6,7 +6,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -102,6 +101,12 @@ val SHEET_TRANSITION_EXIT: ExitTransition =
     shrinkVertically(
         animationSpec = tween(500, 0, easing = FastOutSlowInEasing),
         shrinkTowards = Alignment.Top
+    )
+
+val CARD_RIGHT_EXIT: ExitTransition =
+    shrinkHorizontally(
+        animationSpec = tween(durationMillis = 500,0, easing = FastOutSlowInEasing),
+        shrinkTowards = Alignment.End
     )
 
 

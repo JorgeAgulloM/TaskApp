@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,8 +25,7 @@ import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustomDialog
 import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom
-import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.delay
@@ -38,10 +38,11 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
 
     Scaffold(
         topBar = {
-            TopAppBarCustom(
+            SmallTopAppBarCustom(
+                isMainScreen = false,
                 title = stringResource(settings),
-                nameScreen = AppScreens.SettingsScreen.name,
                 navController = navController,
+                icon = Icons.Rounded.Home
             )
         }
     ) {

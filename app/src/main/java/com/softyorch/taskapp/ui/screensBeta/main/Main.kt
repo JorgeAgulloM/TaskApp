@@ -6,7 +6,7 @@ package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -24,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
@@ -46,7 +48,17 @@ import java.util.*
 @Composable
 fun MainScreenBeta(navController: NavController) {
     val viewModel = hiltViewModel<MainViewModel>()
-    val items = BottomNavItem.items
+    val items = listOf(
+        BottomNavItem(
+            0, stringResource(R.string.to_be_made), Icons.Rounded.EditNote, 0
+        ),
+        BottomNavItem(
+            1, stringResource(R.string.tasks_completed), Icons.Rounded.Checklist, 5
+        ),
+        BottomNavItem(
+            2, stringResource(R.string.history), Icons.Rounded.History, 10
+        )
+    )
     var index by remember { mutableStateOf(value = 0) }
     when (index) {
         0 -> viewModel.load(TaskLoad.UncheckedTask)
@@ -55,9 +67,17 @@ fun MainScreenBeta(navController: NavController) {
     }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
     val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
+    val scope = rememberCoroutineScope()
 
     Scaffold(
-        topBar = { SmallTopAppBarCustom(true, items[index].name, navController) },
+        topBar = {
+            SmallTopAppBarCustom(
+                true,
+                items[index].name,
+                navController,
+                icon = items[index].icon
+            )
+        },
         bottomBar = {
             BottomFakeNavigationBar(
                 index = index,
@@ -74,7 +94,12 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, it) { task -> viewModel.updateTask(task) }
+        Body(taskList, isVisible, it) { task ->
+            scope.launch {
+                //delay(500)
+                viewModel.updateTask(task)
+            }
+        }
     }
 }
 
@@ -147,16 +172,17 @@ fun BottomSheetCustom(
                     verticalArrangement = Arrangement.Top
                 ) {
                     items(taskList) { task ->
-                        CardCustom(task) {
+                        CardCustom(task, isVisible) {
                             onCheckedChange(
                                 task.copy(
                                     checkState = it,
-                                    finishDate = Date.from(Instant.now())
+                                    finishDate = if (it) Date.from(Instant.now()) else null
                                 )
                             )
                         }
                     }
                 }
+                if (taskList.isEmpty()) Text(text = stringResource(R.string.add_new_task))
                 Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {}
             }
         }
@@ -166,19 +192,25 @@ fun BottomSheetCustom(
 @Composable
 fun CardCustom(
     task: TaskModelUi,
+    isVisible: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     var isOpen by remember { mutableStateOf(false) }
-    val height by isOpen.upDownIntegerAnimated(200, 65)
+    if (!isVisible) isOpen = false
+    val height by isOpen.upDownIntegerAnimated(300, 65)
 
-    Card(
+    ElevatedCard(
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
             .height(height.dp),
         shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = ELEVATION_DP),
-        border = BorderStroke(0.5.dp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = ELEVATION_DP
+        )
     ) {
         Column(
             modifier = Modifier
@@ -190,6 +222,7 @@ fun CardCustom(
             horizontalAlignment = Alignment.Start
         ) {
             DetailsTask(task, isOpen) {
+                isOpen = false
                 onCheckedChange(it)
             }
         }
@@ -209,7 +242,7 @@ fun DetailsTask(
     if (!isOpen) scope.launch {
         scrollString.animateScrollTo(
             value = 0,
-            animationSpec = tween(200,0, FastOutLinearInEasing)
+            animationSpec = tween(400, 0, LinearOutSlowInEasing)
         )
     }
 
@@ -232,12 +265,12 @@ fun DetailsTask(
             onCheckedChange(it)
         },
         enabled = true,
-        animated = false,
+        animated = true,
         text = task.title,
     ) {}
     Column(
         modifier = Modifier
-            .padding(start = 4.dp)
+            .padding(start = 4.dp, bottom = 4.dp)
             .verticalScroll(scrollString, enabled = isOpen)
     ) {
         Text(
@@ -265,18 +298,4 @@ data class BottomNavItem(
     val name: String,
     val icon: ImageVector,
     var badgeCount: Int = 0
-) {
-    companion object {
-        val items = listOf(
-            BottomNavItem(
-                0, "To do", Icons.Rounded.CheckBoxOutlineBlank, 0
-            ),
-            BottomNavItem(
-                1, "Finished", Icons.Rounded.CheckBox, 5
-            ),
-            BottomNavItem(
-                2, "History", Icons.Rounded.History, 10
-            )
-        )
-    }
-}
+)

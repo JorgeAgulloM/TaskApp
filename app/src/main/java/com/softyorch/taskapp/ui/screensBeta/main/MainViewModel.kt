@@ -33,15 +33,15 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
 
     }
 
-    fun load(taskLoad: TaskLoad){
+    fun load(taskLoad: TaskLoad) {
         loadTask(taskLoad)
     }
 
-    fun updateTask(taskModelUi: TaskModelUi){
+    fun updateTask(taskModelUi: TaskModelUi) {
         sendUpdateData(taskModelUi)
     }
 
-    private fun visible(){
+    private fun visible() {
         viewModelScope.launch {
             delay(200)
             _isVisible.postValue(true)
@@ -84,7 +84,21 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     }
 
     private fun sendUpdateData(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
+        updateLocalTaskList(taskModelUi)
+        delay(500)
         useCases.updateTask.invoke(taskModelUi.mapToTaskModelUseCase())
     }
 
+    private fun updateLocalTaskList(taskModelUi: TaskModelUi) = viewModelScope.launch {
+        val newList: MutableList<TaskModelUi> = mutableListOf()
+        newList.addAll(_tasks.value!!)
+
+        newList.forEach {
+            if (it.id == taskModelUi.id) {
+                it.checkState = taskModelUi.checkState
+            }
+        }
+
+        _tasks.postValue(newList)
+    }
 }
