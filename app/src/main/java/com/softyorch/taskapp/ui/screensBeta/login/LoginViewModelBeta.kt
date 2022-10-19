@@ -38,11 +38,14 @@ class LoginViewModelBeta @Inject constructor(
     private val _showBody = MutableLiveData(false)
     val showBody: LiveData<Boolean> = _showBody
 
-    private val _showNewAccount = MutableLiveData(false)
-    val showNewAccount: LiveData<Boolean> = _showNewAccount
-
     private val _autoLogin = MutableLiveData(false)
     val autologin: LiveData<Boolean> = _autoLogin
+
+    private val _loginSuccess = MutableLiveData(false)
+    val loginSuccess: LiveData<Boolean> = _loginSuccess
+
+    private val _showNewAccount = MutableLiveData<Boolean>()
+    val showNewAccount: LiveData<Boolean> = _showNewAccount
 
     private val _loginModel = MutableLiveData<LoginModel>()
     val loginModel: LiveData<LoginModel> = _loginModel
@@ -64,10 +67,9 @@ class LoginViewModelBeta @Inject constructor(
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
-        loadImage()
-        _showBody.value = true
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.postValue(true)
+            loadImage()
             autoLogin()
         }
     }
@@ -83,11 +85,10 @@ class LoginViewModelBeta @Inject constructor(
     }
 
     private fun loadImage() = viewModelScope.launch {
-        _isLoading.value = true
         pexelsUseCases.getImage.invoke().let { data ->
             data.mapToMediaModel().let { media ->
                 _pexelsImage.value = media
-                _isLoading.postValue(false)
+                _showBody.postValue(true)
             }
         }
     }
@@ -103,7 +104,7 @@ class LoginViewModelBeta @Inject constructor(
                         signIn(user.mapToLoginModel())?.let { userLogin ->
                             if (isInTime(userLogin)) {
                                 updateDatastore(userLogin)
-                                delay(3000)
+                                delay(2000)
                                 _autoLogin.postValue(true)
                                 _isLoading.postValue(false)
                             } else _isLoading.postValue(false)
@@ -168,6 +169,7 @@ class LoginViewModelBeta @Inject constructor(
             if (user != null) {
                 user.lastLoginDate = Date.from(Instant.now())
                 user.rememberMe = loginModel.rememberMe
+                _loginSuccess.postValue(true)
                 updateUser(user)
                 updateDatastore(user)
                 return true
