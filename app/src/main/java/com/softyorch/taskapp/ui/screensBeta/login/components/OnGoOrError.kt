@@ -14,11 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusManager
 import androidx.navigation.NavController
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screensBeta.login.LoginViewModelBeta
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
-import com.softyorch.taskapp.ui.screensBeta.login.navigateTo
 import kotlinx.coroutines.*
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -82,5 +82,11 @@ fun OnGoOrError(
 
     if (showSnackBarErrors) SnackBarErrorLoginNewAccount(newAccount) {
         showSnackBarErrors = false
+    }
+}
+
+fun navigateTo(navController: NavController) {
+    navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
+        navController.backQueue.clear()
     }
 }
