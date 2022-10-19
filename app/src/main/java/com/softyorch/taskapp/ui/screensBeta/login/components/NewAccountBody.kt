@@ -22,7 +22,7 @@ fun NewAccountBody(
     onClick: () -> Unit
 ) {
     Head("¿Ya tienes cuenta? ", "Inicia sesión", (isBlocked || autoLogin)) {
-        viewModel.showNewAccount()
+        viewModel.hideNewAccount()
     }
     ContentNewAccount(
         newAccountModel,
