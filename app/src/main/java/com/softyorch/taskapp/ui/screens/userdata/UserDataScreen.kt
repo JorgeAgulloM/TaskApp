@@ -196,7 +196,7 @@ private fun Content(
         viewModel.logOut().also {
             viewModel.viewModelScope.launch {
                 it.join()
-                navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                navController.navigate(AppScreensRoutes.LoginScreenBeta.route) {
                     navController.backQueue.clear()
                 }
             }
@@ -242,64 +242,6 @@ private fun Content(
     }
 
 }
-
-/*@Composable
-private fun AsyncImageDataScreen(
-    image: String,
-    userName: String,
-    getImage: () -> Unit
-) {
-
-*//*    var onError by rememberSaveable { mutableStateOf(value = false) }
-    if (onError) AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(image)
-            .error(R.drawable.ic_error_outline_24)
-            .crossfade(true)
-            .crossfade(500)
-            .build(),
-        contentDescription = stringResource(content_image_user),
-        placeholder = painterResource(R.drawable.ic_person_24),
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(200.dp)
-            .clickable {
-                getImage()
-            }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.large
-            ),
-        onLoading = {
-            onError = false
-        },
-        onSuccess = {
-        },
-        onError = {
-            onError = true
-            *//**//*coroutineScope.launch {
-                delay(2000)
-                reload(image)
-            }*//**//*
-        },
-    )
-    else*//*
-    val context = LocalContext.current
-    val text = stringResource(func_not_active)
-
-    LogoUserCapitalLetter(
-        capitalLetter = (
-                if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
-        size = 100.dp
-    ) {
-        //getImage()
-        Toast.makeText(
-            context,
-            text,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-}*/
 
 @Composable
 private fun ButtonCustomDataScreen(
