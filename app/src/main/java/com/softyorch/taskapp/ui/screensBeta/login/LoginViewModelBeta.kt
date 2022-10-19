@@ -72,9 +72,14 @@ class LoginViewModelBeta @Inject constructor(
         }
     }
 
+    fun hideNewAccount() {
+        resetErrors()
+        _showNewAccount.value = false
+    }
+
     fun showNewAccount() {
         resetErrors()
-        _showNewAccount.value = _showNewAccount.value != true
+        _showNewAccount.value = true
     }
 
     private fun loadImage() = viewModelScope.launch {
