@@ -8,14 +8,12 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,19 +30,14 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
-import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screensBeta.login.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
-import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import kotlin.math.absoluteValue
 
 @Composable
@@ -52,7 +45,7 @@ fun LoginScreenBeta(navController: NavController) {
 
     val viewModel = hiltViewModel<LoginViewModelBeta>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val showBody: Boolean by viewModel.showLogin.observeAsState(initial = false)
+    val showBody: Boolean by viewModel.showBody.observeAsState(initial = false)
     val newAccount: Boolean by viewModel.showNewAccount.observeAsState(initial = false)
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
 
@@ -60,8 +53,10 @@ fun LoginScreenBeta(navController: NavController) {
     val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 5) * 4
     val height by newAccount.upDownIntegerAnimated(screenHeightTwoThird, screenHeightMid)
 
-    if (isLoading) CircularIndicatorCustom(stringResource(R.string.loading_loading))
-    if (showBody) Body(viewModel, navController, height.absoluteValue.dp, newAccount, pexelsImage)
+    if (showBody)
+        Body(viewModel, navController, height.absoluteValue.dp, newAccount, isLoading, pexelsImage)
+    if (isLoading)
+        CircularIndicatorCustom(stringResource(R.string.loading_loading))
 
 }
 
@@ -75,15 +70,9 @@ fun Background(
     var isSuccess by remember { mutableStateOf(value = false) }
     var counter by remember { mutableStateOf(value = 0) }
     val scope = rememberCoroutineScope()
-/*    var error by remember { mutableStateOf(value = false) }
-
-    var painterError: Painter = painterResource(R.drawable.notes_512x512)
-    if (error) painterError = painterResource(R.drawable.pexels_polina_kovaleva_5717421)
-*/
 
     scope.launch {
         delay(5000)
-        //error = true
         while (counter < 5 && !isSuccess) {
             counter += 1
             delay(1000)
@@ -97,7 +86,7 @@ fun Background(
             model = pexelsImage.image,
             contentDescription = stringResource(R.string.pexels_courtesy),
             contentScale = ContentScale.Crop,
-            //error = painterError,
+            error = painterResource(R.drawable.backgroudempty),
             onSuccess = { isSuccess = true }
         )
 
@@ -118,6 +107,7 @@ private fun Body(
     navController: NavController,
     height: Dp,
     newAccount: Boolean,
+    isBlocked: Boolean,
     pexelsImage: MediaModel
 ) {
     val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
@@ -138,8 +128,8 @@ private fun Body(
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = sheetState
     )
-    scope.launch {
-        delay(500)
+    if (!autoLogin) scope.launch {
+        delay(1000)
         sheetState.expand()
     }
 
@@ -170,166 +160,25 @@ private fun Body(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (!newAccount) {
-                    Head(text1 = "¿No tienes cuenta? ", text2 = "Crea una nueva") {
-                        viewModel.showNewAccount()
-                    }
-                    ContentLogin(
-                        loginModel,
-                        errorLoginModel,
-                        onGo = { onGo = it },
-                        viewModel::onLoginInputChange
+                onGo = if (!newAccount) {
+                    loginBody(
+                        isBlocked, autoLogin, viewModel, loginModel, errorLoginModel, onGo
                     )
-                    Footer(
-                        text = stringResource(R.string.login),
-                        enable = errorLoginModel.isActivatedButton,
-                        error = errorLoginModel.error
-                    ) {
-                        onGo = true
-                    }
                 } else {
-                    Head(text1 = "¿Ya tienes cuenta? ", text2 = "Inicia sesión") {
-                        viewModel.showNewAccount()
-                    }
-                    ContentNewAccount(
-                        newAccountModel,
-                        errorsNewAccount,
-                        onGo = { onGo = it },
-                        viewModel::onNewAccountInputChange
+                    newAccountBody(
+                        isBlocked, autoLogin, viewModel, newAccountModel, errorsNewAccount, onGo
                     )
-                    Footer(
-                        text = stringResource(R.string.new_account),
-                        enable = errorsNewAccount.isActivatedButton,
-                        error = errorsNewAccount.error
-                    ) {
-                        onGo = true
-                    }
                 }
 
-                var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
-                if (onGo || autoLogin) {
-                    focusManager.clearFocus()
-                    scope.launch {
-                        if (!newAccount) {
-                            if (autoLogin) {
-                                sheetState.collapse()
-                                withContext(Dispatchers.Main) {
-                                    delay(500)
-                                    navigationTo(navController)
-                                }
-                            } else {
-                                viewModel.onLoginDataSend(loginModel).also {
-                                    if (it) showSnackBarErrors = true
-                                    else {
-                                        sheetState.collapse()
-                                        withContext(Dispatchers.Main) {
-                                            delay(500)
-                                            navigationTo(navController)
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            viewModel.onNewAccountDataSend(newAccountModel).also {
-                                if (it) showSnackBarErrors = true
-                                else {
-                                    sheetState.collapse()
-                                    withContext(Dispatchers.Default) {
-                                        delay(500)
-                                        viewModel.showNewAccount()
-                                    }
-                                }
-                            }
-                        }
-                        delay(500)
-                        onGo = false
-                    }
-                }
-
-                if (!errorLoginModel.error) showSnackBarErrors = false
-
-                if (showSnackBarErrors) SnackBarErrorLoginNewAccount(newAccount) {
-                    showSnackBarErrors = false
-                }
+                OnGoOrError(
+                    onGo, autoLogin, focusManager, scope, newAccount, sheetState, navController,
+                    viewModel, loginModel, newAccountModel, errorLoginModel
+                )
             }
         }
     ) {
-        Background(pexelsImage) {
-
-        }
+        if (autoLogin) CircularIndicatorCustom("AutoLogin...")
+        Background(pexelsImage) {}
     }
 
-}
-
-@Composable
-private fun Head(
-    text1: String,
-    text2: String,
-    onClick: () -> Unit
-) {
-    var click by remember { mutableStateOf(value = false) }
-    val colorText by click.contentColorLabelAsStateAnimation {
-        onClick()
-        click = false
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.padding(top = 4.dp),
-            text = text1,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
-            text = text2,
-            style = MaterialTheme.typography.labelSmall.copy(
-                textDecoration = TextDecoration.Underline
-            ),
-            color = colorText
-        )
-    }
-}
-
-@Composable
-fun SnackBarErrorLoginNewAccount(
-    newAccount: Boolean,
-    onClick: () -> Unit
-) {
-    SnackBarError(
-        errorText = if (newAccount) stringResource(R.string.error_email_exist)
-        else stringResource(R.string.error_email_or_pass)
-    ) {
-        onClick()
-    }
-}
-
-@Composable
-private fun Footer(text: String, enable: Boolean, error: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        ButtonCustom(
-            text = text,
-            primary = true,
-            enable = enable,
-            error = error
-        ) {
-            onClick()
-        }
-    }
-}
-
-private fun navigationTo(navController: NavController) {
-    navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
-        navController.backQueue.clear()
-        /*popUpTo(AppScreensRoutes.LoginScreenBeta.route) {
-            inclusive = true
-        }*/
-    }
 }

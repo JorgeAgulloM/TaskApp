@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,13 +35,13 @@ class LoginViewModelBeta @Inject constructor(
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _showLogin = MutableLiveData(false)
-    val showLogin: LiveData<Boolean> = _showLogin
+    private val _showBody = MutableLiveData(false)
+    val showBody: LiveData<Boolean> = _showBody
 
     private val _showNewAccount = MutableLiveData(false)
     val showNewAccount: LiveData<Boolean> = _showNewAccount
 
-    private val _autoLogin = MutableLiveData<Boolean>(false)
+    private val _autoLogin = MutableLiveData(false)
     val autologin: LiveData<Boolean> = _autoLogin
 
     private val _loginModel = MutableLiveData<LoginModel>()
@@ -67,15 +66,8 @@ class LoginViewModelBeta @Inject constructor(
     init {
         _isLoading.value = true
         loadImage()
-        viewModelScope.launch {
-
-            //autoLogin()
-            //_isLoading.value = false
-            _showLogin.postValue(true)
-            _isLoading.postValue(false)
-            delay(2000)
-            autoLogin()
-        }
+        _showBody.value = true
+        viewModelScope.launch { autoLogin() }
     }
 
     fun showNewAccount() {
@@ -90,19 +82,16 @@ class LoginViewModelBeta @Inject constructor(
                     signIn(user.mapToLoginModel())?.let { userLogin ->
                         if (isInTime(userLogin)) {
                             updateDatastore(userLogin)
-                            delay(2000)
+                            delay(3000)
                             _autoLogin.postValue(true)
                             _isLoading.postValue(false)
                         } else _isLoading.postValue(false)
-                        Log.d("LOGIN", "Autologin")
                     }
                 } else {
-                    //_showLogin.postValue(true)
                     _isLoading.postValue(false)
                 }
             }
         }.let {
-            //_showLogin.postValue(true)
             _isLoading.postValue(false)
         }
 
@@ -121,7 +110,6 @@ class LoginViewModelBeta @Inject constructor(
         pexelsUseCases.getImage.invoke().let { data ->
             data.mapToMediaModel().let { media ->
                 _pexelsImage.value = media
-                //_isLoading.postValue(false)
             }
         }
     }
