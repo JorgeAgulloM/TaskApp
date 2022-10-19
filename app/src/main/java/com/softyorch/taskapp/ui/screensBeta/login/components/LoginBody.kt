@@ -7,7 +7,6 @@ package com.softyorch.taskapp.ui.screensBeta.login.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.screensBeta.login.LoginViewModelBeta
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 
@@ -15,9 +14,10 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 fun LoginBody(
     isBlocked: Boolean,
     autoLogin: Boolean,
-    viewModel: LoginViewModelBeta,
     loginModel: LoginModel,
     errorLoginModel: ErrorLoginModel,
+    showNewAccount: () -> Unit,
+    onLoginInputChange: (LoginModel) -> Unit,
     onClick: () -> Unit
 ) {
     Head(
@@ -25,13 +25,13 @@ fun LoginBody(
         stringResource(R.string.create_account),
         (isBlocked || autoLogin)
     ) {
-        viewModel.showNewAccount()
+        showNewAccount()
     }
     ContentLogin(
         loginModel,
         errorLoginModel,
         onGo = { onClick() },
-        viewModel::onLoginInputChange
+        onLoginInputChange
     )
     Footer(
         text = stringResource(R.string.login),
