@@ -19,6 +19,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.*
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -30,7 +31,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
+) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -64,61 +65,63 @@ class LoginViewModelBeta @Inject constructor(
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
+        _isLoading.value = true
+        loadImage()
         viewModelScope.launch {
-            loadImage()
-            autologin(datastore, userDataUseCases::loginUser)
-        }
-    }
 
-    fun showLogin() {
-        autoLogin()
-        _showLogin.value != autologin.value
+            //autoLogin()
+            //_isLoading.value = false
+            _showLogin.postValue(true)
+            _isLoading.postValue(false)
+            delay(2000)
+            autoLogin()
+        }
     }
 
     fun showNewAccount() {
         resetErrors()
-        _showNewAccount.value = !showNewAccount.value!!
+        _showNewAccount.value = _showNewAccount.value != true
     }
 
-    private fun autoLogin() = viewModelScope.launch {
-        datastore.getData.invoke().let { data ->
-            data!!.flowOn(Dispatchers.IO).collect { user ->
+    private suspend fun autoLogin() =
+        getDataDs()?.let { data ->
+            data.flowOn(Dispatchers.IO).collect { user ->
                 if (user.rememberMe) {
-                    userDataUseCases.loginUser.invoke(user.userEmail, user.userPass)
-                        .let { userLogin ->
-                            if (userLogin != null) {
-                                val timeWeekInMillis =
-                                    timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
-                                user.lastLoginDate?.time?.let { autoLoginLimit ->
-                                    val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
-                                    timeWeekInMillis.compareTo(dif).let {
-                                        if (it == 1) {
-                                            datastore.saveData(userDataEntity = user)
-                                            Log.d("LOGIN", "Autologin")
-
-                                            _autoLogin.postValue(true)
-                                        } else {
-                                            _isLoading.postValue(false)
-                                        }
-                                    }
-                                }
-                            } else {
-                                _isLoading.postValue(false)
-                            }
-                        }
+                    signIn(user.mapToLoginModel())?.let { userLogin ->
+                        if (isInTime(userLogin)) {
+                            updateDatastore(userLogin)
+                            delay(2000)
+                            _autoLogin.postValue(true)
+                            _isLoading.postValue(false)
+                        } else _isLoading.postValue(false)
+                        Log.d("LOGIN", "Autologin")
+                    }
                 } else {
+                    //_showLogin.postValue(true)
                     _isLoading.postValue(false)
                 }
             }
+        }.let {
+            //_showLogin.postValue(true)
+            _isLoading.postValue(false)
         }
+
+
+    private fun isInTime(userDataEntity: UserDataEntity): Boolean {
+        val timeWeekInMillis =
+            timeLimitAutoLoginSelectTime(userDataEntity.timeLimitAutoLoading)
+        userDataEntity.lastLoginDate?.time?.let { autoLoginLimit ->
+            val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
+            timeWeekInMillis.compareTo(dif).let { if (it == 1) return true }
+        }
+        return false
     }
 
-
-    private suspend fun loadImage() = viewModelScope.launch {
+    private fun loadImage() = viewModelScope.launch {
         pexelsUseCases.getImage.invoke().let { data ->
             data.mapToMediaModel().let { media ->
                 _pexelsImage.value = media
-                _isLoading.postValue(false)
+                //_isLoading.postValue(false)
             }
         }
     }
@@ -231,18 +234,19 @@ class LoginViewModelBeta @Inject constructor(
 
     /** Data */
 
+    private fun getDataDs() = datastore.getData.invoke()
+
+    private suspend fun updateDatastore(userDataEntity: UserDataEntity) =
+        datastore.saveData(userDataEntity)
+
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
-
-    private suspend fun updateDatastore(userDataEntity: UserDataEntity) {
-        datastore.saveData(userDataEntity)
-    }
 
     private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean =
         userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
 
-    private suspend fun updateUser(userDataEntity: UserDataEntity) {
+    private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)
-    }
+
 
 }

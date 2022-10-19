@@ -1,6 +1,11 @@
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
 package com.softyorch.taskapp.ui.screensBeta.login
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
@@ -43,63 +47,57 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 
-/**
- * Task-App
- * File created by Jorge Agulló on 11/November/2022
- */
-
-
 @Composable
 fun LoginScreenBeta(navController: NavController) {
 
-    val scope = rememberCoroutineScope()
     val viewModel = hiltViewModel<LoginViewModelBeta>()
-    val showLogin: Boolean by viewModel.showLogin.observeAsState(initial = false)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val showBody: Boolean by viewModel.showLogin.observeAsState(initial = false)
     val newAccount: Boolean by viewModel.showNewAccount.observeAsState(initial = false)
-    val autoLogin: Boolean by viewModel.autologin.observeAsState(initial = false)
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
+
     val screenHeightMid = LocalConfiguration.current.screenHeightDp / 2
     val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 5) * 4
     val height by newAccount.upDownIntegerAnimated(screenHeightTwoThird, screenHeightMid)
 
-    Background(pexelsImage) {
-        scope.launch {
-            delay(2000)
-            if (!autoLogin) viewModel.showLogin() else {
-                navigationTo(navController)
-            }
-        }
-    }
+    if (isLoading) CircularIndicatorCustom(stringResource(R.string.loading_loading))
+    if (showBody) Body(viewModel, navController, height.absoluteValue.dp, newAccount, pexelsImage)
 
-
-    if (!showLogin) {
-        CircularIndicatorCustom(stringResource(R.string.loading_loading))
-    } else {
-        Body(viewModel, height.absoluteValue.dp, newAccount, pexelsImage)
-    }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
+fun Background(
+    pexelsImage: MediaModel,
+    onLoadImage: () -> Unit
+) {
     var showInfo by remember { mutableStateOf(value = false) }
     var isSuccess by remember { mutableStateOf(value = false) }
     var counter by remember { mutableStateOf(value = 0) }
     val scope = rememberCoroutineScope()
+/*    var error by remember { mutableStateOf(value = false) }
+
+    var painterError: Painter = painterResource(R.drawable.notes_512x512)
+    if (error) painterError = painterResource(R.drawable.pexels_polina_kovaleva_5717421)
+*/
 
     scope.launch {
-        while (counter < 5 || !isSuccess) {
-            delay(1000)
+        delay(5000)
+        //error = true
+        while (counter < 5 && !isSuccess) {
             counter += 1
+            delay(1000)
+            Log.d("LOADING", "Recargando imagen")
         }
     }
 
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+
         AsyncImage(
             model = pexelsImage.image,
             contentDescription = stringResource(R.string.pexels_courtesy),
             contentScale = ContentScale.Crop,
-            error = painterResource(R.drawable.pexels_polina_kovaleva_5717421),
+            //error = painterError,
             onSuccess = { isSuccess = true }
         )
 
@@ -112,41 +110,12 @@ fun Background(pexelsImage: MediaModel, onLoadImage: () -> Unit) {
     }
 }
 
-@Composable
-private fun Head(text1: String, text2: String, onClick: () -> Unit) {
-    var click by remember { mutableStateOf(value = false) }
-    val colorText by click.contentColorLabelAsStateAnimation {
-        onClick()
-        click = false
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.padding(top = 4.dp),
-            text = text1,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
-            text = text2,
-            style = MaterialTheme.typography.labelSmall.copy(
-                textDecoration = TextDecoration.Underline
-            ),
-            color = colorText
-        )
-    }
-}
-
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Body(
     viewModel: LoginViewModelBeta,
+    navController: NavController,
     height: Dp,
     newAccount: Boolean,
     pexelsImage: MediaModel
@@ -157,6 +126,7 @@ private fun Body(
     val newAccountModel by viewModel.newAccountModel.observeAsState(NewAccountModel.newAccountModel)
     val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewAccountModel.errorNewAccountModel)
 
+    val autoLogin: Boolean by viewModel.autologin.observeAsState(initial = false)
 
     val scope = rememberCoroutineScope()
     val sheetState = rememberBottomSheetState(
@@ -237,17 +207,25 @@ private fun Body(
                 }
 
                 var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
-                if (onGo) {
+                if (onGo || autoLogin) {
                     focusManager.clearFocus()
                     scope.launch {
                         if (!newAccount) {
-                            viewModel.onLoginDataSend(loginModel).also {
-                                if (it) showSnackBarErrors = true
-                                else {
-                                    sheetState.collapse()
-                                    withContext(Dispatchers.Default) {
-                                        delay(500)
-                                        /** TODO navigation **/
+                            if (autoLogin) {
+                                sheetState.collapse()
+                                withContext(Dispatchers.Main) {
+                                    delay(500)
+                                    navigationTo(navController)
+                                }
+                            } else {
+                                viewModel.onLoginDataSend(loginModel).also {
+                                    if (it) showSnackBarErrors = true
+                                    else {
+                                        sheetState.collapse()
+                                        withContext(Dispatchers.Main) {
+                                            delay(500)
+                                            navigationTo(navController)
+                                        }
                                     }
                                 }
                             }
@@ -258,7 +236,7 @@ private fun Body(
                                     sheetState.collapse()
                                     withContext(Dispatchers.Default) {
                                         delay(500)
-                                        /** TODO navigation **/
+                                        viewModel.showNewAccount()
                                     }
                                 }
                             }
@@ -277,12 +255,44 @@ private fun Body(
         }
     ) {
         Background(pexelsImage) {
-            /*scope.launch {
-                delay(1000)
-            }*/
+
         }
     }
 
+}
+
+@Composable
+private fun Head(
+    text1: String,
+    text2: String,
+    onClick: () -> Unit
+) {
+    var click by remember { mutableStateOf(value = false) }
+    val colorText by click.contentColorLabelAsStateAnimation {
+        onClick()
+        click = false
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = text1,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            modifier = Modifier.padding(top = 4.dp).clickable { click = true },
+            text = text2,
+            style = MaterialTheme.typography.labelSmall.copy(
+                textDecoration = TextDecoration.Underline
+            ),
+            color = colorText
+        )
+    }
 }
 
 @Composable
