@@ -23,6 +23,7 @@
     <string name="you_sure_eliminate_task">¿Está seguro de que quiere eliminar la tarea?</string>
     <string name="unknown">Desconocido</string>
     <string name="loading_login">…iniciando sesión</string>
+    <string name="auto_login">Inicio automático…</string>
     <string name="loading_loading">…cargando</string>
     <string name="error_email_already_exists">Error, ya existe una cuenta con la dirección de correo electrónico introducida.</string>
     <string name="login">Inicio de sesión</string>

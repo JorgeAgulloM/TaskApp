@@ -23,6 +23,7 @@
     <string name="you_sure_eliminate_task">Are you sure you want to eliminate the task?</string>
     <string name="unknown">Unknown</string>
     <string name="loading_login">…login</string>
+    <string name="auto_login">Auto login…</string>
     <string name="loading_loading">…loading</string>
     <string name="error_email_already_exists">Error, an account already exists with the entered email address.</string>
     <string name="login">Login</string>
