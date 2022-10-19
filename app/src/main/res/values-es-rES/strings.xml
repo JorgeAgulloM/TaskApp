@@ -121,5 +121,6 @@
     <string name="author">"\Autor: "\</string>
     <string name="click_to_view">Click para ver la imagen</string>
     <string name="text_create_at">"\Creado en "\</string>
+    <string name="have_you_account">"\¿Ya tienes cuenta? "\</string>
 
 </resources>
