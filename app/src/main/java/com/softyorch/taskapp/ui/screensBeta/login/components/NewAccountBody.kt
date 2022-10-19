@@ -4,6 +4,7 @@
 
 package com.softyorch.taskapp.ui.screensBeta.login.components
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
@@ -12,22 +13,21 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountMo
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 
 @Composable
-fun newAccountBody(
+fun NewAccountBody(
     isBlocked: Boolean,
     autoLogin: Boolean,
     viewModel: LoginViewModelBeta,
     newAccountModel: NewAccountModel,
     errorsNewAccount: ErrorNewAccountModel,
-    onGo: Boolean
-): Boolean {
-    var onGo1 = onGo
+    onClick: () -> Unit
+) {
     Head("¿Ya tienes cuenta? ", "Inicia sesión", (isBlocked || autoLogin)) {
         viewModel.showNewAccount()
     }
     ContentNewAccount(
         newAccountModel,
         errorsNewAccount,
-        onGo = { onGo1 = it },
+        onGo = { onClick() },
         viewModel::onNewAccountInputChange
     )
     Footer(
@@ -35,7 +35,7 @@ fun newAccountBody(
         enable = errorsNewAccount.isActivatedButton,
         error = errorsNewAccount.error
     ) {
-        onGo1 = true
+        Log.d("LOGIN", "newAccountBody.()Footer")
+        onClick()
     }
-    return onGo1
 }

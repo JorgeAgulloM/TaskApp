@@ -64,10 +64,12 @@ class LoginViewModelBeta @Inject constructor(
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
     init {
-        _isLoading.value = true
         loadImage()
         _showBody.value = true
-        viewModelScope.launch { autoLogin() }
+        viewModelScope.launch {
+            _isLoading.postValue(true)
+            autoLogin()
+        }
     }
 
     fun showNewAccount() {
@@ -75,26 +77,40 @@ class LoginViewModelBeta @Inject constructor(
         _showNewAccount.value = _showNewAccount.value != true
     }
 
-    private suspend fun autoLogin() =
-        getDataDs()?.let { data ->
-            data.flowOn(Dispatchers.IO).collect { user ->
-                if (user.rememberMe) {
-                    signIn(user.mapToLoginModel())?.let { userLogin ->
-                        if (isInTime(userLogin)) {
-                            updateDatastore(userLogin)
-                            delay(3000)
-                            _autoLogin.postValue(true)
-                            _isLoading.postValue(false)
-                        } else _isLoading.postValue(false)
-                    }
-                } else {
-                    _isLoading.postValue(false)
-                }
+    private fun loadImage() = viewModelScope.launch {
+        _isLoading.value = true
+        pexelsUseCases.getImage.invoke().let { data ->
+            data.mapToMediaModel().let { media ->
+                _pexelsImage.value = media
+                _isLoading.postValue(false)
             }
-        }.let {
-            _isLoading.postValue(false)
         }
+    }
 
+
+    /** AutoLogin **/
+
+    private suspend fun autoLogin() =
+        getDataDs().let { data ->
+            if (data != null) {
+                data.flowOn(Dispatchers.IO).collect { user ->
+                    if (user.rememberMe) {
+                        signIn(user.mapToLoginModel())?.let { userLogin ->
+                            if (isInTime(userLogin)) {
+                                updateDatastore(userLogin)
+                                delay(3000)
+                                _autoLogin.postValue(true)
+                                _isLoading.postValue(false)
+                            } else _isLoading.postValue(false)
+                        }
+                    } else {
+                        _isLoading.postValue(false)
+                    }
+                }
+            } else {
+                _isLoading.postValue(false)
+            }
+        }
 
     private fun isInTime(userDataEntity: UserDataEntity): Boolean {
         val timeWeekInMillis =
@@ -104,14 +120,6 @@ class LoginViewModelBeta @Inject constructor(
             timeWeekInMillis.compareTo(dif).let { if (it == 1) return true }
         }
         return false
-    }
-
-    private fun loadImage() = viewModelScope.launch {
-        pexelsUseCases.getImage.invoke().let { data ->
-            data.mapToMediaModel().let { media ->
-                _pexelsImage.value = media
-            }
-        }
     }
 
 
@@ -220,7 +228,7 @@ class LoginViewModelBeta @Inject constructor(
         }
     }
 
-    /** Data */
+    /** Data **/
 
     private fun getDataDs() = datastore.getData.invoke()
 
@@ -235,6 +243,5 @@ class LoginViewModelBeta @Inject constructor(
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)
-
 
 }

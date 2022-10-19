@@ -16,7 +16,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 fun ContentNewAccount(
     newAccountModel: NewAccountModel,
     errors: ErrorNewAccountModel,
-    onGo: (Boolean) -> Unit,
+    onGo: () -> Unit,
     onNewAccountDataChange: (NewAccountModel) -> Unit
 ) {
 
@@ -46,14 +46,14 @@ fun ContentNewAccount(
             newAccountModel.userPass,
             newAccount = true,
             errors.pass,
-            keyboardActions = KeyboardActions(onGo = { onGo(true) })
+            keyboardActions = KeyboardActions(onGo = { onGo() })
         ) {
             onNewAccountDataChange(newAccountModel.copy(userPass = it.trim()))
         }
         TextFieldPassRepeat(
             newAccountModel.userPassRepeat,
             errors.passRepeat,
-            keyboardActions = KeyboardActions(onGo = { onGo(true) })
+            keyboardActions = KeyboardActions(onGo = { onGo() })
         ) {
             onNewAccountDataChange(newAccountModel.copy(userPassRepeat = it.trim()))
         }

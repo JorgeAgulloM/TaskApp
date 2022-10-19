@@ -5,13 +5,11 @@
 package com.softyorch.taskapp.ui.screensBeta.login.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusManager
 import androidx.navigation.NavController
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
@@ -25,7 +23,6 @@ import kotlinx.coroutines.*
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OnGoOrError(
-    onGo: Boolean,
     autoLogin: Boolean,
     focusManager: FocusManager,
     scope: CoroutineScope,
@@ -35,21 +32,25 @@ fun OnGoOrError(
     viewModel: LoginViewModelBeta,
     loginModel: LoginModel,
     newAccountModel: NewAccountModel,
-    errorLoginModel: ErrorLoginModel
+    errorLoginModel: ErrorLoginModel,
+    onClick: () -> Unit
 ) {
-    var onGo1 = onGo
+    var onGo by remember { mutableStateOf(value = false) }
     var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
-    if (onGo1 || autoLogin) {
+    if (!showSnackBarErrors && !onGo) {
+        Log.d("LOGIN", "OnGoOrError.!showSnack")
         focusManager.clearFocus()
         scope.launch {
             if (!newAccount) {
                 if (autoLogin) {
+                    onGo = true
                     sheetState.collapse()
                     withContext(Dispatchers.Main) {
                         delay(2000)
                         navigateTo(navController)
                     }
                 } else {
+                    onGo = true
                     viewModel.onLoginDataSend(loginModel).also {
                         if (it) showSnackBarErrors = true
                         else {
@@ -62,6 +63,7 @@ fun OnGoOrError(
                     }
                 }
             } else {
+                onGo = true
                 viewModel.onNewAccountDataSend(newAccountModel).also {
                     if (it) showSnackBarErrors = true
                     else {
@@ -74,14 +76,13 @@ fun OnGoOrError(
                 }
             }
             delay(500)
-            onGo1 = false
         }
-    }
-
-    if (!errorLoginModel.error) showSnackBarErrors = false
-
-    if (showSnackBarErrors) SnackBarErrorLoginNewAccount(newAccount) {
-        showSnackBarErrors = false
+    } else if (showSnackBarErrors) {
+        if (!errorLoginModel.error) showSnackBarErrors = false
+        SnackBarErrorLoginNewAccount(newAccount) {
+            onClick()
+            showSnackBarErrors = false
+        }
     }
 }
 

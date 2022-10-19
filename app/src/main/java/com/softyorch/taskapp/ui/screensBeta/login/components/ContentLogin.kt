@@ -13,7 +13,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 fun ContentLogin(
     loginModel: LoginModel,
     errorLoginModel: ErrorLoginModel,
-    onGo: (Boolean) -> Unit,
+    onGo: () -> Unit,
     onLoginInputChange: (LoginModel) -> Unit
 ) {
 
@@ -37,7 +37,7 @@ fun ContentLogin(
             pass = loginModel.userPass,
             error = errorLoginModel.pass,
             errorAccount = errorLoginModel.errorResultSignIn,
-            keyboardActions = KeyboardActions(onGo = { onGo(true) })
+            keyboardActions = KeyboardActions(onGo = { onGo() })
         ) {
             onLoginInputChange(loginModel.copy(userPass = it.trim()))
         }

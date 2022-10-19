@@ -5,7 +5,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,16 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.screensBeta.login.components.*
@@ -58,45 +54,6 @@ fun LoginScreenBeta(navController: NavController) {
     if (isLoading)
         CircularIndicatorCustom(stringResource(R.string.loading_loading))
 
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun Background(
-    pexelsImage: MediaModel,
-    onLoadImage: () -> Unit
-) {
-    var showInfo by remember { mutableStateOf(value = false) }
-    var isSuccess by remember { mutableStateOf(value = false) }
-    var counter by remember { mutableStateOf(value = 0) }
-    val scope = rememberCoroutineScope()
-
-    scope.launch {
-        delay(5000)
-        while (counter < 5 && !isSuccess) {
-            counter += 1
-            delay(1000)
-            Log.d("LOADING", "Recargando imagen")
-        }
-    }
-
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-
-        AsyncImage(
-            model = pexelsImage.image,
-            contentDescription = stringResource(R.string.pexels_courtesy),
-            contentScale = ContentScale.Crop,
-            error = painterResource(R.drawable.backgroudempty),
-            onSuccess = { isSuccess = true }
-        )
-
-        if (isSuccess || counter >= 5) {
-            onLoadImage()
-            showInfo = true
-        }
-
-        if (showInfo) BodyScreen(pexelsImage)
-    }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -160,25 +117,33 @@ private fun Body(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                onGo = if (!newAccount) {
-                    loginBody(
-                        isBlocked, autoLogin, viewModel, loginModel, errorLoginModel, onGo
-                    )
+                if (!newAccount) {
+                    LoginBody(
+                        isBlocked, autoLogin, viewModel, loginModel, errorLoginModel
+                    ){
+                        onGo = true
+                    }
                 } else {
-                    newAccountBody(
-                        isBlocked, autoLogin, viewModel, newAccountModel, errorsNewAccount, onGo
-                    )
+                    NewAccountBody(
+                        isBlocked, autoLogin, viewModel, newAccountModel, errorsNewAccount
+                    ){
+                        onGo = true
+                    }
                 }
 
-                OnGoOrError(
-                    onGo, autoLogin, focusManager, scope, newAccount, sheetState, navController,
-                    viewModel, loginModel, newAccountModel, errorLoginModel
-                )
+                if (onGo || autoLogin) {
+                    OnGoOrError(
+                        autoLogin, focusManager, scope, newAccount, sheetState, navController,
+                        viewModel, loginModel, newAccountModel, errorLoginModel
+                    ){
+                        onGo = false
+                    }
+                }
             }
         }
     ) {
         if (autoLogin) CircularIndicatorCustom("AutoLogin...")
-        Background(pexelsImage) {}
+        Background(pexelsImage)
     }
 
 }
