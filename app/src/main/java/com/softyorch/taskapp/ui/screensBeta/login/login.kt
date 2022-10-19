@@ -44,15 +44,10 @@ fun LoginScreenBeta(navController: NavController) {
 
     val viewModel = hiltViewModel<LoginViewModelBeta>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    Log.d("LOGIN", "isLoading -> $isLoading")
     val showBody: Boolean by viewModel.showBody.observeAsState(initial = false)
-    Log.d("LOGIN", "showBody -> $showBody")
     val newAccount: Boolean by viewModel.showNewAccount.observeAsState(initial = false)
-    Log.d("LOGIN", "newAccount -> $newAccount")
     val autoLogin: Boolean by viewModel.autologin.observeAsState(initial = false)
-    Log.d("LOGIN", "autoLogin -> $autoLogin")
     val loginSuccess: Boolean by viewModel.loginSuccess.observeAsState(initial = false)
-    Log.d("LOGIN", "loginSuccess -> $loginSuccess")
 
     val screenHeightMid = LocalConfiguration.current.screenHeightDp / 2
     val screenHeightTwoThird = (LocalConfiguration.current.screenHeightDp / 5) * 4
@@ -153,7 +148,7 @@ fun LoginScreenBeta(navController: NavController) {
                                     sheetState.collapse()
                                     withContext(Dispatchers.Main) {
                                         focusManager.clearFocus()
-                                        delay(500)
+                                        delay(2000)
                                         navigateTo(navController)
                                     }
                                 }

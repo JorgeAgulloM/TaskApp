@@ -12,7 +12,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 
 @Composable
 fun LoginBody(
-    isBlocked: Boolean,
+    isLoading: Boolean,
     autoLogin: Boolean,
     loginModel: LoginModel,
     errorLoginModel: ErrorLoginModel,
@@ -23,7 +23,7 @@ fun LoginBody(
     Head(
         stringResource(R.string.not_have_account),
         stringResource(R.string.create_account),
-        (isBlocked || autoLogin)
+        (isLoading || autoLogin)
     ) {
         showNewAccount()
     }
@@ -35,7 +35,7 @@ fun LoginBody(
     )
     Footer(
         text = stringResource(R.string.login),
-        enable = errorLoginModel.isActivatedButton,
+        enable = errorLoginModel.isActivatedButton || isLoading,
         error = errorLoginModel.error
     ) {
         onClick()

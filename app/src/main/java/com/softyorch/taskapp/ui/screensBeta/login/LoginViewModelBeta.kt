@@ -56,7 +56,7 @@ class LoginViewModelBeta @Inject constructor(
     private val _errorsLogin = MutableLiveData<ErrorLoginModel>()
     val errorsLogin: LiveData<ErrorLoginModel> = _errorsLogin
 
-    private val _foundError = MutableLiveData<Boolean>()
+    private val _foundInputError = MutableLiveData<Boolean>()
 
     private val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
     val newAccountModel: LiveData<NewAccountModel> = newAccountModelInterface
@@ -133,7 +133,7 @@ class LoginViewModelBeta @Inject constructor(
 
     fun onLoginInputChange(loginModel: LoginModel) {
         _loginModel.value = loginModel
-        if (_foundError.value == true) {
+        if (_foundInputError.value == true) {
             _errorsLogin.postValue(withOutErrorsLogin(loginModel))
         } else _errorsLogin.postValue(
             ErrorLoginModel(isActivatedButton = isActivatedButton(loginModel))
@@ -145,19 +145,17 @@ class LoginViewModelBeta @Inject constructor(
         withOutErrorsLogin(loginModel).let { errors ->
             if (!errors.error) {
                 loginAndUpdateData(loginModel).also {
-                    errors.email = !it
-                    errors.pass = !it
                     errors.errorResultSignIn = !it
                     errors.error = !it
                     _errorsLogin.postValue(errors)
-                    _foundError.postValue(false)
-
+                    _foundInputError.postValue(false)
+                    delay(500)
                     _isLoading.value = false
                     return errors.error
                 }
             } else {
                 _errorsLogin.postValue(errors)
-                if (_foundError.value != true) _foundError.postValue(true)
+                if (_foundInputError.value != true) _foundInputError.postValue(true)
                 _isLoading.value = false
                 return errors.error
             }
@@ -173,14 +171,14 @@ class LoginViewModelBeta @Inject constructor(
                 updateUser(user)
                 updateDatastore(user)
                 return true
-            } else {
+            } /*else {
                 _errorsLogin.postValue(
                     ErrorLoginModel(
                         errorResultSignIn = true,
                         error = true
                     )
                 )
-            }
+            }*/
         }
         return false
     }

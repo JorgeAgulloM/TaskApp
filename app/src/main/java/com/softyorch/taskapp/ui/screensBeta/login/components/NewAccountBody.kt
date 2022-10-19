@@ -13,7 +13,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
 
 @Composable
 fun NewAccountBody(
-    isBlocked: Boolean,
+    isLoading: Boolean,
     autoLogin: Boolean,
     newAccountModel: NewAccountModel,
     errorsNewAccount: ErrorNewAccountModel,
@@ -21,7 +21,7 @@ fun NewAccountBody(
     onNewAccountDataChange: (NewAccountModel) -> Unit,
     onClick: () -> Unit
 ) {
-    Head("¿Ya tienes cuenta? ", "Inicia sesión", (isBlocked || autoLogin)) {
+    Head("¿Ya tienes cuenta? ", "Inicia sesión", (isLoading || autoLogin)) {
         hideNewAccount()
     }
     ContentNewAccount(
@@ -32,7 +32,7 @@ fun NewAccountBody(
     )
     Footer(
         text = stringResource(R.string.new_account),
-        enable = errorsNewAccount.isActivatedButton,
+        enable = errorsNewAccount.isActivatedButton || isLoading,
         error = errorsNewAccount.error
     ) {
         Log.d("LOGIN", "newAccountBody.()Footer")
