@@ -26,7 +26,8 @@
     <string name="loading_loading">…loading</string>
     <string name="error_email_already_exists">Error, an account already exists with the entered email address.</string>
     <string name="login">Login</string>
-    <string name="create_account">Create Account</string>
+    <string name="create_account">Create new account</string>
+    <string name="not_have_account">"\No account? "\</string>
     <string name="new_account">New Account</string>
     <string name="go_to_login">Go to Login</string>
     <string name="remember_me">Remember Me</string>
@@ -117,8 +118,8 @@
     <string name="content_random_img">Pexels.com random image</string>
     <string name="pexels_web">https://www.pexels.com/</string>
     <string name="pexels_courtesy">Courtesy of Pexels.com image</string>
-    <string name="author">\"Author: \"</string>
+    <string name="author">"\ Author: "\</string>
     <string name="click_to_view">Click to view image</string>
-    <string name="text_create_at">\"Created at \"</string>
+    <string name="text_create_at">"\ Created at "\</string>
 
 </resources>

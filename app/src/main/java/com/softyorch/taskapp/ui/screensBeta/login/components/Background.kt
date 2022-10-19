@@ -5,7 +5,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -40,7 +39,6 @@ fun Background(
         while (counter < 5 && !isSuccess) {
             counter += 1
             delay(1000)
-            Log.d("LOADING", "Recargando imagen")
         }
     }
 

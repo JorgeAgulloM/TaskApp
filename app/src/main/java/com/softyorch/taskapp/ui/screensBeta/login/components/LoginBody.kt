@@ -4,7 +4,6 @@
 
 package com.softyorch.taskapp.ui.screensBeta.login.components
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
@@ -21,7 +20,11 @@ fun LoginBody(
     errorLoginModel: ErrorLoginModel,
     onClick: () -> Unit
 ) {
-    Head("¿No tienes cuenta? ", "Crea una nueva", (isBlocked || autoLogin)) {
+    Head(
+        stringResource(R.string.not_have_account),
+        stringResource(R.string.create_account),
+        (isBlocked || autoLogin)
+    ) {
         viewModel.showNewAccount()
     }
     ContentLogin(
@@ -35,7 +38,6 @@ fun LoginBody(
         enable = errorLoginModel.isActivatedButton,
         error = errorLoginModel.error
     ) {
-        Log.d("LOGIN", "LoginBody.()Footer")
         onClick()
     }
 }

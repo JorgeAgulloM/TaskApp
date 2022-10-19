@@ -5,7 +5,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.*
@@ -38,7 +37,6 @@ fun OnGoOrError(
     var onGo by remember { mutableStateOf(value = false) }
     var showSnackBarErrors by rememberSaveable { mutableStateOf(value = false) }
     if (!showSnackBarErrors && !onGo) {
-        Log.d("LOGIN", "OnGoOrError.!showSnack")
         focusManager.clearFocus()
         scope.launch {
             if (!newAccount) {
