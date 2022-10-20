@@ -85,7 +85,7 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
 
     private fun sendUpdateData(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
         updateLocalTaskList(taskModelUi)
-        delay(500)
+        delay(1000)
         useCases.updateTask.invoke(taskModelUi.mapToTaskModelUseCase())
     }
 

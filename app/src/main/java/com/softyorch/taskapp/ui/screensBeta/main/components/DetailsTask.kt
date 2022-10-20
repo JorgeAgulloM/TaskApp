@@ -27,6 +27,8 @@ import com.softyorch.taskapp.ui.screensBeta.main.ShowTaskDetails
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.*
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -36,7 +38,7 @@ fun DetailsTask(
     lineHeight: Int,
     task: TaskModelUi,
     isOpen: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (TaskModelUi) -> Unit
 ) {
     val scrollString = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -69,7 +71,12 @@ fun DetailsTask(
         Checkbox(
             checked = task.checkState,
             onCheckedChange = {
-                onCheckedChange(it)
+                onCheckedChange(
+                    task.copy(
+                        checkState = it,
+                        finishDate = if (it) Date.from(Instant.now()) else null
+                    )
+                )
             }
         )
         Text(

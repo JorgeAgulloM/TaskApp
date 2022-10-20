@@ -22,7 +22,7 @@ import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
 fun CardTaskCustom(
     task: TaskModelUi,
     isVisible: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (TaskModelUi) -> Unit
 ) {
 
     var isOpen by remember { mutableStateOf(false) }

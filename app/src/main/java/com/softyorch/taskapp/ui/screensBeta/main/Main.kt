@@ -37,8 +37,6 @@ import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +90,6 @@ fun MainScreenBeta(navController: NavController) {
     ) {
         Body(taskList, isVisible, it) { task ->
             scope.launch {
-                //delay(500)
                 viewModel.updateTask(task)
             }
         }
@@ -172,12 +169,7 @@ fun BottomSheetCustom(
                 ) {
                     items(taskList) { task ->
                         CardTaskCustom(task, isVisible) {
-                            onCheckedChange(
-                                task.copy(
-                                    checkState = it,
-                                    finishDate = if (it) Date.from(Instant.now()) else null
-                                )
-                            )
+                            onCheckedChange(it)
                         }
                     }
                 }
