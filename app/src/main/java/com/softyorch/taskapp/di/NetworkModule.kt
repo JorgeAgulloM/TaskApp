@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.di
 
+import com.softyorch.taskapp.data.network.pexels.PexelsClient
 import com.softyorch.taskapp.data.repository.pexels.PexelsRepository
 import com.softyorch.taskapp.domain.pexelUseCase.GetImage
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
@@ -21,6 +22,11 @@ object NetworkModule {
         .baseUrl("https://api.pexels.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
+    @Singleton
+    @Provides
+    fun provideGetMediaList(retrofit: Retrofit): PexelsClient =
+        retrofit.create(PexelsClient::class.java)
 
     @Singleton
     @Provides
