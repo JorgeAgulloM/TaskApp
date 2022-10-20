@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.ui.components.ContentStickyHeader
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
@@ -35,6 +36,7 @@ import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigation
 import com.softyorch.taskapp.ui.screensBeta.main.components.CardTaskCustom
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.launch
 
@@ -124,6 +126,7 @@ fun Body(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun BottomSheetCustom(
@@ -162,38 +165,47 @@ fun BottomSheetCustom(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
-                LazyColumn(
-                    modifier = Modifier,
-                    state = lazyState,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    items(taskList) { task ->
-                        CardTaskCustom(task, isVisible) {
-                            onCheckedChange(it)
+                if (taskList.isNotEmpty()) {
+                    val taskMap: Map<String, List<TaskModelUi>> =
+                        taskList.groupBy { it.entryDate.toStringFormatDate() }
+                    LazyColumn(
+                        modifier = Modifier,
+                        state = lazyState,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        taskMap.forEach { (published, taskEntityList) ->
+                            stickyHeader {
+                                ContentStickyHeader(published = published)
+                            }
+                            items(taskList) { task ->
+                                CardTaskCustom(task, isVisible) {
+                                    onCheckedChange(it)
+                                }
+                            }
                         }
+                        item { Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {} }
                     }
-                }
-                if (taskList.isEmpty()) Text(text = stringResource(R.string.add_new_task))
-                Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {}
+
+                } else Text(text = stringResource(R.string.add_new_task))
             }
         }
     }
 }
 
-@Composable
-fun ShowTaskDetails(task: TaskModelUi) {
-    ShowTask(
-        author = task.author,
-        date = task.entryDate.toStringFormatted(),
-        completedDate = task.finishDate?.toStringFormatted()
-            ?: emptyString,
-        paddingStart = 8.dp
-    )
-}
+    @Composable
+    fun ShowTaskDetails(task: TaskModelUi) {
+        ShowTask(
+            author = task.author,
+            date = task.entryDate.toStringFormatted(),
+            completedDate = task.finishDate?.toStringFormatted()
+                ?: emptyString,
+            paddingStart = 8.dp
+        )
+    }
 
-data class BottomNavItem(
-    var indexId: Int,
-    val name: String,
-    val icon: ImageVector,
-    var badgeCount: Int = 0
-)
+    data class BottomNavItem(
+        var indexId: Int,
+        val name: String,
+        val icon: ImageVector,
+        var badgeCount: Int = 0
+    )

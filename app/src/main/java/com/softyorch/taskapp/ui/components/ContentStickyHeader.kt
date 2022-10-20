@@ -21,8 +21,8 @@ import com.softyorch.taskapp.utils.ELEVATION_DP
 @Composable
 fun ContentStickyHeader(published: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 0.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
     ) {
         Text(
             text = stringResource(R.string.text_create_at) + published,
@@ -31,13 +31,13 @@ fun ContentStickyHeader(published: String) {
                 .padding(horizontal = 8.dp)
                 .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
                 .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = MaterialTheme.shapes.large
                 ),
             style = MaterialTheme.typography.labelSmall
-                .copy(color = MaterialTheme.colorScheme.secondary),
+                .copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
             textAlign = TextAlign.Center
         )
     }
-    Divider(modifier = Modifier.padding(start = 48.dp,end = 16.dp), thickness = 0.5.dp)
+    Divider(modifier = Modifier.padding(start = 48.dp,end = 16.dp), thickness = 1.5.dp)
 }
