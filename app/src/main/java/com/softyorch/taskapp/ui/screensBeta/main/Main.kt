@@ -36,6 +36,7 @@ import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
+import com.softyorch.taskapp.ui.screensBeta.main.components.CardTaskCustom
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
@@ -172,7 +173,7 @@ fun BottomSheetCustom(
                     verticalArrangement = Arrangement.Top
                 ) {
                     items(taskList) { task ->
-                        CardCustom(task, isVisible) {
+                        CardTaskCustom(task, isVisible) {
                             onCheckedChange(
                                 task.copy(
                                     checkState = it,
