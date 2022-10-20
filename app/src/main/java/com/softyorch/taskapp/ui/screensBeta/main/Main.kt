@@ -6,13 +6,12 @@ package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -25,13 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.components.CheckCustom
-import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
@@ -40,7 +36,6 @@ import com.softyorch.taskapp.ui.screensBeta.main.components.CardTaskCustom
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
-import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -158,7 +153,10 @@ fun BottomSheetCustom(
                 .padding(top = paddingValues.calculateTopPadding())
                 .background(
                     brush = sheetBrush,
-                    shape = MaterialTheme.shapes.large
+                    shape = MaterialTheme.shapes.large.copy(
+                        topStart = CornerSize(3.dp),
+                        topEnd = CornerSize(50.dp)
+                    )
                 )
                 .fillMaxWidth()
                 .fillMaxHeight()
@@ -191,100 +189,7 @@ fun BottomSheetCustom(
 }
 
 @Composable
-fun CardCustom(
-    task: TaskModelUi,
-    isVisible: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    var isOpen by remember { mutableStateOf(false) }
-    if (!isVisible) isOpen = false
-    val height by isOpen.upDownIntegerAnimated(300, 65)
-
-    ElevatedCard(
-        modifier = Modifier
-            .padding(4.dp)
-            .fillMaxWidth()
-            .height(height.dp),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = ELEVATION_DP
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    isOpen = !isOpen
-                },
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            DetailsTask(task, isOpen) {
-                isOpen = false
-                onCheckedChange(it)
-            }
-        }
-    }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailsTask(
-    task: TaskModelUi,
-    isOpen: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    val scrollString = rememberScrollState()
-    val scope = rememberCoroutineScope()
-    if (!isOpen) scope.launch {
-        scrollString.animateScrollTo(
-            value = 0,
-            animationSpec = tween(400, 0, LinearOutSlowInEasing)
-        )
-    }
-
-    AnimatedVisibility(
-        visible = isOpen,
-        enter = SHEET_TRANSITION_ENTER,
-        exit = SHEET_TRANSITION_EXIT
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ShowTaskDetails(task)
-            DividerCustom(16.dp, 4.dp)
-        }
-    }
-    CheckCustom(
-        checked = task.checkState,
-        onCheckedChange = {
-            onCheckedChange(it)
-        },
-        enabled = true,
-        animated = true,
-        text = task.title,
-    ) {}
-    Column(
-        modifier = Modifier
-            .padding(start = 4.dp, bottom = 4.dp)
-            .verticalScroll(scrollString, enabled = isOpen)
-    ) {
-        Text(
-            text = task.description,
-            overflow = if (isOpen) TextOverflow.Visible else TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(4.dp)
-        )
-    }
-}
-
-@Composable
-private fun ShowTaskDetails(task: TaskModelUi) {
+fun ShowTaskDetails(task: TaskModelUi) {
     ShowTask(
         author = task.author,
         date = task.entryDate.toStringFormatted(),
