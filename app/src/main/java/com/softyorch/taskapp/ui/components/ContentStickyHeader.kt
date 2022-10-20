@@ -39,5 +39,5 @@ fun ContentStickyHeader(published: String) {
             textAlign = TextAlign.Center
         )
     }
-    Divider(modifier = Modifier.padding(start = 48.dp,end = 16.dp), thickness = 1.5.dp)
+    Divider(modifier = Modifier.padding(start = 16.dp,end = 48.dp), thickness = 1.5.dp)
 }

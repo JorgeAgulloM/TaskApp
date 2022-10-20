@@ -4,7 +4,6 @@
 
 package com.softyorch.taskapp.ui.screensBeta.main.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -14,9 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.models.TaskModelUi
-import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
-import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
+import com.softyorch.taskapp.utils.*
 
 @Composable
 fun CardTaskCustom(
@@ -36,41 +33,37 @@ fun CardTaskCustom(
     isMinCollapse = task.description.length / maxTextLength > lines
 
     if (!isVisible) isOpen = false
-    AnimatedVisibility(
-        visible = !isOpen,
-        enter = SHEET_TRANSITION_ENTER,
-        exit = SHEET_TRANSITION_EXIT
+
+    ElevatedCard(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.large.copy(
+            topStart = CornerSize(3.dp),
+            topEnd = CornerSize(50.dp),
+            bottomStart = CornerSize(15.dp),
+            bottomEnd = CornerSize(15.dp)
+        ),
+        /*colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),*/
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = ELEVATION_DP
+        )
     ) {
-        ElevatedCard(
+        Column(
             modifier = Modifier
-                .padding(4.dp)
-                .fillMaxWidth(),
-            shape = MaterialTheme.shapes.large.copy(
-                topStart = CornerSize(3.dp),
-                topEnd = CornerSize(50.dp),
-                bottomStart = CornerSize(15.dp),
-                bottomEnd = CornerSize(15.dp)
-            ),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ),
-            elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = ELEVATION_DP
-            )
+                .clickable {
+                    isOpen = !isOpen
+                },
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
         ) {
-            Column(
-                modifier = Modifier
-                    .clickable {
-                        isOpen = !isOpen
-                    },
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start
-            ) {
-                DetailsTask(isMinCollapse, maxTextLength, lineHeight, task, isOpen) {
-                    isOpen = false
-                    onCheckedChange(it)
-                }
+            DetailsTask(isMinCollapse, maxTextLength, lineHeight, task, isOpen) {
+                isOpen = false
+                onCheckedChange(it)
             }
         }
     }
+
 }

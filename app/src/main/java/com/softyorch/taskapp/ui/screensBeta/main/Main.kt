@@ -66,6 +66,7 @@ fun MainScreenBeta(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        modifier = Modifier,
         topBar = {
             SmallTopAppBarCustom(
                 true,
@@ -108,7 +109,7 @@ fun Body(
 
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.onSecondary,
+            MaterialTheme.colorScheme.secondary,
             MaterialTheme.colorScheme.secondaryContainer
         )
     )
@@ -139,7 +140,7 @@ fun BottomSheetCustom(
     val sheetBrush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.onSecondary
+            MaterialTheme.colorScheme.secondary
         )
     )
 
@@ -173,11 +174,13 @@ fun BottomSheetCustom(
                         state = lazyState,
                         verticalArrangement = Arrangement.Top
                     ) {
+
                         taskMap.forEach { (published, taskEntityList) ->
                             stickyHeader {
                                 ContentStickyHeader(published = published)
                             }
-                            items(taskList) { task ->
+
+                            items(taskEntityList) { task ->
                                 CardTaskCustom(task, isVisible) {
                                     onCheckedChange(it)
                                 }
@@ -192,20 +195,20 @@ fun BottomSheetCustom(
     }
 }
 
-    @Composable
-    fun ShowTaskDetails(task: TaskModelUi) {
-        ShowTask(
-            author = task.author,
-            date = task.entryDate.toStringFormatted(),
-            completedDate = task.finishDate?.toStringFormatted()
-                ?: emptyString,
-            paddingStart = 8.dp
-        )
-    }
-
-    data class BottomNavItem(
-        var indexId: Int,
-        val name: String,
-        val icon: ImageVector,
-        var badgeCount: Int = 0
+@Composable
+fun ShowTaskDetails(task: TaskModelUi) {
+    ShowTask(
+        author = task.author,
+        date = task.entryDate.toStringFormatted(),
+        completedDate = task.finishDate?.toStringFormatted()
+            ?: emptyString,
+        paddingStart = 8.dp
     )
+}
+
+data class BottomNavItem(
+    var indexId: Int,
+    val name: String,
+    val icon: ImageVector,
+    var badgeCount: Int = 0
+)

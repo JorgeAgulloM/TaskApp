@@ -86,7 +86,7 @@ fun DetailsTask(
             style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.outline,
                 textDecoration = TextDecoration.LineThrough
-            ) else MaterialTheme.typography.bodyLarge
+            ) else MaterialTheme.typography.titleMedium
         )
     }
 
@@ -97,7 +97,8 @@ fun DetailsTask(
         Text(
             text = textTransform(isOpen, task.description, isMinCollapse, maxTextLength),
             lineHeight = lineHeight.sp,
-            style = MaterialTheme.typography.bodyLarge,
+            style = if (isOpen) MaterialTheme.typography.bodyMedium
+            else MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(4.dp)
         )
     }

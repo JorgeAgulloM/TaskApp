@@ -103,10 +103,16 @@ val SHEET_TRANSITION_EXIT: ExitTransition =
         shrinkTowards = Alignment.Top
     )
 
-val CARD_RIGHT_EXIT: ExitTransition =
+val CARD_RIGHT_ENTER: EnterTransition =
+    expandHorizontally(
+        animationSpec = tween(durationMillis = 500,0, easing = FastOutSlowInEasing),
+        expandFrom = Alignment.End
+    )
+
+val CARD_LEFT_EXIT: ExitTransition =
     shrinkHorizontally(
         animationSpec = tween(durationMillis = 500,0, easing = FastOutSlowInEasing),
-        shrinkTowards = Alignment.End
+        shrinkTowards = Alignment.Start
     )
 
 

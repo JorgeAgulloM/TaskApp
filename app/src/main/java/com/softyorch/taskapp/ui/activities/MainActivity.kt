@@ -5,6 +5,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.pm.PackageManager.*
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
@@ -47,7 +49,14 @@ class MainActivity : ComponentActivity() {
             }
         updateOrRequestPermissions()
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+
         setContent {
+
             val viewModel = hiltViewModel<MainActivityViewModel>()
             //val coroutineScope = rememberCoroutineScope()
             //var imageResult: String? = newImageGallery.observeAsState().value

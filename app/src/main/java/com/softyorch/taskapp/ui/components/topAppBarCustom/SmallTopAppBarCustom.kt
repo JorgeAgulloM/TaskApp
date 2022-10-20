@@ -6,6 +6,7 @@ package com.softyorch.taskapp.ui.components.topAppBarCustom
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -34,7 +35,8 @@ fun SmallTopAppBarCustom(
 
     TopAppBar(
         modifier = Modifier
-            .padding(4.dp)
+            .systemBarsPadding()
+            .padding(horizontal = 4.dp)
             .height(35.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
         backgroundColor = MaterialTheme.colorScheme.background,
