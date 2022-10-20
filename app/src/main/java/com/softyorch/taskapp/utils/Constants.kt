@@ -19,7 +19,7 @@ const val ELEVATION_FLOAT: Float = (ELEVATION).toFloat()
 
 val KEYBOARD_OPTIONS_CUSTOM: KeyboardOptions = KeyboardOptions.Default.copy(
     capitalization = KeyboardCapitalization.Sentences,
-    autoCorrect = true,
+    autoCorrect = false,
     keyboardType = KeyboardType.Text,
     imeAction = ImeAction.Next
 )
