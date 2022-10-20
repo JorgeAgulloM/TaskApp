@@ -20,11 +20,10 @@ fun BodyScreen(pexelsImage: MediaModel) {
     ) {
         val uriHandler = LocalUriHandler.current
 
-        AppTitle()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 40.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 20.dp),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.End
         ) {
@@ -38,5 +37,6 @@ fun BodyScreen(pexelsImage: MediaModel) {
                 uriHandler.openUri(pexelsImage.imageUrl)
             }
         }
+        AppTitle()
     }
 }

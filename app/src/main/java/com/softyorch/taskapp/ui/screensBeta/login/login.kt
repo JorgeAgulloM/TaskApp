@@ -98,7 +98,6 @@ fun LoginScreenBeta(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .safeContentPadding()
                     .height(height.dp)
                     .background(colorGradient),
                 verticalArrangement = Arrangement.Top,
