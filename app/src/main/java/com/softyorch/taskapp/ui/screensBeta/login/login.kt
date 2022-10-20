@@ -34,6 +34,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountMo
 import com.softyorch.taskapp.ui.screensBeta.login.model.LoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.MediaModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.*
 
@@ -87,6 +88,16 @@ fun LoginScreenBeta(navController: NavController) {
     var onGo by remember { mutableStateOf(value = false) }
     val focusManager = LocalFocusManager.current
 
+    if (autoLogin && !onGo) scope.launch {
+        onGo = true
+        sheetState.collapse()
+        withContext(Dispatchers.Main) {
+            focusManager.clearFocus()
+            delay(3000)
+            navigateTo(navController)
+        }
+    }
+
     BottomSheetScaffold(
         modifier = Modifier.background(Color.Transparent),
         scaffoldState = scaffoldState,
@@ -94,6 +105,8 @@ fun LoginScreenBeta(navController: NavController) {
             bottomStart = CornerSize(0.dp),
             bottomEnd = CornerSize(0.dp)
         ),
+        sheetGesturesEnabled = false,
+        sheetElevation = ELEVATION_DP,
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -104,51 +117,43 @@ fun LoginScreenBeta(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                if (autoLogin && !onGo) scope.launch {
-                    onGo = true
-                    sheetState.collapse()
-                    withContext(Dispatchers.Main) {
-                        focusManager.clearFocus()
-                        delay(3000)
-                        navigateTo(navController)
-                    }
-                }
-
-                if (showBody) if ( newAccount) {
-                    Log.d("LOGIN", "estoy en newAccount")
-                    NewAccountBody(
-                        isLoading, autoLogin, newAccountModel, errorsNewAccount,
-                        viewModel::hideNewAccount, viewModel::onNewAccountInputChange
-                    ) {
-                        scope.launch {
-                            viewModel.onNewAccountDataSend(newAccountModel).also {
-                                if (it) showSnackBarErrors = true
-                                else {
-                                    sheetState.collapse()
-                                    withContext(Dispatchers.Default) {
-                                        focusManager.clearFocus()
-                                        delay(500)
-                                        viewModel.hideNewAccount()
+                if (showBody) {
+                    if (newAccount) {
+                        Log.d("LOGIN", "estoy en newAccount")
+                        NewAccountBody(
+                            isLoading, autoLogin, newAccountModel, errorsNewAccount,
+                            viewModel::hideNewAccount, viewModel::onNewAccountInputChange
+                        ) {
+                            scope.launch {
+                                viewModel.onNewAccountDataSend(newAccountModel).also {
+                                    if (it) showSnackBarErrors = true
+                                    else {
+                                        sheetState.collapse()
+                                        withContext(Dispatchers.Default) {
+                                            focusManager.clearFocus()
+                                            delay(500)
+                                            viewModel.hideNewAccount()
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                } else {
-                    Log.d("LOGIN", "estoy en login")
-                    LoginBody(
-                        isLoading, autoLogin, loginModel, errorLoginModel,
-                        viewModel::showNewAccount, viewModel::onLoginInputChange
-                    ) {
-                        scope.launch {
-                            viewModel.onLoginDataSend(loginModel).also {
-                                if (it) showSnackBarErrors = true
-                                else {
-                                    sheetState.collapse()
-                                    withContext(Dispatchers.Main) {
-                                        focusManager.clearFocus()
-                                        delay(2000)
-                                        navigateTo(navController)
+                    } else {
+                        Log.d("LOGIN", "estoy en login")
+                        LoginBody(
+                            isLoading, autoLogin, loginModel, errorLoginModel,
+                            viewModel::showNewAccount, viewModel::onLoginInputChange
+                        ) {
+                            scope.launch {
+                                viewModel.onLoginDataSend(loginModel).also {
+                                    if (it) showSnackBarErrors = true
+                                    else {
+                                        sheetState.collapse()
+                                        withContext(Dispatchers.Main) {
+                                            focusManager.clearFocus()
+                                            delay(2000)
+                                            navigateTo(navController)
+                                        }
                                     }
                                 }
                             }
