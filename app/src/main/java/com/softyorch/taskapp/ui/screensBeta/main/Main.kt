@@ -93,7 +93,7 @@ fun MainScreenBeta(navController: NavController) {
     ) {
         Body(taskList, isVisible, it) { task ->
             scope.launch {
-                viewModel.updateTask(task)
+                viewModel.updateTasks(task)
             }
         }
     }
