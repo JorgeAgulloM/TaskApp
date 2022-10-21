@@ -41,19 +41,17 @@ interface AutoLogin {
     private suspend fun isTimeOk(
         saveData: KProperty0<SaveData>,
         user: UserDataEntity
-    ): Boolean {
-        val timeWeekInMillis =
-            timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
-        user.lastLoginDate?.time?.let { autoLoginLimit ->
-            val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
-            timeWeekInMillis.compareTo(dif).let {
+    ) = user.lastLoginDate?.time?.let { autoLoginLimit ->
+        timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
+            .compareTo(
+                Date.from(Instant.now())
+                    .time.minus(autoLoginLimit)
+            ).let {
                 if (it == 1) {
                     saveData()(userDataEntity = user)
-
-                    return true
-                }
+                    true
+                } else false
             }
-        }
-        return false
-    }
+    } ?: false
+
 }
