@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screens.settings
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -27,13 +28,15 @@ import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
+import com.softyorch.taskapp.utils.sdk29AndUp
+import com.softyorch.taskapp.utils.sdk31AndUp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @ExperimentalMaterial3Api
 @Composable
-fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Unit) {
+fun SettingsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
@@ -45,22 +48,21 @@ fun SettingsScreen(navController: NavHostController, reloadComposable: () -> Uni
             )
         }
     ) {
-        Content(it = it, reloadComposable = reloadComposable)
+        Content(it = it)
     }
 }
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
+private fun Content(it: PaddingValues) {
 
     val viewModel = hiltViewModel<SettingsViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val settings = viewModel.settings.observeAsState().value
-    val needReload: Boolean by viewModel.needReload.observeAsState(initial = false)
-    var enabled: Boolean by remember { mutableStateOf(value = true) }
+    val settings by viewModel.settings.observeAsState()
     val scrollState = rememberScrollState()
 
-    if (isLoading || !enabled)
+    if (isLoading)
         CircularIndicatorCustom(
             text = stringResource(loading_loading)
         )
@@ -71,28 +73,26 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
         .padding(top = it.calculateTopPadding() * 1.5f)) {
 
         if (settings != null) {
-            var visible by rememberSaveable { mutableStateOf(settings.rememberMe) }
+            var visible by rememberSaveable { mutableStateOf(settings!!.rememberMe) }
 
             SwitchCustomSettings(
                 text = stringResource(light_dark_automatic_theme),
-                checked = settings.lightDarkAutomaticTheme,
-                enabled = enabled && viewModel.minSdk29,
-                description = if (viewModel.minSdk29) stringResource(settings_app_adapts_theme)
+                checked = settings!!.lightDarkAutomaticTheme,
+                enabled = !isLoading && sdk29AndUp,
+                description = if (sdk29AndUp) stringResource(settings_app_adapts_theme)
                 else stringResource(settings_only_android_10)
             ) {
-                settings.lightDarkAutomaticTheme = !settings.lightDarkAutomaticTheme
-                enabled = !enabled
+                settings!!.lightDarkAutomaticTheme = !settings!!.lightDarkAutomaticTheme
                 viewModel.applyChanges()
             }
 
-            if (!settings.lightDarkAutomaticTheme) SwitchCustomSettings(
+            if (!settings!!.lightDarkAutomaticTheme) SwitchCustomSettings(
                 text = stringResource(manual_light_dark),
-                checked = settings.lightOrDarkTheme,
-                enabled = enabled,
+                checked = settings!!.lightOrDarkTheme,
+                enabled = !isLoading,
                 description = stringResource(settings_switch_light_dark)
             ) {
-                settings.lightOrDarkTheme = !settings.lightOrDarkTheme
-                enabled = !enabled
+                settings!!.lightOrDarkTheme = !settings!!.lightOrDarkTheme
                 viewModel.applyChanges()
             }
 
@@ -110,40 +110,33 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 
             SwitchCustomSettings(
                 text = stringResource(automatic_colors),
-                checked = settings.automaticColors,
-                enabled = enabled && viewModel.minSdk31,
-                description = if (viewModel.minSdk31) stringResource(settings_app_color_adapt)
+                checked = settings!!.automaticColors,
+                enabled = !isLoading && sdk31AndUp,
+                description = if (sdk31AndUp) stringResource(settings_app_color_adapt)
                 else stringResource(settings_only_android_12)
             ) {
-                settings.automaticColors = !settings.automaticColors
-                enabled = !enabled
+                settings!!.automaticColors = !settings!!.automaticColors
                 viewModel.applyChanges()
             }
 
             SwitchCustomSettings(
                 text = stringResource(remember_me),
-                checked = settings.rememberMe,
-                enabled = enabled,
+                checked = settings!!.rememberMe,
+                enabled = !isLoading,
                 description = stringResource(settings_autologin_limit_time)
             ) {
-                settings.rememberMe = !settings.rememberMe
+                settings!!.rememberMe = !settings!!.rememberMe
                 visible = !visible
-                enabled = !enabled
                 viewModel.viewModelScope.launch {
                     delay(1000)
                     viewModel.applyChanges()
                 }
             }
 
-            AnimatedBlock(visible = visible, settings = settings, enabled = enabled) {
-                enabled = !enabled
+            AnimatedBlock(visible = visible, settings = settings!!, isLoading = !isLoading) {
                 viewModel.applyChanges()
             }
 
-            if (needReload) {
-                reloadComposable()
-                viewModel.reloaded()
-            }
         }
     }
 }
@@ -152,7 +145,7 @@ private fun Content(it: PaddingValues, reloadComposable: () -> Unit) {
 private fun ColumnScope.AnimatedBlock(
     visible: Boolean,
     settings: UserDataEntity,
-    enabled: Boolean,
+    isLoading: Boolean,
     funcOfViewModel: () -> Unit
 ) {
     val density = LocalDensity.current
@@ -189,7 +182,7 @@ private fun ColumnScope.AnimatedBlock(
             settings.timeLimitAutoLoading =
                 sliderCustomSettingsAutoLoading(
                     initValue = settings.timeLimitAutoLoading,
-                    enabled = enabled
+                    enabled = isLoading
                 ) {
                     funcOfViewModel()
                 }
