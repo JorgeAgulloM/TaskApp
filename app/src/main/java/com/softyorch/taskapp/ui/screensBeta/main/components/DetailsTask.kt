@@ -8,8 +8,10 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.ShowTaskDetails
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
 import kotlinx.coroutines.launch
@@ -86,20 +92,22 @@ fun DetailsTask(
             style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.outline,
                 textDecoration = TextDecoration.LineThrough
-            ) else MaterialTheme.typography.titleMedium
+            ) else MaterialTheme.typography.titleSmall
         )
     }
 
     Column(
         modifier = Modifier
-            .padding(start = 4.dp, bottom = 4.dp)
+            .offset(0.dp, (-16).dp)
+            .padding(start = 8.dp, bottom = 0.dp, end = 8.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = textTransform(isOpen, task.description, isMinCollapse, maxTextLength),
             lineHeight = lineHeight.sp,
             style = if (isOpen) MaterialTheme.typography.bodyMedium
             else MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(4.dp)
         )
     }
 }

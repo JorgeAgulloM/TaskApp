@@ -129,7 +129,7 @@ fun Boolean.contentColorLabelAsStateAnimation(finishedListener: () -> Unit): Sta
     )
 
 @Composable
-fun Boolean.intOffsetAnimation(stateOne: Boolean, stateTwo: Boolean = false): State<IntOffset> =
+fun Boolean.intOffsetAnimation(stateOne: Boolean, stateTwo: Boolean = false, finishedListener: () -> Unit? = {}): State<IntOffset> =
     animateIntOffsetAsState(
         targetValue =
         if (stateOne && !stateTwo && this) IntOffset(-1000, 0)
@@ -137,9 +137,11 @@ fun Boolean.intOffsetAnimation(stateOne: Boolean, stateTwo: Boolean = false): St
         else IntOffset(0, 0),
         animationSpec = tween(
             durationMillis = 300,
-            delayMillis = 100,
+            delayMillis = 0,
             easing = LinearEasing
-        )
+        ), finishedListener = {
+            finishedListener()
+        }
     )
 
 @Composable

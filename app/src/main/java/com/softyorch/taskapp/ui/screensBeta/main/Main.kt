@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
@@ -38,6 +39,7 @@ import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,11 +58,6 @@ fun MainScreenBeta(navController: NavController) {
         )
     )
     var index by remember { mutableStateOf(value = 0) }
-    when (index) {
-        0 -> viewModel.load(TaskLoad.UncheckedTask)
-        1 -> viewModel.load(TaskLoad.CheckedTask)
-        2 -> viewModel.load(TaskLoad.AllTask)
-    }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
     val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
@@ -80,9 +77,13 @@ fun MainScreenBeta(navController: NavController) {
                 index = index,
                 items = items,
                 onItemClick = { itemButton ->
-                    items.forEach { item ->
-                        if (item.indexId == itemButton.indexId)
-                            index = item.indexId
+                    scope.launch {
+                        viewModel.visible()
+                        delay(400)
+                        items.forEach { item ->
+                            if (item.indexId == itemButton.indexId)
+                                index = item.indexId
+                        }
                     }
                 }
             )
@@ -91,8 +92,9 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, it) { task ->
+        Body(taskList, isVisible, index, it) { task ->
             scope.launch {
+                viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
             }
         }
@@ -103,6 +105,7 @@ fun MainScreenBeta(navController: NavController) {
 fun Body(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
+    index: Int,
     pv: PaddingValues,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
@@ -123,7 +126,7 @@ fun Body(
             ),
         contentAlignment = Alignment.BottomCenter
     ) {
-        BottomSheetCustom(taskList, isVisible, pv) { onCheckedChange(it) }
+        BottomSheetCustom(taskList, isVisible, index, pv) { onCheckedChange(it) }
     }
 }
 
@@ -133,6 +136,7 @@ fun Body(
 fun BottomSheetCustom(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
+    index: Int,
     paddingValues: PaddingValues,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
@@ -159,8 +163,7 @@ fun BottomSheetCustom(
                         topEnd = CornerSize(50.dp)
                     )
                 )
-                .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxSize()
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -168,7 +171,17 @@ fun BottomSheetCustom(
             ) {
                 if (taskList.isNotEmpty()) {
                     val taskMap: Map<String, List<TaskModelUi>> =
-                        taskList.groupBy { it.entryDate.toStringFormatDate() }
+                        taskList.filter {
+                            when (index) {
+                                0 -> {
+                                    !it.checkState
+                                }
+                                1 -> {
+                                    it.checkState
+                                }
+                                else -> it.title.length > 1
+                            }
+                        }.groupBy { it.entryDate.toStringFormatDate() }
                     LazyColumn(
                         modifier = Modifier,
                         state = lazyState,

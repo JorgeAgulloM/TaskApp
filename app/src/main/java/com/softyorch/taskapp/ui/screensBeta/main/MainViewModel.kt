@@ -31,64 +31,46 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     val isVisible: LiveData<Boolean> = _isVisible
 
     init {
-
-    }
-
-    fun load(taskLoad: TaskLoad) {
-        loadTask(taskLoad)
+        loadTask()
+        visible()
     }
 
     fun updateTasks(taskModelUi: TaskModelUi) {
         sendUpdateData(taskModelUi)
     }
 
-    private fun visible() {
+    fun visible() {
         viewModelScope.launch {
-            delay(200)
+            delay(0)
+            _isVisible.postValue(false)
+            delay(400)
             _isVisible.postValue(true)
         }
     }
 
+    fun dropTaskLocalList(taskModelUi: TaskModelUi) {
+        val list = _tasks.value as MutableList
+        list.removeIf { it == taskModelUi }
+        _tasks.value = list
+    }
+
     @OptIn(FlowPreview::class)
-    private fun loadTask(
-        taskLoad: TaskLoad, taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)
-    ) {
+    private fun loadTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
         viewModelScope.launch(Dispatchers.IO) {
             _isVisible.postValue(false)
             val debounceTime = 500L
-            //delay(200)
-            when (taskLoad) {
-                TaskLoad.AllTask -> getAllTask(taskOrder)
-                    .debounce(debounceTime)
-                    .collect { list ->
-                        _tasks.postValue(list.map { taskModelUseCase ->
-                            taskModelUseCase.mapToTaskModelUI()
-                        })
-                        visible()
-                    }
-                TaskLoad.CheckedTask -> getCheckedTask(taskOrder)
-                    .debounce(debounceTime)
-                    .collect { list ->
-                        _tasks.postValue(list.map { taskModelUseCase ->
-                            taskModelUseCase.mapToTaskModelUI()
-                        })
-                        visible()
-                    }
-                TaskLoad.UncheckedTask -> getUncheckedTask(taskOrder)
-                    .debounce(debounceTime)
-                    .collect { list ->
-                        _tasks.postValue(list.map { taskModelUseCase ->
-                            taskModelUseCase.mapToTaskModelUI()
-                        })
-                        visible()
-                    }
-            }
+            getAllTask(taskOrder)
+                .debounce(debounceTime)
+                .collect { list ->
+                    _tasks.postValue(list.map { taskModelUseCase ->
+                        taskModelUseCase.mapToTaskModelUI()
+                    })
+                }
         }
     }
 
     private fun sendUpdateData(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
         updateLocalTaskList(taskModelUi)
-        //delay(1000)
         updateTask(taskModelUi)
     }
 
