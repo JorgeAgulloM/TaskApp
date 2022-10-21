@@ -14,3 +14,7 @@ inline fun <T> sdk28AndUp(onSdk28: () -> T): T? =
 inline fun <T> sdk27AndUp(onSdk27: () -> T): T? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) onSdk27() else null
 
+val sdk31AndUp = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+val sdk29AndUp = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+val sdk28AndUp = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+val sdk27AndUp = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
