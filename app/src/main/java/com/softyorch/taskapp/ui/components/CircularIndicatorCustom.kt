@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.infiniteTransitionAnimateColor
+import com.softyorch.taskapp.utils.extensions.infiniteTransitionAnimateColor
+
 
 @Composable
 fun CircularIndicatorCustomDialog(
@@ -34,31 +36,35 @@ fun CircularIndicatorCustom(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.safeContentPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    val colorGradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.background,
+            MaterialTheme.colorScheme.onTertiary
+        )
+    )
+
+    Box(modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
+        Row(
             modifier = modifier
-                .size(45.dp)
+                .padding(4.dp)
                 .shadow(elevation = ELEVATION_DP * 2, shape = CircleShape)
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
+                .background(brush = colorGradient, shape = CircleShape),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             CircularProgressIndicator(
+                modifier = Modifier.padding(8.dp).size(35.dp),
                 color = MaterialTheme.infiniteTransitionAnimateColor().value
             )
+            Text(
+                text = text,
+                modifier = Modifier.padding(end = 8.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
-        )
     }
-
 }
 

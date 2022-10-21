@@ -17,16 +17,15 @@ import com.softyorch.taskapp.ui.screens.settings.SettingsScreen
 import com.softyorch.taskapp.ui.screens.splash.SplashScreen
 import com.softyorch.taskapp.ui.screens.splash.SplashViewModel
 import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
+import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
+import com.softyorch.taskapp.ui.screensBeta.main.MainScreenBeta
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(
-    reloadComposable: () -> Unit,
-    //getUserImage: Pair<() -> Unit, String?>
-) {
+fun TaskAppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.name) {
+    NavHost(navController = navController, startDestination = AppScreensRoutes.LoginScreenBeta.route) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
             val splashViewModel = hiltViewModel<SplashViewModel>()
             SplashScreen(
@@ -36,6 +35,12 @@ fun TaskAppNavigation(
         }
         composable(route = AppScreensRoutes.LoginScreen.route) {
             LoginScreen(navController = navController)
+        }
+        composable(route = AppScreensRoutes.LoginScreenBeta.route){
+            LoginScreenBeta(navController = navController)
+        }
+        composable(route = AppScreensRoutes.MainScreenBeta.route){
+            MainScreenBeta(navController)
         }
         composable(route = AppScreensRoutes.MainScreen.route) {
             val mainViewModel = hiltViewModel<MainViewModel>()
@@ -58,7 +63,7 @@ fun TaskAppNavigation(
             HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
-            SettingsScreen(navController = navController, reloadComposable = reloadComposable)
+            SettingsScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.UserDataScreen.route) {
             UserDataScreen(navController = navController)//, getUserImage = getUserImage)

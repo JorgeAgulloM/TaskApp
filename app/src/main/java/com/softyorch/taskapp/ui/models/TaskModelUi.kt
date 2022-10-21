@@ -13,7 +13,11 @@ data class TaskModelUi(
     var entryDate: Date = Date.from(Instant.now()),
     var finishDate: Date? = null,
     var checkState: Boolean = false
-)
+) {
+    companion object{
+        val emptyTask = TaskModelUi()
+    }
+}
 
 fun TaskModelUi.mapToTaskModelUseCase() = TaskModelUseCase(
     id = this.id ?: UUID.randomUUID(),

@@ -20,7 +20,10 @@ fun ShowTask(
     paddingStart: Dp = 24.dp
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = paddingStart),
+        modifier = Modifier.fillMaxWidth().padding(
+            start = paddingStart,
+            top = 4.dp,
+            bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {

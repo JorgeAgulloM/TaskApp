@@ -11,7 +11,6 @@ import com.softyorch.taskapp.ui.errors.ErrorInterface
 import com.softyorch.taskapp.ui.errors.ErrorUserInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -139,9 +138,6 @@ class UserDataViewModel @Inject constructor(
      * data
      */
 
-    private suspend fun getUserDataEmail(email: String): UserDataEntity? =
-        userDataUseCases.getUserEmailExist(email = email)
-
     private suspend fun updateUserData(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity = userDataEntity)
 
@@ -152,24 +148,19 @@ class UserDataViewModel @Inject constructor(
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        datastore.getData().let { resource ->
-            if (resource != null) {
-                resource.flowOn(Dispatchers.IO).collect { data ->
-                    /**REVISAR ESTO, SI REGRESA UN NULL NO PASARÁ NADA*/
-                    getUserDataEmail(email = data.userEmail)?.let { user ->
-                        _userDataEntityActive.postValue(user)
-                        _name.postValue(user.username)
-                        _email.postValue(user.userEmail)
-                        _pass.postValue(user.userPass)
-                        _image.postValue(user.userPicture)
-                        _isLoading.postValue(false)
-                    }
-                }
-            } else {
-                //TODO
-            }
+        getData().collect { data ->
+            _userDataEntityActive.postValue(data)
+            _name.postValue(data.username)
+            _email.postValue(data.userEmail)
+            _pass.postValue(data.userPass)
+            _image.postValue(data.userPicture)
+            _isLoading.postValue(false)
         }
     }
+
+    /** data */
+
+    private fun getData() = datastore.getData()
 
     private suspend fun updateUserDataDatastore(userDataEntity: UserDataEntity) =
         datastore.saveData(userDataEntity = userDataEntity)

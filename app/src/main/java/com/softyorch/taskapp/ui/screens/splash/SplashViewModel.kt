@@ -11,7 +11,6 @@ import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -70,30 +69,26 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private suspend fun userActivated() {
-        datastore.getData().let { resource ->
-            if (resource != null) {
-                resource.flowOn(Dispatchers.IO).collect { user ->
-                    if (user.rememberMe) {
-                        logInWithRememberMe(
-                            email = user.userEmail,
-                            pass = user.userPass
-                        ).let { userLogin ->
-                            if (userLogin != null) {
-                                isAutoLoginTime(user = userLogin)
+    private fun userActivated() {
+        viewModelScope.launch(Dispatchers.IO) {
+            datastore.getData().collect { user ->
+                if (user.rememberMe) {
+                    logInWithRememberMe(
+                        email = user.userEmail,
+                        pass = user.userPass
+                    ).let { userLogin ->
+                        if (userLogin != null) {
+                            isAutoLoginTime(user = userLogin)
 
-                            } else {
-                                _goToAutologin.postValue(false)
-                                _isLoading.postValue(false)
-                            }
+                        } else {
+                            _goToAutologin.postValue(false)
+                            _isLoading.postValue(false)
                         }
-                    } else {
-                        _goToAutologin.postValue(false)
-                        _isLoading.postValue(false)
                     }
+                } else {
+                    _goToAutologin.postValue(false)
+                    _isLoading.postValue(false)
                 }
-            } else {
-                //TODO
             }
         }
     }

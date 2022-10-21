@@ -1,17 +1,16 @@
 package com.softyorch.taskapp.ui.components.fabCustom
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
+import com.softyorch.taskapp.domain.taskUsesCase.TaskModelUseCase
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.models.mapToTaskModelUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,21 +28,22 @@ class FABCustomViewModel @Inject constructor(
 
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData().let { resource ->
-                if (resource != null) {
-                    resource.flowOn(Dispatchers.IO).collect { user ->
-                        _user.postValue(user.username)
-                    }
-                } else {
-                    _user.postValue("Error")
-                }
+            getData().collect { user ->
+                _user.postValue(user.username)
             }
         }
     }
 
     fun addTask(taskModelUi: TaskModelUi) =
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TASK_ID", "FAB addTask -> ${taskModelUi.id}")
-            taskUseCase.addNewTask.invoke(taskModelUseCase = taskModelUi.mapToTaskModelUseCase())
+            addNewTask(taskModelUseCase = taskModelUi.mapToTaskModelUseCase())
         }
+
+    /** Data */
+
+    private fun getData() = datastore.getData()
+
+    private suspend fun addNewTask(taskModelUseCase: TaskModelUseCase) =
+        taskUseCase.addNewTask(taskModelUseCase)
+
 }

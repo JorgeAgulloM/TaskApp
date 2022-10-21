@@ -8,7 +8,6 @@ import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,18 +30,17 @@ class TopAppBarCustomViewModel @Inject constructor(
 
     private fun getUserData() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData().let { resource ->
-                if (resource != null) {
-                    resource.flowOn(Dispatchers.IO).collect { user ->
-                        _userDataEntity.postValue(user).let {
-                            _imageUser.postValue(user.userPicture)
-                            _userName.postValue(user.username)
-                        }
-                    }
-                } else {
-                    //TODO
+            getData().collect { user ->
+                _userDataEntity.postValue(user).let {
+                    _imageUser.postValue(user.userPicture)
+                    _userName.postValue(user.username)
                 }
             }
         }
     }
+
+    /** data */
+
+    private fun getData() = datastore.getData()
+
 }

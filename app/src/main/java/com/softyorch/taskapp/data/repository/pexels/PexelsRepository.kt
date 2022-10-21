@@ -4,7 +4,7 @@ import com.softyorch.taskapp.data.network.pexels.PexelsService
 import com.softyorch.taskapp.data.repository.pexels.model.MediaModel
 import com.softyorch.taskapp.data.repository.pexels.model.mapToMediaModel
 import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.random
+import com.softyorch.taskapp.utils.extensions.random
 
 import javax.inject.Inject
 import javax.inject.Singleton

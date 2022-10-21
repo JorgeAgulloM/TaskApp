@@ -35,8 +35,8 @@ import com.softyorch.taskapp.ui.models.TaskModelUiMain
 import com.softyorch.taskapp.ui.navigation.AppScreens
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.widgets.RowInfo
-import com.softyorch.taskapp.utils.contentColorAsSateAnimation
-import com.softyorch.taskapp.utils.toStringFormatDate
+import com.softyorch.taskapp.utils.extensions.contentColorAsSateAnimation
+import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant

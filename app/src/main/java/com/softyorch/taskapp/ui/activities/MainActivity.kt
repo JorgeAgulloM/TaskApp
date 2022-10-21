@@ -5,6 +5,7 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.pm.PackageManager.*
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -18,14 +19,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
+import com.softyorch.taskapp.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
 
-//private val _newImageGallery = MutableLiveData<String>()
-//val newImageGallery: LiveData<String> = _newImageGallery
 const val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
 
 @ExperimentalMaterial3Api
@@ -45,40 +46,26 @@ class MainActivity : ComponentActivity() {
                 writePermissionGranted =
                     permissions[WRITE_EXTERNAL_STORAGE] ?: writePermissionGranted
             }
+
         updateOrRequestPermissions()
 
-        setContent {
-            val viewModel = hiltViewModel<MainActivityViewModel>()
-            val reloadComposable: () -> Unit = {
-                viewModel.reloadSettings()
-                this.recreate()
-            }
-            //val coroutineScope = rememberCoroutineScope()
-            //var imageResult: String? = newImageGallery.observeAsState().value
-            /*val getImage: () -> Unit = {
-                coroutineScope.launch {
-                    coroutineScope.launch {
-                        getImageGallery.launch(GALLERY_IMAGES)
-                    }.let {
-                        it.join()
-                        imageResult = newImageGallery.value
-                    }
-                }
-            }*/
+        sdk29AndUp {
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
 
-            //val getUserImage: Pair<() -> Unit, String?> = Pair(getImage, imageResult)
+        setContent {
+
+            val viewModel = hiltViewModel<MainActivityViewModel>()
 
             TaskApp(
-                viewModel = viewModel,
-                reloadComposable = reloadComposable,
-                //getUserImage = getUserImage
+                viewModel = viewModel
             )
         }
     }
-
-/*    private val getImageGallery = registerForActivityResult(GetContent()) { uri ->
-        if (uri != null) _newImageGallery.value = uri.toString()
-    }*/
 
     private fun updateOrRequestPermissions() {
         val hasReadPermission = ContextCompat.checkSelfPermission(
@@ -118,15 +105,12 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 @Composable
 private fun TaskApp(
-    viewModel: MainActivityViewModel,
-    reloadComposable: () -> Unit,
-    //getUserImage: Pair<() -> Unit, String?>
+    viewModel: MainActivityViewModel
 ) {
 
     val darkSystem: Boolean by viewModel.darkSystem.observeAsState(initial = false)
     val lightOrDark: Boolean by viewModel.lightOrDark.observeAsState(initial = false)
     val colorSystem: Boolean by viewModel.colorSystem.observeAsState(initial = false)
-    //val languageAuto: Boolean by viewModel.language.observeAsState(initial = false)
 
     TaskAppTheme(
         darkTheme = if (darkSystem) isSystemInDarkTheme()
@@ -136,37 +120,7 @@ private fun TaskApp(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation(reloadComposable = reloadComposable)//, getUserImage = getUserImage)
+            TaskAppNavigation()
         }
     }
 }
-
-
-/*
-//Esto debería ir en onCreate
-private fun savePhotoToExternalStorage(displayName: String, bmp: Bitmap): Boolean {
-     val imageCollection = sdk29AndUp {
-         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-     } ?: MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-
-     val contentValues = ContentValues().apply {
-         put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.jpg")
-         put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-         put(MediaStore.Images.Media.WIDTH, bmp.width)
-         put(MediaStore.Images.Media.HEIGHT, bmp.height)
-     }
-
-     return try {
-         contentResolver.insert(imageCollection, contentValues)?.also { uri ->
-             contentResolver.openOutputStream(uri).use { outputStream ->
-                 if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)) {
-                     throw IOException(getString(io_exception_save_bitmap))
-                 }
-             }
-         } ?: throw IOException(getString(io_exception_create_media_store_entry))
-         true
-     } catch (e: IOException) {
-         e.printStackTrace()
-         false
-     }
- }*/

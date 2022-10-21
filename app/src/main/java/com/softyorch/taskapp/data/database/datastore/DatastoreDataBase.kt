@@ -7,10 +7,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.NameOfSettings.*
-import com.softyorch.taskapp.utils.datastore
 import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.toDate
-import kotlinx.coroutines.flow.Flow
+import com.softyorch.taskapp.utils.extensions.datastore
+import com.softyorch.taskapp.utils.extensions.toDate
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.util.*
@@ -58,76 +57,33 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
         }
     }
 
-/*    fun getData(): DataOrError<Flow<UserDataEntity>, String> {
-        val userData = DataOrError<Flow<UserDataEntity>, String>()
-         try {
-            userData.data = context.datastore.data.map { setting ->
-                UserDataEntity(
-                    username = setting[stringPreferencesKey(Name.name)].orEmpty(),
-                    userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
-                    userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),
-                    userPicture = setting[stringPreferencesKey(Picture.name)].orEmpty(),
-                    lastLoginDate = if (setting[stringPreferencesKey(LastLoginDate.name)].isNullOrEmpty()) {
-                        null
+    fun getData() =
+        context.datastore.data.map { setting ->
+            UserDataEntity(
+                username = setting[stringPreferencesKey(Name.name)].orEmpty(),
+                userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
+                userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),
+                userPicture = setting[stringPreferencesKey(Picture.name)].orEmpty(),
+                lastLoginDate = if (setting[stringPreferencesKey(LastLoginDate.name)].isNullOrEmpty()) {
+                    null
+                } else {
+                    if (setting[stringPreferencesKey(LastLoginDate.name)] == "null") {
+                        Date.from(Instant.now())
                     } else {
-                        if (setting[stringPreferencesKey(LastLoginDate.name)] == "null"){
-                            Date.from(Instant.now())
-                        } else {
-                            setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
-                        }
-                    },
-                    rememberMe = setting[booleanPreferencesKey(RememberMe.name)] ?: false,
-                    lightDarkAutomaticTheme = setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
-                        ?: false,
-                    lightOrDarkTheme = setting[booleanPreferencesKey(LightOrDarkTheme.name)]
-                        ?: false,
-                    automaticLanguage = setting[booleanPreferencesKey(AutomaticLanguage.name)]
-                        ?: false,
-                    automaticColors = setting[booleanPreferencesKey(AutomaticColors.name)] ?: false,
-                    timeLimitAutoLoading = setting[intPreferencesKey(TimeLimitAutoLoading.name)]
-                        ?: 0,
-                    textSize = setting[intPreferencesKey(TextSize.name)] ?: 0
-                )
-            }
-        } catch (e: Exception) {
-            userData.error = e.message.toString()
+                        setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
+                    }
+                },
+                rememberMe = setting[booleanPreferencesKey(RememberMe.name)] ?: false,
+                lightDarkAutomaticTheme = setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
+                    ?: false,
+                lightOrDarkTheme = setting[booleanPreferencesKey(LightOrDarkTheme.name)]
+                    ?: false,
+                automaticLanguage = setting[booleanPreferencesKey(AutomaticLanguage.name)]
+                    ?: false,
+                automaticColors = setting[booleanPreferencesKey(AutomaticColors.name)] ?: false,
+                timeLimitAutoLoading = setting[intPreferencesKey(TimeLimitAutoLoading.name)]
+                    ?: 0,
+                textSize = setting[intPreferencesKey(TextSize.name)] ?: 0
+            )
         }
-        return userData
-    }*/
-
-    fun getData(): Flow<UserDataEntity>? {
-        return try {
-            context.datastore.data.map { setting ->
-                UserDataEntity(
-                    username = setting[stringPreferencesKey(Name.name)].orEmpty(),
-                    userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
-                    userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),
-                    userPicture = setting[stringPreferencesKey(Picture.name)].orEmpty(),
-                    lastLoginDate = if (setting[stringPreferencesKey(LastLoginDate.name)].isNullOrEmpty()) {
-                        null
-                    } else {
-                        if (setting[stringPreferencesKey(LastLoginDate.name)] == "null") {
-                            Date.from(Instant.now())
-                        } else {
-                            setting[stringPreferencesKey(LastLoginDate.name)]?.toDate()
-                        }
-                    },
-                    rememberMe = setting[booleanPreferencesKey(RememberMe.name)] ?: false,
-                    lightDarkAutomaticTheme = setting[booleanPreferencesKey(LightDarkAutomaticTheme.name)]
-                        ?: false,
-                    lightOrDarkTheme = setting[booleanPreferencesKey(LightOrDarkTheme.name)]
-                        ?: false,
-                    automaticLanguage = setting[booleanPreferencesKey(AutomaticLanguage.name)]
-                        ?: false,
-                    automaticColors = setting[booleanPreferencesKey(AutomaticColors.name)] ?: false,
-                    timeLimitAutoLoading = setting[intPreferencesKey(TimeLimitAutoLoading.name)]
-                        ?: 0,
-                    textSize = setting[intPreferencesKey(TextSize.name)] ?: 0
-                )
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
 }

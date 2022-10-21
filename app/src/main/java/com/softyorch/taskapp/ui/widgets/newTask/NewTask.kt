@@ -22,7 +22,7 @@ import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.emptyString
-import com.softyorch.taskapp.utils.toStringFormatDate
+import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import kotlinx.coroutines.Job
 import java.time.Instant
 import java.util.*

@@ -1,6 +1,5 @@
 package com.softyorch.taskapp.ui.screens.userdata
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
@@ -30,14 +30,13 @@ import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.*
-import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
-import com.softyorch.taskapp.ui.navigation.AppScreens
+import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
+
 @ExperimentalMaterial3Api
 @Composable
 fun UserDataScreen(
@@ -46,10 +45,11 @@ fun UserDataScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBarCustom(
+            SmallTopAppBarCustom(
+                isMainScreen = false,
                 title = stringResource(user_data),
-                nameScreen = AppScreens.UserDataScreen.name,
                 navController = navController,
+                icon = Icons.Rounded.Home
             )
         }
     ) {
@@ -63,7 +63,6 @@ fun UserDataScreen(
 
 
 @ExperimentalMaterial3Api
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun Content(
     it: PaddingValues,
@@ -197,7 +196,7 @@ private fun Content(
         viewModel.logOut().also {
             viewModel.viewModelScope.launch {
                 it.join()
-                navController.navigate(AppScreensRoutes.SplashScreen.route) {
+                navController.navigate(AppScreensRoutes.LoginScreenBeta.route) {
                     navController.backQueue.clear()
                 }
             }
@@ -243,64 +242,6 @@ private fun Content(
     }
 
 }
-
-/*@Composable
-private fun AsyncImageDataScreen(
-    image: String,
-    userName: String,
-    getImage: () -> Unit
-) {
-
-*//*    var onError by rememberSaveable { mutableStateOf(value = false) }
-    if (onError) AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(image)
-            .error(R.drawable.ic_error_outline_24)
-            .crossfade(true)
-            .crossfade(500)
-            .build(),
-        contentDescription = stringResource(content_image_user),
-        placeholder = painterResource(R.drawable.ic_person_24),
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(200.dp)
-            .clickable {
-                getImage()
-            }.shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.large
-            ),
-        onLoading = {
-            onError = false
-        },
-        onSuccess = {
-        },
-        onError = {
-            onError = true
-            *//**//*coroutineScope.launch {
-                delay(2000)
-                reload(image)
-            }*//**//*
-        },
-    )
-    else*//*
-    val context = LocalContext.current
-    val text = stringResource(func_not_active)
-
-    LogoUserCapitalLetter(
-        capitalLetter = (
-                if (userName.isNotEmpty()) userName[0] else emptyString).toString().uppercase(),
-        size = 100.dp
-    ) {
-        //getImage()
-        Toast.makeText(
-            context,
-            text,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-}*/
 
 @Composable
 private fun ButtonCustomDataScreen(
