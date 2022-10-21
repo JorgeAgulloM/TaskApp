@@ -22,11 +22,9 @@ import com.softyorch.taskapp.ui.screensBeta.main.MainScreenBeta
 
 @ExperimentalMaterial3Api
 @Composable
-fun TaskAppNavigation(reloadComposable: () -> Unit) {
+fun TaskAppNavigation() {
     val navController = rememberNavController()
 
-    //startDestination = AppScreens.SplashScreen.name
-    //startDestination = AppScreensRoutes.LoginBeta.route
     NavHost(navController = navController, startDestination = AppScreensRoutes.LoginScreenBeta.route) {
         composable(route = AppScreensRoutes.SplashScreen.route) {
             val splashViewModel = hiltViewModel<SplashViewModel>()
@@ -65,7 +63,7 @@ fun TaskAppNavigation(reloadComposable: () -> Unit) {
             HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
-            SettingsScreen(navController = navController, reloadComposable = reloadComposable)
+            SettingsScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.UserDataScreen.route) {
             UserDataScreen(navController = navController)//, getUserImage = getUserImage)

@@ -120,9 +120,7 @@ private fun TaskApp(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            TaskAppNavigation {
-                viewModel.reloadSettings()
-            }
+            TaskAppNavigation()
         }
     }
 }
