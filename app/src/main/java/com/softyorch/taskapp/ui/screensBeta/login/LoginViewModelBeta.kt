@@ -15,9 +15,7 @@ import com.softyorch.taskapp.ui.screensBeta.login.errors.WithOutErrorsNewAccount
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screensBeta.login.errors.model.ErrorNewAccountModel
 import com.softyorch.taskapp.ui.screensBeta.login.model.*
-import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -29,7 +27,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
+) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -69,7 +67,8 @@ class LoginViewModelBeta @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             loadImage()
-            autoLogin()
+            _autoLogin.value = autologin(datastore, userDataUseCases::loginUser)
+            _isLoading.value =false
         }
     }
 
@@ -85,7 +84,7 @@ class LoginViewModelBeta @Inject constructor(
 
     private fun loadImage() {
         viewModelScope.launch {
-            pexelsUseCases.getImage.invoke().let { data ->
+            getImage().let { data ->
                 data.mapToMediaModel().let { media ->
                     _pexelsImage.value = media
                     _showBody.postValue(true)
@@ -93,40 +92,6 @@ class LoginViewModelBeta @Inject constructor(
             }
         }
     }
-
-
-    /** AutoLogin **/
-
-    private suspend fun autoLogin() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getDataDatastore().collect { user ->
-                if (user.rememberMe) {
-                    signIn(user.mapToLoginModel())?.let { userLogin ->
-                        if (isInTime(userLogin)) {
-                            updateDatastore(userLogin)
-                            delay(2000)
-                            _autoLogin.postValue(true)
-                            _isLoading.postValue(false)
-                        } else _isLoading.postValue(false)
-                    }
-                } else {
-                    _isLoading.postValue(false)
-                }
-            }
-        }
-    }
-
-    private fun isInTime(userDataEntity: UserDataEntity) =
-        userDataEntity.lastLoginDate?.time?.let { autoLoginLimit ->
-            timeLimitAutoLoginSelectTime(userDataEntity.timeLimitAutoLoading)
-                .compareTo(
-                    Date.from(Instant.now()).time.minus(autoLoginLimit)
-                )
-                .let {
-                    it == 1
-                }
-        } ?: false
-
 
     /** Login **/
 
@@ -227,8 +192,6 @@ class LoginViewModelBeta @Inject constructor(
 
     /** Data **/
 
-    private fun getDataDatastore() = datastore.getData()
-
     private suspend fun updateDatastore(userDataEntity: UserDataEntity) =
         datastore.saveData(userDataEntity)
 
@@ -240,5 +203,7 @@ class LoginViewModelBeta @Inject constructor(
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)
+
+    private suspend fun getImage() = pexelsUseCases.getImage()
 
 }
