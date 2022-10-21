@@ -19,7 +19,6 @@ import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -84,11 +83,13 @@ class LoginViewModelBeta @Inject constructor(
         _showNewAccount.value = true
     }
 
-    private fun loadImage() = viewModelScope.launch {
-        pexelsUseCases.getImage.invoke().let { data ->
-            data.mapToMediaModel().let { media ->
-                _pexelsImage.value = media
-                _showBody.postValue(true)
+    private fun loadImage() {
+        viewModelScope.launch {
+            pexelsUseCases.getImage.invoke().let { data ->
+                data.mapToMediaModel().let { media ->
+                    _pexelsImage.value = media
+                    _showBody.postValue(true)
+                }
             }
         }
     }
@@ -96,37 +97,35 @@ class LoginViewModelBeta @Inject constructor(
 
     /** AutoLogin **/
 
-    private suspend fun autoLogin() =
-        getDataDs().let { data ->
-            if (data != null) {
-                data.flowOn(Dispatchers.IO).collect { user ->
-                    if (user.rememberMe) {
-                        signIn(user.mapToLoginModel())?.let { userLogin ->
-                            if (isInTime(userLogin)) {
-                                updateDatastore(userLogin)
-                                delay(2000)
-                                _autoLogin.postValue(true)
-                                _isLoading.postValue(false)
-                            } else _isLoading.postValue(false)
-                        }
-                    } else {
-                        _isLoading.postValue(false)
+    private suspend fun autoLogin() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getDataDatastore().collect { user ->
+                if (user.rememberMe) {
+                    signIn(user.mapToLoginModel())?.let { userLogin ->
+                        if (isInTime(userLogin)) {
+                            updateDatastore(userLogin)
+                            delay(2000)
+                            _autoLogin.postValue(true)
+                            _isLoading.postValue(false)
+                        } else _isLoading.postValue(false)
                     }
+                } else {
+                    _isLoading.postValue(false)
                 }
-            } else {
-                _isLoading.postValue(false)
             }
         }
-
-    private fun isInTime(userDataEntity: UserDataEntity): Boolean {
-        val timeWeekInMillis =
-            timeLimitAutoLoginSelectTime(userDataEntity.timeLimitAutoLoading)
-        userDataEntity.lastLoginDate?.time?.let { autoLoginLimit ->
-            val dif = Date.from(Instant.now()).time.minus(autoLoginLimit)
-            timeWeekInMillis.compareTo(dif).let { if (it == 1) return true }
-        }
-        return false
     }
+
+    private fun isInTime(userDataEntity: UserDataEntity) =
+        userDataEntity.lastLoginDate?.time?.let { autoLoginLimit ->
+            timeLimitAutoLoginSelectTime(userDataEntity.timeLimitAutoLoading)
+                .compareTo(
+                    Date.from(Instant.now()).time.minus(autoLoginLimit)
+                )
+                .let {
+                    it == 1
+                }
+        } ?: false
 
 
     /** Login **/
@@ -171,14 +170,7 @@ class LoginViewModelBeta @Inject constructor(
                 updateUser(user)
                 updateDatastore(user)
                 return true
-            } /*else {
-                _errorsLogin.postValue(
-                    ErrorLoginModel(
-                        errorResultSignIn = true,
-                        error = true
-                    )
-                )
-            }*/
+            }
         }
         return false
     }
@@ -235,7 +227,7 @@ class LoginViewModelBeta @Inject constructor(
 
     /** Data **/
 
-    private fun getDataDs() = datastore.getData.invoke()
+    private fun getDataDatastore() = datastore.getData()
 
     private suspend fun updateDatastore(userDataEntity: UserDataEntity) =
         datastore.saveData(userDataEntity)
