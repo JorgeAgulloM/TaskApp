@@ -8,10 +8,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,9 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.input.pointer.PointerIcon
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.ShowTaskDetails
-import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
 import kotlinx.coroutines.launch
@@ -91,8 +85,9 @@ fun DetailsTask(
             maxLines = 1,
             style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.outline,
-                textDecoration = TextDecoration.LineThrough
-            ) else MaterialTheme.typography.titleSmall
+                textDecoration = TextDecoration.LineThrough,
+            ) else MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 
@@ -108,6 +103,7 @@ fun DetailsTask(
             lineHeight = lineHeight.sp,
             style = if (isOpen) MaterialTheme.typography.bodyMedium
             else MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.screensBeta.main.BottomNavItem
@@ -43,8 +44,20 @@ fun BottomFakeNavigationBar(
         elevation = ELEVATION_DP * 2
     ) {
         items.forEach { item ->
+            val selected = item.indexId == index
+            val gradiant = Brush.verticalGradient(
+                if (selected) listOf(
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.secondaryContainer
+                )
+                else
+                    listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.background
+                    )
+            )
             BottomNavigationItem(
-                selected = item.indexId == index,
+                selected = selected,
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(
@@ -78,6 +91,12 @@ fun BottomFakeNavigationBar(
                         }
                     }
                 },
+                modifier = Modifier
+                    .padding(2.dp)
+                    .background(
+                        brush = gradiant,
+                        shape = MaterialTheme.shapes.large
+                    ),
                 selectedContentColor = MaterialTheme.colorScheme.tertiary,
                 unselectedContentColor = MaterialTheme.colorScheme.tertiaryContainer
             )

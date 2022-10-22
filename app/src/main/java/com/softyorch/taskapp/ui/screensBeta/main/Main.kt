@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
@@ -112,8 +111,8 @@ fun Body(
 
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.secondary,
-            MaterialTheme.colorScheme.secondaryContainer
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondary
         )
     )
     Box(
@@ -143,8 +142,8 @@ fun BottomSheetCustom(
     val lazyState = rememberLazyListState()
     val sheetBrush = Brush.verticalGradient(
         listOf(
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.secondary
+            MaterialTheme.colorScheme.onSecondary,
+            MaterialTheme.colorScheme.secondaryContainer
         )
     )
 
