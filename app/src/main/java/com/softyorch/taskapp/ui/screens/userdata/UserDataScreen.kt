@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.userdata
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -34,8 +36,6 @@ import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.launch
-
-
 
 @ExperimentalMaterial3Api
 @Composable
@@ -104,8 +104,16 @@ private fun Content(
 
     val scrollState = rememberScrollState()
 
+    val contentBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondary
+        )
+    )
+
     Column(
         modifier = Modifier
+            .background(brush = contentBrush)
             .fillMaxSize()
             .verticalScroll(state = scrollState)
             .padding(top = it.calculateTopPadding() * 1.5f),

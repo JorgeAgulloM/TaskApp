@@ -2,6 +2,7 @@ package com.softyorch.taskapp.ui.screens.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -67,7 +69,15 @@ private fun Content(it: PaddingValues) {
             text = stringResource(loading_loading)
         )
 
+    val contentBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondary
+        )
+    )
+
     Column(modifier = Modifier
+        .background(brush = contentBrush)
         .fillMaxSize()
         .verticalScroll(state = scrollState)
         .padding(top = it.calculateTopPadding() * 1.5f)) {
