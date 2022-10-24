@@ -8,5 +8,7 @@ class UUIDConverter {
     fun fromUUID(uuid: UUID): String? = uuid.toString()
 
     @TypeConverter
-    fun uuidFromString(string: String): UUID? = UUID.fromString(string)
+    fun uuidFromString(string: String): UUID? = UUID.fromString(
+        string.ifEmpty { UUID.randomUUID().toString() }
+    )
 }

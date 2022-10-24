@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.NameOfSettings.*
+import com.softyorch.taskapp.utils.UUIDConverter
 import com.softyorch.taskapp.utils.emptyString
 import com.softyorch.taskapp.utils.extensions.datastore
 import com.softyorch.taskapp.utils.extensions.toDate
@@ -21,6 +22,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
 
     suspend fun saveData(userDataEntity: UserDataEntity) {
         context.datastore.edit { setting ->
+            setting[stringPreferencesKey(Id.name)] = UUIDConverter().fromUUID(userDataEntity.id)!!
             setting[stringPreferencesKey(Name.name)] = userDataEntity.username
             setting[stringPreferencesKey(Email.name)] = userDataEntity.userEmail
             setting[stringPreferencesKey(Pass.name)] = userDataEntity.userPass
@@ -42,6 +44,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
 
     suspend fun deleteData() {
         context.datastore.edit { setting ->
+            setting[stringPreferencesKey(Id.name)] = emptyString
             setting[stringPreferencesKey(Name.name)] = emptyString
             setting[stringPreferencesKey(Email.name)] = emptyString
             setting[stringPreferencesKey(Pass.name)] = emptyString
@@ -60,6 +63,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
     fun getData() =
         context.datastore.data.map { setting ->
             UserDataEntity(
+                id = UUIDConverter().uuidFromString(setting[stringPreferencesKey(Id.name)].orEmpty())!!,
                 username = setting[stringPreferencesKey(Name.name)].orEmpty(),
                 userEmail = setting[stringPreferencesKey(Email.name)].orEmpty(),
                 userPass = setting[stringPreferencesKey(Pass.name)].orEmpty(),

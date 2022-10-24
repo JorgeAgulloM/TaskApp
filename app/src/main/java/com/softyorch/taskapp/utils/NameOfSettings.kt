@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.utils
 
 enum class NameOfSettings {
+    Id,
     Name,
     Email,
     Pass,
@@ -17,6 +18,7 @@ enum class NameOfSettings {
 
     companion object {
         fun name(name: String): String = when (name) {
+            Id.name -> "id"
             Name.name -> "name"
             Email.name -> "email"
             Pass.name -> "pass"
