@@ -41,6 +41,7 @@ import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenBeta(navController: NavController) {
@@ -91,7 +92,7 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, index, it) { task ->
+        Body(taskList, isVisible, index) { task ->
             scope.launch {
                 viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
@@ -105,7 +106,6 @@ fun Body(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
     index: Int,
-    pv: PaddingValues,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
 
@@ -125,7 +125,7 @@ fun Body(
             ),
         contentAlignment = Alignment.BottomCenter
     ) {
-        BottomSheetCustom(taskList, isVisible, index, pv) { onCheckedChange(it) }
+        BottomSheetCustom(taskList, isVisible, index) { onCheckedChange(it) }
     }
 }
 
@@ -136,7 +136,6 @@ fun BottomSheetCustom(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
     index: Int,
-    paddingValues: PaddingValues,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
     val lazyState = rememberLazyListState()
@@ -154,7 +153,7 @@ fun BottomSheetCustom(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
+                .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
                 .background(
                     brush = sheetBrush,
                     shape = MaterialTheme.shapes.large.copy(

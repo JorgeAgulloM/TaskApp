@@ -34,6 +34,7 @@ val REGEX_PASSWORD: String = compile(
 const val emptyString = ""
 const val ID = "id"
 const val GALLERY_IMAGES = "image/*"
+const val SMALL_TOP_BAR_HEIGHT = 35
 
 /** Tables -> Names of values -> tasks */
 const val TITLE = "task_title"

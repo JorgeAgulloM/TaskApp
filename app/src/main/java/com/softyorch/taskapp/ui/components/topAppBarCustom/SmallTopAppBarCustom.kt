@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.ELEVATION_DP
-import com.softyorch.taskapp.utils.sdk29AndUp
+import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
 
 @Composable
 fun SmallTopAppBarCustom(
@@ -33,12 +33,11 @@ fun SmallTopAppBarCustom(
     navController: NavController,
     icon: ImageVector
 ) {
-
     TopAppBar(
         modifier = Modifier
             .systemBarsPadding()
-            .padding(horizontal = 4.dp, vertical = sdk29AndUp { 0.dp } ?: 8.dp)
-            .height(35.dp)
+            .padding(4.dp)
+            .height(SMALL_TOP_BAR_HEIGHT.dp)
             .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
         backgroundColor = MaterialTheme.colorScheme.background,
         title = {
