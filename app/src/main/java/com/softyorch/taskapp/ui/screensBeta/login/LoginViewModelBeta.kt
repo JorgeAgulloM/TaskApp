@@ -141,8 +141,8 @@ class LoginViewModelBeta @Inject constructor(
     }
 
     private fun resetErrors() {
-        _errorsLogin.value = ErrorLoginModel.errorLoginModel
-        _errorsNewAccount.value = ErrorNewAccountModel.errorNewAccountModel
+        _errorsLogin.postValue(ErrorLoginModel.errorLoginModel)
+        _errorsNewAccount.postValue(ErrorNewAccountModel.errorNewAccountModel)
     }
 
     /** New Account */
