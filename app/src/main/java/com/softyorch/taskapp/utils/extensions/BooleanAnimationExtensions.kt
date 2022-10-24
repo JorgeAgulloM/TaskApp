@@ -138,7 +138,7 @@ fun Boolean.intOffsetAnimation(stateOne: Boolean, stateTwo: Boolean = false, fin
         animationSpec = tween(
             durationMillis = 300,
             delayMillis = 0,
-            easing = LinearEasing
+            easing = FastOutSlowInEasing
         ), finishedListener = {
             finishedListener()
         }

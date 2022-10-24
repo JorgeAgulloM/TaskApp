@@ -17,12 +17,15 @@ import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.intOffsetAnimation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.*
 
 @Composable
 fun CardTaskCustom(
+    itemOfList: Int,
     task: TaskModelUi,
     isVisible: Boolean,
-    onCheckedChange: (TaskModelUi) -> Unit
+    onCheckedChange: (TaskModelUi, Int) -> Unit
 ) {
     var isOpen by remember { mutableStateOf(false) }
     var isClickInCheckBox by remember { mutableStateOf(false) }
@@ -34,12 +37,22 @@ fun CardTaskCustom(
     val lineHeight = 20
     isMinCollapse = task.description.length / maxTextLength > lines
 
-
     if (!isVisible) isOpen = false
     if (!isVisible) isClickInCheckBox = false
 
     val cardOffsetAnim by isClickInCheckBox.intOffsetAnimation(!task.checkState, task.checkState) {
-        if (isClickInCheckBox) isClickInCheckBox = false
+        if (isClickInCheckBox) {
+            isClickInCheckBox = false
+            onCheckedChange(
+                task.copy(
+                    checkState = !task.checkState,
+                    finishDate = if (task.checkState) {
+                        Date.from(Instant.now())
+                    } else null
+                ),
+                itemOfList
+            )
+        }
     }
 
     ElevatedCard(
@@ -61,7 +74,7 @@ fun CardTaskCustom(
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = ELEVATION_DP
         )
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .clickable {
@@ -72,10 +85,11 @@ fun CardTaskCustom(
         ) {
             DetailsTask(isMinCollapse, maxTextLength, lineHeight, task, isOpen) {
                 scope.launch {
-                    onCheckedChange(it)
-                    delay(400)
                     isOpen = false
+                    delay(300)
                     isClickInCheckBox = true
+                    //delay(1)
+                    //onCheckedChange(task, itemOfList)
                 }
             }
         }

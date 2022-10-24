@@ -5,7 +5,9 @@
 package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,28 +20,35 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.ContentStickyHeader
+import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
-import com.softyorch.taskapp.ui.screensBeta.main.components.CardTaskCustom
+import com.softyorch.taskapp.ui.screensBeta.main.components.textTransform
 import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +103,7 @@ fun MainScreenBeta(navController: NavController) {
     ) {
         Body(taskList, isVisible, index) { task ->
             scope.launch {
-                viewModel.dropTaskLocalList(task)
+                //viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
             }
         }
@@ -138,6 +147,7 @@ fun BottomSheetCustom(
     index: Int,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val lazyState = rememberLazyListState()
     val sheetBrush = Brush.verticalGradient(
         listOf(
@@ -168,8 +178,11 @@ fun BottomSheetCustom(
                 contentAlignment = Alignment.TopCenter
             ) {
                 if (taskList.isNotEmpty()) {
+                    //val list by remember { mutableStateOf(taskList) }
+                    val list = taskList
+
                     val taskMap: Map<String, List<TaskModelUi>> =
-                        taskList.filter {
+                        list.filter {
                             when (index) {
                                 0 -> {
                                     !it.checkState
@@ -180,26 +193,132 @@ fun BottomSheetCustom(
                                 else -> it.title.length > 1
                             }
                         }.groupBy { it.entryDate.toStringFormatDate() }
+                    Log.d("LAZYCOLUMN", "LIST -> $list")
+
                     LazyColumn(
                         modifier = Modifier,
                         state = lazyState,
-                        verticalArrangement = Arrangement.Top
-                    ) {
+                        verticalArrangement = Arrangement.Top,
+                        content = {
+                            taskMap.forEach { (published, taskEntityList) ->
+                                stickyHeader {
+                                    ContentStickyHeader(published = published)
+                                }
 
-                        taskMap.forEach { (published, taskEntityList) ->
-                            stickyHeader {
-                                ContentStickyHeader(published = published)
-                            }
+                                items(taskEntityList) { task ->
+                                    var isOpen by remember { mutableStateOf(false) }
+                                    var isChecked by remember { mutableStateOf(false) }
+                                    isChecked = task.checkState
 
-                            items(taskEntityList) { task ->
-                                CardTaskCustom(task, isVisible) {
-                                    onCheckedChange(it)
+                                    ElevatedCard(
+                                        modifier = Modifier.padding(
+                                            vertical = 2.dp,
+                                            horizontal = 4.dp
+                                        ),
+                                        content = {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clickable {
+                                                        isOpen = !isOpen
+                                                    },
+                                                verticalArrangement = Arrangement.Top,
+                                                horizontalAlignment = Alignment.Start,
+                                                content = {
+                                                    AnimatedVisibility(
+                                                        visible = isOpen,
+                                                        enter = SHEET_TRANSITION_ENTER,
+                                                        exit = SHEET_TRANSITION_EXIT
+                                                    ) {
+                                                        Column(
+                                                            verticalArrangement = Arrangement.Top,
+                                                            horizontalAlignment = Alignment.CenterHorizontally
+                                                        ) {
+                                                            ShowTaskDetails(task)
+                                                            DividerCustom(16.dp, 4.dp)
+                                                        }
+                                                    }
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .offset(
+                                                                (-8).dp, (-8).dp
+                                                            ),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.Start,
+                                                        content = {
+                                                            Checkbox(
+                                                                checked = isChecked,
+                                                                onCheckedChange = { click ->
+                                                                    scope.launch {
+                                                                        isChecked = click
+                                                                        delay(300)
+                                                                        onCheckedChange(
+                                                                            task.copy(
+                                                                                checkState = click,
+                                                                                finishDate = if (click) Date.from(
+                                                                                    Instant.now()
+                                                                                ) else null
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                }
+                                                            )
+                                                            Text(
+                                                                text = task.title,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                maxLines = 1,
+                                                                style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
+                                                                    color = MaterialTheme.colorScheme.outline,
+                                                                    textDecoration = TextDecoration.LineThrough,
+                                                                ) else MaterialTheme.typography.titleSmall,
+                                                                color = MaterialTheme.colorScheme.onSurface
+                                                            )
+                                                        }
+                                                    )
+                                                    /*val extendText by animateValueAsState(
+                                                        targetValue =
+                                                        if (isOpen) MaterialTheme.typography.bodyMedium
+                                                        else MaterialTheme.typography.bodySmall
+                                                    )*/
+                                                    var isMinCollapse by remember {
+                                                        mutableStateOf(
+                                                            value = false
+                                                        )
+                                                    }
+
+                                                    val lines = 3
+                                                    val maxTextLength = 40
+                                                    val lineHeight = 20
+                                                    isMinCollapse =
+                                                        task.description.length / maxTextLength > lines
+
+                                                    Text(
+                                                        text = textTransform(
+                                                            isOpen,
+                                                            task.description,
+                                                            isMinCollapse,
+                                                            maxTextLength
+                                                        ),
+                                                        modifier = Modifier
+                                                            .offset(0.dp, (-16).dp)
+                                                            .padding(
+                                                                start = 8.dp,
+                                                                end = 4.dp
+                                                            ),
+                                                        lineHeight = lineHeight.sp,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.onSurface
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
                                 }
                             }
+                            item { Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {} }
                         }
-                        item { Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {} }
-                    }
-
+                    )
                 } else Text(text = stringResource(R.string.add_new_task))
             }
         }

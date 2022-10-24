@@ -58,7 +58,7 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     private fun loadTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
         viewModelScope.launch(Dispatchers.IO) {
             _isVisible.postValue(false)
-            val debounceTime = 500L
+            val debounceTime = 200L
             getAllTask(taskOrder)
                 .debounce(debounceTime)
                 .collect { list ->
@@ -70,7 +70,7 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     }
 
     private fun sendUpdateData(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
-        updateLocalTaskList(taskModelUi)
+        //updateLocalTaskList(taskModelUi)
         updateTask(taskModelUi)
     }
 
