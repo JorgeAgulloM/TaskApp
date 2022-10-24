@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.ui.components.TextCustom
+import com.softyorch.taskapp.ui.widgets.newTask.TextCustom
 import com.softyorch.taskapp.utils.emptyString
 
 

@@ -1,4 +1,8 @@
-package com.softyorch.taskapp.ui.components
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
+package com.softyorch.taskapp.ui.widgets.newTask
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +21,7 @@ fun TextCustom(
     Text(
         modifier = Modifier.padding(4.dp),
         text = text,
-        //color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.bodySmall,
         fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
     )
