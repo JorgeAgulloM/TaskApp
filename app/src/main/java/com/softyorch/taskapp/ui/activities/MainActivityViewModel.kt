@@ -24,19 +24,19 @@ class MainActivityViewModel @Inject constructor(
     val colorSystem: LiveData<Boolean> = _colorSystem
 
     private val _language = MutableLiveData(true)
-    val language: LiveData<Boolean> = _language
+    //val language: LiveData<Boolean> = _language
 
     init {
         reloadSettings()
     }
 
-    fun reloadSettings() {
+    private fun reloadSettings() {
         getUserDataSettings()
     }
 
     private fun getUserDataSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData.invoke().collect { user ->
+            getData().collect { user ->
                 _darkSystem.postValue(user.lightDarkAutomaticTheme)
                 _lightOrDark.postValue(user.lightOrDarkTheme)
                 _colorSystem.postValue(user.automaticColors)
@@ -44,5 +44,7 @@ class MainActivityViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getData() = datastore.getData()
 
 }
