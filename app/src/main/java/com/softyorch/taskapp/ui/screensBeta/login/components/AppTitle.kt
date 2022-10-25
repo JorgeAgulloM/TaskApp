@@ -10,35 +10,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
 
 @Composable
 fun AppTitle() {
-    val colorGradient = Brush.verticalGradient(
+    val colorGradient = Brush.horizontalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
-            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+            MaterialTheme.colorScheme.primary.copy(alpha = 1f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 1f),
         )
     )
+
     Box(
         modifier = Modifier
             .padding(bottom = 4.dp)
             .background(
                 brush = colorGradient,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.extraLarge
             ),
     ) {
         Text(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(horizontal = 8.dp),
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.displayLarge.copy(
-                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Cursive
             ),
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primaryContainer
         )
     }
 }
