@@ -48,18 +48,14 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
         }
     }
 
-    fun dropTaskLocalList(taskModelUi: TaskModelUi) {
-        val list = _tasks.value as MutableList
-        list.removeIf { it == taskModelUi }
-        _tasks.value = list
-    }
-
     @OptIn(FlowPreview::class)
     private fun loadTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
         viewModelScope.launch(Dispatchers.IO) {
             _isVisible.postValue(false)
-            //useCases.fakeData()
-            //delay(2000)
+            /** Para añadir datos fake
+            useCases.fakeData()
+            delay(2000)
+             */
             val debounceTime = 200L
             getAllTask(taskOrder)
                 .debounce(debounceTime)
@@ -72,33 +68,13 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     }
 
     private fun sendUpdateData(taskModelUi: TaskModelUi) = viewModelScope.launch(Dispatchers.IO) {
-        //updateLocalTaskList(taskModelUi)
         updateTask(taskModelUi)
-    }
-
-    private fun updateLocalTaskList(taskModelUi: TaskModelUi) = viewModelScope.launch {
-        val newList: MutableList<TaskModelUi> = mutableListOf()
-        newList.addAll(_tasks.value!!)
-
-        newList.forEach {
-            if (it.id == taskModelUi.id) {
-                it.checkState = taskModelUi.checkState
-            }
-        }
-
-        _tasks.postValue(newList)
     }
 
     /** Data */
 
     private fun getAllTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) =
         useCases.getAllTask(taskOrder)
-
-    private fun getCheckedTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) =
-        useCases.getCheckedTask(taskOrder)
-
-    private fun getUncheckedTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) =
-        useCases.getUncheckedTask(taskOrder)
 
     private suspend fun updateTask(taskModelUi: TaskModelUi) =
         useCases.updateTask(taskModelUi.mapToTaskModelUseCase())
