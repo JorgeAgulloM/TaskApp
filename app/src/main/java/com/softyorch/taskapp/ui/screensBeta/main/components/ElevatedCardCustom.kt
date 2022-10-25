@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,18 @@ fun ElevatedCardCustom(
                 top = 4.dp,
                 bottom = 4.dp
             )
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .shadow(
+                ELEVATION_DP,
+                shape = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(3.dp),
+                    topEnd = CornerSize(50.dp),
+                    bottomStart = CornerSize(15.dp),
+                    bottomEnd = CornerSize(15.dp)
+                ),
+                ambientColor = MaterialTheme.colorScheme.primary,
+                spotColor = MaterialTheme.colorScheme.primary
+            ),
         shape = MaterialTheme.shapes.large.copy(
             topStart = CornerSize(3.dp),
             topEnd = CornerSize(50.dp),
