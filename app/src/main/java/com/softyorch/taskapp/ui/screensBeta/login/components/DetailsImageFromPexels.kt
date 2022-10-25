@@ -8,7 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.utils.extensions.contentColorLabelAsStateAnimation
@@ -25,27 +25,23 @@ fun DetailsImageFromPexels(
             click = false
         }
     }
-    val colorGradient = Brush.verticalGradient(
-        colors = listOf(
-            clickColor.copy(alpha = 0.6f),
-            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-        )
-    )
 
     Box(
         modifier = Modifier
             .padding(bottom = 4.dp)
             .background(
-                brush = colorGradient,
+                color = clickColor,
                 shape = MaterialTheme.shapes.small
-            ).clickable {
+            )
+            .clickable {
                 click = true
             },
     ) {
         Text(
-            modifier = Modifier.padding(2.dp),
+            modifier = Modifier.padding(horizontal = 8.dp),
             text = text,
             style = MaterialTheme.typography.labelSmall.copy(
+                fontFamily = FontFamily.Cursive,
                 textDecoration = TextDecoration.Underline
             ),
             color = MaterialTheme.colorScheme.onSecondary

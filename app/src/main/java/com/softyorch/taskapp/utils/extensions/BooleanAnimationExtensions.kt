@@ -123,7 +123,7 @@ fun Boolean.contentColorAsSateAnimation(finishedListener: () -> Unit): State<Col
 fun Boolean.contentColorLabelAsStateAnimation(finishedListener: () -> Unit): State<Color> =
     animateColorAsState(
         targetValue = if (this) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-        else MaterialTheme.colorScheme.background,
+        else MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
         animationSpec = tween(durationMillis = 200, easing = LinearEasing),
         finishedListener = { finishedListener() }
     )
