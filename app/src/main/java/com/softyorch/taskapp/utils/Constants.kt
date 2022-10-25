@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.regex.Pattern.*
 
-private const val ELEVATION: Int = 2
+private const val ELEVATION: Int = 4
 val ELEVATION_DP: Dp = ELEVATION.dp
 const val ELEVATION_FLOAT: Float = (ELEVATION).toFloat()
 
