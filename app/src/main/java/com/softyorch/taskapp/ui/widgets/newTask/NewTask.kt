@@ -200,7 +200,7 @@ private fun ButtonCustomNewTask(
 
 @ExperimentalMaterial3Api
 @Composable
-private fun TextFieldCustomNewTaskName(
+fun TextFieldCustomNewTaskName(
     text: String,
     error: Boolean,
     titleDeedCounter: Int,
@@ -235,7 +235,7 @@ private fun TextFieldCustomNewTaskName(
 
 @ExperimentalMaterial3Api
 @Composable
-private fun TextFieldCustomNewTaskDescription(
+fun TextFieldCustomNewTaskDescription(
     text: String,
     keyboardActions: KeyboardActions,
     error: Boolean,

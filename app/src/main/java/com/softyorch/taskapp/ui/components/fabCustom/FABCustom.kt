@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -24,7 +25,10 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.outlinedTextFieldCustom
+import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskDescription
+import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskName
 import com.softyorch.taskapp.ui.widgets.newTask.newTask
+import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 
 @ExperimentalMaterial3Api
@@ -68,7 +72,13 @@ fun FABCustom() {
     Box(
         modifier = Modifier
             .height(height.dp)
-            .width(width.dp),
+            .width(width.dp)
+            .shadow(
+                ELEVATION_DP,
+                shape = MaterialTheme.shapes.large,
+                ambientColor = MaterialTheme.colorScheme.primary,
+                spotColor = MaterialTheme.colorScheme.primary
+            ),
         contentAlignment = Alignment.BottomEnd
     ) {
         Column(
@@ -82,48 +92,34 @@ fun FABCustom() {
             //Head
 
             //Body
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-                outlinedTextFieldCustom(
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+                TextFieldCustomNewTaskName(
                     text = "",
-                    label = stringResource(name_task),
-                    placeholder = stringResource(write_name),
-                    icon = Icons.Rounded.Title,
-                    contentDescription = stringResource(write_name),
-                    keyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
-                    keyboardActions = KeyboardActions(),
-                    isError = false,
-                    isVisible = true,
-                    password = false,
-                    onTextFieldChanged = {
+                    error = false,
+                    titleDeedCounter = 35,
+                    limitCharTittle = 40
+                ){
 
-                    }
-                )
-                outlinedTextFieldCustom(
+                }
+                TextFieldCustomNewTaskDescription(
                     text = "",
-                    label = stringResource(task_description),
-                    placeholder = stringResource(write_description),
-                    icon = Icons.Rounded.Description,
-                    contentDescription = stringResource(write_description),
-                    keyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
                     keyboardActions = KeyboardActions(),
-                    isError = false,
-                    isVisible = true,
-                    password = false,
-                    onTextFieldChanged = {
+                    error = false
+                ){
 
-                    }
-                )
+                }
+
             }
             //Footer
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 ButtonCustom(text = "Save", true) {
                     openDialog = false
                 }
-                ButtonCustom(text = "Close", true) {
+                ButtonCustom(text = "Close") {
                     openDialog = false
                 }
             }
