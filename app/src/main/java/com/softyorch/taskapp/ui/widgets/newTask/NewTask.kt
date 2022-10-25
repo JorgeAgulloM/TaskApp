@@ -259,7 +259,7 @@ fun TextFieldCustomNewTaskDescription(
 }
 
 @Composable
-private fun ShowTaskNewTask(
+fun ShowTaskNewTask(
     userName: String,
     dateFormatted: String
 ) {
@@ -268,7 +268,7 @@ private fun ShowTaskNewTask(
             author = userName,
             date = dateFormatted
         )
-        Divider(modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp))
+        Divider(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp))
     }
 
 }

@@ -41,16 +41,17 @@ fun BottomFakeNavigationBar(
     index: Int,
     items: List<BottomNavItem>,
     settings: Boolean = false,
+    newTask: Boolean = true,
     onItemClick: (BottomNavItem) -> Unit
 ) {
-    var show by remember { mutableStateOf(false) }
-    rememberCoroutineScope().launch {
+    //var show by remember { mutableStateOf(value = newTask) }
+/*    rememberCoroutineScope().launch {
         delay(100)
-        show = true
-    }
+        //show = true
+    }*/
 
-    BottomMenuBody(show, settings, items, index, onItemClick)
-    BottomMenuSettings(show, settings)
+    BottomMenuBody(newTask, settings, items, index, onItemClick)
+    BottomMenuSettings(newTask, settings)
 
 }
 

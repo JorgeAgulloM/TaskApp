@@ -39,6 +39,10 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
         sendUpdateData(taskModelUi)
     }
 
+    fun hideSheet(){
+        _isVisible.value = isVisible.value != true
+    }
+
     fun visible() {
         viewModelScope.launch {
             delay(0)

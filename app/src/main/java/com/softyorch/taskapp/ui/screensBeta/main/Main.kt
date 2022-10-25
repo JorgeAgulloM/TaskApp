@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
+import com.softyorch.taskapp.ui.components.fabCustom.fabCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
@@ -51,6 +51,8 @@ fun MainScreenBeta(navController: NavController) {
         )
     )
     var index by remember { mutableStateOf(value = 0) }
+    var settings by remember { mutableStateOf(value = false) }
+    var newTask by remember { mutableStateOf(value = false) }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
     val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
@@ -69,7 +71,8 @@ fun MainScreenBeta(navController: NavController) {
             BottomFakeNavigationBar(
                 index = index,
                 items = items,
-                settings = false, //pasar a true para mostrar las settings
+                settings = settings, //pasar a true para mostrar las settings
+                newTask = !newTask,
                 onItemClick = { itemButton ->
                     scope.launch {
                         viewModel.visible()
@@ -82,7 +85,12 @@ fun MainScreenBeta(navController: NavController) {
                 }
             )
         },
-        floatingActionButton = { FABCustom() },
+        floatingActionButton = {
+            fabCustom {
+                viewModel.hideSheet()
+                newTask = it
+            }
+        },
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
