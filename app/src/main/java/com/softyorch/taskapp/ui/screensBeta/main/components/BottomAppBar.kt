@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.ui.screensBeta.main.BottomNavItem
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable
