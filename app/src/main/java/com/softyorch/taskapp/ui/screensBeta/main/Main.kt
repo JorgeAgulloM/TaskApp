@@ -5,6 +5,7 @@
 package com.softyorch.taskapp.ui.screensBeta.main
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -68,6 +69,7 @@ fun MainScreenBeta(navController: NavController) {
             BottomFakeNavigationBar(
                 index = index,
                 items = items,
+                settings = false, //pasar a true para mostrar las settings
                 onItemClick = { itemButton ->
                     scope.launch {
                         viewModel.visible()

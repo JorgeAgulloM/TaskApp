@@ -54,6 +54,7 @@ fun BottomFakeNavigationBar(
 
 }
 
+@Composable
 private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
     val maxHeight = LocalConfiguration.current.screenHeightDp
     val calculateHeight = (maxHeight / 5) * 4
