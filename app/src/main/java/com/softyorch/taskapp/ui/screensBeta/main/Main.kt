@@ -7,7 +7,6 @@ package com.softyorch.taskapp.ui.screensBeta.main
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,6 +44,7 @@ import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.*
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -206,114 +206,7 @@ fun BottomSheetCustom(
                                 }
 
                                 items(taskEntityList) { task ->
-                                    var isOpen by remember { mutableStateOf(false) }
-                                    var isChecked by remember { mutableStateOf(false) }
-                                    isChecked = task.checkState
-
-                                    ElevatedCard(
-                                        modifier = Modifier.padding(
-                                            vertical = 2.dp,
-                                            horizontal = 4.dp
-                                        ),
-                                        content = {
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .clickable {
-                                                        isOpen = !isOpen
-                                                    },
-                                                verticalArrangement = Arrangement.Top,
-                                                horizontalAlignment = Alignment.Start,
-                                                content = {
-                                                    AnimatedVisibility(
-                                                        visible = isOpen,
-                                                        enter = SHEET_TRANSITION_ENTER,
-                                                        exit = SHEET_TRANSITION_EXIT
-                                                    ) {
-                                                        Column(
-                                                            verticalArrangement = Arrangement.Top,
-                                                            horizontalAlignment = Alignment.CenterHorizontally
-                                                        ) {
-                                                            ShowTaskDetails(task)
-                                                            DividerCustom(16.dp, 4.dp)
-                                                        }
-                                                    }
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxSize()
-                                                            .offset(
-                                                                (-8).dp, (-8).dp
-                                                            ),
-                                                        verticalAlignment = Alignment.CenterVertically,
-                                                        horizontalArrangement = Arrangement.Start,
-                                                        content = {
-                                                            Checkbox(
-                                                                checked = isChecked,
-                                                                onCheckedChange = { click ->
-                                                                    scope.launch {
-                                                                        isChecked = click
-                                                                        delay(300)
-                                                                        onCheckedChange(
-                                                                            task.copy(
-                                                                                checkState = click,
-                                                                                finishDate = if (click) Date.from(
-                                                                                    Instant.now()
-                                                                                ) else null
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                }
-                                                            )
-                                                            Text(
-                                                                text = task.title,
-                                                                overflow = TextOverflow.Ellipsis,
-                                                                maxLines = 1,
-                                                                style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
-                                                                    color = MaterialTheme.colorScheme.outline,
-                                                                    textDecoration = TextDecoration.LineThrough,
-                                                                ) else MaterialTheme.typography.titleSmall,
-                                                                color = MaterialTheme.colorScheme.onSurface
-                                                            )
-                                                        }
-                                                    )
-                                                    /*val extendText by animateValueAsState(
-                                                        targetValue =
-                                                        if (isOpen) MaterialTheme.typography.bodyMedium
-                                                        else MaterialTheme.typography.bodySmall
-                                                    )*/
-                                                    var isMinCollapse by remember {
-                                                        mutableStateOf(
-                                                            value = false
-                                                        )
-                                                    }
-
-                                                    val lines = 3
-                                                    val maxTextLength = 40
-                                                    val lineHeight = 20
-                                                    isMinCollapse =
-                                                        task.description.length / maxTextLength > lines
-
-                                                    Text(
-                                                        text = textTransform(
-                                                            isOpen,
-                                                            task.description,
-                                                            isMinCollapse,
-                                                            maxTextLength
-                                                        ),
-                                                        modifier = Modifier
-                                                            .offset(0.dp, (-16).dp)
-                                                            .padding(
-                                                                start = 8.dp,
-                                                                end = 4.dp
-                                                            ),
-                                                        lineHeight = lineHeight.sp,
-                                                        style = MaterialTheme.typography.bodySmall,
-                                                        color = MaterialTheme.colorScheme.onSurface
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
+                                    ElevatedCardCustom(task, scope) { onCheckedChange(it) }
                                 }
                             }
                             item { Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {} }
@@ -323,6 +216,118 @@ fun BottomSheetCustom(
             }
         }
     }
+}
+
+@Composable
+private fun ElevatedCardCustom(
+    task: TaskModelUi,
+    scope: CoroutineScope,
+    onCheckedChange: (TaskModelUi) -> Unit
+) {
+    var isOpen by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(false) }
+    isChecked = task.checkState
+
+    ElevatedCard(
+        modifier = Modifier.padding(
+            vertical = 2.dp,
+            horizontal = 4.dp
+        ),
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        isOpen = !isOpen
+                    },
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+                content = {
+                    AnimatedVisibility(
+                        visible = isOpen,
+                        enter = SHEET_TRANSITION_ENTER,
+                        exit = SHEET_TRANSITION_EXIT
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            ShowTaskDetails(task)
+                            DividerCustom(16.dp, 4.dp)
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .offset(
+                                (-8).dp, (-8).dp
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        content = {
+                            Checkbox(
+                                checked = isChecked,
+                                onCheckedChange = { click ->
+                                    scope.launch {
+                                        isChecked = click
+                                        delay(300)
+                                        onCheckedChange(
+                                            task.copy(
+                                                checkState = click,
+                                                finishDate = if (click) Date.from(
+                                                    Instant.now()
+                                                ) else null
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                            Text(
+                                text = task.title,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                style = if (task.checkState) MaterialTheme.typography.bodyLarge.copy(
+                                    color = MaterialTheme.colorScheme.outline,
+                                    textDecoration = TextDecoration.LineThrough,
+                                ) else MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    )
+
+                    var isMinCollapse by remember {
+                        mutableStateOf(
+                            value = false
+                        )
+                    }
+
+                    val lines = 3
+                    val maxTextLength = 40
+                    val lineHeight = 20
+                    isMinCollapse =
+                        task.description.length / maxTextLength > lines
+
+                    Text(
+                        text = textTransform(
+                            isOpen,
+                            task.description,
+                            isMinCollapse,
+                            maxTextLength
+                        ),
+                        modifier = Modifier
+                            .offset(0.dp, (-16).dp)
+                            .padding(
+                                start = 8.dp,
+                                end = 4.dp
+                            ),
+                        lineHeight = lineHeight.sp,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            )
+        }
+    )
 }
 
 @Composable

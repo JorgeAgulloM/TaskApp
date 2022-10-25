@@ -5,7 +5,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -55,7 +54,7 @@ fun LoginScreenBeta(navController: NavController) {
     val height by newAccount.upDownIntegerAnimated(screenHeightTwoThird, screenHeightMid)
 
     val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
-    val errorLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
+    val errorsLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
 
     val newAccountModel by viewModel.newAccountModel.observeAsState(NewAccountModel.newAccountModel)
     val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewAccountModel.errorNewAccountModel)
@@ -119,18 +118,18 @@ fun LoginScreenBeta(navController: NavController) {
 
                 if (showBody) {
                     if (newAccount) {
-                        Log.d("LOGIN", "estoy en newAccount")
                         NewAccountBody(
                             isLoading, autoLogin, newAccountModel, errorsNewAccount,
                             viewModel::hideNewAccount, viewModel::onNewAccountInputChange
                         ) {
+                            focusManager.clearFocus()
                             scope.launch {
                                 viewModel.onNewAccountDataSend(newAccountModel).also {
-                                    if (it) showSnackBarErrors = true
-                                    else {
+                                    if (it) {
+                                        if (errorsNewAccount.emailExists) showSnackBarErrors = true
+                                    } else {
                                         sheetState.collapse()
                                         withContext(Dispatchers.Default) {
-                                            focusManager.clearFocus()
                                             delay(500)
                                             viewModel.hideNewAccount()
                                         }
@@ -139,18 +138,17 @@ fun LoginScreenBeta(navController: NavController) {
                             }
                         }
                     } else {
-                        Log.d("LOGIN", "estoy en login")
                         LoginBody(
-                            isLoading, autoLogin, loginModel, errorLoginModel,
+                            isLoading, autoLogin, loginModel, errorsLoginModel,
                             viewModel::showNewAccount, viewModel::onLoginInputChange
                         ) {
+                            focusManager.clearFocus()
                             scope.launch {
                                 viewModel.onLoginDataSend(loginModel).also {
-                                    if (it) showSnackBarErrors = true
-                                    else {
-                                        sheetState.collapse()
+                                    if (it) {
+                                        if (errorsLoginModel.errorResultSignIn) showSnackBarErrors = true
+                                    } else {
                                         withContext(Dispatchers.Main) {
-                                            focusManager.clearFocus()
                                             delay(2000)
                                             navigateTo(navController)
                                         }
@@ -162,7 +160,7 @@ fun LoginScreenBeta(navController: NavController) {
                 }
 
                 if (showSnackBarErrors) {
-                    if (!errorLoginModel.error) showSnackBarErrors = false
+                    //if (!errorLoginModel.error && !errorsNewAccount.error) showSnackBarErrors = false
                     SnackBarErrorLoginNewAccount(newAccount) {
                         showSnackBarErrors = false
                     }

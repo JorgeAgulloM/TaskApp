@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.screensBeta.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -74,12 +75,12 @@ class LoginViewModelBeta @Inject constructor(
 
     fun hideNewAccount() {
         resetErrors()
-        _showNewAccount.value = false
+        _showNewAccount.postValue(false)
     }
 
     fun showNewAccount() {
         resetErrors()
-        _showNewAccount.value = true
+        _showNewAccount.postValue(true)
     }
 
     private fun loadImage() {
@@ -150,17 +151,10 @@ class LoginViewModelBeta @Inject constructor(
     fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
         newAccountModelInterface.value = newAccountModel
         if (foundErrorNewAccountInterface.value == true) {
-            setErrorsNewAccount(withOutErrorsNewAccount(newAccountModel))
+            _errorsNewAccount.postValue(withOutErrorsNewAccount(newAccountModel))
         } else _errorsNewAccount.postValue(
             ErrorNewAccountModel(isActivatedButton = isActivatedButton(newAccountModel))
         )
-    }
-
-    private fun setErrorsNewAccount(errors: ErrorNewAccountModel) {
-        if (foundErrorNewAccountInterface.value != true) foundErrorNewAccountInterface.postValue(
-            true
-        )
-        _errorsNewAccount.postValue(errors)
     }
 
     suspend fun onNewAccountDataSend(
@@ -169,21 +163,19 @@ class LoginViewModelBeta @Inject constructor(
         _isLoading.postValue(true)
         withOutErrorsNewAccount(newAccountModel).let { errors ->
             if (!errors.error) {
-                addNewUser(
-                    newAccountModel
-                ).also { isError -> //When true returned, the user has been created else, this email exist now.
-                    errors.apply {
-                        emailExists = !isError
-                        error = !isError
-                    }
-                    setErrorsNewAccount(errors)
-
+                addNewUser(newAccountModel).also { isError -> //When true returned, the user has been created else, this email exist now.
+                    errors.emailExists = !isError
+                    errors.error = !isError
+                    _errorsNewAccount.postValue(errors)
+                    Log.d("ERRORS","errors -> $errors")
+                    delay(500)
                     _isLoading.postValue(false)
                     return errors.error
                 }
             } else {
-                setErrorsNewAccount(errors)
-
+                _errorsNewAccount.postValue(errors)
+                if (foundErrorNewAccountInterface.value != true)
+                    foundErrorNewAccountInterface.postValue(true)
                 _isLoading.postValue(false)
                 return errors.error
             }
