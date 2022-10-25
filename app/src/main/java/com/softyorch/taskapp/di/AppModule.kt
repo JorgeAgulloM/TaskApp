@@ -85,7 +85,8 @@ object AppModule {
             addNewTask = AddNewTask(repository = taskRepository),
             updateTask = UpdateTask(repository = taskRepository),
             deleteTask = DeleteTask(repository = taskRepository),
-            deleteAllTask = DeleteAllTask(repository = taskRepository)
+            deleteAllTask = DeleteAllTask(repository = taskRepository),
+            fakeData = FakeData(repository = taskRepository)
         )
 
     @Singleton

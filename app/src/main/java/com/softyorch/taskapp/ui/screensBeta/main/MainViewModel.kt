@@ -58,6 +58,8 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     private fun loadTask(taskOrder: TaskOrder = TaskOrder.Create(OrderType.Descending)) {
         viewModelScope.launch(Dispatchers.IO) {
             _isVisible.postValue(false)
+            //useCases.fakeData()
+            //delay(2000)
             val debounceTime = 200L
             getAllTask(taskOrder)
                 .debounce(debounceTime)
