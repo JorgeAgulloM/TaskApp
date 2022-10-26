@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.screens.settings
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,7 @@ import com.softyorch.taskapp.utils.sdk29AndUp
 import com.softyorch.taskapp.utils.sdk31AndUp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 @ExperimentalMaterial3Api
@@ -61,13 +63,10 @@ private fun Content(it: PaddingValues) {
 
     val viewModel = hiltViewModel<SettingsViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val manualThemeShow: Boolean by viewModel.manualThemeShow.observeAsState(initial = false)
     val settings by viewModel.settings.observeAsState()
+    Log.d("MY_SETTINGS", "settings on screen -> $settings")
     val scrollState = rememberScrollState()
-
-    if (isLoading)
-        CircularIndicatorCustom(
-            text = stringResource(loading_loading)
-        )
 
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
@@ -76,41 +75,47 @@ private fun Content(it: PaddingValues) {
         )
     )
 
-    Column(modifier = Modifier
-        .background(brush = contentBrush)
-        .fillMaxSize()
-        .verticalScroll(state = scrollState)
-        .padding(top = it.calculateTopPadding() * 1.5f)) {
+    Column(
+        modifier = Modifier
+            .background(brush = contentBrush)
+            .fillMaxSize()
+            .verticalScroll(state = scrollState)
+            .padding(top = it.calculateTopPadding() * 1.5f)
+    ) {
 
         if (settings != null) {
             var visible by rememberSaveable { mutableStateOf(settings!!.rememberMe) }
 
-            SwitchCustomSettings(
+            SwitchCustom(
                 text = stringResource(light_dark_automatic_theme),
                 checked = settings!!.lightDarkAutomaticTheme,
-                enabled = !isLoading && sdk29AndUp,
+                enable = !isLoading && sdk29AndUp,
                 description = if (sdk29AndUp) stringResource(settings_app_adapts_theme)
                 else stringResource(settings_only_android_10)
             ) {
-                settings!!.lightDarkAutomaticTheme = !settings!!.lightDarkAutomaticTheme
-                viewModel.applyChanges()
+                viewModel.let { vm ->
+                    vm.applyChanges(
+                        settings!!.copy(lightDarkAutomaticTheme = it)
+                    )
+                    vm.manualShow(!it)
+                }
             }
 
-            if (!settings!!.lightDarkAutomaticTheme) SwitchCustomSettings(
+            if (manualThemeShow) SwitchCustom(
                 text = stringResource(manual_light_dark),
                 checked = settings!!.lightOrDarkTheme,
-                enabled = !isLoading,
+                enable = !isLoading,
                 description = stringResource(settings_switch_light_dark)
             ) {
-                settings!!.lightOrDarkTheme = !settings!!.lightOrDarkTheme
-                viewModel.applyChanges()
+                viewModel.applyChanges(
+                    settings!!.copy(lightOrDarkTheme = it)
+                )
             }
 
-
-            /*SwitchCustomSettings(
+            /*SwitchCustom(
                 text = stringResource(automatic_language),
                 checked = settings.automaticLanguage,
-                enabled = enabled,
+                enable = enabled,
                 description = stringResource(settings_default_language_or_choose)
             ) {
                 settings.automaticLanguage = !settings.automaticLanguage
@@ -118,37 +123,45 @@ private fun Content(it: PaddingValues) {
                 viewModel.applyChanges()
             }*/
 
-            SwitchCustomSettings(
+            SwitchCustom(
                 text = stringResource(automatic_colors),
                 checked = settings!!.automaticColors,
-                enabled = !isLoading && sdk31AndUp,
+                enable = !isLoading && sdk31AndUp,
                 description = if (sdk31AndUp) stringResource(settings_app_color_adapt)
                 else stringResource(settings_only_android_12)
             ) {
-                settings!!.automaticColors = !settings!!.automaticColors
-                viewModel.applyChanges()
+                viewModel.applyChanges(
+                    settings!!.copy(automaticColors = it)
+                )
             }
 
-            SwitchCustomSettings(
+            SwitchCustom(
                 text = stringResource(remember_me),
                 checked = settings!!.rememberMe,
-                enabled = !isLoading,
+                enable = !isLoading,
                 description = stringResource(settings_autologin_limit_time)
             ) {
-                settings!!.rememberMe = !settings!!.rememberMe
                 visible = !visible
                 viewModel.viewModelScope.launch {
                     delay(1000)
-                    viewModel.applyChanges()
+                    viewModel.applyChanges(
+                        settings!!.copy(rememberMe = it)
+                    )
                 }
             }
 
             AnimatedBlock(visible = visible, settings = settings!!, isLoading = !isLoading) {
-                viewModel.applyChanges()
+                viewModel.applyChanges(
+                    settings!!.copy(timeLimitAutoLoading = it)
+                )
             }
 
         }
     }
+    if (isLoading)
+        CircularIndicatorCustom(
+            text = stringResource(loading_loading)
+        )
 }
 
 @Composable
@@ -156,7 +169,7 @@ private fun ColumnScope.AnimatedBlock(
     visible: Boolean,
     settings: UserDataEntity,
     isLoading: Boolean,
-    funcOfViewModel: () -> Unit
+    funcOfViewModel: (Int) -> Unit
 ) {
     val density = LocalDensity.current
     AnimatedVisibility(
@@ -190,43 +203,16 @@ private fun ColumnScope.AnimatedBlock(
             )
 
             settings.timeLimitAutoLoading =
-                sliderCustomSettingsAutoLoading(
+                sliderCustom(
                     initValue = settings.timeLimitAutoLoading,
-                    enabled = isLoading
+                    enable = isLoading,
+                    text = stringResource(time_automatic_login) + " " +
+                            getString(settings.timeLimitAutoLoading)
                 ) {
-                    funcOfViewModel()
+                    funcOfViewModel(it)
                 }
         }
     }
-}
-
-@Composable
-private fun SwitchCustomSettings(
-    text: String,
-    checked: Boolean,
-    enabled: Boolean,
-    description: String,
-    onCheckedChange: () -> Unit
-) = SwitchCustom(
-    text = text,
-    checked = checked,
-    enable = enabled,
-    description = description,
-    onCheckedChange = { onCheckedChange() }
-)
-
-@Composable
-private fun sliderCustomSettingsAutoLoading(
-    initValue: Int,
-    enabled: Boolean,
-    onValueChangeFinished: () -> Unit
-): Int {
-    return sliderCustom(
-        initValue = initValue,
-        enable = enabled,
-        text = stringResource(time_automatic_login) + " " + getString(initValue),
-        onValueChangeFinished = { onValueChangeFinished() }
-    )
 }
 
 @Composable

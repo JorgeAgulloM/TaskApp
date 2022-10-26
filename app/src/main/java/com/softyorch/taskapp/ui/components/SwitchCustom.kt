@@ -36,7 +36,7 @@ fun SwitchCustom(
             checked = stateSwitch,
             onCheckedChange = {
                 stateSwitch = !stateSwitch
-                onCheckedChange.invoke(it)
+                onCheckedChange(it)
             },
             thumbContent = {
                 if (stateSwitch)
