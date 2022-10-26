@@ -12,7 +12,7 @@ interface WithOutErrorsNewTask : IsValidTitle, IsValidDescription, IsActivatedBu
         newTaskModel.apply {
             !isValidTitle(title).also { errors.title = !it }
             !isValidDescription(description).also { errors.description = !it }
-            //isActivated(taskModelUiMain).also { errors.isActivatedButton = it }
+            isActivated(newTaskModel).also { errors.isActivatedButton = it }
         }
         errors.apply { error = (title || description) }
 
