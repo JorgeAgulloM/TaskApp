@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.CheckCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.TopAppBarCustom
 import com.softyorch.taskapp.domain.utils.TaskOrder
@@ -59,7 +59,7 @@ fun MainScreen(navController: NavHostController, mainViewModel: MainViewModel) {
             )
         },
         floatingActionButton = {
-            FABCustom(){}
+            //FABCustom(){}
         },
     ) {
         Content(

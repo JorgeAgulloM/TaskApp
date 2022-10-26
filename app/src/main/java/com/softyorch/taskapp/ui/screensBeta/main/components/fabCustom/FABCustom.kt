@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.components.fabCustom
+package com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -21,9 +21,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
+import com.softyorch.taskapp.ui.screensBeta.main.MainViewModel
 import com.softyorch.taskapp.ui.widgets.newTask.ShowTaskNewTask
 import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskDescription
 import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskName
@@ -35,10 +35,9 @@ import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
-fun FABCustom(onOpen: (Boolean) -> Unit) {
+fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
 
-    val viewModel = hiltViewModel<FABCustomViewModel>()
-    val userName: String by viewModel.user.observeAsState(initial = "")
+    val userName: String by viewModel.userName.observeAsState(initial = "")
     var openDialog by remember { mutableStateOf(false) }
 
     val maxHeight = LocalConfiguration.current.screenHeightDp
@@ -168,8 +167,6 @@ fun FABCustom(onOpen: (Boolean) -> Unit) {
                 }
             )
         }
-
-
     }
 
 }
