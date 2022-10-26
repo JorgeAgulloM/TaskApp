@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
 package com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,9 +27,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
-import com.softyorch.taskapp.ui.screensBeta.main.MainViewModel
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.errors.ErrorsNewTaskModel
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.model.NewTaskModel
 import com.softyorch.taskapp.ui.widgets.newTask.ShowTaskNewTask
 import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskDescription
 import com.softyorch.taskapp.ui.widgets.newTask.TextFieldCustomNewTaskName
@@ -35,11 +43,10 @@ import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
-fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
+fun FABCustom(onOpen: (Boolean) -> Unit) {
+    val viewModel = hiltViewModel<FABCustomViewModel>()
 
-    val userName: String by viewModel.userName.observeAsState(initial = "")
     var openDialog by remember { mutableStateOf(false) }
-
     val maxHeight = LocalConfiguration.current.screenHeightDp
     val calculateHeight = (maxHeight / 10) * 9
     val maxWidth = LocalConfiguration.current.screenWidthDp
@@ -86,6 +93,17 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
             ),
         contentAlignment = Alignment.BottomEnd
     ) {
+
+        val userName: String by viewModel.userName.observeAsState(initial = "")
+        val newTask: NewTaskModel by viewModel.newTask.observeAsState(initial = NewTaskModel())
+        val errorsNewTask: ErrorsNewTaskModel by viewModel.errorsNewTask
+            .observeAsState(initial = ErrorsNewTaskModel())
+        val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+        val titleDeepCounter: Int by viewModel.titleDeedCounter.observeAsState(initial = 0)
+
+        val date = Date.from(Instant.now())
+        val dateFormatted = date.toStringFormatDate()
+
         Column(
             modifier = Modifier
                 .height(height.dp)
@@ -96,7 +114,7 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
         ) {
             //Head
             ShowTaskNewTask(
-                userName = userName, dateFormatted = Date.from(Instant.now()).toStringFormatDate()
+                userName = userName, dateFormatted = dateFormatted
             )
             //Body
             Column(
@@ -105,21 +123,44 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
                     .padding(8.dp)
             ) {
                 TextFieldCustomNewTaskName( //añadir focus a este field
-                    text = "",
-                    error = false,
-                    titleDeedCounter = 35,
-                    limitCharTittle = 40
+                    text = newTask.title,
+                    error = errorsNewTask.title,
+                    titleDeedCounter = titleDeepCounter,
+                    limitCharTittle = viewModel.limitCharTittle
                 ) {
-
+                    viewModel.onInputChanged(
+                        newTask.copy(
+                            title = it.replaceFirstChar { char ->
+                                char.uppercase()
+                            }
+                        )
+                    )
                 }
                 TextFieldCustomNewTaskDescription(
-                    text = "",
-                    keyboardActions = KeyboardActions(),
-                    error = false
+                    text = newTask.description,
+                    keyboardActions = KeyboardActions(onGo = {
+                        viewModel.onDataSend(newTask.copy(
+                            title = newTask.title.trim(),
+                            description = newTask.description.trim(),
+                            author = userName,
+                            entryDate = date
+                        )).let { error ->
+                            if (!error) {
+                                openDialog = false
+                                onOpen(false)
+                            }
+                        }
+                    }),
+                    error = errorsNewTask.description
                 ) {
-
+                    viewModel.onInputChanged(
+                        newTask.copy(
+                            description = it.replaceFirstChar { char ->
+                                char.uppercase()
+                            }
+                        )
+                    )
                 }
-
             }
             //Footer
             Row(
@@ -127,11 +168,25 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                ButtonCustom(text = "Save", true) {
-                    openDialog = false
-                    onOpen(false)
+                ButtonCustom(
+                    text = stringResource(save),
+                    primary = true,
+                    enable = errorsNewTask.isActivatedButton && !isLoading,
+                    error = errorsNewTask.error
+                ) {
+                    viewModel.onDataSend(newTask.copy(
+                        title = newTask.title.trim(),
+                        description = newTask.description.trim(),
+                        author = userName,
+                        entryDate = date
+                    )).let { error ->
+                        if (!error) {
+                            openDialog = false
+                            onOpen(false)
+                        }
+                    }
                 }
-                ButtonCustom(text = "Close") {
+                ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
                     openDialog = false
                     onOpen(false)
                 }
@@ -139,8 +194,10 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
         }
 
         AnimatedVisibility(
-            visible = !openDialog
-        ){
+            visible = !openDialog,
+            enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 300))
+        ) {
             ExtendedFloatingActionButton(
                 text = {
                     Text(
@@ -162,8 +219,10 @@ fun FABCustom(viewModel: MainViewModel, onOpen: (Boolean) -> Unit) {
                 containerColor = if (openDialog) MaterialTheme.colorScheme.secondaryContainer
                 else MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
-                    openDialog = true
-                    onOpen(true)
+                    if (!openDialog) {
+                        openDialog = true
+                        onOpen(true)
+                    }
                 }
             )
         }
