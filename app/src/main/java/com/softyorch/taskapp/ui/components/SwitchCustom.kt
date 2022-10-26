@@ -22,7 +22,7 @@ fun SwitchCustom(
     checked: Boolean = false,
     enable: Boolean = true,
     description: String,
-    onCheckedChange: () -> Unit
+    onCheckedChange: (Boolean) -> Unit
 ) {
 
     var stateSwitch by rememberSaveable { mutableStateOf(checked) }
@@ -36,7 +36,7 @@ fun SwitchCustom(
             checked = stateSwitch,
             onCheckedChange = {
                 stateSwitch = !stateSwitch
-                onCheckedChange.invoke()
+                onCheckedChange.invoke(it)
             },
             thumbContent = {
                 if (stateSwitch)

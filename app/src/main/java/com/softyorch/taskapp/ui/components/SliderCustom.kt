@@ -19,7 +19,7 @@ fun sliderCustom(
     steps: Int = 4,
     text: String,
     style: TextStyle = MaterialTheme.typography.labelSmall,
-    onValueChangeFinished: () -> Unit
+    onValueChangeFinished: (Int) -> Unit
 ): Int {
 
     var selection by rememberSaveable { mutableStateOf(initValue.toFloat()) }
@@ -38,7 +38,9 @@ fun sliderCustom(
                 enabled = enable,
                 valueRange = valueRange,
                 steps = steps,
-                onValueChangeFinished = { onValueChangeFinished.invoke() }
+                onValueChangeFinished = {
+                    onValueChangeFinished.invoke(selection.toInt())
+                }
             )
         }
     )
