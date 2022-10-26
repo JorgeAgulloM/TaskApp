@@ -1,4 +1,8 @@
-package com.softyorch.taskapp.ui.widgets
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
+package com.softyorch.taskapp.ui.screensBeta.main.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -8,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
-import com.softyorch.taskapp.ui.widgets.newTask.TextCustom
 import com.softyorch.taskapp.utils.emptyString
 
 

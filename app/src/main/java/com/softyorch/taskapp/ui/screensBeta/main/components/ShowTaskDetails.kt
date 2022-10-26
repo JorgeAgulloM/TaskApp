@@ -7,7 +7,6 @@ package com.softyorch.taskapp.ui.screensBeta.main.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.models.TaskModelUi
-import com.softyorch.taskapp.ui.widgets.ShowTask
 import com.softyorch.taskapp.utils.emptyString
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 
