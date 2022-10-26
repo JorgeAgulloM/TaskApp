@@ -86,7 +86,7 @@ fun MainScreenBeta(navController: NavController) {
             )
         },
         floatingActionButton = {
-            FABCustom(viewModel) {
+            FABCustom() {
                 viewModel.hideSheet()
                 newTask = it
             }
