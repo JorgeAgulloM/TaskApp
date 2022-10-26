@@ -31,7 +31,9 @@ fun SmallTopAppBarCustom(
     isMainScreen: Boolean = false,
     title: String,
     navController: NavController,
-    icon: ImageVector
+    icon: ImageVector,
+    showSettings: (Boolean) -> Unit,
+    showUserData: (Boolean) -> Unit
 ) {
     TopAppBar(
         modifier = Modifier
@@ -64,7 +66,8 @@ fun SmallTopAppBarCustom(
             IconButtonTABC(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
-                navController.navigate(AppScreensRoutes.SettingsScreen.route)
+                //navController.navigate(AppScreensRoutes.SettingsScreen.route)
+                showSettings(true)
             }
 
             IconButtonTABC(
