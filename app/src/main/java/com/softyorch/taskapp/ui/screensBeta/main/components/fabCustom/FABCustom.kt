@@ -42,7 +42,10 @@ import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
-fun FABCustom(show: (Boolean) -> Unit) {
+fun FABCustom(
+    hide: Boolean,
+    show: (Boolean) -> Unit
+) {
     val viewModel = hiltViewModel<FABCustomViewModel>()
 
     var openDialog by remember { mutableStateOf(false) }
@@ -80,150 +83,160 @@ fun FABCustom(show: (Boolean) -> Unit) {
 
     if (!openDialog) focusManager.clearFocus()
 
-    Box(
-        modifier = Modifier
-            .height(height.dp)
-            .width(width.dp)
-            .shadow(
-                ELEVATION_DP,
-                shape = MaterialTheme.shapes.large,
-                ambientColor = MaterialTheme.colorScheme.primary,
-                spotColor = MaterialTheme.colorScheme.primary
-            ),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-
-        val userName: String by viewModel.userName.observeAsState(initial = "")
-        val newTask: NewTaskModel by viewModel.newTask.observeAsState(initial = NewTaskModel())
-        val errorsNewTask: ErrorsNewTaskModel by viewModel.errorsNewTask
-            .observeAsState(initial = ErrorsNewTaskModel())
-        val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-        val titleDeepCounter: Int by viewModel.titleDeedCounter.observeAsState(initial = 0)
-
-        val date = Date.from(Instant.now())
-        val dateFormatted = date.toStringFormatDate()
-
-        Column(
+    AnimatedVisibility(
+        visible = !hide,
+        enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300))
+    ){
+        Box(
             modifier = Modifier
                 .height(height.dp)
                 .width(width.dp)
-                .background(brush = sheetBrush, shape = MaterialTheme.shapes.large),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .shadow(
+                    ELEVATION_DP,
+                    shape = MaterialTheme.shapes.large,
+                    ambientColor = MaterialTheme.colorScheme.primary,
+                    spotColor = MaterialTheme.colorScheme.primary
+                ),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            //Head
-            ShowTaskNewTask(
-                userName = userName, dateFormatted = dateFormatted
-            )
-            //Body
+
+            val userName: String by viewModel.userName.observeAsState(initial = "")
+            val newTask: NewTaskModel by viewModel.newTask.observeAsState(initial = NewTaskModel())
+            val errorsNewTask: ErrorsNewTaskModel by viewModel.errorsNewTask
+                .observeAsState(initial = ErrorsNewTaskModel())
+            val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+            val titleDeepCounter: Int by viewModel.titleDeedCounter.observeAsState(initial = 0)
+
+            val date = Date.from(Instant.now())
+            val dateFormatted = date.toStringFormatDate()
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                    .height(height.dp)
+                    .width(width.dp)
+                    .background(brush = sheetBrush, shape = MaterialTheme.shapes.large),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                TextFieldCustomNewTaskName( //añadir focus a este field
-                    text = newTask.title,
-                    error = errorsNewTask.title,
-                    titleDeedCounter = titleDeepCounter,
-                    limitCharTittle = viewModel.limitCharTittle
+                //Head
+                ShowTaskNewTask(
+                    userName = userName, dateFormatted = dateFormatted
+                )
+                //Body
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 ) {
-                    viewModel.onInputChanged(
-                        newTask.copy(
-                            title = it.replaceFirstChar { char ->
-                                char.uppercase()
-                            }
+                    TextFieldCustomNewTaskName( //añadir focus a este field
+                        text = newTask.title,
+                        error = errorsNewTask.title,
+                        titleDeedCounter = titleDeepCounter,
+                        limitCharTittle = viewModel.limitCharTittle
+                    ) {
+                        viewModel.onInputChanged(
+                            newTask.copy(
+                                title = it.replaceFirstChar { char ->
+                                    char.uppercase()
+                                }
+                            )
                         )
-                    )
+                    }
+                    TextFieldCustomNewTaskDescription(
+                        text = newTask.description,
+                        keyboardActions = KeyboardActions(onGo = {
+                            viewModel.onDataSend(
+                                newTask.copy(
+                                    title = newTask.title.trim(),
+                                    description = newTask.description.trim(),
+                                    author = userName,
+                                    entryDate = date
+                                )
+                            ).let { error ->
+                                if (!error) {
+                                    openDialog = false
+                                    show(true)
+                                }
+                            }
+                        }),
+                        error = errorsNewTask.description
+                    ) {
+                        viewModel.onInputChanged(
+                            newTask.copy(
+                                description = it.replaceFirstChar { char ->
+                                    char.uppercase()
+                                }
+                            )
+                        )
+                    }
                 }
-                TextFieldCustomNewTaskDescription(
-                    text = newTask.description,
-                    keyboardActions = KeyboardActions(onGo = {
-                        viewModel.onDataSend(newTask.copy(
-                            title = newTask.title.trim(),
-                            description = newTask.description.trim(),
-                            author = userName,
-                            entryDate = date
-                        )).let { error ->
+                //Footer
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    ButtonCustom(
+                        text = stringResource(save),
+                        primary = true,
+                        enable = errorsNewTask.isActivatedButton && !isLoading,
+                        error = errorsNewTask.error
+                    ) {
+                        viewModel.onDataSend(
+                            newTask.copy(
+                                title = newTask.title.trim(),
+                                description = newTask.description.trim(),
+                                author = userName,
+                                entryDate = date
+                            )
+                        ).let { error ->
                             if (!error) {
                                 openDialog = false
                                 show(true)
                             }
                         }
-                    }),
-                    error = errorsNewTask.description
-                ) {
-                    viewModel.onInputChanged(
-                        newTask.copy(
-                            description = it.replaceFirstChar { char ->
-                                char.uppercase()
-                            }
-                        )
-                    )
+                    }
+                    ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
+                        openDialog = false
+                        show(true)
+                    }
                 }
             }
-            //Footer
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+
+            AnimatedVisibility(
+                visible = !openDialog,
+                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300))
             ) {
-                ButtonCustom(
-                    text = stringResource(save),
-                    primary = true,
-                    enable = errorsNewTask.isActivatedButton && !isLoading,
-                    error = errorsNewTask.error
-                ) {
-                    viewModel.onDataSend(newTask.copy(
-                        title = newTask.title.trim(),
-                        description = newTask.description.trim(),
-                        author = userName,
-                        entryDate = date
-                    )).let { error ->
-                        if (!error) {
-                            openDialog = false
-                            show(true)
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(
+                            text = stringResource(add_task),
+                            color = if (openDialog) MaterialTheme.colorScheme.outline
+                            else MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = stringResource(add_task),
+                            tint = if (openDialog) MaterialTheme.colorScheme.outline
+                            else MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    shape = MaterialTheme.shapes.large,
+                    containerColor = if (openDialog) MaterialTheme.colorScheme.secondaryContainer
+                    else MaterialTheme.colorScheme.primaryContainer,
+                    onClick = {
+                        if (!openDialog) {
+                            openDialog = true
+                            show(false)
                         }
                     }
-                }
-                ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
-                    openDialog = false
-                    show(true)
-                }
+                )
             }
-        }
-
-        AnimatedVisibility(
-            visible = !openDialog,
-            enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 300))
-        ) {
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(
-                        text = stringResource(add_task),
-                        color = if (openDialog) MaterialTheme.colorScheme.outline
-                        else MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(32.dp),
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = stringResource(add_task),
-                        tint = if (openDialog) MaterialTheme.colorScheme.outline
-                        else MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                shape = MaterialTheme.shapes.large,
-                containerColor = if (openDialog) MaterialTheme.colorScheme.secondaryContainer
-                else MaterialTheme.colorScheme.primaryContainer,
-                onClick = {
-                    if (!openDialog) {
-                        openDialog = true
-                        show(false)
-                    }
-                }
-            )
         }
     }
 

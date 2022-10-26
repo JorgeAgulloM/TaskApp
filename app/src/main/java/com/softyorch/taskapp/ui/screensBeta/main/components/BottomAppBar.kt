@@ -8,22 +8,20 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
 
@@ -32,38 +30,35 @@ import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
 fun BottomFakeNavigationBar(
     index: Int,
     items: List<BottomNavItem>,
+    isEnabled: Boolean = true,
     settings: Boolean = false,
     show: Boolean = true,
-    isEnabled: Boolean = true,
-    onItemClick: (BottomNavItem) -> Unit
+    onItemClick: (BottomNavItem) -> Unit,
+    scope: () -> Unit
 ) {
-    //var show by remember { mutableStateOf(value = newTask) }
-/*    rememberCoroutineScope().launch {
-        delay(100)
-        //show = true
-    }*/
-
-    BottomMenuBody(show, settings, isEnabled, items, index, onItemClick)
-    BottomMenuSettings(show, settings)
-
+    Box(contentAlignment = BottomCenter){
+        BottomMenuSettings(show, settings){ scope() }
+        BottomMenuBody(show, isEnabled, items, index, onItemClick)
+    }
 }
 
 @Composable
 private fun BottomMenuBody(
     show: Boolean,
-    newTask: Boolean,
     isEnabled: Boolean,
     items: List<BottomNavItem>,
     index: Int,
     onItemClick: (BottomNavItem) -> Unit
 ) {
     AnimatedVisibility(
-        visible = show && !newTask,
+        visible = show,
         enter = expandVertically(
             animationSpec = tween(durationMillis = 300),
             expandFrom = Alignment.Top
-        ) + fadeIn(
-            animationSpec = tween(durationMillis = 300)
+        ),
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = 300),
+            shrinkTowards = Alignment.Bottom
         )
     ) {
         BottomAppBar(
@@ -102,7 +97,7 @@ private fun BottomMenuBody(
                     icon = {
                         Column(
                             modifier = Modifier.padding(vertical = 2.dp),
-                            horizontalAlignment = CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             if (item.badgeCount > 0) {
                                 BadgedBox(
@@ -149,7 +144,7 @@ private fun BottomMenuBody(
 }
 
 @Composable
-private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
+private fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Unit) {
     val maxHeight = LocalConfiguration.current.screenHeightDp
     val calculateHeight = (maxHeight / 5) * 4
     val sheetBrush = Brush.verticalGradient(
@@ -160,18 +155,25 @@ private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
     )
 
     AnimatedVisibility(
-        visible = show && newTask,
+        visible = show && settings,
         enter = expandVertically(
             animationSpec = tween(durationMillis = 300),
             expandFrom = Alignment.Top
-        ) + fadeIn(
-            animationSpec = tween(durationMillis = 300)
+        ),
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = 300),
+            shrinkTowards = Alignment.Bottom
         )
     ) {
         Column(
             modifier = Modifier
                 .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
                 .height(calculateHeight.dp)
+                .shadow(ELEVATION_DP,
+                    shape = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(3.dp),
+                    topEnd = CornerSize(50.dp)
+                ))
                 .background(
                     brush = sheetBrush,
                     shape = MaterialTheme.shapes.large.copy(
@@ -179,9 +181,16 @@ private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
                         topEnd = CornerSize(50.dp)
                     )
                 )
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-
+            ButtonCustom(
+                text = "Salir",
+                onClick = {
+                    scope()
+                }
+            )
         }
     }
 }

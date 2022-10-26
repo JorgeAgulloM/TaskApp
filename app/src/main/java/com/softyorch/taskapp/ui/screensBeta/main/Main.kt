@@ -52,11 +52,11 @@ fun MainScreenBeta(navController: NavController) {
         )
     )
     var index by remember { mutableStateOf(value = 0) }
-    var settings by remember { mutableStateOf(value = false) }
-    var isEnabled by remember { mutableStateOf(value = true) }
-    var show by remember { mutableStateOf(value = true) }
+
+    //var isEnabled by remember { mutableStateOf(value = true) }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
-    val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
+    //val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
+    val stateMain: StateMain by viewModel.stateMain.observeAsState(initial = StateMain.Main)
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -66,16 +66,20 @@ fun MainScreenBeta(navController: NavController) {
                 true,
                 items[index].name,
                 navController,
-                icon = items[index].icon
+                icon = items[index].icon,
+                showSettings = {
+                    viewModel.changeState(StateMain.Settings)
+                },
+                showUserData = {}
             )
         },
         bottomBar = {
             BottomFakeNavigationBar(
                 index = index,
                 items = items,
-                isEnabled = isEnabled,
-                settings = settings, //pasar a true para mostrar las settings
-                show = show,
+                isEnabled = stateMain == StateMain.Main,
+                settings = stateMain == StateMain.Settings, //pasar a true para mostrar las settings
+                //show = show,
                 onItemClick = { itemButton ->
                     scope.launch {
                         viewModel.visible()
@@ -86,20 +90,23 @@ fun MainScreenBeta(navController: NavController) {
                         }
                     }
                 }
-            )
+            ){
+                viewModel.changeState(StateMain.Main)
+            }
         },
         floatingActionButton = {
-            FABCustom() {
-                viewModel.hideSheet()
+            FABCustom(hide = stateMain == StateMain.Settings) {
+                //viewModel.hideSheet()
+                if (it) viewModel.changeState(StateMain.Main)
+                else viewModel.changeState(StateMain.NewTask)
                 //show = it
-                isEnabled = it
-
+                //isEnabled = it
             }
         },
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, index) { task ->
+        Body(taskList, stateMain == StateMain.Main, index) { task ->
             scope.launch {
                 //viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
