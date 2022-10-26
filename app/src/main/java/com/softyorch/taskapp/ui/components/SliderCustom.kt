@@ -18,7 +18,9 @@ fun sliderCustom(
     valueRange: ClosedFloatingPointRange<Float> = 0f..5f,
     steps: Int = 4,
     text: String,
-    style: TextStyle = MaterialTheme.typography.labelSmall,
+    style: TextStyle = MaterialTheme.typography.labelSmall.copy(
+        color = MaterialTheme.colorScheme.onSurface
+    ),
     onValueChangeFinished: (Int) -> Unit
 ): Int {
 

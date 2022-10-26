@@ -55,12 +55,14 @@ fun SwitchCustom(
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = text,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 modifier = Modifier.padding(start = 16.dp),
                 text = description,
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
 
         }

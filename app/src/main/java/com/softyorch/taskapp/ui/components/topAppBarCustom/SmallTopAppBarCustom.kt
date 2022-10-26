@@ -15,6 +15,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,6 +39,8 @@ fun SmallTopAppBarCustom(
     showSettings: (Boolean) -> Unit,
     showUserData: (Boolean) -> Unit
 ) {
+    var show by remember { mutableStateOf(false) }
+
     TopAppBar(
         modifier = Modifier
             .systemBarsPadding()
@@ -67,7 +73,8 @@ fun SmallTopAppBarCustom(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
                 //navController.navigate(AppScreensRoutes.SettingsScreen.route)
-                showSettings(true)
+                show = !show
+                showSettings(show)
             }
 
             IconButtonTABC(
