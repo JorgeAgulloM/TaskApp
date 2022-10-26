@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.components.fabCustom.fabCustom
+import com.softyorch.taskapp.ui.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
@@ -86,7 +86,7 @@ fun MainScreenBeta(navController: NavController) {
             )
         },
         floatingActionButton = {
-            fabCustom {
+            FABCustom {
                 viewModel.hideSheet()
                 newTask = it
             }

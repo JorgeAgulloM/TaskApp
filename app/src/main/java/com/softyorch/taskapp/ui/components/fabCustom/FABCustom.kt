@@ -1,5 +1,6 @@
 package com.softyorch.taskapp.ui.components.fabCustom
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -12,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
@@ -32,19 +32,20 @@ import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import java.time.Instant
 import java.util.*
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @ExperimentalMaterial3Api
 @Composable
-fun fabCustom(onOpen: (Boolean) -> Unit) {
+fun FABCustom(onOpen: (Boolean) -> Unit) {
 
     val viewModel = hiltViewModel<FABCustomViewModel>()
     val userName: String by viewModel.user.observeAsState(initial = "")
     var openDialog by remember { mutableStateOf(false) }
 
     val maxHeight = LocalConfiguration.current.screenHeightDp
-    val calculateHeight = (maxHeight / 5) * 4
+    val calculateHeight = (maxHeight / 10) * 9
     val maxWidth = LocalConfiguration.current.screenWidthDp
     val calculateWidth = maxWidth - 32
+    val focusManager = LocalFocusManager.current
 
     val sheetBrush = Brush.verticalGradient(
         listOf(
@@ -66,16 +67,13 @@ fun fabCustom(onOpen: (Boolean) -> Unit) {
         animationSpec = tween(
             durationMillis = 300,
             easing = FastOutSlowInEasing
-        )
+        ),
+        finishedListener = {
+            if (openDialog) focusManager.moveFocus(FocusDirection.Up)
+        }
     )
 
-    val focusManager = LocalFocusManager.current
-
-    if (!openDialog) {
-        focusManager.clearFocus()
-    } else {
-        focusManager.moveFocus(FocusDirection.Up)
-    }
+    if (!openDialog) focusManager.clearFocus()
 
     Box(
         modifier = Modifier
@@ -107,7 +105,7 @@ fun fabCustom(onOpen: (Boolean) -> Unit) {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                TextFieldCustomNewTaskName(
+                TextFieldCustomNewTaskName( //añadir focus a este field
                     text = "",
                     error = false,
                     titleDeedCounter = 35,
@@ -141,31 +139,37 @@ fun fabCustom(onOpen: (Boolean) -> Unit) {
             }
         }
 
-        ExtendedFloatingActionButton(
-            text = {
-                Text(
-                    text = stringResource(add_task),
-                    color = if (openDialog) MaterialTheme.colorScheme.outline
-                    else MaterialTheme.colorScheme.onSurface
-                )
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(32.dp),
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = stringResource(add_task),
-                    tint = if (openDialog) MaterialTheme.colorScheme.outline
-                    else MaterialTheme.colorScheme.onSurface
-                )
-            },
-            shape = MaterialTheme.shapes.large,
-            containerColor = if (openDialog) MaterialTheme.colorScheme.secondaryContainer
-            else MaterialTheme.colorScheme.primaryContainer,
-            onClick = {
-                openDialog = true
-                onOpen(true)
-            }
-        )
+        AnimatedVisibility(
+            visible = !openDialog
+        ){
+            ExtendedFloatingActionButton(
+                text = {
+                    Text(
+                        text = stringResource(add_task),
+                        color = if (openDialog) MaterialTheme.colorScheme.outline
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                icon = {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(add_task),
+                        tint = if (openDialog) MaterialTheme.colorScheme.outline
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                shape = MaterialTheme.shapes.large,
+                containerColor = if (openDialog) MaterialTheme.colorScheme.secondaryContainer
+                else MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    openDialog = true
+                    onOpen(true)
+                }
+            )
+        }
+
+
     }
 
 }
