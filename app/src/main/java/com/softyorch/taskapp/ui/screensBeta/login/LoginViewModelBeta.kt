@@ -56,8 +56,8 @@ class LoginViewModelBeta @Inject constructor(
 
     private val _foundInputError = MutableLiveData<Boolean>()
 
-    private val newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
-    val newAccountModel: LiveData<NewAccountModel> = newAccountModelInterface
+    private val _newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
+    val newAccountModel: LiveData<NewAccountModel> = _newAccountModelInterface
 
     private val _errorsNewAccount = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
     val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount
@@ -149,7 +149,7 @@ class LoginViewModelBeta @Inject constructor(
     /** New Account */
 
     fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
-        newAccountModelInterface.value = newAccountModel
+        _newAccountModelInterface.value = newAccountModel
         if (foundErrorNewAccountInterface.value == true) {
             _errorsNewAccount.postValue(withOutErrorsNewAccount(newAccountModel))
         } else _errorsNewAccount.postValue(
