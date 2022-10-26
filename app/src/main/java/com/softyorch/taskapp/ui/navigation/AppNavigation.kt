@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.softyorch.taskapp.ui.screens.history.HistoryScreen
 import com.softyorch.taskapp.ui.screens.settings.SettingsScreen
 import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
 import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
@@ -22,9 +21,6 @@ fun TaskAppNavigation() {
         }
         composable(route = AppScreensRoutes.MainScreenBeta.route){
             MainScreenBeta(navController)
-        }
-        composable(route = AppScreensRoutes.HistoryScreen.route) {
-            HistoryScreen(navController = navController)
         }
         composable(route = AppScreensRoutes.SettingsScreen.route) {
             SettingsScreen(navController = navController)
