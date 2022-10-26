@@ -21,6 +21,9 @@ class SettingsViewModel @Inject constructor(
     private val _settings = MutableLiveData<UserDataEntity>()
     val settings: LiveData<UserDataEntity> = _settings
 
+    private val _manualThemeShow = MutableLiveData(false)
+    val manualThemeShow: LiveData<Boolean> = _manualThemeShow
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -31,37 +34,42 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadUserData() {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.getData().collect {
-                _settings.postValue(it)
-                _isLoading.postValue(false)
-            }
+            getData().collect {
+                    _manualThemeShow.postValue(!it.lightDarkAutomaticTheme)
+                    _settings.postValue(it)
+                    _isLoading.postValue(false)
+                }
         }
     }
 
-    fun applyChanges() {
+    fun applyChanges(settings: UserDataEntity) {
         _isLoading.value = true
-        _settings.value?.let {
-            updatePreferences(userDataEntity = it)
-        }
+        updatePreferences(userDataEntity = settings)
+    }
+
+    fun manualShow(show: Boolean) {
+        _manualThemeShow.value = show
     }
 
     private fun updatePreferences(userDataEntity: UserDataEntity) {
         viewModelScope.launch {
             this.launch(Dispatchers.IO) {
-                updateUser(userDataEntity = userDataEntity)
+                updateData(userDataEntity = userDataEntity)
             }.join()
             this.launch(Dispatchers.IO) {
-                updateData(userDataEntity = userDataEntity)
+                updateUser(userDataEntity = userDataEntity)
             }.join()
             _isLoading.value = false
         }
     }
 
-    private suspend fun updateUser(userDataEntity: UserDataEntity) =
-        userDataUseCases.updateUser(userDataEntity = userDataEntity)
+    private fun getData() = datastore.getData()
 
     private suspend fun updateData(userDataEntity: UserDataEntity) =
         datastore.saveData(userDataEntity = userDataEntity)
+
+    private suspend fun updateUser(userDataEntity: UserDataEntity) =
+        userDataUseCases.updateUser(userDataEntity = userDataEntity)
 
 }
 
