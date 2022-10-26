@@ -48,7 +48,9 @@ fun SettingsScreen(navController: NavHostController) {
                 isMainScreen = false,
                 title = stringResource(settings),
                 navController = navController,
-                icon = Icons.Rounded.Home
+                icon = Icons.Rounded.Home,
+                showSettings = {},
+                showUserData = {}
             )
         }
     ) {

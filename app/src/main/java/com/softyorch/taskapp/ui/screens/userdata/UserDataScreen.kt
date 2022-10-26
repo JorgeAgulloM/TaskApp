@@ -49,7 +49,9 @@ fun UserDataScreen(
                 isMainScreen = false,
                 title = stringResource(user_data),
                 navController = navController,
-                icon = Icons.Rounded.Home
+                icon = Icons.Rounded.Home,
+                showSettings = {},
+                showUserData = {}
             )
         }
     ) {
