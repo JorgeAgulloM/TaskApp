@@ -43,7 +43,7 @@ import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
-fun FABCustom(onOpen: (Boolean) -> Unit) {
+fun FABCustom(show: (Boolean) -> Unit) {
     val viewModel = hiltViewModel<FABCustomViewModel>()
 
     var openDialog by remember { mutableStateOf(false) }
@@ -147,7 +147,7 @@ fun FABCustom(onOpen: (Boolean) -> Unit) {
                         )).let { error ->
                             if (!error) {
                                 openDialog = false
-                                onOpen(false)
+                                show(true)
                             }
                         }
                     }),
@@ -182,13 +182,13 @@ fun FABCustom(onOpen: (Boolean) -> Unit) {
                     )).let { error ->
                         if (!error) {
                             openDialog = false
-                            onOpen(false)
+                            show(true)
                         }
                     }
                 }
                 ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
                     openDialog = false
-                    onOpen(false)
+                    show(true)
                 }
             }
         }
@@ -221,7 +221,7 @@ fun FABCustom(onOpen: (Boolean) -> Unit) {
                 onClick = {
                     if (!openDialog) {
                         openDialog = true
-                        onOpen(true)
+                        show(false)
                     }
                 }
             )

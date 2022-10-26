@@ -53,7 +53,8 @@ fun MainScreenBeta(navController: NavController) {
     )
     var index by remember { mutableStateOf(value = 0) }
     var settings by remember { mutableStateOf(value = false) }
-    var newTask by remember { mutableStateOf(value = false) }
+    var isEnabled by remember { mutableStateOf(value = true) }
+    var show by remember { mutableStateOf(value = true) }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
     val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
@@ -72,8 +73,9 @@ fun MainScreenBeta(navController: NavController) {
             BottomFakeNavigationBar(
                 index = index,
                 items = items,
+                isEnabled = isEnabled,
                 settings = settings, //pasar a true para mostrar las settings
-                newTask = !newTask,
+                show = show,
                 onItemClick = { itemButton ->
                     scope.launch {
                         viewModel.visible()
@@ -89,7 +91,9 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButton = {
             FABCustom() {
                 viewModel.hideSheet()
-                newTask = it
+                //show = it
+                isEnabled = it
+
             }
         },
         floatingActionButtonPosition = FabPosition.End,

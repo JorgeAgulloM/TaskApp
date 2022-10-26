@@ -33,7 +33,8 @@ fun BottomFakeNavigationBar(
     index: Int,
     items: List<BottomNavItem>,
     settings: Boolean = false,
-    newTask: Boolean = true,
+    show: Boolean = true,
+    isEnabled: Boolean = true,
     onItemClick: (BottomNavItem) -> Unit
 ) {
     //var show by remember { mutableStateOf(value = newTask) }
@@ -42,53 +43,16 @@ fun BottomFakeNavigationBar(
         //show = true
     }*/
 
-    BottomMenuBody(newTask, settings, items, index, onItemClick)
-    BottomMenuSettings(newTask, settings)
+    BottomMenuBody(show, settings, isEnabled, items, index, onItemClick)
+    BottomMenuSettings(show, settings)
 
-}
-
-@Composable
-private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
-    val maxHeight = LocalConfiguration.current.screenHeightDp
-    val calculateHeight = (maxHeight / 5) * 4
-    val sheetBrush = Brush.verticalGradient(
-        listOf(
-            MaterialTheme.colorScheme.onSecondary,
-            MaterialTheme.colorScheme.secondaryContainer
-        )
-    )
-
-    AnimatedVisibility(
-        visible = show && newTask,
-        enter = expandVertically(
-            animationSpec = tween(durationMillis = 300),
-            expandFrom = Alignment.Top
-        ) + fadeIn(
-            animationSpec = tween(durationMillis = 300)
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
-                .height(calculateHeight.dp)
-                .background(
-                    brush = sheetBrush,
-                    shape = MaterialTheme.shapes.large.copy(
-                        topStart = CornerSize(3.dp),
-                        topEnd = CornerSize(50.dp)
-                    )
-                )
-                .fillMaxSize()
-        ) {
-
-        }
-    }
 }
 
 @Composable
 private fun BottomMenuBody(
     show: Boolean,
     newTask: Boolean,
+    isEnabled: Boolean,
     items: List<BottomNavItem>,
     index: Int,
     onItemClick: (BottomNavItem) -> Unit
@@ -134,7 +98,7 @@ private fun BottomMenuBody(
                 )
                 BottomNavigationItem(
                     selected = selected,
-                    onClick = { onItemClick(item) },
+                    onClick = { if (isEnabled) onItemClick(item) },
                     icon = {
                         Column(
                             modifier = Modifier.padding(vertical = 2.dp),
@@ -145,7 +109,8 @@ private fun BottomMenuBody(
                                     badge = {
                                         Text(
                                             text = item.badgeCount.toString(),
-                                            color = MaterialTheme.colorScheme.error
+                                            color = if (isEnabled) MaterialTheme.colorScheme.error
+                                            else MaterialTheme.colorScheme.outline
                                         )
                                     }
                                 ) {
@@ -173,10 +138,50 @@ private fun BottomMenuBody(
                             brush = gradiant,
                             shape = MaterialTheme.shapes.large
                         ),
-                    selectedContentColor = MaterialTheme.colorScheme.tertiary,
-                    unselectedContentColor = MaterialTheme.colorScheme.tertiaryContainer
+                    selectedContentColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
+                            else MaterialTheme.colorScheme.outline,
+                    unselectedContentColor = if (isEnabled) MaterialTheme.colorScheme.tertiaryContainer
+                            else MaterialTheme.colorScheme.outline
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun BottomMenuSettings(show: Boolean, newTask: Boolean) {
+    val maxHeight = LocalConfiguration.current.screenHeightDp
+    val calculateHeight = (maxHeight / 5) * 4
+    val sheetBrush = Brush.verticalGradient(
+        listOf(
+            MaterialTheme.colorScheme.onSecondary,
+            MaterialTheme.colorScheme.secondaryContainer
+        )
+    )
+
+    AnimatedVisibility(
+        visible = show && newTask,
+        enter = expandVertically(
+            animationSpec = tween(durationMillis = 300),
+            expandFrom = Alignment.Top
+        ) + fadeIn(
+            animationSpec = tween(durationMillis = 300)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
+                .height(calculateHeight.dp)
+                .background(
+                    brush = sheetBrush,
+                    shape = MaterialTheme.shapes.large.copy(
+                        topStart = CornerSize(3.dp),
+                        topEnd = CornerSize(50.dp)
+                    )
+                )
+                .fillMaxSize()
+        ) {
+
         }
     }
 }
