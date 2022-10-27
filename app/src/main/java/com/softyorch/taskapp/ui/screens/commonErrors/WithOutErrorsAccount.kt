@@ -11,7 +11,7 @@ interface WithOutErrorsAccount :
     IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat,
     IsActivatedButton {
 
-    fun withOutErrorsNewAccount(
+    fun withOutErrorsAccount(
         accountModel: AccountModel
     ): ErrorAccountModel {
         val errors = ErrorAccountModel()

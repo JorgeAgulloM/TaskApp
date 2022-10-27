@@ -151,7 +151,7 @@ class LoginViewModelBeta @Inject constructor(
     fun onNewAccountInputChange(accountModel: AccountModel) {
         _AccountModelInterface.value = accountModel
         if (foundErrorNewAccountInterface.value == true) {
-            _errorsNewAccount.postValue(withOutErrorsNewAccount(accountModel))
+            _errorsNewAccount.postValue(withOutErrorsAccount(accountModel))
         } else _errorsNewAccount.postValue(
             ErrorAccountModel(isActivatedButton = isActivatedButton(accountModel))
         )
@@ -161,7 +161,7 @@ class LoginViewModelBeta @Inject constructor(
         accountModel: AccountModel
     ): Boolean {
         _isLoading.postValue(true)
-        withOutErrorsNewAccount(accountModel).let { errors ->
+        withOutErrorsAccount(accountModel).let { errors ->
             if (!errors.error) {
                 addNewUser(accountModel).also { isError -> //When true returned, the user has been created else, this email exist now.
                     errors.emailExists = !isError
