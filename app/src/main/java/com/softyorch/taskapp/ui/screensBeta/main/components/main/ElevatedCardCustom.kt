@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components
+package com.softyorch.taskapp.ui.screensBeta.main.components.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -167,3 +167,15 @@ fun ElevatedCardCustom(
         }
     )
 }
+
+@Composable
+private fun textTransform(
+    isOpen: Boolean,
+    description: String,
+    isMinCollapse: Boolean,
+    maxTextLength: Int
+) = if (isOpen) {
+    description
+} else if (isMinCollapse && description.length > maxTextLength) {
+    description.substring(0, maxTextLength) + "..."
+} else description

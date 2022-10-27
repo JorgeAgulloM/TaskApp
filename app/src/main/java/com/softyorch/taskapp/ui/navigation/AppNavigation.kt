@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.softyorch.taskapp.ui.screens.settings.SettingsScreen
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings.model.SettingsScreen
 import com.softyorch.taskapp.ui.screens.userdata.UserDataScreen
 import com.softyorch.taskapp.ui.screensBeta.login.LoginScreenBeta
 import com.softyorch.taskapp.ui.screensBeta.main.MainScreenBeta

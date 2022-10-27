@@ -1,4 +1,8 @@
-package com.softyorch.taskapp.ui.screens.settings
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings.model
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -29,6 +33,7 @@ import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.ui.components.sliderCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings.SettingsViewModel
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 import com.softyorch.taskapp.utils.sdk29AndUp

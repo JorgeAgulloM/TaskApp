@@ -32,8 +32,9 @@ import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.errors.ErrorsNewTaskModel
 import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.model.NewTaskModel
-import com.softyorch.taskapp.ui.screensBeta.main.components.TextFieldCustomNewTaskDescription
-import com.softyorch.taskapp.ui.screensBeta.main.components.TextFieldCustomNewTaskName
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.components.TextFieldCustomNewTaskDescription
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.components.TextFieldCustomNewTaskName
+import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.components.ShowTaskNewTask
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import java.time.Instant

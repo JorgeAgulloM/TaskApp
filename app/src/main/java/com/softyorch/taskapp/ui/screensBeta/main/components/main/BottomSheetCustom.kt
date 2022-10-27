@@ -2,10 +2,9 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components
+package com.softyorch.taskapp.ui.screensBeta.main.components.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -71,11 +70,9 @@ fun BottomSheetCustom(
                 contentAlignment = Alignment.TopCenter
             ) {
                 if (taskList.isNotEmpty()) {
-                    //val list by remember { mutableStateOf(taskList) }
-                    val list = taskList
-
+                    //val list = taskList
                     val taskMap: Map<String, List<TaskModelUi>> =
-                        list.filter {
+                        taskList.filter {
                             when (index) {
                                 0 -> {
                                     !it.checkState
@@ -86,7 +83,6 @@ fun BottomSheetCustom(
                                 else -> it.title.length > 1
                             }
                         }.groupBy { it.entryDate.toStringFormatDate() }
-                    Log.d("LAZYCOLUMN", "LIST -> $list")
 
                     LazyColumn(
                         modifier = Modifier,

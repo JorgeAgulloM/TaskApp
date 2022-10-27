@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.menu
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.ui.screensBeta.main.components.BottomNavItem
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.BottomNavItem
 import com.softyorch.taskapp.utils.ELEVATION_DP
 
 @Composable

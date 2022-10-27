@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components.settings
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

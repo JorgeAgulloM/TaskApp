@@ -27,9 +27,9 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.screensBeta.main.components.fabCustom.FABCustom
 import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
-import com.softyorch.taskapp.ui.screensBeta.main.components.BottomFakeNavigationBar
-import com.softyorch.taskapp.ui.screensBeta.main.components.BottomNavItem
-import com.softyorch.taskapp.ui.screensBeta.main.components.BottomSheetCustom
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.BottomFakeNavigationBar
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.BottomNavItem
+import com.softyorch.taskapp.ui.screensBeta.main.components.main.BottomSheetCustom
 import com.softyorch.taskapp.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

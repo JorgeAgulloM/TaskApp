@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screensBeta.main.components.settings
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
@@ -19,7 +19,6 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SpacerCustom
 import com.softyorch.taskapp.ui.components.SwitchCustom
-import com.softyorch.taskapp.ui.screens.settings.SettingsViewModel
 import com.softyorch.taskapp.utils.sdk29AndUp
 import com.softyorch.taskapp.utils.sdk31AndUp
 import kotlinx.coroutines.delay
@@ -27,7 +26,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Content() {
+fun SettingsContent() {
 
     val viewModel = hiltViewModel<SettingsViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)

@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.screens.settings
+package com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
