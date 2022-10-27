@@ -48,7 +48,7 @@ fun ElevatedCardCustom(
                 start = 4.dp,
                 end = 25.dp,
                 top = 4.dp,
-                bottom = 4.dp
+                bottom = 16.dp
             )
             .fillMaxWidth()
             .shadow(

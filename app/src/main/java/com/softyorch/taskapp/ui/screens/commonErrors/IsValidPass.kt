@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.login.errors
+package com.softyorch.taskapp.ui.screens.commonErrors
 
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import java.util.regex.Pattern

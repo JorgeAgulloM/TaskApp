@@ -2,9 +2,9 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.login.errors.model
+package com.softyorch.taskapp.ui.screens.commonErrors.model
 
-data class ErrorNewAccountModel(
+data class ErrorNewModel(
     var name: Boolean = false,
     var email: Boolean = false,
     var emailRepeat: Boolean = false,
@@ -15,6 +15,6 @@ data class ErrorNewAccountModel(
     var isActivatedButton: Boolean = false
 ) {
     companion object {
-        val errorNewAccountModel = ErrorNewAccountModel()
+        val errorNewModel = ErrorNewModel()
     }
 }

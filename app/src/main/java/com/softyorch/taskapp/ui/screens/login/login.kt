@@ -28,8 +28,8 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.*
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screens.login.components.*
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorLoginModel
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorNewAccountModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
 import com.softyorch.taskapp.ui.screens.login.model.MediaModel
 import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
@@ -57,7 +57,7 @@ fun LoginScreenBeta(navController: NavController) {
     val errorsLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
 
     val newAccountModel by viewModel.newAccountModel.observeAsState(NewAccountModel.newAccountModel)
-    val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewAccountModel.errorNewAccountModel)
+    val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorNewModel.errorNewModel)
 
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
 

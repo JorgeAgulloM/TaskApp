@@ -2,19 +2,19 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.login.errors
+package com.softyorch.taskapp.ui.screens.commonErrors
 
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorNewAccountModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
 import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
 
-interface WithOutErrorsNewAccount :
+interface WithOutErrorsAccount :
     IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat,
     IsActivatedButton {
 
     fun withOutErrorsNewAccount(
         newAccountModel: NewAccountModel
-    ): ErrorNewAccountModel {
-        val errors = ErrorNewAccountModel()
+    ): ErrorNewModel {
+        val errors = ErrorNewModel()
         newAccountModel.apply {
             !isValidName(userName).also { errors.name = !it }
             !isValidEmail(userEmail).also { errors.email = !it }

@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.login.errors.model
+package com.softyorch.taskapp.ui.screens.commonErrors.model
 
 data class ErrorLoginModel(
     var email: Boolean = false,

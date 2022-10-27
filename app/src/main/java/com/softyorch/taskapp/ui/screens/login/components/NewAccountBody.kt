@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorNewAccountModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
 import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
 
 @Composable
@@ -16,7 +16,7 @@ fun NewAccountBody(
     isLoading: Boolean,
     autoLogin: Boolean,
     newAccountModel: NewAccountModel,
-    errorsNewAccount: ErrorNewAccountModel,
+    errorsNewAccount: ErrorNewModel,
     hideNewAccount: () -> Unit,
     onNewAccountDataChange: (NewAccountModel) -> Unit,
     onClick: () -> Unit

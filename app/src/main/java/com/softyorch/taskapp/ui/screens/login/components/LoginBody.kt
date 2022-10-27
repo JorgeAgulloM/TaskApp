@@ -7,7 +7,7 @@ package com.softyorch.taskapp.ui.screens.login.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
 
 @Composable

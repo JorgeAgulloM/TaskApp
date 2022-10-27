@@ -10,11 +10,11 @@ import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
-import com.softyorch.taskapp.ui.screens.login.errors.IsActivatedButton
-import com.softyorch.taskapp.ui.screens.login.errors.WithOutErrorsLogin
-import com.softyorch.taskapp.ui.screens.login.errors.WithOutErrorsNewAccount
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorLoginModel
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorNewAccountModel
+import com.softyorch.taskapp.ui.screens.commonErrors.IsActivatedButton
+import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsLogin
+import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
 import com.softyorch.taskapp.ui.screens.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -28,7 +28,7 @@ class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
     private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
-) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsNewAccount, IsActivatedButton {
+) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsAccount, IsActivatedButton {
 
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -59,8 +59,8 @@ class LoginViewModelBeta @Inject constructor(
     private val _newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
     val newAccountModel: LiveData<NewAccountModel> = _newAccountModelInterface
 
-    private val _errorsNewAccount = MutableLiveData(ErrorNewAccountModel.errorNewAccountModel)
-    val errorsNewAccount: LiveData<ErrorNewAccountModel> = _errorsNewAccount
+    private val _errorsNewAccount = MutableLiveData(ErrorNewModel.errorNewModel)
+    val errorsNewAccount: LiveData<ErrorNewModel> = _errorsNewAccount
 
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
@@ -143,7 +143,7 @@ class LoginViewModelBeta @Inject constructor(
 
     private fun resetErrors() {
         _errorsLogin.postValue(ErrorLoginModel.errorLoginModel)
-        _errorsNewAccount.postValue(ErrorNewAccountModel.errorNewAccountModel)
+        _errorsNewAccount.postValue(ErrorNewModel.errorNewModel)
     }
 
     /** New Account */
@@ -153,7 +153,7 @@ class LoginViewModelBeta @Inject constructor(
         if (foundErrorNewAccountInterface.value == true) {
             _errorsNewAccount.postValue(withOutErrorsNewAccount(newAccountModel))
         } else _errorsNewAccount.postValue(
-            ErrorNewAccountModel(isActivatedButton = isActivatedButton(newAccountModel))
+            ErrorNewModel(isActivatedButton = isActivatedButton(newAccountModel))
         )
     }
 

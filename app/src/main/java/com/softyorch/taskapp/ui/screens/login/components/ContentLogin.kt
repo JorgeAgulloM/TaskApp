@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.ui.screens.login.errors.model.ErrorLoginModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
 
 @Composable
