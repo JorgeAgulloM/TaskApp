@@ -60,7 +60,7 @@ fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Unit) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            SettingsContent()
+            BodyContentSettings()
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.Center

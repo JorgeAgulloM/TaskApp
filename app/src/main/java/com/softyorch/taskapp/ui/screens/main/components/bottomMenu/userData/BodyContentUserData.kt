@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserDataContent(
+fun BodyContentUserData(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()

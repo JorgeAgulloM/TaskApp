@@ -66,7 +66,7 @@ fun BottomMenuUser(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            UserDataContent(navController)
+            BodyContentUserData(navController)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.Center

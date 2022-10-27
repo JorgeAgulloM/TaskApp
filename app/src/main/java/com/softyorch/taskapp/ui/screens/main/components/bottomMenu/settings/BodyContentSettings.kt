@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun SettingsContent() {
+fun BodyContentSettings() {
 
     val viewModel = hiltViewModel<SettingsViewModel>()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
