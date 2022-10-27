@@ -5,44 +5,50 @@
 package com.softyorch.taskapp.ui.screensBeta.main.components
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.ui.components.*
-import com.softyorch.taskapp.ui.screens.settings.SettingsViewModel
-import com.softyorch.taskapp.ui.widgets.RowInfo
+import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.screens.userdata.UserDataViewModel
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.BottomMenuBody
+import com.softyorch.taskapp.ui.screensBeta.main.components.settings.BottomMenuSettings
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
-import com.softyorch.taskapp.utils.extensions.toStringFormatted
-import com.softyorch.taskapp.utils.sdk29AndUp
-import com.softyorch.taskapp.utils.sdk31AndUp
-import kotlinx.coroutines.delay
+import com.softyorch.taskapp.utils.emptyString
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -52,119 +58,26 @@ fun BottomFakeNavigationBar(
     items: List<BottomNavItem>,
     isEnabled: Boolean = true,
     settings: Boolean = false,
+    userData: Boolean = false,
     show: Boolean = true,
+    navController: NavController,
     onItemClick: (BottomNavItem) -> Unit,
     scope: () -> Unit
 ) {
     Box(contentAlignment = BottomCenter) {
+        BottomMenuUser(show, userData, navController) { scope() }
         BottomMenuSettings(show, settings) { scope() }
         BottomMenuBody(show, isEnabled, items, index, onItemClick)
     }
 }
 
 @Composable
-private fun BottomMenuBody(
+fun BottomMenuUser(
     show: Boolean,
-    isEnabled: Boolean,
-    items: List<BottomNavItem>,
-    index: Int,
-    onItemClick: (BottomNavItem) -> Unit
+    userData: Boolean,
+    navController: NavController,
+    scope: () -> Unit
 ) {
-    AnimatedVisibility(
-        visible = show,
-        enter = expandVertically(
-            animationSpec = tween(durationMillis = 300),
-            expandFrom = Alignment.Top
-        ),
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = 300),
-            shrinkTowards = Alignment.Bottom
-        )
-    ) {
-        BottomAppBar(
-            modifier = Modifier.background(
-                color = MaterialTheme.colorScheme.onSecondary,
-                shape = MaterialTheme.shapes.large.copy(
-                    bottomStart = CornerSize(0.dp),
-                    bottomEnd = CornerSize(0.dp)
-                )
-            ).shadow(
-                elevation = ELEVATION_DP * 2, shape = MaterialTheme.shapes.large.copy(
-                    bottomStart = CornerSize(0.dp),
-                    bottomEnd = CornerSize(0.dp)
-                )
-            ),
-            backgroundColor = MaterialTheme.colorScheme.background,
-            cutoutShape = MaterialTheme.shapes.large,
-            elevation = ELEVATION_DP * 2
-        ) {
-            items.forEach { item ->
-                val selected = item.indexId == index
-                val gradiant = Brush.verticalGradient(
-                    if (selected) listOf(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.secondaryContainer
-                    )
-                    else
-                        listOf(
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.background
-                        )
-                )
-                BottomNavigationItem(
-                    selected = selected,
-                    onClick = { if (isEnabled) onItemClick(item) },
-                    icon = {
-                        Column(
-                            modifier = Modifier.padding(vertical = 2.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if (item.badgeCount > 0) {
-                                BadgedBox(
-                                    badge = {
-                                        Text(
-                                            text = item.badgeCount.toString(),
-                                            color = if (isEnabled) MaterialTheme.colorScheme.error
-                                            else MaterialTheme.colorScheme.outline
-                                        )
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = item.name
-                                    )
-                                }
-                            } else {
-                                Icon(imageVector = item.icon, contentDescription = item.name)
-                            }
-                            if (item.indexId == index) {
-                                Text(
-                                    text = item.name,
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        textAlign = TextAlign.Center
-                                    )
-                                )
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .background(
-                            brush = gradiant,
-                            shape = MaterialTheme.shapes.large
-                        ),
-                    selectedContentColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
-                    else MaterialTheme.colorScheme.outline,
-                    unselectedContentColor = if (isEnabled) MaterialTheme.colorScheme.tertiaryContainer
-                    else MaterialTheme.colorScheme.outline
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Unit) {
     val maxHeight = LocalConfiguration.current.screenHeightDp
     val calculateHeight = (maxHeight / 5) * 4
     val sheetBrush = Brush.verticalGradient(
@@ -175,7 +88,7 @@ private fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Un
     )
 
     AnimatedVisibility(
-        visible = show && settings,
+        visible = show && userData,
         enter = expandVertically(
             animationSpec = tween(durationMillis = 300),
             expandFrom = Alignment.Top
@@ -201,7 +114,7 @@ private fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Un
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            Content()
+            Content(navController)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.Center
@@ -215,159 +128,266 @@ private fun BottomMenuSettings(show: Boolean, settings: Boolean, scope: () -> Un
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Content() {
-
-    val viewModel = hiltViewModel<SettingsViewModel>()
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val manualThemeShow: Boolean by viewModel.manualThemeShow.observeAsState(initial = false)
-    val settings by viewModel.settings.observeAsState()
-
-    if (settings != null) {
-        var visible by rememberSaveable { mutableStateOf(settings!!.rememberMe) }
-        SpacerCustom(bottom = 24.dp)
-        SwitchCustom(
-            text = stringResource(R.string.light_dark_automatic_theme),
-            checked = settings!!.lightDarkAutomaticTheme,
-            enable = !isLoading && sdk29AndUp,
-            description = if (sdk29AndUp) stringResource(R.string.settings_app_adapts_theme)
-            else stringResource(R.string.settings_only_android_10)
-        ) {
-            viewModel.let { vm ->
-                vm.applyChanges(
-                    settings!!.copy(lightDarkAutomaticTheme = it)
-                )
-                vm.manualShow(!it)
-            }
-        }
-
-        if (manualThemeShow) SwitchCustom(
-            text = stringResource(R.string.manual_light_dark),
-            checked = settings!!.lightOrDarkTheme,
-            enable = !isLoading,
-            description = stringResource(R.string.settings_switch_light_dark)
-        ) {
-            viewModel.applyChanges(
-                settings!!.copy(lightOrDarkTheme = it)
-            )
-        }
-
-        /*SwitchCustom(
-            text = stringResource(automatic_language),
-            checked = settings.automaticLanguage,
-            enable = enabled,
-            description = stringResource(settings_default_language_or_choose)
-        ) {
-            settings.automaticLanguage = !settings.automaticLanguage
-            enabled = !enabled
-            viewModel.applyChanges()
-        }*/
-
-        SwitchCustom(
-            text = stringResource(R.string.automatic_colors),
-            checked = settings!!.automaticColors,
-            enable = !isLoading && sdk31AndUp,
-            description = if (sdk31AndUp) stringResource(R.string.settings_app_color_adapt)
-            else stringResource(R.string.settings_only_android_12)
-        ) {
-            viewModel.applyChanges(
-                settings!!.copy(automaticColors = it)
-            )
-        }
-
-        SwitchCustom(
-            text = stringResource(R.string.remember_me),
-            checked = settings!!.rememberMe,
-            enable = !isLoading,
-            description = stringResource(R.string.settings_autologin_limit_time)
-        ) {
-            visible = !visible
-            viewModel.viewModelScope.launch {
-                delay(1000)
-                viewModel.applyChanges(
-                    settings!!.copy(rememberMe = it)
-                )
-            }
-        }
-
-        AnimatedBlock(visible = visible, settings = settings!!, isLoading = !isLoading) {
-            viewModel.applyChanges(
-                settings!!.copy(timeLimitAutoLoading = it)
-            )
-        }
-
-    }
-
-    if (isLoading)
-        CircularIndicatorCustom(
-            text = stringResource(R.string.loading_loading)
-        )
-}
-
-@Composable
-private fun AnimatedBlock(
-    visible: Boolean,
-    settings: UserDataEntity,
-    isLoading: Boolean,
-    funcOfViewModel: (Int) -> Unit
+private fun Content(
+    navController: NavController
 ) {
-    val density = LocalDensity.current
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInVertically {
-            with(density) { -40.dp.roundToPx() }
-        } + expandVertically(
-            expandFrom = Alignment.Top
-        ) + fadeIn(
-            initialAlpha = 0.3f
-        ),
-        exit = slideOutVertically() + shrinkVertically() + fadeOut()
-    ) {
-        Column() {
-            Row(modifier = Modifier.padding(start = 32.dp, top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                content = {
-                    androidx.compose.material3.Icon(
-                        Icons.Rounded.Info,
-                        contentDescription = stringResource(R.string.content_last_time_login),
-                        tint = MaterialTheme.colorScheme.outline
-                    )
-                    RowInfo(
-                        text = stringResource(R.string.last_login_manual) + " " +
-                                settings.lastLoginDate?.toStringFormatted(),
-                        paddingStart = 8.dp,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
-            )
+    val viewModel = hiltViewModel<UserDataViewModel>()
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
-            settings.timeLimitAutoLoading =
-                sliderCustom(
-                    initValue = settings.timeLimitAutoLoading,
-                    enable = isLoading,
-                    text = stringResource(R.string.time_automatic_login) + " " +
-                            getString(settings.timeLimitAutoLoading)
-                ) {
-                    funcOfViewModel(it)
-                }
+    if (isLoading) CircularIndicatorCustom(text = stringResource(R.string.loading_loading))
+
+    val image: String by viewModel.image.observeAsState(initial = emptyString)
+    val name: String by viewModel.name.observeAsState(initial = emptyString)
+    val email: String by viewModel.email.observeAsState(initial = emptyString)
+    val pass: String by viewModel.pass.observeAsState(initial = emptyString)
+    val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
+
+    /** Error states */
+    val errorName: Boolean by viewModel.errorName.observeAsState(initial = false)
+    val errorEmail: Boolean by viewModel.errorEmail.observeAsState(initial = false)
+    val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
+    val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
+    val error: Boolean by viewModel.error.observeAsState(initial = false)
+    val errorLoadData: Boolean by viewModel.errorLoadData.observeAsState(initial = false)
+
+    var confirmDialog by remember { mutableStateOf(value = false) }
+    var cancelDialog by remember { mutableStateOf(value = false) }
+    var logOutDialog by remember { mutableStateOf(value = false) }
+
+    SpacerCustom(bottom = 16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        TextFieldCustomDataScreen(
+            text = name,
+            label = stringResource(R.string.name),
+            icon = Icons.Rounded.Person,
+            error = errorName,
+            errorText = stringResource(R.string.input_error_name)
+        ) {
+            viewModel.onDataInputChange(name = it.trim(), email = email, pass = pass)
         }
+
+        TextFieldCustomDataScreen(
+            text = email,
+            label = stringResource(R.string.email),
+            icon = Icons.Rounded.Email,
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Email,
+            error = errorEmail,
+            errorEmailExist = errorEmailExists,
+            errorText = stringResource(R.string.input_error_email)
+        ) {
+            viewModel.onDataInputChange(name = name, email = it.trim(), pass = pass)
+        }
+
+        TextFieldCustomDataScreen(
+            text = pass,
+            label = stringResource(R.string.password),
+            icon = Icons.Rounded.Key,
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Go, password = true,
+            keyboardActions = KeyboardActions(
+                onGo = {
+                    confirmDialog = true
+                }
+            ),
+            error = errorPass,
+            errorText = stringResource(R.string.input_error_pass)
+        ) {
+            viewModel.onDataInputChange(name = name, email = email, pass = it.trim())
+        }
+    }
+    SpacerCustom(bottom = 16.dp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ButtonCustomDataScreen(
+                text = stringResource(R.string.save),
+                enable = saveEnabled || error,
+                primary = true,
+                error = error
+            ) {
+                confirmDialog = true
+            }
+            ButtonCustomDataScreen(
+                text = stringResource(R.string.cancel),
+                enable = saveEnabled || error
+            ) {
+                cancelDialog = true
+            }
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            ButtonCustomDataScreen(text = stringResource(R.string.logout), tertiary = true) {
+                logOutDialog = true
+            }
+        }
+    }
+
+
+    if (logOutDialog) UserDataDialog(
+        title = stringResource(R.string.logout),
+        text = stringResource(R.string.sure_you_want_logout),
+        confirmButtonText = stringResource(R.string.yes_sure),
+        onDismissRequest = { logOutDialog = false },
+        onDismissButtonClick = { logOutDialog = false }
+    ) {
+        logOutDialog = false
+        viewModel.logOut().also {
+            viewModel.viewModelScope.launch {
+                it.join()
+                navController.navigate(AppScreensRoutes.LoginScreenBeta.route) {
+                    navController.backQueue.clear()
+                }
+            }
+        }
+    }
+
+    var showSnackBarErrors by remember { mutableStateOf(value = false) }
+
+    if (confirmDialog) UserDataDialog(
+        title = stringResource(R.string.save_user),
+        text = stringResource(R.string.sure_about_making_changes),
+        confirmButtonText = stringResource(R.string.yes_modify_it),
+        onDismissRequest = { confirmDialog = false },
+        onDismissButtonClick = { confirmDialog = false }
+    ) {
+        viewModel.onUpdateDataSend(name = name, email = email, pass = pass, image = image)
+        confirmDialog = false
+        if (error) showSnackBarErrors = true
+    }
+
+    if (cancelDialog) UserDataDialog(
+        title = stringResource(R.string.cancel_change_user),
+        text = stringResource(R.string.sure_not_make_changes),
+        confirmButtonText = stringResource(R.string.yes_not_make_it),
+        onDismissRequest = { cancelDialog = false },
+        onDismissButtonClick = { cancelDialog = false }
+    ) {
+        navController.popBackStack()
+    }
+
+
+    if (!error) showSnackBarErrors = false
+    if (showSnackBarErrors) SnackBarError {
+        showSnackBarErrors = false
+    }
+
+    if (errorLoadData) Toast.makeText(
+        LocalContext.current,
+        "Error al cargar los datos de usuario",
+        Toast.LENGTH_SHORT
+    ).show().let {
+        viewModel.resetErrorLoadData()
+    }
+
+}
+
+@Composable
+private fun ButtonCustomDataScreen(
+    text: String,
+    enable: Boolean = true,
+    primary: Boolean = false,
+    tertiary: Boolean = false,
+    error: Boolean = false,
+    onclick: () -> Unit
+) {
+    ButtonCustom(
+        text = text,
+        enable = enable,
+        tertiary = tertiary,
+        primary = primary,
+        error = error
+    ) {
+        onclick()
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun TextFieldCustomDataScreen(
+    text: String,
+    label: String,
+    icon: ImageVector,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Next,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    password: Boolean = false,
+    error: Boolean,
+    errorEmailExist: Boolean = false,
+    errorText: String,
+    onTextFieldChanged: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+        Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
+            textFieldCustomInputData(
+                text = text,
+                label = label,
+                placeholder = stringResource(R.string.write_your_label) + label.lowercase(),
+                icon = icon,
+                contentDescription = label + stringResource(R.string.label_of_user),
+                keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
+                    capitalization = capitalization,
+                    keyboardType = keyboardType,
+                    imeAction = imeAction
+                ),
+                keyboardActions = keyboardActions,
+                singleLine = true,
+                isError = error || errorEmailExist,
+                password = password,
+                onTextFieldChanged = { onTextFieldChanged(it) }
+            )
+        }
+        if (error || errorEmailExist) IconError(
+            errorText =
+            if (errorEmailExist) stringResource(R.string.error_email_exist)
+            else errorText
+        )
+
     }
 }
 
 @Composable
-private fun getString(needString: Int): String =
-    when (needString) {
-        0 -> stringResource(R.string.limit_time_one_day)
-        1 -> stringResource(R.string.limit_time_one_week)
-        2 -> stringResource(R.string.limit_time_two_week)
-        3 -> stringResource(R.string.limit_time_one_month)
-        4 -> stringResource(R.string.limit_time_six_month)
-        5 -> stringResource(R.string.limit_time_one_year)
-        else -> stringResource(R.string.unknown)
-    }
+private fun UserDataDialog(
+    title: String,
+    text: String,
+    confirmButtonText: String,
+    onDismissRequest: () -> Unit,
+    onDismissButtonClick: () -> Unit,
+    onConfirmButtonClick: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = { onDismissRequest() },
+        dismissButton = {
+            ButtonCustomDataScreen(text = stringResource(R.string.cancel)) { onDismissButtonClick() }
+        },
+        confirmButton = {
+            ButtonCustomDataScreen(text = confirmButtonText, primary = true) {
+                onConfirmButtonClick()
+            }
+        },
+        title = { androidx.compose.material3.Text(text = title) },
+        text = {
+            androidx.compose.material3.Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = TextStyle(textAlign = TextAlign.Center)
+            )
+        },
+        icon = {}
+    )
+}
 
 

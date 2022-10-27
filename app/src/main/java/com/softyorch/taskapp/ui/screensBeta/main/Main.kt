@@ -53,9 +53,7 @@ fun MainScreenBeta(navController: NavController) {
     )
     var index by remember { mutableStateOf(value = 0) }
 
-    //var isEnabled by remember { mutableStateOf(value = true) }
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
-    //val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val stateMain: StateMain by viewModel.stateMain.observeAsState(initial = StateMain.Main)
     val scope = rememberCoroutineScope()
 
@@ -67,10 +65,14 @@ fun MainScreenBeta(navController: NavController) {
                 items[index].name,
                 navController,
                 icon = items[index].icon,
-                showSettings = {
-                    viewModel.changeState(StateMain.Settings)
+                scopeSettings = {
+                    if (it) viewModel.changeState(StateMain.Settings)
+                    else viewModel.changeState(StateMain.Main)
                 },
-                showUserData = {}
+                scopeUserData = {
+                    if (it) viewModel.changeState(StateMain.UserData)
+                    else viewModel.changeState(StateMain.Main)
+                }
             )
         },
         bottomBar = {
@@ -79,7 +81,8 @@ fun MainScreenBeta(navController: NavController) {
                 items = items,
                 isEnabled = stateMain == StateMain.Main,
                 settings = stateMain == StateMain.Settings, //pasar a true para mostrar las settings
-                //show = show,
+                userData = stateMain == StateMain.UserData,
+                navController = navController,
                 onItemClick = { itemButton ->
                     scope.launch {
                         viewModel.visible()
@@ -95,12 +98,13 @@ fun MainScreenBeta(navController: NavController) {
             }
         },
         floatingActionButton = {
-            FABCustom(hide = stateMain == StateMain.Settings) {
-                //viewModel.hideSheet()
+            FABCustom(
+                hide = stateMain == StateMain.Settings || stateMain == StateMain.UserData
+            ) {
+
                 if (it) viewModel.changeState(StateMain.Main)
                 else viewModel.changeState(StateMain.NewTask)
-                //show = it
-                //isEnabled = it
+
             }
         },
         floatingActionButtonPosition = FabPosition.End,

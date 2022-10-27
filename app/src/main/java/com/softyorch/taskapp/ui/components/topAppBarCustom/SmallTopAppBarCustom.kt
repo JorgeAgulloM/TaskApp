@@ -36,10 +36,11 @@ fun SmallTopAppBarCustom(
     title: String,
     navController: NavController,
     icon: ImageVector,
-    showSettings: (Boolean) -> Unit,
-    showUserData: (Boolean) -> Unit
+    scopeSettings: (Boolean) -> Unit,
+    scopeUserData: (Boolean) -> Unit
 ) {
-    var show by remember { mutableStateOf(false) }
+    var showSettings by remember { mutableStateOf(false) }
+    var showUserData by remember { mutableStateOf(false) }
 
     TopAppBar(
         modifier = Modifier
@@ -73,15 +74,17 @@ fun SmallTopAppBarCustom(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
                 //navController.navigate(AppScreensRoutes.SettingsScreen.route)
-                show = !show
-                showSettings(show)
+                showSettings = !showSettings
+                scopeSettings(showSettings)
             }
 
             IconButtonTABC(
                 imageVector = Icons.Rounded.Person,
                 text = stringResource(R.string.content_image_user)
             ) {
-                navController.navigate(AppScreensRoutes.UserDataScreen.route)
+                //navController.navigate(AppScreensRoutes.UserDataScreen.route)
+                showUserData = !showUserData
+                scopeUserData(showUserData)
             }
         },
         elevation = ELEVATION_DP

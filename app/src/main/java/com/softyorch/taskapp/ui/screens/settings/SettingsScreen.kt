@@ -49,8 +49,8 @@ fun SettingsScreen(navController: NavHostController) {
                 title = stringResource(settings),
                 navController = navController,
                 icon = Icons.Rounded.Home,
-                showSettings = {},
-                showUserData = {}
+                scopeSettings = {},
+                scopeUserData = {}
             )
         }
     ) {

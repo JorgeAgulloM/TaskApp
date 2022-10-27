@@ -8,4 +8,5 @@ sealed interface StateMain{
     object Main: StateMain
     object NewTask: StateMain
     object Settings: StateMain
+    object UserData: StateMain
 }
