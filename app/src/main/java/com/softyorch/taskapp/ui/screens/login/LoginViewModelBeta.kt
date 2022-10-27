@@ -10,6 +10,7 @@ import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.ui.screens.commonErrors.IsActivatedButton
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
@@ -56,8 +57,8 @@ class LoginViewModelBeta @Inject constructor(
 
     private val _foundInputError = MutableLiveData<Boolean>()
 
-    private val _AccountModelInterface = MutableLiveData(AccountModel.accountModel)
-    val accountModel: LiveData<AccountModel> = _AccountModelInterface
+    private val _accountModel = MutableLiveData(AccountModel.accountModel)
+    val accountModel: LiveData<AccountModel> = _accountModel
 
     private val _errorsNewAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
     val errorsNewAccount: LiveData<ErrorAccountModel> = _errorsNewAccount
@@ -149,7 +150,7 @@ class LoginViewModelBeta @Inject constructor(
     /** New Account */
 
     fun onNewAccountInputChange(accountModel: AccountModel) {
-        _AccountModelInterface.value = accountModel
+        _accountModel.value = accountModel
         if (foundErrorNewAccountInterface.value == true) {
             _errorsNewAccount.postValue(withOutErrorsAccount(accountModel))
         } else _errorsNewAccount.postValue(
