@@ -123,5 +123,8 @@
     <string name="click_to_view">Click to view image</string>
     <string name="text_create_at">"\ Created at "\</string>
     <string name="have_you_account">"\ Already have an account? "\</string>
+    <string name="confirm">Confirm</string>
+    <string name="text_confim_data">Confirm your data</string>
+    <string name="content_confirm_data">Confirm your data</string>
 
 </resources>

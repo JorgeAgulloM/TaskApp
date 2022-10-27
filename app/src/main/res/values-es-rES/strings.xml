@@ -123,5 +123,8 @@
     <string name="click_to_view">Click para ver la imagen</string>
     <string name="text_create_at">"\Creado en "\</string>
     <string name="have_you_account">"\¿Ya tienes cuenta? "\</string>
+    <string name="confirm">Confirmar</string>
+    <string name="text_confim_data">Confirma tus datos</string>
+    <string name="content_confirm_data">Confirma tus datos</string>
 
 </resources>
