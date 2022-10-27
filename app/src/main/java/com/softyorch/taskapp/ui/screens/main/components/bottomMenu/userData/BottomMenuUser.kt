@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
@@ -34,8 +36,8 @@ fun BottomMenuUser(
     val calculateHeight = (maxHeight / 5) * 4
     val sheetBrush = Brush.verticalGradient(
         listOf(
-            MaterialTheme.colorScheme.onSecondary,
-            MaterialTheme.colorScheme.secondaryContainer
+            MaterialTheme.colorScheme.onTertiary,
+            MaterialTheme.colorScheme.tertiary
         )
     )
 
@@ -52,11 +54,17 @@ fun BottomMenuUser(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
+                .padding(
+                    top = (SMALL_TOP_BAR_HEIGHT + 8).dp,
+                    start = 8.dp,
+                    end = 8.dp
+                )
                 .height(calculateHeight.dp)
                 .shadow(
                     ELEVATION_DP,
-                    shape = MaterialTheme.shapes.large
+                    shape = MaterialTheme.shapes.large,
+                    ambientColor = MaterialTheme.colorScheme.tertiary,
+                    spotColor = MaterialTheme.colorScheme.tertiary
                 )
                 .background(
                     brush = sheetBrush,
@@ -72,7 +80,7 @@ fun BottomMenuUser(
                 horizontalArrangement = Arrangement.Center
             ) {
                 ButtonCustom(
-                    text = "Salir",
+                    text = stringResource(go_home),
                     onClick = { scope() }
                 )
             }
