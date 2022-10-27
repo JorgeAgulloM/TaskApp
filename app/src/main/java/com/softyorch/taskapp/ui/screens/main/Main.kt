@@ -129,14 +129,17 @@ fun Body(
 
     val contentBrush = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.onSecondary
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.primary
         )
     )
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = contentBrush)
+            .background(
+                brush = contentBrush
+            //color = MaterialTheme.colorScheme.background
+            )
             .padding(
                 start = 4.dp,
                 end = 4.dp
