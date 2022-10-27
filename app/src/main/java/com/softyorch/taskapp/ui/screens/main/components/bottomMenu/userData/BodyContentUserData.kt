@@ -4,7 +4,6 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.bottomMenu.userData
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -35,6 +34,7 @@ import com.softyorch.taskapp.ui.components.SnackBarError
 import com.softyorch.taskapp.ui.components.SpacerCustom
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.utils.extensions.toastError
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +59,6 @@ fun BodyContentUserData(
     val errorLoadData: Boolean by viewModel.errorLoadData.observeAsState(initial = false)
 
     var confirmDialog by remember { mutableStateOf(value = false) }
-    var cancelDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
 
     SpacerCustom(bottom = 24.dp)
@@ -128,19 +127,11 @@ fun BodyContentUserData(
             ) {
                 confirmDialog = true
             }
-            ButtonCustomDataScreen(
-                text = stringResource(R.string.cancel),
-                enable = saveEnabled || error
-            ) {
-                cancelDialog = true
-            }
-            Spacer(modifier = Modifier.padding(top = 16.dp))
             ButtonCustomDataScreen(text = stringResource(R.string.logout), tertiary = true) {
                 logOutDialog = true
             }
         }
     }
-
 
     if (logOutDialog) UserDataDialog(
         title = stringResource(R.string.logout),
@@ -174,28 +165,14 @@ fun BodyContentUserData(
         if (error) showSnackBarErrors = true
     }
 
-    if (cancelDialog) UserDataDialog(
-        title = stringResource(R.string.cancel_change_user),
-        text = stringResource(R.string.sure_not_make_changes),
-        confirmButtonText = stringResource(R.string.yes_not_make_it),
-        onDismissRequest = { cancelDialog = false },
-        onDismissButtonClick = { cancelDialog = false }
-    ) {
-        navController.popBackStack()
-    }
-
-
     if (!error) showSnackBarErrors = false
     if (showSnackBarErrors) SnackBarError {
         showSnackBarErrors = false
     }
 
-    if (errorLoadData) Toast.makeText(
-        LocalContext.current,
-        "Error al cargar los datos de usuario",
-        Toast.LENGTH_SHORT
-    ).show().let {
-        viewModel.resetErrorLoadData()
-    }
+    if (errorLoadData) LocalContext.current
+        .toastError("Error al cargar los datos de usuario"){
+            viewModel.resetErrorLoadData()
+        }
 
 }
