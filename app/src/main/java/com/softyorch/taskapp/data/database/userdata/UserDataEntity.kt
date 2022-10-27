@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
-import com.softyorch.taskapp.ui.screensBeta.login.model.NewAccountModel
+import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
 

@@ -2,22 +2,12 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.domain.userdataUseCase
+package com.softyorch.taskapp.ui.screens.main.components.bottomMenu.settings.model
 
-
-import com.softyorch.taskapp.ui.screens.main.components.bottomMenu.settings.model.SettingsModel
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
 import java.util.*
 
-data class UserDataModelDomain(
-    val id: UUID = UUID.randomUUID(),
-    var username: String = emptyString,
-    var userEmail: String = emptyString,
-    var userPass: String = emptyString,
-    var userPicture: String = emptyString,
-    /**
-     * User Settings
-     */
+data class SettingsModel(
     var lastLoginDate: Date? = null,
     var rememberMe: Boolean = false,
     var lightDarkAutomaticTheme: Boolean = true,
@@ -28,7 +18,7 @@ data class UserDataModelDomain(
     var textSize: Int = 0
 )
 
-fun SettingsModel.mapToUserDataModelDomain(): UserDataModelDomain = UserDataModelDomain(
+fun UserDataModelDomain.mapToSettingsModel(): SettingsModel = SettingsModel(
     lastLoginDate = this.lastLoginDate,
     rememberMe = this.rememberMe,
     lightDarkAutomaticTheme = this.lightDarkAutomaticTheme,
@@ -38,4 +28,3 @@ fun SettingsModel.mapToUserDataModelDomain(): UserDataModelDomain = UserDataMode
     timeLimitAutoLoading = this.timeLimitAutoLoading,
     textSize = this.textSize
 )
-
