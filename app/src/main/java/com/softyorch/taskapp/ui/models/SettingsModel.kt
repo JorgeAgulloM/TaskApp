@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.main.components.bottomMenu.settings.model
+package com.softyorch.taskapp.ui.models
 
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
 import java.util.*
