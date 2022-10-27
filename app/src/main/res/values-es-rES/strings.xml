@@ -5,7 +5,7 @@
     <string name="io_exception_create_media_store_entry">No se ha podido crear la entrada de MediaStore</string>
     <string name="add_task">Añadir tarea</string>
     <string name="go_to_home">Ir a Inicio</string>
-    <string name="go_home">A Inicio</string>
+    <string name="go_home">Volver a Inicio</string>
     <string name="history">Historial</string>
     <string name="settings">Ajustes</string>
     <string name="image_of_user">Imagen de usuario</string>
