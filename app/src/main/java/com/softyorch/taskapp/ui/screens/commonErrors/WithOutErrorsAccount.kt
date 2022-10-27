@@ -4,7 +4,7 @@
 
 package com.softyorch.taskapp.ui.screens.commonErrors
 
-import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
 
 interface WithOutErrorsAccount :
@@ -13,8 +13,8 @@ interface WithOutErrorsAccount :
 
     fun withOutErrorsNewAccount(
         newAccountModel: NewAccountModel
-    ): ErrorNewModel {
-        val errors = ErrorNewModel()
+    ): ErrorAccountModel {
+        val errors = ErrorAccountModel()
         newAccountModel.apply {
             !isValidName(userName).also { errors.name = !it }
             !isValidEmail(userEmail).also { errors.email = !it }

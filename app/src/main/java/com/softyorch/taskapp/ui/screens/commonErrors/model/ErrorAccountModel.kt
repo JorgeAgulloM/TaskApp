@@ -4,7 +4,7 @@
 
 package com.softyorch.taskapp.ui.screens.commonErrors.model
 
-data class ErrorNewModel(
+data class ErrorAccountModel(
     var name: Boolean = false,
     var email: Boolean = false,
     var emailRepeat: Boolean = false,
@@ -15,6 +15,6 @@ data class ErrorNewModel(
     var isActivatedButton: Boolean = false
 ) {
     companion object {
-        val errorNewModel = ErrorNewModel()
+        val errorAccountModel = ErrorAccountModel()
     }
 }

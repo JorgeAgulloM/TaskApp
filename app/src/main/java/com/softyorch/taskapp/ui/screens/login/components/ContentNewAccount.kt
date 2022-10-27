@@ -9,13 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
 
 @Composable
 fun ContentNewAccount(
     newAccountModel: NewAccountModel,
-    errors: ErrorNewModel,
+    errors: ErrorAccountModel,
     onGo: () -> Unit,
     onNewAccountDataChange: (NewAccountModel) -> Unit
 ) {

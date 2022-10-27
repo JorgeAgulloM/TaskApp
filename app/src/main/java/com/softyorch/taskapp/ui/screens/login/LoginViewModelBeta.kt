@@ -14,7 +14,7 @@ import com.softyorch.taskapp.ui.screens.commonErrors.IsActivatedButton
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
-import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorNewModel
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -59,8 +59,8 @@ class LoginViewModelBeta @Inject constructor(
     private val _newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
     val newAccountModel: LiveData<NewAccountModel> = _newAccountModelInterface
 
-    private val _errorsNewAccount = MutableLiveData(ErrorNewModel.errorNewModel)
-    val errorsNewAccount: LiveData<ErrorNewModel> = _errorsNewAccount
+    private val _errorsNewAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
+    val errorsNewAccount: LiveData<ErrorAccountModel> = _errorsNewAccount
 
     private val foundErrorNewAccountInterface = MutableLiveData(false)
 
@@ -143,7 +143,7 @@ class LoginViewModelBeta @Inject constructor(
 
     private fun resetErrors() {
         _errorsLogin.postValue(ErrorLoginModel.errorLoginModel)
-        _errorsNewAccount.postValue(ErrorNewModel.errorNewModel)
+        _errorsNewAccount.postValue(ErrorAccountModel.errorAccountModel)
     }
 
     /** New Account */
@@ -153,7 +153,7 @@ class LoginViewModelBeta @Inject constructor(
         if (foundErrorNewAccountInterface.value == true) {
             _errorsNewAccount.postValue(withOutErrorsNewAccount(newAccountModel))
         } else _errorsNewAccount.postValue(
-            ErrorNewModel(isActivatedButton = isActivatedButton(newAccountModel))
+            ErrorAccountModel(isActivatedButton = isActivatedButton(newAccountModel))
         )
     }
 
