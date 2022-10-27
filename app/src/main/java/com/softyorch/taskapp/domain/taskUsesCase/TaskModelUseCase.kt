@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.domain.taskUsesCase
 
 import com.softyorch.taskapp.data.repository.task.TaskModel
-import com.softyorch.taskapp.ui.screens.main.components.fabCustom.model.NewTaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 import com.softyorch.taskapp.utils.emptyString
 import java.time.Instant
 import java.util.*

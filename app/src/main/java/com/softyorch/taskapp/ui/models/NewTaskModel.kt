@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.taskapp.ui.screens.main.components.fabCustom.model
+package com.softyorch.taskapp.ui.models
 
 import com.softyorch.taskapp.utils.emptyString
 import java.time.Instant

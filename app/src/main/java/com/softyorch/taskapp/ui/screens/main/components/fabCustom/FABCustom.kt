@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.ErrorsNewTaskModel
-import com.softyorch.taskapp.ui.screens.main.components.fabCustom.model.NewTaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.TextFieldCustomNewTaskDescription
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.TextFieldCustomNewTaskName
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.ShowTaskNewTask

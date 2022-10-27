@@ -4,7 +4,7 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors
 
-import com.softyorch.taskapp.ui.screens.main.components.fabCustom.model.NewTaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 
 interface WithOutErrorsNewTask : IsValidTitle, IsValidDescription, IsActivatedButton {
     fun withOutErrors(newTaskModel: NewTaskModel): ErrorsNewTaskModel {

@@ -13,7 +13,7 @@ import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.mapToModelUseCases
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.ErrorsNewTaskModel
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.WithOutErrorsNewTask
-import com.softyorch.taskapp.ui.screens.main.components.fabCustom.model.NewTaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

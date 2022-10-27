@@ -4,7 +4,7 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors
 
-import com.softyorch.taskapp.ui.screens.main.components.fabCustom.model.NewTaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 
 interface IsActivatedButton {
     fun isActivated(newTaskModel: NewTaskModel) =
