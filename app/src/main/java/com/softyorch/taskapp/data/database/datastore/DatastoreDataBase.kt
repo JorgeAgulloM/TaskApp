@@ -22,7 +22,7 @@ class DatastoreDataBase @Inject constructor(private val context: Context) {
 
     suspend fun saveData(userDataEntity: UserDataEntity) {
         context.datastore.edit { setting ->
-            setting[stringPreferencesKey(Id.name)] = UUIDConverter().fromUUID(userDataEntity.id)!!
+            setting[stringPreferencesKey(Id.name)] = UUIDConverter().fromUUID(userDataEntity.id)
             setting[stringPreferencesKey(Name.name)] = userDataEntity.username
             setting[stringPreferencesKey(Email.name)] = userDataEntity.userEmail
             setting[stringPreferencesKey(Pass.name)] = userDataEntity.userPass
