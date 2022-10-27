@@ -5,15 +5,17 @@
 package com.softyorch.taskapp.ui.screens.main.components.common
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.utils.emptyString
-
 
 @Composable
 fun ShowTask(
@@ -50,6 +52,20 @@ fun ShowTask(
             if (completedDate.isNotBlank()) TextCustom(text = completedDate)
         }
     }
+}
+
+@Composable
+private fun TextCustom(
+    text: String,
+    description: Boolean = false
+) {
+    Text(
+        modifier = Modifier.padding(4.dp),
+        text = text,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = if (description) FontWeight.SemiBold else FontWeight.Normal
+    )
 }
 
 
