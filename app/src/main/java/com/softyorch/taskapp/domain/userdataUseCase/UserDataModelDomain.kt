@@ -4,7 +4,8 @@
 
 package com.softyorch.taskapp.domain.userdataUseCase
 
-import com.softyorch.taskapp.ui.screens.settings.SettingsModel
+
+import com.softyorch.taskapp.ui.screensBeta.main.components.bottomMenu.settings.model.SettingsModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
