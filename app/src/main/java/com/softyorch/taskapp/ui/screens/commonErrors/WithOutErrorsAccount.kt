@@ -5,23 +5,23 @@
 package com.softyorch.taskapp.ui.screens.commonErrors
 
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
+import com.softyorch.taskapp.ui.screens.login.model.AccountModel
 
 interface WithOutErrorsAccount :
     IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat,
     IsActivatedButton {
 
     fun withOutErrorsNewAccount(
-        newAccountModel: NewAccountModel
+        accountModel: AccountModel
     ): ErrorAccountModel {
         val errors = ErrorAccountModel()
-        newAccountModel.apply {
+        accountModel.apply {
             !isValidName(userName).also { errors.name = !it }
             !isValidEmail(userEmail).also { errors.email = !it }
             !isValidEmail(userEmail, userEmailRepeat).also { errors.emailRepeat = !it }
             !isValidPass(userPass).also { errors.pass = !it }
             !isValidPass(userPass, userPassRepeat).also { errors.passRepeat = !it }
-            isActivatedButton(newAccountModel).also { errors.isActivatedButton = it }
+            isActivatedButton(accountModel).also { errors.isActivatedButton = it }
         }
 
         errors.let {

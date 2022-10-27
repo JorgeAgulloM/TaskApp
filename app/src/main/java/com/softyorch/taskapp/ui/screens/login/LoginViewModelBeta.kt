@@ -56,8 +56,8 @@ class LoginViewModelBeta @Inject constructor(
 
     private val _foundInputError = MutableLiveData<Boolean>()
 
-    private val _newAccountModelInterface = MutableLiveData(NewAccountModel.newAccountModel)
-    val newAccountModel: LiveData<NewAccountModel> = _newAccountModelInterface
+    private val _AccountModelInterface = MutableLiveData(AccountModel.accountModel)
+    val accountModel: LiveData<AccountModel> = _AccountModelInterface
 
     private val _errorsNewAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
     val errorsNewAccount: LiveData<ErrorAccountModel> = _errorsNewAccount
@@ -148,22 +148,22 @@ class LoginViewModelBeta @Inject constructor(
 
     /** New Account */
 
-    fun onNewAccountInputChange(newAccountModel: NewAccountModel) {
-        _newAccountModelInterface.value = newAccountModel
+    fun onNewAccountInputChange(accountModel: AccountModel) {
+        _AccountModelInterface.value = accountModel
         if (foundErrorNewAccountInterface.value == true) {
-            _errorsNewAccount.postValue(withOutErrorsNewAccount(newAccountModel))
+            _errorsNewAccount.postValue(withOutErrorsNewAccount(accountModel))
         } else _errorsNewAccount.postValue(
-            ErrorAccountModel(isActivatedButton = isActivatedButton(newAccountModel))
+            ErrorAccountModel(isActivatedButton = isActivatedButton(accountModel))
         )
     }
 
     suspend fun onNewAccountDataSend(
-        newAccountModel: NewAccountModel
+        accountModel: AccountModel
     ): Boolean {
         _isLoading.postValue(true)
-        withOutErrorsNewAccount(newAccountModel).let { errors ->
+        withOutErrorsNewAccount(accountModel).let { errors ->
             if (!errors.error) {
-                addNewUser(newAccountModel).also { isError -> //When true returned, the user has been created else, this email exist now.
+                addNewUser(accountModel).also { isError -> //When true returned, the user has been created else, this email exist now.
                     errors.emailExists = !isError
                     errors.error = !isError
                     _errorsNewAccount.postValue(errors)
@@ -190,8 +190,8 @@ class LoginViewModelBeta @Inject constructor(
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
 
-    private suspend fun addNewUser(newAccountModel: NewAccountModel): Boolean =
-        userDataUseCases.newAccountUser(newAccountModel.mapToUserDataEntity())
+    private suspend fun addNewUser(accountModel: AccountModel): Boolean =
+        userDataUseCases.newAccountUser(accountModel.mapToUserDataEntity())
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)

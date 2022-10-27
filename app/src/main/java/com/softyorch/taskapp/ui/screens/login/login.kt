@@ -32,7 +32,7 @@ import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
 import com.softyorch.taskapp.ui.screens.login.model.MediaModel
-import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
+import com.softyorch.taskapp.ui.screens.login.model.AccountModel
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.*
@@ -56,7 +56,7 @@ fun LoginScreenBeta(navController: NavController) {
     val loginModel by viewModel.loginModel.observeAsState(initial = LoginModel.loginModelEmpty)
     val errorsLoginModel by viewModel.errorsLogin.observeAsState(ErrorLoginModel.errorLoginModel)
 
-    val newAccountModel by viewModel.newAccountModel.observeAsState(NewAccountModel.newAccountModel)
+    val accountModel by viewModel.accountModel.observeAsState(AccountModel.accountModel)
     val errorsNewAccount by viewModel.errorsNewAccount.observeAsState(ErrorAccountModel.errorAccountModel)
 
     val pexelsImage by viewModel.pexelsImage.observeAsState(initial = MediaModel.MediaModelEmpty)
@@ -119,12 +119,12 @@ fun LoginScreenBeta(navController: NavController) {
                 if (showBody) {
                     if (newAccount) {
                         NewAccountBody(
-                            isLoading, autoLogin, newAccountModel, errorsNewAccount,
+                            isLoading, autoLogin, accountModel, errorsNewAccount,
                             viewModel::hideNewAccount, viewModel::onNewAccountInputChange
                         ) {
                             focusManager.clearFocus()
                             scope.launch {
-                                viewModel.onNewAccountDataSend(newAccountModel).also {
+                                viewModel.onNewAccountDataSend(accountModel).also {
                                     if (it) {
                                         if (errorsNewAccount.emailExists) showSnackBarErrors = true
                                     } else {

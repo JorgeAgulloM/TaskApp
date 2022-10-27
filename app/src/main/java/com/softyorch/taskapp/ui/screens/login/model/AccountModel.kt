@@ -2,7 +2,7 @@ package com.softyorch.taskapp.ui.screens.login.model
 
 import com.softyorch.taskapp.utils.emptyString
 
-data class NewAccountModel(
+data class AccountModel(
     var userName: String,
     var userEmail: String,
     var userEmailRepeat: String,
@@ -10,7 +10,7 @@ data class NewAccountModel(
     var userPassRepeat: String,
 ) {
     companion object {
-        val newAccountModel = NewAccountModel(
+        val accountModel = AccountModel(
             userName = emptyString,
             userEmail = emptyString,
             userEmailRepeat = emptyString,

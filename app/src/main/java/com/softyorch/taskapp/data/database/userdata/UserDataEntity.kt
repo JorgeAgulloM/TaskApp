@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
-import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
+import com.softyorch.taskapp.ui.screens.login.model.AccountModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
@@ -29,7 +29,7 @@ data class UserDataEntity(
     @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
 )
 
-fun NewAccountModel.mapToUserDataEntity() = UserDataEntity(
+fun AccountModel.mapToUserDataEntity() = UserDataEntity(
     username = this.userName,
     userEmail = this.userEmail,
     userPass = this.userPass

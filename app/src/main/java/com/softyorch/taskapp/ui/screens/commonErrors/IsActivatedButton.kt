@@ -5,18 +5,18 @@
 package com.softyorch.taskapp.ui.screens.commonErrors
 
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
-import com.softyorch.taskapp.ui.screens.login.model.NewAccountModel
+import com.softyorch.taskapp.ui.screens.login.model.AccountModel
 
 interface IsActivatedButton {
     fun isActivatedButton(loginModel: LoginModel): Boolean =
         loginModel.userEmail.isNotEmpty() && loginModel.userPass.isNotEmpty()
 
     fun isActivatedButton(
-        newAccountModel: NewAccountModel
+        accountModel: AccountModel
     ): Boolean =
-        newAccountModel.userName.isNotEmpty() &&
-        newAccountModel.userEmail.isNotEmpty() &&
-        newAccountModel.userEmailRepeat.isNotEmpty() &&
-        newAccountModel.userPass.isNotEmpty() &&
-        newAccountModel.userPassRepeat.isNotEmpty()
+        accountModel.userName.isNotEmpty() &&
+        accountModel.userEmail.isNotEmpty() &&
+        accountModel.userEmailRepeat.isNotEmpty() &&
+        accountModel.userPass.isNotEmpty() &&
+        accountModel.userPassRepeat.isNotEmpty()
 }
