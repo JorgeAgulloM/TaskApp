@@ -47,7 +47,11 @@ fun SmallTopAppBarCustom(
             .systemBarsPadding()
             .padding(4.dp)
             .height(SMALL_TOP_BAR_HEIGHT.dp)
-            .shadow(elevation = ELEVATION_DP, shape = MaterialTheme.shapes.large),
+            .shadow(
+                elevation = ELEVATION_DP*2,
+                shape = MaterialTheme.shapes.large,
+                spotColor = MaterialTheme.colorScheme.primary
+            ),
         backgroundColor = MaterialTheme.colorScheme.background,
         title = {
             Text(
