@@ -32,8 +32,9 @@ import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SnackBarError
 import com.softyorch.taskapp.ui.components.SpacerCustom
+import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
-import com.softyorch.taskapp.utils.emptyString
+import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.utils.extensions.toastError
 import kotlinx.coroutines.launch
 
@@ -43,7 +44,9 @@ fun BodyContentUserData(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
-    val userData by viewModel.userDataEntityActive.observeAsState()
+    val userData: AccountModel by viewModel.userDataEntityActive.observeAsState(
+        initial = AccountModel.accountModel
+    )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
     if (isLoading) CircularIndicatorCustom(text = stringResource(R.string.loading_loading))
@@ -51,12 +54,11 @@ fun BodyContentUserData(
     val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
 
     /** Error states */
-    val errorName: Boolean by viewModel.errorName.observeAsState(initial = false)
-    val errorEmail: Boolean by viewModel.errorEmail.observeAsState(initial = false)
-    val errorEmailExists: Boolean by viewModel.errorEmailExists.observeAsState(initial = false)
-    val errorPass: Boolean by viewModel.errorPass.observeAsState(initial = false)
-    val error: Boolean by viewModel.error.observeAsState(initial = false)
-    val errorLoadData: Boolean by viewModel.errorLoadData.observeAsState(initial = false)
+    val errors: ErrorAccountModel by viewModel.errorsAccount.observeAsState(
+        initial = ErrorAccountModel.errorAccountModel
+    )
+
+    val showErrorLoad: Boolean by viewModel.showErrorLoadData.observeAsState(initial = false)
 
     var confirmDialog by remember { mutableStateOf(value = false) }
     var logOutDialog by remember { mutableStateOf(value = false) }
@@ -70,30 +72,30 @@ fun BodyContentUserData(
     ) {
 
         TextFieldCustomDataScreen(
-            text = userData?.username ?: emptyString,
+            text = userData.userName,
             label = stringResource(R.string.name),
             icon = Icons.Rounded.Person,
-            error = errorName,
+            error = errors.name,
             errorText = stringResource(R.string.input_error_name)
         ) {
-            viewModel.onDataInputChange(userData!!.copy(username = it.trim()))
+            viewModel.onDataInputChange(userData.copy(userName = it.trim()))
         }
 
         TextFieldCustomDataScreen(
-            text = userData?.userEmail ?: emptyString,
+            text = userData.userEmail,
             label = stringResource(R.string.email),
             icon = Icons.Rounded.Email,
             capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Email,
-            error = errorEmail,
-            errorEmailExist = errorEmailExists,
+            error = errors.email,
+            errorEmailExist = errors.emailExists,
             errorText = stringResource(R.string.input_error_email)
         ) {
-            viewModel.onDataInputChange(userData!!.copy(userEmail = it.trim()))
+            viewModel.onDataInputChange(userData.copy(userEmail = it.trim()))
         }
 
         TextFieldCustomDataScreen(
-            text = userData?.userPass ?: emptyString,
+            text = userData.userPass,
             label = stringResource(R.string.password),
             icon = Icons.Rounded.Key,
             keyboardType = KeyboardType.Password,
@@ -103,10 +105,10 @@ fun BodyContentUserData(
                     confirmDialog = true
                 }
             ),
-            error = errorPass,
+            error = errors.pass,
             errorText = stringResource(R.string.input_error_pass)
         ) {
-            viewModel.onDataInputChange(userData!!.copy(userPass = it.trim()))
+            viewModel.onDataInputChange(userData.copy(userPass = it.trim()))
         }
     }
     SpacerCustom(bottom = 16.dp)
@@ -121,9 +123,9 @@ fun BodyContentUserData(
         ) {
             ButtonCustomDataScreen(
                 text = stringResource(R.string.save),
-                enable = saveEnabled || error,
+                enable = saveEnabled || errors.error,
                 primary = true,
-                error = error
+                error = errors.error
             ) {
                 confirmDialog = true
             }
@@ -153,26 +155,31 @@ fun BodyContentUserData(
 
     var showSnackBarErrors by remember { mutableStateOf(value = false) }
 
-    if (confirmDialog) UserDataDialog(
-        title = stringResource(R.string.save_user),
-        text = stringResource(R.string.sure_about_making_changes),
-        confirmButtonText = stringResource(R.string.yes_modify_it),
+    if (confirmDialog) UserDataConfirmDialog(
+        userData = userData,
+        errorEmailRepeat = errors.emailRepeat,
+        errorPassRepeat = errors.passRepeat,
         onDismissRequest = { confirmDialog = false },
-        onDismissButtonClick = { confirmDialog = false }
-    ) {
-        viewModel.onUpdateDataSend(userData!!)
-        confirmDialog = false
-        if (error) showSnackBarErrors = true
-    }
+        onDismissButtonClick = { confirmDialog = false },
+        onConfirmButtonClick = { userConfirmed ->
+            viewModel.onUpdateDataSend(userConfirmed).let { error ->
+                if (!error) {
+                    confirmDialog = false
+                } else {
+                    showSnackBarErrors = true
+                }
+            }
+        }
+    )
 
-    if (!error) showSnackBarErrors = false
+    if (!errors.error) showSnackBarErrors = false
     if (showSnackBarErrors) SnackBarError {
         showSnackBarErrors = false
     }
 
-    if (errorLoadData) LocalContext.current
-        .toastError("Error al cargar los datos de usuario"){
-            viewModel.resetErrorLoadData()
+    if (showErrorLoad) LocalContext.current
+        .toastError("Error al cargar los datos de usuario") {
+            viewModel.resetShowErrorLoad()
         }
 
 }
