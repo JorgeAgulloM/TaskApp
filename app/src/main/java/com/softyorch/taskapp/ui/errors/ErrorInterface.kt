@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.ui.errors
 
 import android.util.Patterns
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.ui.errors.ErrorUserInput.*
 import com.softyorch.taskapp.utils.REGEX_PASSWORD
 import java.util.regex.Pattern
@@ -45,11 +46,11 @@ interface ErrorInterface {
         return errors
     }
 
-    fun withOutErrors(name: String, email: String, pass: String): Error {
+    fun withOutErrors(userData: UserDataEntity): Error {
         val errors = Error()
-        !isValidName(name = name).also { errors.name = !it }
-        !isValidEmail(email = email).also { errors.email = !it }
-        !isValidPass(pass = pass).also { errors.pass = !it }
+        !isValidName(name = userData.username).also { errors.name = !it }
+        !isValidEmail(email = userData.userEmail).also { errors.email = !it }
+        !isValidPass(pass = userData.userPass).also { errors.pass = !it }
 
         errors.let { it.error = (it.name || it.email || it.pass) }
 

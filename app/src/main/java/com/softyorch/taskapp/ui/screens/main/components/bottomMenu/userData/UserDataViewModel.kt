@@ -29,23 +29,11 @@ class UserDataViewModel @Inject constructor(
     private val _image = MutableLiveData<String>()
     val image: LiveData<String> = _image
 
-    private val _name = MutableLiveData<String>()
-    val name: LiveData<String> = _name
-
-    private val _email = MutableLiveData<String>()
-    val email: LiveData<String> = _email
-
-    private val _pass = MutableLiveData<String>()
-    val pass: LiveData<String> = _pass
-
     private val _saveEnabled = MutableLiveData<Boolean>()
     val saveEnabled: LiveData<Boolean> = _saveEnabled
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _savingImage = MutableLiveData<Boolean>()
-    val savingImage: LiveData<Boolean> = _savingImage
 
     private val _errorName = MutableLiveData<Boolean>()
     val errorName: LiveData<Boolean> = _errorName
@@ -76,44 +64,22 @@ class UserDataViewModel @Inject constructor(
         loadUserData()
     }
 
-    fun onDataInputChange(name: String, email: String, pass: String) {
-        _name.value = name
-        _email.value = email
-        _pass.value = pass
+    fun onDataInputChange(userData: UserDataEntity) {
+        _userDataEntityActive.value = userData
         _saveEnabled.value = true
         if (_foundError.value == true) {
-            setErrorsData(error = withOutErrors(name = name, email = email, pass = pass))
+            setErrorsData(error = withOutErrors(userData))
         }
-    }
-
-    fun onImageInputChange(image: String) {
-        _savingImage.value = true
-        _isLoading.value = true
-        viewModelScope.launch {
-            _image.value = image
-            _saveEnabled.value = true
-        }.let {
-            _isLoading.postValue(false)
-        }
-    }
-
-    fun resetSavingImage() {
-        _savingImage.value = false
     }
 
     fun onUpdateDataSend(
-        name: String, email: String, pass: String, image: String
+        userData: UserDataEntity
     ) {
         _isLoading.value = true
-        withOutErrors(name = name, email = email, pass = pass).let { error ->
+        withOutErrors(userData).let { error ->
             setErrorsData(error = error)
             if (!error.error) {
-                _userDataEntityActive.value?.let { user ->
-                    user.username = name
-                    user.userEmail = email
-                    user.userPass = pass
-                    user.userPicture = image
-                }
+                _userDataEntityActive.value = userData
                 viewModelScope.launch(Dispatchers.IO) {
                     userDataEntityActive.value?.let { userData ->
                         updateUserData(userDataEntity = userData)
@@ -154,10 +120,6 @@ class UserDataViewModel @Inject constructor(
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
         getData().collect { data ->
             _userDataEntityActive.postValue(data)
-            _name.postValue(data.username)
-            _email.postValue(data.userEmail)
-            _pass.postValue(data.userPass)
-            _image.postValue(data.userPicture)
             _isLoading.postValue(false)
         }
     }

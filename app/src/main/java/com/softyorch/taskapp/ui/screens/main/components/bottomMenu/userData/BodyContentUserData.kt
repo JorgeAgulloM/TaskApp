@@ -43,14 +43,11 @@ fun BodyContentUserData(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
+    val userData by viewModel.userDataEntityActive.observeAsState()
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 
     if (isLoading) CircularIndicatorCustom(text = stringResource(R.string.loading_loading))
 
-    val image: String by viewModel.image.observeAsState(initial = emptyString)
-    val name: String by viewModel.name.observeAsState(initial = emptyString)
-    val email: String by viewModel.email.observeAsState(initial = emptyString)
-    val pass: String by viewModel.pass.observeAsState(initial = emptyString)
     val saveEnabled: Boolean by viewModel.saveEnabled.observeAsState(initial = false)
 
     /** Error states */
@@ -74,17 +71,17 @@ fun BodyContentUserData(
     ) {
 
         TextFieldCustomDataScreen(
-            text = name,
+            text = userData?.username ?: emptyString,
             label = stringResource(R.string.name),
             icon = Icons.Rounded.Person,
             error = errorName,
             errorText = stringResource(R.string.input_error_name)
         ) {
-            viewModel.onDataInputChange(name = it.trim(), email = email, pass = pass)
+            viewModel.onDataInputChange(userData!!.copy(username = it.trim()))
         }
 
         TextFieldCustomDataScreen(
-            text = email,
+            text = userData?.userEmail ?: emptyString,
             label = stringResource(R.string.email),
             icon = Icons.Rounded.Email,
             capitalization = KeyboardCapitalization.None,
@@ -93,11 +90,11 @@ fun BodyContentUserData(
             errorEmailExist = errorEmailExists,
             errorText = stringResource(R.string.input_error_email)
         ) {
-            viewModel.onDataInputChange(name = name, email = it.trim(), pass = pass)
+            viewModel.onDataInputChange(userData!!.copy(userEmail = it.trim()))
         }
 
         TextFieldCustomDataScreen(
-            text = pass,
+            text = userData?.userPass ?: emptyString,
             label = stringResource(R.string.password),
             icon = Icons.Rounded.Key,
             keyboardType = KeyboardType.Password,
@@ -110,7 +107,7 @@ fun BodyContentUserData(
             error = errorPass,
             errorText = stringResource(R.string.input_error_pass)
         ) {
-            viewModel.onDataInputChange(name = name, email = email, pass = it.trim())
+            viewModel.onDataInputChange(userData!!.copy(userPass = it.trim()))
         }
     }
     SpacerCustom(bottom = 16.dp)
@@ -172,7 +169,7 @@ fun BodyContentUserData(
         onDismissRequest = { confirmDialog = false },
         onDismissButtonClick = { confirmDialog = false }
     ) {
-        viewModel.onUpdateDataSend(name = name, email = email, pass = pass, image = image)
+        viewModel.onUpdateDataSend(userData!!)
         confirmDialog = false
         if (error) showSnackBarErrors = true
     }
