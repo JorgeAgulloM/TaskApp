@@ -5,7 +5,7 @@
 package com.softyorch.taskapp.ui.screens.commonErrors
 
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.screens.login.model.AccountModel
+import com.softyorch.taskapp.ui.models.AccountModel
 
 interface WithOutErrorsAccount :
     IsValidName, IsValidEmail, IsValidEmailRepeat, IsValidPass, IsValidPassRepeat,

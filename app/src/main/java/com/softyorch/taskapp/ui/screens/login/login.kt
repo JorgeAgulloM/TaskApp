@@ -32,7 +32,7 @@ import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorLoginModel
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.model.LoginModel
 import com.softyorch.taskapp.ui.screens.login.model.MediaModel
-import com.softyorch.taskapp.ui.screens.login.model.AccountModel
+import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.extensions.upDownIntegerAnimated
 import kotlinx.coroutines.*

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.screens.login.model.AccountModel
+import com.softyorch.taskapp.ui.models.AccountModel
 
 @Composable
 fun NewAccountBody(

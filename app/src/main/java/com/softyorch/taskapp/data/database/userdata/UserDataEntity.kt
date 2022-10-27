@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
-import com.softyorch.taskapp.ui.screens.login.model.AccountModel
+import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
@@ -35,7 +35,7 @@ fun AccountModel.mapToUserDataEntity() = UserDataEntity(
     userPass = this.userPass
 )
 
-fun UserDataEntity.mapFromUserDataEntity(): UserDataModelDomain = UserDataModelDomain(
+fun UserDataEntity.mapFromUserDataEntity() = UserDataModelDomain(
     lastLoginDate = this.lastLoginDate,
     rememberMe = this.rememberMe,
     lightDarkAutomaticTheme = this.lightDarkAutomaticTheme,
@@ -46,7 +46,7 @@ fun UserDataEntity.mapFromUserDataEntity(): UserDataModelDomain = UserDataModelD
     textSize = this.textSize
 )
 
-fun UserDataModelDomain.mapToUserDataEntity(): UserDataEntity = UserDataEntity(
+fun UserDataModelDomain.mapToUserDataEntity() = UserDataEntity(
     id = this.id,
     username = this.username,
     userEmail = this.userEmail,

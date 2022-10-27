@@ -1,5 +1,10 @@
-package com.softyorch.taskapp.ui.screens.login.model
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
 
+package com.softyorch.taskapp.ui.models
+
+import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.utils.emptyString
 
 data class AccountModel(
@@ -19,3 +24,11 @@ data class AccountModel(
         )
     }
 }
+
+fun UserDataEntity.mapToAccountModel(): AccountModel = AccountModel(
+    userName = this.username,
+    userEmail = this.userEmail,
+    userEmailRepeat = this.userEmail,
+    userPass = this.userPass,
+    userPassRepeat = this.userPass
+)

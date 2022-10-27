@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.screens.login.model.AccountModel
+import com.softyorch.taskapp.ui.models.AccountModel
 
 @Composable
 fun ContentNewAccount(
