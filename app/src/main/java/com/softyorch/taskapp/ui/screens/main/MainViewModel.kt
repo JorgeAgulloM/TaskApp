@@ -31,8 +31,8 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
     private val _isVisible = MutableLiveData(false)
     val isVisible: LiveData<Boolean> = _isVisible
 
-    private val _StateMain = MutableLiveData<StateMain>(StateMain.Main)
-    val stateMain: LiveData<StateMain> = _StateMain
+    private val _stateMain = MutableLiveData<StateMain>(StateMain.Main)
+    val stateMain: LiveData<StateMain> = _stateMain
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -46,12 +46,9 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
         sendUpdateData(taskModelUi)
     }
 
-    fun hideSheet() {
-        _isVisible.value = isVisible.value != true
-    }
-
     fun changeState(state: StateMain){
-        _StateMain.value = state
+        _stateMain.value = state
+        _isVisible.value = state == StateMain.Main
     }
 
     fun visible() {

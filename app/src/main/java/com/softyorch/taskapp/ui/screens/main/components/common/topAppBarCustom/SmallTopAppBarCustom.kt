@@ -15,10 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
+import com.softyorch.taskapp.ui.screens.main.StateMain
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
 
@@ -36,19 +33,16 @@ fun SmallTopAppBarCustom(
     title: String,
     navController: NavController,
     icon: ImageVector,
-    scopeSettings: (Boolean) -> Unit,
-    scopeUserData: (Boolean) -> Unit
+    state: StateMain,
+    scope: (StateMain) -> Unit
 ) {
-    var showSettings by remember { mutableStateOf(false) }
-    var showUserData by remember { mutableStateOf(false) }
-
     TopAppBar(
         modifier = Modifier
             .systemBarsPadding()
             .padding(4.dp)
             .height(SMALL_TOP_BAR_HEIGHT.dp)
             .shadow(
-                elevation = ELEVATION_DP*2,
+                elevation = ELEVATION_DP * 2,
                 shape = MaterialTheme.shapes.large,
                 spotColor = MaterialTheme.colorScheme.primary
             ),
@@ -65,8 +59,7 @@ fun SmallTopAppBarCustom(
         },
         navigationIcon = {
             IconButtonTABC(
-                imageVector = icon,
-                text = stringResource(R.string.go_to_home),
+                imageVector = icon, text = stringResource(R.string.go_to_home),
             ) {
                 if (!isMainScreen) navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
                     navController.backQueue.clear()
@@ -77,18 +70,14 @@ fun SmallTopAppBarCustom(
             IconButtonTABC(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
-                //navController.navigate(AppScreensRoutes.SettingsScreen.route)
-                showSettings = !showSettings
-                scopeSettings(showSettings)
+                scope(if (state == StateMain.Main) StateMain.Settings else StateMain.Main)
             }
 
             IconButtonTABC(
                 imageVector = Icons.Rounded.Person,
                 text = stringResource(R.string.content_image_user)
             ) {
-                //navController.navigate(AppScreensRoutes.UserDataScreen.route)
-                showUserData = !showUserData
-                scopeUserData(showUserData)
+                scope(if (state == StateMain.Main) StateMain.UserData else StateMain.Main)
             }
         },
         elevation = ELEVATION_DP

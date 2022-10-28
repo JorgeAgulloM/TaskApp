@@ -55,6 +55,7 @@ fun MainScreenBeta(navController: NavController) {
 
     val taskList: List<TaskModelUi> by viewModel.tasks.observeAsState(listOf(TaskModelUi.emptyTask))
     val stateMain: StateMain by viewModel.stateMain.observeAsState(initial = StateMain.Main)
+    val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -65,13 +66,9 @@ fun MainScreenBeta(navController: NavController) {
                 items[index].name,
                 navController,
                 icon = items[index].icon,
-                scopeSettings = {
-                    if (it) viewModel.changeState(StateMain.Settings)
-                    else viewModel.changeState(StateMain.Main)
-                },
-                scopeUserData = {
-                    if (it) viewModel.changeState(StateMain.UserData)
-                    else viewModel.changeState(StateMain.Main)
+                state = stateMain,
+                scope = {
+                    viewModel.changeState(it)
                 }
             )
         },
@@ -110,7 +107,7 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, stateMain == StateMain.Main, index) { task ->
+        Body(taskList, isVisible, index) { task ->
             scope.launch {
                 //viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
