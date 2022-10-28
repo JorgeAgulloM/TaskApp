@@ -77,9 +77,9 @@ fun LoginScreenBeta(navController: NavController) {
     }
 
     val colorGradient = Brush.verticalGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.secondaryContainer,
-            MaterialTheme.colorScheme.onSecondaryContainer
+        listOf(
+            MaterialTheme.colorScheme.onPrimary,
+            MaterialTheme.colorScheme.primary
         )
     )
 

@@ -6,6 +6,7 @@ package com.softyorch.taskapp.ui.screens.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -58,13 +59,39 @@ fun MainScreenBeta(navController: NavController) {
     val isVisible: Boolean by viewModel.isVisible.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
 
+    val topColor = animateColorAsState(
+        targetValue = when (stateMain) {
+            StateMain.Main -> MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+            StateMain.NewTask -> MaterialTheme.colorScheme.primaryContainer
+            StateMain.Settings -> MaterialTheme.colorScheme.primaryContainer
+            StateMain.UserData -> MaterialTheme.colorScheme.onTertiary
+        },
+        animationSpec = spring(dampingRatio = 3f)
+    )
+
+    val bottomColor = animateColorAsState(
+        targetValue = when (stateMain) {
+            StateMain.Main -> MaterialTheme.colorScheme.background
+            StateMain.NewTask -> MaterialTheme.colorScheme.primary
+            StateMain.Settings -> MaterialTheme.colorScheme.primary
+            StateMain.UserData -> MaterialTheme.colorScheme.tertiary
+        },
+        animationSpec = spring(dampingRatio = 3f)
+    )
+
+    val contentBrush = Brush.verticalGradient(
+        colors = listOf(
+            topColor.value,
+            bottomColor.value
+        )
+    )
+
+
     Scaffold(
         modifier = Modifier,
         topBar = {
             SmallTopAppBarCustom(
-                true,
                 items[index].name,
-                navController,
                 icon = items[index].icon,
                 state = stateMain,
                 scope = {
@@ -90,7 +117,7 @@ fun MainScreenBeta(navController: NavController) {
                         }
                     }
                 }
-            ){
+            ) {
                 viewModel.changeState(StateMain.Main)
             }
         },
@@ -107,9 +134,8 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, index) { task ->
+        Body(taskList, isVisible, index, contentBrush) { task ->
             scope.launch {
-                //viewModel.dropTaskLocalList(task)
                 viewModel.updateTasks(task)
             }
         }
@@ -121,21 +147,16 @@ fun Body(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
     index: Int,
+    contentBrush: Brush,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
 
-    val contentBrush = Brush.verticalGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.primary
-        )
-    )
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = contentBrush
-            //color = MaterialTheme.colorScheme.background
+                //color = MaterialTheme.colorScheme.background
             )
             .padding(
                 start = 4.dp,

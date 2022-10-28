@@ -20,18 +20,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screens.main.StateMain
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SMALL_TOP_BAR_HEIGHT
 
 @Composable
 fun SmallTopAppBarCustom(
-    isMainScreen: Boolean = false,
     title: String,
-    navController: NavController,
     icon: ImageVector,
     state: StateMain,
     scope: (StateMain) -> Unit
@@ -39,7 +35,7 @@ fun SmallTopAppBarCustom(
     TopAppBar(
         modifier = Modifier
             .systemBarsPadding()
-            .padding(4.dp)
+            .padding(vertical = 8.dp, horizontal = 4.dp)
             .height(SMALL_TOP_BAR_HEIGHT.dp)
             .shadow(
                 elevation = ELEVATION_DP * 2,
@@ -49,7 +45,7 @@ fun SmallTopAppBarCustom(
         backgroundColor = MaterialTheme.colorScheme.background,
         title = {
             Text(
-                text = if (title == stringResource(R.string.complete))
+                text = if (title == stringResource(R.string.tasks_completed))
                     stringResource(R.string.tasks_completed_last_days)
                 else title,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -61,23 +57,21 @@ fun SmallTopAppBarCustom(
             IconButtonTABC(
                 imageVector = icon, text = stringResource(R.string.go_to_home),
             ) {
-                if (!isMainScreen) navController.navigate(AppScreensRoutes.MainScreenBeta.route) {
-                    navController.backQueue.clear()
-                }
+
             }
         },
         actions = {
             IconButtonTABC(
                 imageVector = Icons.Rounded.Settings, text = stringResource(R.string.settings)
             ) {
-                scope(if (state == StateMain.Main) StateMain.Settings else StateMain.Main)
+                scope(if (state == StateMain.Main || state == StateMain.UserData) StateMain.Settings else StateMain.Main)
             }
 
             IconButtonTABC(
                 imageVector = Icons.Rounded.Person,
                 text = stringResource(R.string.content_image_user)
             ) {
-                scope(if (state == StateMain.Main) StateMain.UserData else StateMain.Main)
+                scope(if (state == StateMain.Main || state == StateMain.Settings) StateMain.UserData else StateMain.Main)
             }
         },
         elevation = ELEVATION_DP

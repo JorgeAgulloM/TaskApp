@@ -43,8 +43,8 @@ fun BottomSheetCustom(
     val lazyState = rememberLazyListState()
     val sheetBrush = Brush.verticalGradient(
         listOf(
-            MaterialTheme.colorScheme.onSecondary,
-            MaterialTheme.colorScheme.secondaryContainer
+            MaterialTheme.colorScheme.onPrimary,
+            MaterialTheme.colorScheme.primary
         )
     )
 
@@ -55,7 +55,7 @@ fun BottomSheetCustom(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = (SMALL_TOP_BAR_HEIGHT + 8).dp)
+                .padding(top = (SMALL_TOP_BAR_HEIGHT + 16).dp)
                 .background(
                     brush = sheetBrush,
                     shape = MaterialTheme.shapes.large.copy(
