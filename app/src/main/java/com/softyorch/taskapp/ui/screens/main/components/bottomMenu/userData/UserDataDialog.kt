@@ -98,6 +98,7 @@ fun UserDataConfirmDialog(
                 TextFieldEmailRepeat(
                     email = emailConfirm,
                     error = errorEmailRepeat,
+                    onDialog = true,
                     onTextFieldChanged = {
                         emailConfirm = it.trim()
                     }
@@ -105,6 +106,7 @@ fun UserDataConfirmDialog(
                 TextFieldPassRepeat(
                     pass = passConfirm,
                     error = errorPassRepeat,
+                    onDialog = true,
                     keyboardActions = KeyboardActions(onGo = {}),
                     onTextFieldChanged = {
                         passConfirm = it.trim()

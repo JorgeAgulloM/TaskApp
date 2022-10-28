@@ -26,6 +26,7 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 fun TextFieldPassRepeat(
     pass: String,
     error: Boolean,
+    onDialog: Boolean = false,
     keyboardActions: KeyboardActions,
     onTextFieldChanged: (String) -> Unit
 ) {
@@ -44,6 +45,7 @@ fun TextFieldPassRepeat(
                 contentDescription = stringResource(R.string.repeat_your_password),
                 isError = error,
                 password = true,
+                onDialog = onDialog,
                 onTextFieldChanged = onTextFieldChanged
             )
         }

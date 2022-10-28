@@ -49,6 +49,7 @@ fun textFieldCustomInputData(
     isError: Boolean = false,
     isVisible: Boolean = true,
     password: Boolean = false,
+    onDialog: Boolean = false,
     onTextFieldChanged: (String) -> Unit = {}
 ): String {
     val personalizedShape: Shape = MaterialTheme.shapes.large.copy(
@@ -73,13 +74,13 @@ fun textFieldCustomInputData(
             onValueChange = { onTextFieldChanged(it) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 16.dp)
+                .padding(vertical = 4.dp, horizontal = if (onDialog) 0.dp else 16.dp)
                 .height(
                     height =
                     if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 3
                 )
                 .shadow(
-                    elevation = ELEVATION_DP/3,
+                    elevation = ELEVATION_DP / 3,
                     shape = personalizedShape,
                     spotColor = MaterialTheme.colorScheme.primary
                 ),
@@ -108,7 +109,7 @@ fun textFieldCustomInputData(
 }
 
 @Composable
-private fun isPassword(password: Boolean, passVisible: Boolean):Boolean {
+private fun isPassword(password: Boolean, passVisible: Boolean): Boolean {
     var visible by remember { mutableStateOf(value = passVisible) }
     if (password) {
         val image = if (visible)

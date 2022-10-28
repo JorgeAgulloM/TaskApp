@@ -25,6 +25,7 @@ import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 fun TextFieldEmailRepeat(
     email: String,
     error: Boolean,
+    onDialog: Boolean = false,
     onTextFieldChanged: (String) -> Unit
 ) {
 
@@ -41,6 +42,7 @@ fun TextFieldEmailRepeat(
                     keyboardType = KeyboardType.Email
                 ),
                 isError = error,
+                onDialog = onDialog,
                 onTextFieldChanged = { onTextFieldChanged(it) }
             )
         }
