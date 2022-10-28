@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
-import com.softyorch.taskapp.domain.userdataUseCase.UserDataModelDomain
 import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
@@ -33,31 +32,4 @@ fun AccountModel.mapToUserDataEntity() = UserDataEntity(
     username = this.userName,
     userEmail = this.userEmail,
     userPass = this.userPass
-)
-
-fun UserDataEntity.mapFromUserDataEntity() = UserDataModelDomain(
-    lastLoginDate = this.lastLoginDate,
-    rememberMe = this.rememberMe,
-    lightDarkAutomaticTheme = this.lightDarkAutomaticTheme,
-    lightOrDarkTheme = this.lightOrDarkTheme,
-    automaticLanguage = this.automaticLanguage,
-    automaticColors = this.automaticColors,
-    timeLimitAutoLoading = this.timeLimitAutoLoading,
-    textSize = this.textSize
-)
-
-fun UserDataModelDomain.mapToUserDataEntity() = UserDataEntity(
-    id = this.id,
-    username = this.username,
-    userEmail = this.userEmail,
-    userPass = this.userPass,
-    userPicture = this.userPicture,
-    lastLoginDate = this.lastLoginDate,
-    rememberMe = this.rememberMe,
-    lightDarkAutomaticTheme = this.lightDarkAutomaticTheme,
-    lightOrDarkTheme = this.lightOrDarkTheme,
-    automaticLanguage = this.automaticLanguage,
-    automaticColors = this.automaticColors,
-    timeLimitAutoLoading = this.timeLimitAutoLoading,
-    textSize = this.textSize
 )

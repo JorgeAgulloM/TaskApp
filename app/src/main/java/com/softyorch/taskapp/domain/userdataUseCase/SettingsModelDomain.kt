@@ -4,19 +4,11 @@
 
 package com.softyorch.taskapp.domain.userdataUseCase
 
-
-import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.data.repository.user.SettingsModel
 import java.util.*
 
-data class UserDataModelDomain(
+data class SettingsModelDomain(
     val id: UUID = UUID.randomUUID(),
-    var username: String = emptyString,
-    var userEmail: String = emptyString,
-    var userPass: String = emptyString,
-    var userPicture: String = emptyString,
-    /**
-     * User Settings
-     */
     var lastLoginDate: Date? = null,
     var rememberMe: Boolean = false,
     var lightDarkAutomaticTheme: Boolean = true,
@@ -27,3 +19,14 @@ data class UserDataModelDomain(
     var textSize: Int = 0
 )
 
+fun SettingsModel.mapToSettingsModelDomain() = SettingsModelDomain(
+    id,
+    lastLoginDate,
+    rememberMe,
+    lightDarkAutomaticTheme,
+    lightOrDarkTheme,
+    automaticLanguage,
+    automaticColors,
+    timeLimitAutoLoading,
+    textSize
+)

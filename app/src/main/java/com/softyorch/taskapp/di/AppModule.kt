@@ -11,7 +11,7 @@ import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERD
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.task.TaskRepository
-import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.data.repository.user.UserDataRepository
 import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
 import com.softyorch.taskapp.domain.datastoreUseCase.GetData
@@ -93,9 +93,11 @@ object AppModule {
     @Provides
     fun providesUserDataUseCases(userDataRepository: UserDataRepository): UserDataUseCases =
         UserDataUseCases(
+            getSettings = GetSettings(repository = userDataRepository),
             getUserEmailExist = GetUserEmailExist(repository = userDataRepository),
             loginUser = LoginUser(repository = userDataRepository),
             newAccountUser = NewAccountUser(repository = userDataRepository),
+            saveSettings = SaveSettings(repository = userDataRepository),
             updateUser = UpdateUser(repository = userDataRepository)
         )
 }
