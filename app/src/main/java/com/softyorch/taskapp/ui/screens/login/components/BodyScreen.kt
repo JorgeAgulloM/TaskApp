@@ -14,7 +14,7 @@ import com.softyorch.taskapp.ui.screens.login.model.MediaModel
 fun BodyScreen(pexelsImage: MediaModel) {
     val pexelsUrl = stringResource(R.string.pexels_web)
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f).padding(vertical = 8.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
