@@ -101,7 +101,7 @@ val SHEET_TRANSITION_ENTER: EnterTransition =
 val SHEET_TRANSITION_EXIT: ExitTransition =
     shrinkVertically(
         animationSpec = tween(500, 0, easing = FastOutSlowInEasing),
-        shrinkTowards = Alignment.Top
+        shrinkTowards = Alignment.Bottom
     )
 
 val CARD_RIGHT_ENTER: EnterTransition =
