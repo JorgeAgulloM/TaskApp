@@ -6,14 +6,14 @@ package com.softyorch.taskapp.domain.userdataUseCase
 
 import com.softyorch.taskapp.data.repository.user.UserDataRepository
 import com.softyorch.taskapp.data.repository.user.mapToSettingsModel
+import java.util.UUID
 
 class LogoutUser(private val repository: UserDataRepository) {
-    suspend operator fun invoke() {
-        repository.saveSettings(
-            SettingsModelDomain(
-                rememberMe = false,
-                lastLoginDate = null
-            ).mapToSettingsModel()
-        )
+    suspend operator fun invoke(userId: UUID) {
+        repository.saveSettings(SettingsModelDomain(
+            id = userId,
+            rememberMe = false,
+            lastLoginDate = null
+        ).mapToSettingsModel())
     }
 }

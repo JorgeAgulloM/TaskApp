@@ -25,8 +25,8 @@ import javax.inject.Inject
 class UserDataViewModel @Inject constructor(
     private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), WithOutErrorsAccount {
-    private val _userDataEntityActive = MutableLiveData<UserModelUi>()
-    val userDataEntityActive: LiveData<UserModelUi> = _userDataEntityActive
+    private val _user = MutableLiveData<UserModelUi>()
+    val user: LiveData<UserModelUi> = _user
 
     private val _errorsAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
     val errorsAccount: LiveData<ErrorAccountModel> = _errorsAccount
@@ -48,7 +48,7 @@ class UserDataViewModel @Inject constructor(
     }
 
     fun onDataInputChange(userData: UserModelUi) {
-        _userDataEntityActive.value = userData
+        _user.value = userData
         _saveEnabled.value = true
         if (_foundError.value == true) {
             setErrorsData(errors = withOutErrorsAccount(userData))
@@ -62,9 +62,9 @@ class UserDataViewModel @Inject constructor(
         withOutErrorsAccount(userData).let { error ->
             setErrorsData(errors = error)
             if (!error.error) {
-                _userDataEntityActive.value = userData
+                _user.value = userData
                 viewModelScope.launch(Dispatchers.IO) {
-                    userDataEntityActive.value?.let { userData ->
+                    user.value?.let { userData ->
                         updateUserData(userModelUi = userData)
                     }
                 }
@@ -95,7 +95,7 @@ class UserDataViewModel @Inject constructor(
                 _isLoading.postValue(false)
             }
             .collect { data ->
-                _userDataEntityActive.postValue(data)
+                _user.postValue(data)
                 _isLoading.postValue(false)
 
             }
@@ -105,7 +105,9 @@ class UserDataViewModel @Inject constructor(
         it.mapToUserModelUI()
     }
 
-    fun logOut() = viewModelScope.launch(Dispatchers.IO) { userDataUseCases.logoutUser() }
+    fun logOut() {
+        viewModelScope.launch(Dispatchers.IO) { userDataUseCases.logoutUser(user.value!!.id) }
+    }
 
     private suspend fun updateUserData(userModelUi: UserModelUi) {
         userDataUseCases.saveUser(userModelUi.mapToUserModelDomain())

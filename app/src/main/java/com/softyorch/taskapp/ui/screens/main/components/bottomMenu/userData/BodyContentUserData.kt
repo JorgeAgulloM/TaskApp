@@ -39,7 +39,7 @@ fun BodyContentUserData(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
-    val userData: UserModelUi by viewModel.userDataEntityActive.observeAsState(
+    val userData: UserModelUi by viewModel.user.observeAsState(
         initial = UserModelUi.userModelUi
     )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
@@ -127,7 +127,7 @@ fun BodyContentUserData(
         logOutDialog = false
         viewModel.logOut().also {
             viewModel.viewModelScope.launch {
-                it.join()
+                //it.join()
                 navController.navigate(AppScreensRoutes.LoginScreenBeta.route) {
                     navController.backQueue.clear()
                 }
