@@ -6,6 +6,7 @@ package com.softyorch.taskapp.data.repository.user
 
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
+import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,8 +55,8 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
     suspend fun singInUser(email: String, password: String): UserDataEntity? =
         userDataBaseDao.signIn(email = email, password = password)
 
-    suspend fun addUserData(userDataEntity: UserDataEntity) =
-        userDataBaseDao.insert(userDataEntity = userDataEntity)
+    suspend fun addUserData(userModel: UserModel) =
+        userDataBaseDao.insert(userModel.mapToUserDataEntity())
 
     suspend fun updateUserData(userDataEntity: UserDataEntity) =
         userDataBaseDao.update(userDataEntity = userDataEntity)

@@ -8,9 +8,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.mapToModelUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.ErrorsNewTaskModel
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.WithOutErrorsNewTask
 import com.softyorch.taskapp.ui.models.NewTaskModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
-    private val datastore: DatastoreUseCases,
+    private val useCases: UserDataUseCases,
     private val taskUseCase: TaskUseCases
 ) : ViewModel(), WithOutErrorsNewTask {
 
@@ -49,8 +49,8 @@ class FABCustomViewModel @Inject constructor(
 
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
-            getData().collect { user ->
-                _userName.postValue(user.username)
+            getData().let { user ->
+                if(user != null) _userName.postValue(user.username)
             }
         }
     }
@@ -89,7 +89,7 @@ class FABCustomViewModel @Inject constructor(
 
     /** Data */
 
-    private fun getData() = datastore.getData()
+    private suspend fun getData() = useCases.getUser()
 
     private suspend fun addNewTask(newTaskModel: NewTaskModel) {
         taskUseCase.addNewTask(newTaskModel.mapToModelUseCases())

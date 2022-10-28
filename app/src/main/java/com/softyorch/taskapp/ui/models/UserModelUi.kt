@@ -4,7 +4,6 @@
 
 package com.softyorch.taskapp.ui.models
 
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.domain.userdataUseCase.UserModelDomain
 import com.softyorch.taskapp.utils.emptyString
 import java.util.*
@@ -30,16 +29,6 @@ data class UserModelUi(
 }
 
 fun UserModelDomain.mapToUserModelUI() = UserModelUi(
-    id = this.id,
-    userName = this.username,
-    userEmail = this.userEmail,
-    userEmailRepeat = this.userEmail,
-    userPass = this.userPass,
-    userPassRepeat = this.userPass
-)
-
-
-fun UserDataEntity.mapToAccountModel(): UserModelUi = UserModelUi(
     id = this.id,
     userName = this.username,
     userEmail = this.userEmail,

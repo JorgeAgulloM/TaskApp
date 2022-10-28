@@ -2,20 +2,14 @@ package com.softyorch.taskapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.softyorch.taskapp.data.database.datastore.DatastoreDataBase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase.Companion.TASK_DB_NAME
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
-import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.task.TaskRepository
 import com.softyorch.taskapp.data.repository.user.UserDataRepository
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
-import com.softyorch.taskapp.domain.datastoreUseCase.GetData
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
 import com.softyorch.taskapp.domain.taskUsesCase.*
 import com.softyorch.taskapp.domain.userdataUseCase.*
 import dagger.Module
@@ -58,21 +52,6 @@ object AppModule {
         )
             .fallbackToDestructiveMigration()
             .build()
-
-    @Singleton
-    @Provides
-    fun providesDatastoreDataBase(@ApplicationContext context: Context): DatastoreDataBase =
-        DatastoreDataBase(context = context)
-
-    @Singleton
-    @Provides
-    fun providesDatastoreUseCases(datastoreRepository: DatastoreRepository): DatastoreUseCases =
-        DatastoreUseCases(
-            getData = GetData(repository = datastoreRepository),
-            saveData = SaveData(repository = datastoreRepository),
-            deleteData = DeleteData(repository = datastoreRepository)
-        )
-
 
     @Singleton
     @Provides

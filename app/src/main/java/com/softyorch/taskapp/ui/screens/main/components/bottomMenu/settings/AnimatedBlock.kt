@@ -20,14 +20,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
+import com.softyorch.taskapp.ui.models.SettingsModelUi
 import com.softyorch.taskapp.ui.widgets.RowInfo
 import com.softyorch.taskapp.utils.extensions.toStringFormatted
 
 @Composable
 fun AnimatedBlock(
     visible: Boolean,
-    settings: UserDataEntity,
+    settings: SettingsModelUi,
     isLoading: Boolean,
     funcOfViewModel: (Int) -> Unit
 ) {

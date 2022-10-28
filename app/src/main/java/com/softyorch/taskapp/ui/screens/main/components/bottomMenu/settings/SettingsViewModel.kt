@@ -4,13 +4,15 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.bottomMenu.settings
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.mapToSettingsModelDomain
+import com.softyorch.taskapp.ui.models.SettingsModelUi
+import com.softyorch.taskapp.ui.models.mapToSettingsModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,12 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
 ) : ViewModel() {
 
-    private val _settings = MutableLiveData<UserDataEntity>()
-    val settings: LiveData<UserDataEntity> = _settings
+    private val _settings = MutableLiveData<SettingsModelUi>()
+    val settings: LiveData<SettingsModelUi> = _settings
 
     private val _manualThemeShow = MutableLiveData(false)
     val manualThemeShow: LiveData<Boolean> = _manualThemeShow
@@ -36,44 +37,41 @@ class SettingsViewModel @Inject constructor(
         loadUserData()
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun loadUserData() {
         viewModelScope.launch(Dispatchers.IO) {
-            getData().collect {
+            getData().let {
+                if (it != null) {
                     _manualThemeShow.postValue(!it.lightDarkAutomaticTheme)
-                    _settings.postValue(it)
+                    _settings.postValue(it.mapToSettingsModelUi())
                     _isLoading.postValue(false)
                 }
+            }
         }
     }
 
-    fun applyChanges(settings: UserDataEntity) {
+    fun applyChanges(settings: SettingsModelUi) {
         _isLoading.value = true
-        updatePreferences(userDataEntity = settings)
+        updatePreferences(settingsModelUi = settings)
     }
 
     fun manualShow(show: Boolean) {
         _manualThemeShow.value = show
     }
 
-    private fun updatePreferences(userDataEntity: UserDataEntity) {
+    private fun updatePreferences(settingsModelUi: SettingsModelUi) {
         viewModelScope.launch {
             this.launch(Dispatchers.IO) {
-                updateData(userDataEntity = userDataEntity)
-            }.join()
-            this.launch(Dispatchers.IO) {
-                updateUser(userDataEntity = userDataEntity)
+                updateUser(settingsModelUi = settingsModelUi)
             }.join()
             _isLoading.value = false
         }
     }
 
-    private fun getData() = datastore.getData()
+    private suspend fun getData() = userDataUseCases.getSettings()
 
-    private suspend fun updateData(userDataEntity: UserDataEntity) =
-        datastore.saveData(userDataEntity = userDataEntity)
-
-    private suspend fun updateUser(userDataEntity: UserDataEntity) =
-        userDataUseCases.updateUser(userDataEntity = userDataEntity)
+    private suspend fun updateUser(settingsModelUi: SettingsModelUi) =
+        userDataUseCases.saveSettings(settingsModelUi.mapToSettingsModelDomain())
 
 }
 

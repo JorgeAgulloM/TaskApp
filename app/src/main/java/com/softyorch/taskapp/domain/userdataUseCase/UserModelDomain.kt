@@ -5,6 +5,7 @@
 package com.softyorch.taskapp.domain.userdataUseCase
 
 import com.softyorch.taskapp.data.repository.user.UserModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.utils.emptyString
 import java.util.*
 
@@ -18,4 +19,8 @@ data class UserModelDomain(
 
 fun UserModel.mapToUserModelDomain() = UserModelDomain(
     id, username, userEmail, userPass, userPicture
+)
+
+fun UserModelUi.mapToUserModelDomain() = UserModelDomain(
+    id, userName, userEmail, userPass
 )

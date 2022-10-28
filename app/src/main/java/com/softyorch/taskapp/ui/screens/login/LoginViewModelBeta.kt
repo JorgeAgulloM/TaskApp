@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.mapToUserModelDomain
 import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.ui.screens.commonErrors.IsActivatedButton
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsLogin
@@ -186,7 +186,7 @@ class LoginViewModelBeta @Inject constructor(
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
 
     private suspend fun addNewUser(userModelUi: UserModelUi): Boolean =
-        userDataUseCases.newAccountUser(userModelUi.mapToUserDataEntity())
+        userDataUseCases.newAccountUser(userModelUi.mapToUserModelDomain())
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)

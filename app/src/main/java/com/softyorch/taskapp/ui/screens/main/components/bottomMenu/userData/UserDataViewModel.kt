@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
+import com.softyorch.taskapp.domain.userdataUseCase.mapToUserModelDomain
 import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.ui.models.mapToUserModelUI
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
@@ -63,7 +64,6 @@ class UserDataViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     userDataEntityActive.value?.let { userData ->
                         updateUserData(userModelUi = userData)
-                        updateUserDataDatastore(userModelUi = userData)
                     }
                 }
             }
@@ -98,15 +98,12 @@ class UserDataViewModel @Inject constructor(
         }
     }
 
+    private suspend fun getData() = userDataUseCases.getUser()
+
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { userDataUseCases.logoutUser() }
 
     private suspend fun updateUserData(userModelUi: UserModelUi) {
-        //userDataUseCases.updateUser(userDataEntity = accountModel)
+        userDataUseCases.saveUser(userModelUi.mapToUserModelDomain())
     }
 
-    private suspend fun getData() = userDataUseCases.getUser()
-
-    private suspend fun updateUserDataDatastore(userModelUi: UserModelUi) {
-        //datastore.saveData(userDataEntity = accountModel)
-    }
 }
