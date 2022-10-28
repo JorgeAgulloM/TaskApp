@@ -17,7 +17,6 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SpacerCustom
-import com.softyorch.taskapp.ui.components.SwitchCustom
 import com.softyorch.taskapp.utils.sdk29AndUp
 import com.softyorch.taskapp.utils.sdk31AndUp
 import kotlinx.coroutines.delay

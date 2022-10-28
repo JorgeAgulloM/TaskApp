@@ -25,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.FABCustom
-import com.softyorch.taskapp.ui.components.topAppBarCustom.SmallTopAppBarCustom
+import com.softyorch.taskapp.ui.screens.main.components.common.topAppBarCustom.SmallTopAppBarCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.ui.screens.main.components.bottomMenu.BottomFakeNavigationBar
 import com.softyorch.taskapp.ui.screens.main.components.bottomMenu.BottomNavItem

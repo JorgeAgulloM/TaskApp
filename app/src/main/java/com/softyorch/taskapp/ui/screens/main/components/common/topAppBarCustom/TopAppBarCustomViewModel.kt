@@ -1,4 +1,4 @@
-package com.softyorch.taskapp.ui.components.topAppBarCustom
+package com.softyorch.taskapp.ui.screens.main.components.common.topAppBarCustom
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

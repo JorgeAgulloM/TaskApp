@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
-import com.softyorch.taskapp.ui.components.ContentStickyHeader
+import com.softyorch.taskapp.ui.screens.main.components.common.ContentStickyHeader
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT

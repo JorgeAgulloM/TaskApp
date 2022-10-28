@@ -1,4 +1,8 @@
-package com.softyorch.taskapp.ui.components
+/*
+ * Copyright (c) 2022. File developed by Jorge Agulló Martín for SoftYorch
+ */
+
+package com.softyorch.taskapp.ui.screens.main.components.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
