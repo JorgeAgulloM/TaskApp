@@ -14,9 +14,11 @@ import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.ErrorsNewTaskModel
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.WithOutErrorsNewTask
 import com.softyorch.taskapp.ui.models.NewTaskModel
+import com.softyorch.taskapp.ui.models.mapToUserModelUI
 import com.softyorch.taskapp.utils.emptyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,8 +51,8 @@ class FABCustomViewModel @Inject constructor(
 
     private fun getUserName() {
         viewModelScope.launch(Dispatchers.IO) {
-            getData().let { user ->
-                if(user != null) _userName.postValue(user.username)
+            getData().collect { user ->
+                _userName.postValue(user.userName)
             }
         }
     }
@@ -89,7 +91,9 @@ class FABCustomViewModel @Inject constructor(
 
     /** Data */
 
-    private suspend fun getData() = useCases.getUser()
+    private fun getData() = useCases.getUser().map {
+        it.mapToUserModelUI()
+    }
 
     private suspend fun addNewTask(newTaskModel: NewTaskModel) {
         taskUseCase.addNewTask(newTaskModel.mapToModelUseCases())

@@ -10,6 +10,7 @@ import com.softyorch.taskapp.domain.userdataUseCase.mapToSettingsModelDomain
 import com.softyorch.taskapp.ui.models.SettingsModelUi
 import com.softyorch.taskapp.ui.models.mapToSettingsModelUi
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
+import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KProperty0
@@ -20,9 +21,10 @@ interface AutoLogin {
         saveSettings: KProperty0<SaveSettings>
     ): Boolean {
         var isAuto = false
-        getSettings()().let {
-            if (it != null && it.rememberMe)
-                isAuto = isTimeOk(saveSettings, it.mapToSettingsModelUi())
+        getSettings()().first().let {
+            val settings = it.mapToSettingsModelUi()
+            if (settings.rememberMe)
+                isAuto = isTimeOk(saveSettings, settings)
         }
 
         return isAuto

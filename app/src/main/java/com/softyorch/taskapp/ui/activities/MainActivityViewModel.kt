@@ -8,6 +8,7 @@ import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.models.mapToSettingsModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,7 +38,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun getUserDataSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            getData()?.let { user ->
+            getData().collect { user ->
                 _darkSystem.postValue(user.lightDarkAutomaticTheme)
                 _lightOrDark.postValue(user.lightOrDarkTheme)
                 _colorSystem.postValue(user.automaticColors)
@@ -46,6 +47,8 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getData() = useCases.getSettings()?.mapToSettingsModelUi()
+    private fun getData() = useCases.getSettings().map {
+        it.mapToSettingsModelUi()
+    }
 
 }

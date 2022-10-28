@@ -16,6 +16,8 @@ import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -87,18 +89,21 @@ class UserDataViewModel @Inject constructor(
      */
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        getData().let { data ->
-            if (data != null) {
-                _userDataEntityActive.postValue(data.mapToUserModelUI())
-                _isLoading.postValue(false)
-            } else {
+        getData()
+            .catch {
                 _showErrorLoadData.postValue(true)
                 _isLoading.postValue(false)
             }
-        }
+            .collect { data ->
+                _userDataEntityActive.postValue(data)
+                _isLoading.postValue(false)
+
+            }
     }
 
-    private suspend fun getData() = userDataUseCases.getUser()
+    private fun getData() = userDataUseCases.getUser().map {
+        it.mapToUserModelUI()
+    }
 
     fun logOut() = viewModelScope.launch(Dispatchers.IO) { userDataUseCases.logoutUser() }
 

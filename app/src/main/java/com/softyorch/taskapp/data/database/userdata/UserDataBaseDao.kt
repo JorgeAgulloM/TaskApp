@@ -1,12 +1,14 @@
 package com.softyorch.taskapp.data.database.userdata
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface UserDataBaseDao {
 
     @Query("SELECT * FROM userdata_tbl")
-    suspend fun getData(): UserDataEntity?
+    fun getData(): Flow<UserDataEntity>
 
     @Query("SELECT * FROM userdata_tbl WHERE id =:id")
     suspend fun getUserId(id: String): UserDataEntity?

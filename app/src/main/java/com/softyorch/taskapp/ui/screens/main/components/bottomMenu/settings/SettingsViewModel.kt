@@ -15,6 +15,7 @@ import com.softyorch.taskapp.ui.models.SettingsModelUi
 import com.softyorch.taskapp.ui.models.mapToSettingsModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,12 +41,10 @@ class SettingsViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     private fun loadUserData() {
         viewModelScope.launch(Dispatchers.IO) {
-            getData().let {
-                if (it != null) {
-                    _manualThemeShow.postValue(!it.lightDarkAutomaticTheme)
-                    _settings.postValue(it.mapToSettingsModelUi())
-                    _isLoading.postValue(false)
-                }
+            getData().collect {
+                _manualThemeShow.postValue(!it.lightDarkAutomaticTheme)
+                _settings.postValue(it)
+                _isLoading.postValue(false)
             }
         }
     }
@@ -68,7 +67,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getData() = userDataUseCases.getSettings()
+    private fun getData() = userDataUseCases.getSettings().map {
+        it.mapToSettingsModelUi()
+    }
 
     private suspend fun updateUser(settingsModelUi: SettingsModelUi) =
         userDataUseCases.saveSettings(settingsModelUi.mapToSettingsModelDomain())

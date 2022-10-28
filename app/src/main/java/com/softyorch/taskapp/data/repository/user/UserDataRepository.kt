@@ -7,14 +7,18 @@ package com.softyorch.taskapp.data.repository.user
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDataBaseDao) {
 
-    suspend fun getUser(): UserModel? =
-        userDataBaseDao.getData()?.mapToUserModel()
+    fun getUser(): Flow<UserModel> =
+        userDataBaseDao.getData().map {
+            it.mapToUserModel()
+        }
 
     suspend fun saveUser(userModel: UserModel) {
         userDataBaseDao.apply {
@@ -29,8 +33,10 @@ class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDa
         }
     }
 
-    suspend fun getSettings(): SettingsModel? =
-        userDataBaseDao.getData()?.mapToSettingsModel()
+    fun getSettings(): Flow<SettingsModel> =
+        userDataBaseDao.getData().map {
+            it.mapToSettingsModel()
+        }
 
     suspend fun saveSettings(settingsModel: SettingsModel) {
         userDataBaseDao.apply {
