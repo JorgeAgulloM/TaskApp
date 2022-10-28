@@ -12,23 +12,39 @@ import javax.inject.Singleton
 @Singleton
 class UserDataRepository @Inject constructor(private val userDataBaseDao: UserDataBaseDao) {
 
+    suspend fun getUser(): UserModel? =
+        userDataBaseDao.getData()?.mapToUserModel()
+
+    suspend fun saveUser(userModel: UserModel) {
+        userDataBaseDao.apply {
+            val user = getUserId(userModel.id.toString())?.copy(
+                username = userModel.username,
+                userEmail = userModel.userEmail,
+                userPass = userModel.userPass,
+                userPicture = userModel.userPicture
+            )
+
+            if (user != null) update(user)
+        }
+    }
+
     suspend fun getSettings(): SettingsModel? =
         userDataBaseDao.getData()?.mapToSettingsModel()
 
     suspend fun saveSettings(settingsModel: SettingsModel) {
         userDataBaseDao.apply {
-            val user = (getUserId(settingsModel.id.toString())?.copy(
-                            lastLoginDate = settingsModel.lastLoginDate,
-                            rememberMe = settingsModel.rememberMe,
-                            lightDarkAutomaticTheme = settingsModel.lightDarkAutomaticTheme,
-                            lightOrDarkTheme = settingsModel.lightOrDarkTheme,
-                            automaticLanguage = settingsModel.automaticLanguage,
-                            automaticColors = settingsModel.automaticColors,
-                            timeLimitAutoLoading = settingsModel.timeLimitAutoLoading,
-                            textSize = settingsModel.textSize
-                        )
-                    )
-            if (user != null) update(user)
+            val settings = getUserId(settingsModel.id.toString())?.copy(
+                lastLoginDate = settingsModel.lastLoginDate,
+                rememberMe = settingsModel.rememberMe,
+                lightDarkAutomaticTheme = settingsModel.lightDarkAutomaticTheme,
+                lightOrDarkTheme = settingsModel.lightOrDarkTheme,
+                automaticLanguage = settingsModel.automaticLanguage,
+                automaticColors = settingsModel.automaticColors,
+                timeLimitAutoLoading = settingsModel.timeLimitAutoLoading,
+                textSize = settingsModel.textSize
+            )
+
+            if (settings != null) update(settings)
         }
     }
 

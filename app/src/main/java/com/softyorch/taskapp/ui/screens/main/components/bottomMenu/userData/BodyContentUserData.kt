@@ -25,7 +25,7 @@ import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SnackBarError
 import com.softyorch.taskapp.ui.components.SpacerCustom
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import com.softyorch.taskapp.ui.screens.login.components.TextFieldEmail
@@ -39,8 +39,8 @@ fun BodyContentUserData(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<UserDataViewModel>()
-    val userData: AccountModel by viewModel.userDataEntityActive.observeAsState(
-        initial = AccountModel.accountModel
+    val userData: UserModelUi by viewModel.userDataEntityActive.observeAsState(
+        initial = UserModelUi.userModelUi
     )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = true)
 

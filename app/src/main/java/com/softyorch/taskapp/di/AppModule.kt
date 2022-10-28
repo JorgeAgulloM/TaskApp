@@ -94,10 +94,13 @@ object AppModule {
     fun providesUserDataUseCases(userDataRepository: UserDataRepository): UserDataUseCases =
         UserDataUseCases(
             getSettings = GetSettings(repository = userDataRepository),
+            getUser = GetUser(repository = userDataRepository),
             getUserEmailExist = GetUserEmailExist(repository = userDataRepository),
             loginUser = LoginUser(repository = userDataRepository),
+            logoutUser = LogoutUser(repository = userDataRepository),
             newAccountUser = NewAccountUser(repository = userDataRepository),
             saveSettings = SaveSettings(repository = userDataRepository),
+            saveUser = SaveUser(repository = userDataRepository),
             updateUser = UpdateUser(repository = userDataRepository)
         )
 }

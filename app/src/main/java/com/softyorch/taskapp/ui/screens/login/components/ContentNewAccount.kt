@@ -10,14 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 
 @Composable
 fun ContentNewAccount(
-    accountModel: AccountModel,
+    userModelUi: UserModelUi,
     errors: ErrorAccountModel,
     onGo: () -> Unit,
-    onNewAccountDataChange: (AccountModel) -> Unit
+    onNewAccountDataChange: (UserModelUi) -> Unit
 ) {
 
     Column(
@@ -27,35 +27,35 @@ fun ContentNewAccount(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextFieldName(accountModel.userName, errors.name) {
-            onNewAccountDataChange(accountModel.copy(userName = it.trim().replaceFirstChar {
+        TextFieldName(userModelUi.userName, errors.name) {
+            onNewAccountDataChange(userModelUi.copy(userName = it.trim().replaceFirstChar {
                 char -> char.uppercase()
             }))
         }
         TextFieldEmail(
-            accountModel.userEmail,
+            userModelUi.userEmail,
             error = errors.email,
             errorAccount = errors.emailExists
         ) {
-            onNewAccountDataChange(accountModel.copy(userEmail = it.trim().lowercase()))
+            onNewAccountDataChange(userModelUi.copy(userEmail = it.trim().lowercase()))
         }
-        TextFieldEmailRepeat(accountModel.userEmailRepeat, errors.emailRepeat) {
-            onNewAccountDataChange(accountModel.copy(userEmailRepeat = it.trim().lowercase()))
+        TextFieldEmailRepeat(userModelUi.userEmailRepeat, errors.emailRepeat) {
+            onNewAccountDataChange(userModelUi.copy(userEmailRepeat = it.trim().lowercase()))
         }
         TextFieldPass(
-            accountModel.userPass,
+            userModelUi.userPass,
             newAccount = true,
             errors.pass,
             keyboardActions = KeyboardActions(onGo = { onGo() })
         ) {
-            onNewAccountDataChange(accountModel.copy(userPass = it.trim()))
+            onNewAccountDataChange(userModelUi.copy(userPass = it.trim()))
         }
         TextFieldPassRepeat(
-            accountModel.userPassRepeat,
+            userModelUi.userPassRepeat,
             errors.passRepeat,
             keyboardActions = KeyboardActions(onGo = { onGo() })
         ) {
-            onNewAccountDataChange(accountModel.copy(userPassRepeat = it.trim()))
+            onNewAccountDataChange(userModelUi.copy(userPassRepeat = it.trim()))
         }
 
     }

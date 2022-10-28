@@ -9,23 +9,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 
 @Composable
 fun NewAccountBody(
     isLoading: Boolean,
     autoLogin: Boolean,
-    accountModel: AccountModel,
+    userModelUi: UserModelUi,
     errorsNewAccount: ErrorAccountModel,
     hideNewAccount: () -> Unit,
-    onNewAccountDataChange: (AccountModel) -> Unit,
+    onNewAccountDataChange: (UserModelUi) -> Unit,
     onClick: () -> Unit
 ) {
     Head("¿Ya tienes cuenta? ", "Inicia sesión", (isLoading || autoLogin)) {
         hideNewAccount()
     }
     ContentNewAccount(
-        accountModel,
+        userModelUi,
         errorsNewAccount,
         onGo = { onClick() },
         onNewAccountDataChange

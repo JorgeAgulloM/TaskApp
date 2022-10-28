@@ -9,7 +9,7 @@ import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.ui.screens.commonErrors.IsActivatedButton
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsLogin
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
@@ -55,8 +55,8 @@ class LoginViewModelBeta @Inject constructor(
 
     private val _foundInputError = MutableLiveData<Boolean>()
 
-    private val _accountModel = MutableLiveData(AccountModel.accountModel)
-    val accountModel: LiveData<AccountModel> = _accountModel
+    private val _userModelUi = MutableLiveData(UserModelUi.userModelUi)
+    val userModelUi: LiveData<UserModelUi> = _userModelUi
 
     private val _errorsNewAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
     val errorsNewAccount: LiveData<ErrorAccountModel> = _errorsNewAccount
@@ -146,22 +146,22 @@ class LoginViewModelBeta @Inject constructor(
 
     /** New Account */
 
-    fun onNewAccountInputChange(accountModel: AccountModel) {
-        _accountModel.value = accountModel
+    fun onNewAccountInputChange(userModelUi: UserModelUi) {
+        _userModelUi.value = userModelUi
         if (foundErrorNewAccountInterface.value == true) {
-            _errorsNewAccount.postValue(withOutErrorsAccount(accountModel))
+            _errorsNewAccount.postValue(withOutErrorsAccount(userModelUi))
         } else _errorsNewAccount.postValue(
-            ErrorAccountModel(isActivatedButton = isActivatedButton(accountModel))
+            ErrorAccountModel(isActivatedButton = isActivatedButton(userModelUi))
         )
     }
 
     suspend fun onNewAccountDataSend(
-        accountModel: AccountModel
+        userModelUi: UserModelUi
     ): Boolean {
         _isLoading.postValue(true)
-        withOutErrorsAccount(accountModel).let { errors ->
+        withOutErrorsAccount(userModelUi).let { errors ->
             if (!errors.error) {
-                addNewUser(accountModel).also { isError -> //When true returned, the user has been created else, this email exist now.
+                addNewUser(userModelUi).also { isError -> //When true returned, the user has been created else, this email exist now.
                     errors.emailExists = !isError
                     errors.error = !isError
                     _errorsNewAccount.postValue(errors)
@@ -185,8 +185,8 @@ class LoginViewModelBeta @Inject constructor(
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
 
-    private suspend fun addNewUser(accountModel: AccountModel): Boolean =
-        userDataUseCases.newAccountUser(accountModel.mapToUserDataEntity())
+    private suspend fun addNewUser(userModelUi: UserModelUi): Boolean =
+        userDataUseCases.newAccountUser(userModelUi.mapToUserDataEntity())
 
     private suspend fun updateUser(userDataEntity: UserDataEntity) =
         userDataUseCases.updateUser(userDataEntity)

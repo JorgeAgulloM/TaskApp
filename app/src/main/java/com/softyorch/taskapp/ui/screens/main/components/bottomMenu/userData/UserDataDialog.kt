@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.ui.screens.login.components.TextFieldEmailRepeat
 import com.softyorch.taskapp.ui.screens.login.components.TextFieldPassRepeat
 import com.softyorch.taskapp.utils.emptyString
@@ -64,12 +64,12 @@ fun UserDataDialog(
 
 @Composable
 fun UserDataConfirmDialog(
-    userData: AccountModel,
+    userData: UserModelUi,
     errorEmailRepeat: Boolean,
     errorPassRepeat: Boolean,
     onDismissRequest: () -> Unit,
     onDismissButtonClick: () -> Unit,
-    onConfirmButtonClick: (AccountModel) -> Unit
+    onConfirmButtonClick: (UserModelUi) -> Unit
 ) {
     val userConfirm by remember { mutableStateOf(value = userData) }
     var emailConfirm by remember { mutableStateOf(value = userData.userEmail) }

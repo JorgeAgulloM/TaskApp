@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
-import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
@@ -28,7 +28,7 @@ data class UserDataEntity(
     @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
 )
 
-fun AccountModel.mapToUserDataEntity() = UserDataEntity(
+fun UserModelUi.mapToUserDataEntity() = UserDataEntity(
     username = this.userName,
     userEmail = this.userEmail,
     userPass = this.userPass
