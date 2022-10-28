@@ -5,9 +5,12 @@
 package com.softyorch.taskapp.ui.models
 
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
+import com.softyorch.taskapp.domain.userdataUseCase.UserModelDomain
 import com.softyorch.taskapp.utils.emptyString
+import java.util.*
 
-data class AccountModel(
+data class UserModelUi(
+    var id: UUID = UUID.randomUUID(),
     var userName: String,
     var userEmail: String,
     var userEmailRepeat: String,
@@ -15,7 +18,8 @@ data class AccountModel(
     var userPassRepeat: String,
 ) {
     companion object {
-        val accountModel = AccountModel(
+        val userModelUi = UserModelUi(
+            id = UUID.randomUUID(),
             userName = emptyString,
             userEmail = emptyString,
             userEmailRepeat = emptyString,
@@ -25,7 +29,18 @@ data class AccountModel(
     }
 }
 
-fun UserDataEntity.mapToAccountModel(): AccountModel = AccountModel(
+fun UserModelDomain.mapToUserModelUI() = UserModelUi(
+    id = this.id,
+    userName = this.username,
+    userEmail = this.userEmail,
+    userEmailRepeat = this.userEmail,
+    userPass = this.userPass,
+    userPassRepeat = this.userPass
+)
+
+
+fun UserDataEntity.mapToAccountModel(): UserModelUi = UserModelUi(
+    id = this.id,
     userName = this.username,
     userEmail = this.userEmail,
     userEmailRepeat = this.userEmail,

@@ -8,7 +8,7 @@ import com.softyorch.taskapp.domain.userdataUseCase.SettingsModelDomain
 import java.util.*
 
 data class SettingsModelUi(
-    val id: UUID = UUID.randomUUID(),
+    var id: UUID = UUID.randomUUID(),
     var lastLoginDate: Date? = null,
     var rememberMe: Boolean = false,
     var lightDarkAutomaticTheme: Boolean = true,

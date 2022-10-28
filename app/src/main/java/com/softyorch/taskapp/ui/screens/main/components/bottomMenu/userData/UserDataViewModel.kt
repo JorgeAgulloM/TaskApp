@@ -8,25 +8,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
-import com.softyorch.taskapp.ui.models.AccountModel
-import com.softyorch.taskapp.ui.models.mapToAccountModel
+import com.softyorch.taskapp.ui.models.UserModelUi
+import com.softyorch.taskapp.ui.models.mapToUserModelUI
 import com.softyorch.taskapp.ui.screens.commonErrors.WithOutErrorsAccount
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UserDataViewModel @Inject constructor(
-    private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), WithOutErrorsAccount {
-    private val _userDataEntityActive = MutableLiveData<AccountModel>()
-    val userDataEntityActive: LiveData<AccountModel> = _userDataEntityActive
+    private val _userDataEntityActive = MutableLiveData<UserModelUi>()
+    val userDataEntityActive: LiveData<UserModelUi> = _userDataEntityActive
 
     private val _errorsAccount = MutableLiveData(ErrorAccountModel.errorAccountModel)
     val errorsAccount: LiveData<ErrorAccountModel> = _errorsAccount
@@ -47,7 +44,7 @@ class UserDataViewModel @Inject constructor(
         loadUserData()
     }
 
-    fun onDataInputChange(userData: AccountModel) {
+    fun onDataInputChange(userData: UserModelUi) {
         _userDataEntityActive.value = userData
         _saveEnabled.value = true
         if (_foundError.value == true) {
@@ -56,7 +53,7 @@ class UserDataViewModel @Inject constructor(
     }
 
     fun onUpdateDataSend(
-        userData: AccountModel
+        userData: UserModelUi
     ): Boolean {
         _isLoading.value = true
         withOutErrorsAccount(userData).let { error ->
@@ -65,8 +62,8 @@ class UserDataViewModel @Inject constructor(
                 _userDataEntityActive.value = userData
                 viewModelScope.launch(Dispatchers.IO) {
                     userDataEntityActive.value?.let { userData ->
-                        updateUserData(accountModel = userData)
-                        updateUserDataDatastore(accountModel = userData)
+                        updateUserData(userModelUi = userData)
+                        updateUserDataDatastore(userModelUi = userData)
                     }
                 }
             }
@@ -90,25 +87,26 @@ class UserDataViewModel @Inject constructor(
      */
 
     private fun loadUserData() = viewModelScope.launch(Dispatchers.IO) {
-        getData().catch {
-            _showErrorLoadData.postValue(true)
-            _isLoading.postValue(false)
-        } .collect { data ->
-            _userDataEntityActive.postValue(data.mapToAccountModel())
-            _isLoading.postValue(false)
+        getData().let { data ->
+            if (data != null) {
+                _userDataEntityActive.postValue(data.mapToUserModelUI())
+                _isLoading.postValue(false)
+            } else {
+                _showErrorLoadData.postValue(true)
+                _isLoading.postValue(false)
+            }
         }
     }
 
-    fun logOut() = viewModelScope.launch(Dispatchers.IO) { datastore.deleteData() }
+    fun logOut() = viewModelScope.launch(Dispatchers.IO) { userDataUseCases.logoutUser() }
 
-    private suspend fun updateUserData(accountModel: AccountModel) {
+    private suspend fun updateUserData(userModelUi: UserModelUi) {
         //userDataUseCases.updateUser(userDataEntity = accountModel)
     }
 
+    private suspend fun getData() = userDataUseCases.getUser()
 
-    private fun getData() = datastore.getData()
-
-    private suspend fun updateUserDataDatastore(accountModel: AccountModel) {
+    private suspend fun updateUserDataDatastore(userModelUi: UserModelUi) {
         //datastore.saveData(userDataEntity = accountModel)
     }
 }
