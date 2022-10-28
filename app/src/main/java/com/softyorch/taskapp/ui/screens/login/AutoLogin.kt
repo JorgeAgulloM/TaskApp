@@ -4,43 +4,33 @@
 
 package com.softyorch.taskapp.ui.screens.login
 
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
-import com.softyorch.taskapp.domain.userdataUseCase.LoginUser
+import com.softyorch.taskapp.domain.userdataUseCase.GetSettings
+import com.softyorch.taskapp.domain.userdataUseCase.SaveSettings
+import com.softyorch.taskapp.domain.userdataUseCase.mapToSettingsModelDomain
+import com.softyorch.taskapp.ui.models.SettingsModelUi
+import com.softyorch.taskapp.ui.models.mapToSettingsModelUi
 import com.softyorch.taskapp.utils.timeLimitAutoLoginSelectTime
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import okhttp3.internal.notify
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KProperty0
 
 interface AutoLogin {
-    @OptIn(FlowPreview::class)
     suspend fun autologin(
-        datastoreUseCases: DatastoreUseCases,
-        logIn: KProperty0<LoginUser>
+        getSettings: KProperty0<GetSettings>,
+        saveSettings: KProperty0<SaveSettings>
     ): Boolean {
         var isAuto = false
-        datastoreUseCases.getData().debounce(2000)
-            .catch { ex ->
-                ex.notify()
-                /**No se para que sirve notify()*/
-            }.first().let {
-                if (it.rememberMe) logIn()(it.userEmail, it.userPass)?.let { user ->
-                    isAuto = isTimeOk(datastoreUseCases::saveData, user)
-                }
-            }
+        getSettings()().let {
+            if (it != null && it.rememberMe)
+                isAuto = isTimeOk(saveSettings, it.mapToSettingsModelUi())
+        }
 
         return isAuto
     }
 
     private suspend fun isTimeOk(
-        saveData: KProperty0<SaveData>,
-        user: UserDataEntity
+        saveSettings: KProperty0<SaveSettings>,
+        user: SettingsModelUi
     ) = user.lastLoginDate?.time?.let { autoLoginLimit ->
         timeLimitAutoLoginSelectTime(user.timeLimitAutoLoading)
             .compareTo(
@@ -48,7 +38,7 @@ interface AutoLogin {
                     .time.minus(autoLoginLimit)
             ).let {
                 if (it == 1) {
-                    saveData()(userDataEntity = user)
+                    saveSettings()(user.mapToSettingsModelDomain())
                     true
                 } else false
             }

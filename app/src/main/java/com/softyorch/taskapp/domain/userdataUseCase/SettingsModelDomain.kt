@@ -5,6 +5,7 @@
 package com.softyorch.taskapp.domain.userdataUseCase
 
 import com.softyorch.taskapp.data.repository.user.SettingsModel
+import com.softyorch.taskapp.ui.models.SettingsModelUi
 import java.util.*
 
 data class SettingsModelDomain(
@@ -20,6 +21,18 @@ data class SettingsModelDomain(
 )
 
 fun SettingsModel.mapToSettingsModelDomain() = SettingsModelDomain(
+    id,
+    lastLoginDate,
+    rememberMe,
+    lightDarkAutomaticTheme,
+    lightOrDarkTheme,
+    automaticLanguage,
+    automaticColors,
+    timeLimitAutoLoading,
+    textSize
+)
+
+fun SettingsModelUi.mapToSettingsModelDomain() = SettingsModelDomain(
     id,
     lastLoginDate,
     rememberMe,

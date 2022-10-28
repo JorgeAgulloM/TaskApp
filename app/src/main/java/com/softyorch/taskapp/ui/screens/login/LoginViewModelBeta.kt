@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
 import com.softyorch.taskapp.data.database.userdata.mapToUserDataEntity
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
 import com.softyorch.taskapp.domain.pexelUseCase.PexelsUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
 import com.softyorch.taskapp.ui.models.AccountModel
@@ -27,7 +26,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModelBeta @Inject constructor(
     private val pexelsUseCases: PexelsUseCases,
-    private val datastore: DatastoreUseCases,
     private val userDataUseCases: UserDataUseCases
 ) : ViewModel(), AutoLogin, WithOutErrorsLogin, WithOutErrorsAccount, IsActivatedButton {
 
@@ -69,7 +67,7 @@ class LoginViewModelBeta @Inject constructor(
         _isLoading.value = true
         viewModelScope.launch {
             loadImage()
-            _autoLogin.value = autologin(datastore, userDataUseCases::loginUser)
+            _autoLogin.value = autologin(userDataUseCases::getSettings, userDataUseCases::saveSettings)
             _isLoading.value =false
         }
     }
@@ -135,7 +133,6 @@ class LoginViewModelBeta @Inject constructor(
                 user.rememberMe = loginModel.rememberMe
                 _loginSuccess.postValue(true)
                 updateUser(user)
-                updateDatastore(user)
                 return true
             }
         }
@@ -184,9 +181,6 @@ class LoginViewModelBeta @Inject constructor(
     }
 
     /** Data **/
-
-    private suspend fun updateDatastore(userDataEntity: UserDataEntity) =
-        datastore.saveData(userDataEntity)
 
     private suspend fun signIn(loginModel: LoginModel): UserDataEntity? =
         userDataUseCases.loginUser(loginModel.userEmail, loginModel.userPass)
