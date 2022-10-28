@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -23,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R.string.*
+import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.models.AccountModel
+import com.softyorch.taskapp.ui.screens.login.components.TextFieldEmailRepeat
+import com.softyorch.taskapp.ui.screens.login.components.TextFieldPassRepeat
 import com.softyorch.taskapp.utils.emptyString
 
 @Composable
@@ -42,10 +43,10 @@ fun UserDataDialog(
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         dismissButton = {
-            ButtonCustomDataScreen(text = stringResource(cancel)) { onDismissButtonClick() }
+            ButtonCustom(text = stringResource(cancel)) { onDismissButtonClick() }
         },
         confirmButton = {
-            ButtonCustomDataScreen(text = confirmButtonText, primary = true) {
+            ButtonCustom(text = confirmButtonText, primary = true) {
                 onConfirmButtonClick()
             }
         },
@@ -61,7 +62,6 @@ fun UserDataDialog(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserDataConfirmDialog(
     userData: AccountModel,
@@ -78,7 +78,7 @@ fun UserDataConfirmDialog(
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         dismissButton = {
-            ButtonCustomDataScreen(text = stringResource(cancel)) { onDismissButtonClick() }
+            ButtonCustom(text = stringResource(cancel)) { onDismissButtonClick() }
         },
         icon = {
             Icon(
@@ -95,26 +95,17 @@ fun UserDataConfirmDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextFieldCustomDataScreen(
-                    text = emailConfirm,
-                    label = stringResource(repeat_your_email),
-                    icon = Icons.Rounded.Email,
-                    keyboardType = KeyboardType.Email,
+                TextFieldEmailRepeat(
+                    email = emailConfirm,
                     error = errorEmailRepeat,
-                    errorText = stringResource(input_error_repeat_email),
                     onTextFieldChanged = {
                         emailConfirm = it.trim()
                     }
                 )
-                TextFieldCustomDataScreen(
-                    text = passConfirm,
-                    label = stringResource(repeat_your_password),
-                    icon = Icons.Rounded.Key,
-                    keyboardType = KeyboardType.Password,
-                    password = true,
+                TextFieldPassRepeat(
+                    pass = passConfirm,
                     error = errorPassRepeat,
-                    errorEmailExist = false,
-                    errorText = stringResource(input_error_pass),
+                    keyboardActions = KeyboardActions(onGo = {}),
                     onTextFieldChanged = {
                         passConfirm = it.trim()
                     }
@@ -122,7 +113,7 @@ fun UserDataConfirmDialog(
             }
         },
         confirmButton = {
-            ButtonCustomDataScreen(text = stringResource(confirm), primary = true) {
+            ButtonCustom(text = stringResource(confirm), primary = true) {
                 onConfirmButtonClick(
                     userConfirm.copy(
                         userEmailRepeat = emailConfirm,

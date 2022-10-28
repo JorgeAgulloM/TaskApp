@@ -6,11 +6,6 @@ package com.softyorch.taskapp.ui.screens.main.components.bottomMenu.userData
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -21,24 +16,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.softyorch.taskapp.R
+import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.CircularIndicatorCustom
 import com.softyorch.taskapp.ui.components.SnackBarError
 import com.softyorch.taskapp.ui.components.SpacerCustom
 import com.softyorch.taskapp.ui.models.AccountModel
 import com.softyorch.taskapp.ui.navigation.AppScreensRoutes
 import com.softyorch.taskapp.ui.screens.commonErrors.model.ErrorAccountModel
+import com.softyorch.taskapp.ui.screens.login.components.TextFieldEmail
+import com.softyorch.taskapp.ui.screens.login.components.TextFieldName
+import com.softyorch.taskapp.ui.screens.login.components.TextFieldPass
 import com.softyorch.taskapp.utils.extensions.toastError
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BodyContentUserData(
     navController: NavController
@@ -71,42 +66,29 @@ fun BodyContentUserData(
         verticalArrangement = Arrangement.Center
     ) {
 
-        TextFieldCustomDataScreen(
-            text = userData.userName,
-            label = stringResource(R.string.name),
-            icon = Icons.Rounded.Person,
-            error = errors.name,
-            errorText = stringResource(R.string.input_error_name)
+        TextFieldName(
+            name = userData.userName,
+            error = errors.name
         ) {
             viewModel.onDataInputChange(userData.copy(userName = it.trim()))
         }
 
-        TextFieldCustomDataScreen(
-            text = userData.userEmail,
-            label = stringResource(R.string.email),
-            icon = Icons.Rounded.Email,
-            capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Email,
+        TextFieldEmail(
+            email = userData.userEmail,
             error = errors.email,
-            errorEmailExist = errors.emailExists,
-            errorText = stringResource(R.string.input_error_email)
+            errorEmailExist = errors.emailExists
         ) {
             viewModel.onDataInputChange(userData.copy(userEmail = it.trim()))
         }
 
-        TextFieldCustomDataScreen(
-            text = userData.userPass,
-            label = stringResource(R.string.password),
-            icon = Icons.Rounded.Key,
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Go, password = true,
+        TextFieldPass(
+            pass = userData.userPass,
             keyboardActions = KeyboardActions(
                 onGo = {
                     confirmDialog = true
                 }
             ),
-            error = errors.pass,
-            errorText = stringResource(R.string.input_error_pass)
+            error = errors.pass
         ) {
             viewModel.onDataInputChange(userData.copy(userPass = it.trim()))
         }
@@ -121,7 +103,7 @@ fun BodyContentUserData(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ButtonCustomDataScreen(
+            ButtonCustom(
                 text = stringResource(R.string.save),
                 enable = saveEnabled || errors.error,
                 primary = true,
@@ -129,7 +111,7 @@ fun BodyContentUserData(
             ) {
                 confirmDialog = true
             }
-            ButtonCustomDataScreen(text = stringResource(R.string.logout), tertiary = true) {
+            ButtonCustom(text = stringResource(R.string.logout), tertiary = true) {
                 logOutDialog = true
             }
         }
