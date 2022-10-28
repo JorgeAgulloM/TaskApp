@@ -134,7 +134,10 @@ fun MainScreenBeta(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End,
         contentColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
     ) {
-        Body(taskList, isVisible, index, contentBrush) { task ->
+        Body(taskList, isVisible, index, contentBrush, {
+            viewModel.delete(it)
+        }
+        ) { task ->
             scope.launch {
                 viewModel.updateTasks(task)
             }
@@ -148,9 +151,9 @@ fun Body(
     isVisible: Boolean,
     index: Int,
     contentBrush: Brush,
+    deleteTask: (TaskModelUi) -> Unit,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -164,6 +167,6 @@ fun Body(
             ),
         contentAlignment = Alignment.BottomCenter
     ) {
-        BottomSheetCustom(taskList, isVisible, index) { onCheckedChange(it) }
+        BottomSheetCustom(taskList, isVisible, index, { deleteTask(it) }) { onCheckedChange(it) }
     }
 }

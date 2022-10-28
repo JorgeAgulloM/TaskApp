@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : ViewModel(), WithOutErrorsNewTask {
+class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : ViewModel(),
+    WithOutErrorsNewTask {
     private val _tasks = MutableLiveData(listOf(TaskModelUi.emptyTask))
     val tasks: LiveData<List<TaskModelUi>> = _tasks
 
@@ -46,7 +47,7 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
         sendUpdateData(taskModelUi)
     }
 
-    fun changeState(state: StateMain){
+    fun changeState(state: StateMain) {
         _stateMain.value = state
         _isVisible.value = state == StateMain.Main
     }
@@ -57,6 +58,12 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
             _isVisible.postValue(false)
             delay(400)
             _isVisible.postValue(true)
+        }
+    }
+
+    fun delete(taskModelUi: TaskModelUi) {
+        viewModelScope.launch {
+            deleteTask(taskModelUi)
         }
     }
 
@@ -92,6 +99,10 @@ class MainViewModel @Inject constructor(private val useCases: TaskUseCases) : Vi
 
     private suspend fun updateTask(taskModelUi: TaskModelUi) {
         useCases.updateTask(taskModelUi.mapToTaskModelUseCase())
+    }
+
+    private suspend fun deleteTask(taskModelUi: TaskModelUi) {
+        useCases.deleteTask(taskModelUi.mapToTaskModelUseCase())
     }
 
 }

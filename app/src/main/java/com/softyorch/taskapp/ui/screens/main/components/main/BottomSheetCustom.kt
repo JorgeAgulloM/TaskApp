@@ -37,6 +37,7 @@ fun BottomSheetCustom(
     taskList: List<TaskModelUi>,
     isVisible: Boolean,
     index: Int,
+    deleteTask: (TaskModelUi) -> Unit,
     onCheckedChange: (TaskModelUi) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -95,7 +96,7 @@ fun BottomSheetCustom(
                                 }
 
                                 items(taskEntityList) { task ->
-                                    ElevatedCardCustom(task, scope) { onCheckedChange(it) }
+                                    ElevatedCardCustom(task, scope, { deleteTask(it) }) { onCheckedChange(it) }
                                 }
                             }
                             item { Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {} }
