@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.IconError
-import com.softyorch.taskapp.ui.components.outlinedTextFieldCustom
+import com.softyorch.taskapp.ui.components.textFieldCustomInputData
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +29,7 @@ fun TextFieldName(
 
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
+            textFieldCustomInputData(
                 text = name,
                 label = stringResource(R.string.name),
                 placeholder = stringResource(R.string.type_your_name),

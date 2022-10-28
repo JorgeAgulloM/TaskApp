@@ -18,7 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.components.IconError
-import com.softyorch.taskapp.ui.components.outlinedTextFieldCustom
+import com.softyorch.taskapp.ui.components.textFieldCustomInputData
 import com.softyorch.taskapp.utils.KEYBOARD_OPTIONS_CUSTOM
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +33,7 @@ fun TextFieldPass(
 ) {
     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         Box(modifier = Modifier.height(TextFieldDefaults.MinHeight + 8.dp)) {
-            outlinedTextFieldCustom(
+            textFieldCustomInputData(
                 text = pass,
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.type_your_password),
