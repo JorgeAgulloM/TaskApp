@@ -4,7 +4,10 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.main
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,12 +60,43 @@ fun ElevatedCardCustom(
     var isChecked by remember { mutableStateOf(false) }
     isChecked = task.checkState
 
-    val squareSize = 78.dp
+    val squareSize = 160.dp
 
     val swipeableState = rememberSwipeableState(0)
+    Log.d("VALUE", "swipeableState ->${swipeableState.offset.value}")
 
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
-    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+    val anchors = mapOf(0f to 0, -sizePx to 1, sizePx to 2)
+
+    val topColor = animateColorAsState(
+        targetValue =
+        if (swipeableState.offset.value < -340) {
+            MaterialTheme.colorScheme.error
+        } else if (swipeableState.offset.value > 340) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        },
+        animationSpec = spring(dampingRatio = 3f)
+    )
+
+    val bottomColor = animateColorAsState(
+        targetValue = if (swipeableState.offset.value < -340) {
+            MaterialTheme.colorScheme.errorContainer
+        } else if (swipeableState.offset.value > 340) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        },
+        animationSpec = spring(dampingRatio = 3f)
+    )
+
+    val bgBrush = Brush.horizontalGradient(
+        colors = listOf(
+            topColor.value,
+            bottomColor.value
+        )
+    )
 
     Box(
         modifier = Modifier
@@ -72,52 +107,47 @@ fun ElevatedCardCustom(
                 bottom = 16.dp
             )
             .fillMaxWidth()
+            .background(
+                brush = bgBrush,
+                shape = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(3.dp),
+                    topEnd = CornerSize(50.dp),
+                    bottomStart = CornerSize(15.dp),
+                    bottomEnd = CornerSize(15.dp)
+                )
+            )
             .swipeable(
                 state = swipeableState,
                 anchors = anchors,
-                thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                thresholds = { _, _ -> FractionalThreshold(0.8f) },
                 orientation = Orientation.Horizontal
             ),
-        contentAlignment = Alignment.TopStart
+        contentAlignment = Alignment.CenterStart
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 4.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = MaterialTheme.shapes.large
-                )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AnimatedVisibility(
-                    visible = isOpen,
-                    enter = SHEET_TRANSITION_ENTER,
-                    exit = SHEET_TRANSITION_EXIT
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-                            .size(40.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(40.dp)
-                        .clickable {
-                            deleteTask(task)
-                        },
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+            Icon(
+                imageVector = Icons.Rounded.Edit,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .height(40.dp),
+                //tint = MaterialTheme.colorScheme.primary
+            )
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .height(40.dp)
+                    .clickable {
+                        deleteTask(task)
+                    },
+                //tint = MaterialTheme.colorScheme.error
+            )
         }
         ElevatedCard(
             modifier = Modifier.offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) },
@@ -233,6 +263,7 @@ fun ElevatedCardCustom(
         )
     }
 }
+
 
 @Composable
 private fun textTransform(
