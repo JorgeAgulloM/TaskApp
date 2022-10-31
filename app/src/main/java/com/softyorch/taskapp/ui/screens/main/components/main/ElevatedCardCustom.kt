@@ -5,10 +5,12 @@
 package com.softyorch.taskapp.ui.screens.main.components.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.ExperimentalMaterialApi
@@ -19,21 +21,23 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
+import com.softyorch.taskapp.ui.utils.*
+import com.softyorch.taskapp.ui.utils.SwipeRippleState
 import com.softyorch.taskapp.utils.ELEVATION_DP
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_ENTER
 import com.softyorch.taskapp.utils.SHEET_TRANSITION_EXIT
@@ -42,6 +46,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -56,12 +61,26 @@ fun ElevatedCardCustom(
     var isChecked by remember { mutableStateOf(false) }
     isChecked = task.checkState
 
-    val squareSize = 78.dp
+    val squareSize = (LocalConfiguration.current.screenWidthDp / 2).dp
 
     val swipeableState = rememberSwipeableState(0)
 
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
-    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+    val anchors = mapOf(0f to 0, sizePx to 1)
+    val drop = SwipeAction(
+        icon = { Icons.Rounded.Delete },
+        background = MaterialTheme.colorScheme.error,
+        onSwipe = {
+
+        }
+    )
+    val edit = SwipeAction(
+        icon = { Icons.Rounded.Edit },
+        background = MaterialTheme.colorScheme.primary,
+        onSwipe = {
+
+        }
+    )
 
     Box(
         modifier = Modifier
@@ -72,52 +91,48 @@ fun ElevatedCardCustom(
                 bottom = 16.dp
             )
             .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(3.dp),
+                    topEnd = CornerSize(50.dp),
+                    bottomStart = CornerSize(15.dp),
+                    bottomEnd = CornerSize(15.dp)
+                )
+            )
             .swipeable(
                 state = swipeableState,
                 anchors = anchors,
-                thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                thresholds = { _, _ -> FractionalThreshold(0.8f) },
                 orientation = Orientation.Horizontal
             ),
-        contentAlignment = Alignment.TopStart
+        contentAlignment = Alignment.CenterStart
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 4.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = MaterialTheme.shapes.large
-                )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AnimatedVisibility(
-                    visible = isOpen,
-                    enter = SHEET_TRANSITION_ENTER,
-                    exit = SHEET_TRANSITION_EXIT
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-                            .size(40.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(40.dp)
-                        .clickable {
-                            deleteTask(task)
-                        },
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+            Icon(
+                imageVector = Icons.Rounded.Edit,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(40.dp)
+                    .width(squareSize / 3),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(40.dp)
+                    .width(squareSize / 3)
+                    .clickable {
+                        deleteTask(task)
+                    },
+                tint = MaterialTheme.colorScheme.error
+            )
         }
         ElevatedCard(
             modifier = Modifier.offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) },
@@ -245,3 +260,122 @@ private fun textTransform(
 } else if (isMinCollapse && description.length > maxTextLength) {
     description.substring(0, maxTextLength) + "..."
 } else description
+
+@Composable
+private fun SwipeableActionBox(
+    modifier: Modifier = Modifier,
+    state: SwipeableActionsState = rememberSwipeableActionsState(),
+    startActions: List<SwipeAction> = emptyList(),
+    endActions: List<SwipeAction> = emptyList(),
+    swipeThreshold: Dp = 40.dp,
+    backgroundUntilSwipeThreshold: Color = MaterialTheme.colorScheme.surfaceVariant,
+    content: @Composable BoxScope.() -> Unit
+) = BoxWithConstraints(modifier) {
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val leftActions = if (isRtl) endActions else startActions
+    val rightActions = if (isRtl) startActions else startActions
+    val swipeThresholdPx = LocalDensity.current.run { swipeThreshold.toPx() }
+
+    val ripple = remember {
+        SwipeRippleState()
+    }
+
+    val actions = remember(leftActions, rightActions) {
+        ActionFinder(left = leftActions, right = rightActions)
+    }
+    LaunchedEffect(state, actions) {
+        state.run {
+            canSwipeTowardsRight = { leftActions.isNotEmpty() }
+            canSwipeTowardsLeft = { rightActions.isNotEmpty() }
+        }
+    }
+
+    val offset = state.offset.value
+    val thresholdCrossed = abs(offset) > swipeThresholdPx
+
+    var swipedAction: SwipeActionMeta? by remember {
+        mutableStateOf(value = null)
+    }
+    val visibleAction: SwipeActionMeta? = remember(offset, actions) {
+        actions.actionAt(offset, totalWidth = constraints.maxWidth)
+    }
+
+    val backgroundColor: Color by animateColorAsState(
+        when {
+            swipedAction != null -> swipedAction!!.value.background
+            !thresholdCrossed -> backgroundUntilSwipeThreshold
+            visibleAction == null -> Color.Transparent
+            else -> visibleAction.value.background
+        }
+    )
+
+    Box(
+        modifier = Modifier
+            .absoluteOffset { IntOffset(x = offset.roundToInt(), y = 0) }
+            .drawOverContent { ripple.draw(scope = this) }
+            .draggable(
+                orientation = Orientation.Horizontal,
+                enabled = !state.isResettingOnRelease,
+                onDragStopped = {
+                    if (thresholdCrossed && visibleAction != null) {
+                        swipedAction = visibleAction
+                        swipedAction!!.value.onSwipe()
+                        ripple.animate(
+                            action = swipedAction!!,
+                            scope = this
+                        )
+                    }
+                    launch {
+                        state.resetOffset()
+                        swipedAction = null
+                    }
+                },
+                state = state.draggableState,
+            ),
+        content = content
+    )
+
+    (swipedAction ?: visibleAction)?.let { action ->
+        ActionIconBox(
+            modifier = Modifier.matchParentSize(),
+            action = action,
+            offset = offset,
+            backgroundColor = backgroundColor,
+            content = { action.value.icon() }
+        )
+    }
+
+}
+
+@Composable
+private fun ActionIconBox(
+    action: SwipeActionMeta,
+    offset: Float,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .layout { measurable, constraints ->
+                val placeholder = measurable.measure(constraints)
+                layout(width = placeholder.width, height = placeholder.height) {
+                    val iconOffset =
+                        if (action.isOnRightSide) constraints.maxWidth + offset else offset - placeholder.width
+                    placeholder.placeRelative(x = iconOffset.roundToInt(), y = 0)
+                }
+            }
+            .background(color = backgroundColor),
+        horizontalArrangement = if (action.isOnRightSide) Arrangement.Start else Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+
+        ) {
+        content()
+    }
+}
+
+private fun Modifier.drawOverContent(onDraw: DrawScope.() -> Unit) =
+    drawWithContent {
+        drawContent()
+        onDraw(this)
+    }
