@@ -11,7 +11,7 @@ data class SettingsModelUi(
     var id: UUID = UUID.randomUUID(),
     var lastLoginDate: Date? = null,
     var rememberMe: Boolean = false,
-    var lightDarkAutomaticTheme: Boolean = true,
+    var lightDarkAutomaticTheme: Boolean = false,
     var lightOrDarkTheme: Boolean = false,
     var automaticLanguage: Boolean = true,
     var automaticColors: Boolean = false,

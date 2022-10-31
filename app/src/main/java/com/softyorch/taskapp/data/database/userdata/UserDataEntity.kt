@@ -20,7 +20,7 @@ data class UserDataEntity(
      */
     @ColumnInfo(name = LAST_LOGIN) var lastLoginDate: Date? = null,
     @ColumnInfo(name = REMEMBER_ME) var rememberMe: Boolean = false,
-    @ColumnInfo(name = LIGHT_DARK_AUTOMATIC) var lightDarkAutomaticTheme: Boolean = true,
+    @ColumnInfo(name = LIGHT_DARK_AUTOMATIC) var lightDarkAutomaticTheme: Boolean = false,
     @ColumnInfo(name = LIGHT_DARK) var lightOrDarkTheme: Boolean = false,
     @ColumnInfo(name = AUTOMATIC_LANGUAGE) var automaticLanguage: Boolean = true,
     @ColumnInfo(name = AUTOMATIC_COLORS) var automaticColors: Boolean = false,
