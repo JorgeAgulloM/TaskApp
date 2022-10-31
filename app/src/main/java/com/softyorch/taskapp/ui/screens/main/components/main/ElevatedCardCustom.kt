@@ -4,6 +4,7 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.main
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -36,6 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import com.softyorch.taskapp.ui.components.ButtonCustom
 import com.softyorch.taskapp.ui.components.DividerCustom
 import com.softyorch.taskapp.ui.models.TaskModelUi
 import com.softyorch.taskapp.utils.ELEVATION_DP
@@ -48,6 +51,7 @@ import java.time.Instant
 import java.util.*
 import kotlin.math.roundToInt
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ElevatedCardCustom(
@@ -61,12 +65,11 @@ fun ElevatedCardCustom(
     isChecked = task.checkState
 
     val squareSize = 160.dp
-
     val swipeableState = rememberSwipeableState(0)
-    Log.d("VALUE", "swipeableState ->${swipeableState.offset.value}")
-
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
     val anchors = mapOf(0f to 0, -sizePx to 1, sizePx to 2)
+
+    var openDeleteDialog by remember { mutableStateOf(value = false) }
 
     val topColor = animateColorAsState(
         targetValue =
@@ -77,7 +80,61 @@ fun ElevatedCardCustom(
         } else {
             MaterialTheme.colorScheme.surfaceVariant
         },
-        animationSpec = spring(dampingRatio = 3f)
+        animationSpec = spring(dampingRatio = 3f),
+        finishedListener = {
+            if (swipeableState.offset.value < -340) {
+                if (!openDeleteDialog) openDeleteDialog = true
+            } else if (swipeableState.offset.value > 340) {
+                Log.d("Swipe", "Edit")
+            }
+        }
+    )
+
+    if (openDeleteDialog) AlertDialog(
+        onDismissRequest = {
+            openDeleteDialog = false
+            scope.launch {
+                swipeableState.animateTo(
+                    targetValue = 0,
+                    anim = tween(durationMillis = 300)
+                )
+            }
+        },
+        dismissButton = {
+            ButtonCustom(
+                onClick = {
+                    openDeleteDialog = false
+                    scope.launch {
+                        swipeableState.animateTo(
+                            targetValue = 0,
+                            anim = tween(durationMillis = 300)
+                        )
+                    }
+                },
+                text = "Cancel"
+            )
+        },
+        confirmButton = {
+            ButtonCustom(
+                onClick = {
+                    openDeleteDialog = false
+                    scope.launch {
+                        swipeableState.animateTo(
+                            targetValue = 0,
+                            anim = tween(durationMillis = 300)
+                        )
+                        deleteTask(task)
+                    }
+                },
+                text = "Confirm",
+                primary = true
+            )
+        },
+        text = { Text(text = "Confirm delete?") },
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false
+        )
     )
 
     val bottomColor = animateColorAsState(
@@ -86,7 +143,7 @@ fun ElevatedCardCustom(
         } else if (swipeableState.offset.value > 340) {
             MaterialTheme.colorScheme.primary
         } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.outline
         },
         animationSpec = spring(dampingRatio = 3f)
     )
@@ -134,8 +191,8 @@ fun ElevatedCardCustom(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .height(40.dp),
-                //tint = MaterialTheme.colorScheme.primary
+                    .height(40.dp)
+                    .size(50.dp)
             )
             Icon(
                 imageVector = Icons.Rounded.Delete,
@@ -143,10 +200,7 @@ fun ElevatedCardCustom(
                 modifier = Modifier
                     .padding(end = 24.dp)
                     .height(40.dp)
-                    .clickable {
-                        deleteTask(task)
-                    },
-                //tint = MaterialTheme.colorScheme.error
+                    .size(50.dp)
             )
         }
         ElevatedCard(
