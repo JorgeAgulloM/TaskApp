@@ -5,7 +5,7 @@
     <string name="io_exception_create_media_store_entry">No se ha podido crear la entrada de MediaStore</string>
     <string name="add_task">Añadir tarea</string>
     <string name="go_to_home">Ir a Inicio</string>
-    <string name="go_home">A Inicio</string>
+    <string name="go_home">Volver a Inicio</string>
     <string name="history">Historial</string>
     <string name="settings">Ajustes</string>
     <string name="image_of_user">Imagen de usuario</string>
@@ -23,10 +23,12 @@
     <string name="you_sure_eliminate_task">¿Está seguro de que quiere eliminar la tarea?</string>
     <string name="unknown">Desconocido</string>
     <string name="loading_login">…iniciando sesión</string>
+    <string name="auto_login">Inicio automático…</string>
     <string name="loading_loading">…cargando</string>
     <string name="error_email_already_exists">Error, ya existe una cuenta con la dirección de correo electrónico introducida.</string>
     <string name="login">Inicio de sesión</string>
-    <string name="create_account">Crear cuenta</string>
+    <string name="create_account">Crear nueva cuenta</string>
+    <string name="not_have_account">"\¿No tienes cuenta? "\</string>
     <string name="new_account">Nueva cuenta</string>
     <string name="go_to_login">Iniciar sesión</string>
     <string name="remember_me">Recuerdame</string>
@@ -44,6 +46,7 @@
     <string name="to_be_made">Por hacer…</string>
     <string name="add_new_task">Añadir nueva tarea…</string>
     <string name="tasks_completed_last_days">Completadas en los últimos 7 días</string>
+    <string name="tasks_completed">Completadas</string>
     <string name="not_yet_complet_any_task">Todavía no has completado ninguna tarea</string>
     <string name="go_to_up">Ir arriba</string>
     <string name="light_dark_automatic_theme">Tema automático Claro/Oscuro</string>
@@ -115,9 +118,13 @@
     <string name="limit_time_one_year">Un año</string>
     <string name="content_random_img">Imagen aleatoria de Pexels.com</string>
     <string name="pexels_web">https://www.pexels.com/</string>
-    <string name="pexels_courtesy">Por cortesia de Pexels.com</string>
-    <string name="author">\"Autor: \"</string>
+    <string name="pexels_courtesy">Imagen por cortesia de Pexels.com</string>
+    <string name="author">"\Autor: "\</string>
     <string name="click_to_view">Click para ver la imagen</string>
-    <string name="text_create_at">\"Creado en \"</string>
+    <string name="text_create_at">"\Creado en "\</string>
+    <string name="have_you_account">"\¿Ya tienes cuenta? "\</string>
+    <string name="confirm">Confirmar</string>
+    <string name="text_confim_data">Confirma tus datos</string>
+    <string name="content_confirm_data">Confirma tus datos</string>
 
 </resources>

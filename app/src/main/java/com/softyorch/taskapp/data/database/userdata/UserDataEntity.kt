@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
+import com.softyorch.taskapp.data.repository.user.UserModel
 import com.softyorch.taskapp.utils.*
 import java.util.*
 
@@ -25,4 +26,11 @@ data class UserDataEntity(
     @ColumnInfo(name = AUTOMATIC_COLORS) var automaticColors: Boolean = false,
     @ColumnInfo(name = TIME_LIMIT_AUTOLOGIN) var timeLimitAutoLoading: Int = 1, //One week
     @ColumnInfo(name = TEXT_SIZE) var textSize: Int = 0
+)
+
+fun UserModel.mapToUserDataEntity() = UserDataEntity(
+    username = this.username,
+    userEmail = this.userEmail,
+    userPass = this.userPass,
+    userPicture = this.userPicture
 )

@@ -1,7 +1,7 @@
 package com.softyorch.taskapp.domain.userdataUseCase
 
 import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.data.repository.user.UserDataRepository
 import com.softyorch.taskapp.utils.emptyString
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify

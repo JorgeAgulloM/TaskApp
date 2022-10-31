@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.utils.*
+import com.softyorch.taskapp.utils.extensions.containerColorAsStateAnimation
+import com.softyorch.taskapp.utils.extensions.contentColorAsStateAnimation
 
 @Composable
 fun ButtonCustom(

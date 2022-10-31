@@ -2,20 +2,14 @@ package com.softyorch.taskapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.softyorch.taskapp.data.database.datastore.DatastoreDataBase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase.Companion.TASK_DB_NAME
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
 import com.softyorch.taskapp.data.database.userdata.UserDataBase
 import com.softyorch.taskapp.data.database.userdata.UserDataBase.Companion.USERDATA_DB_NAME
 import com.softyorch.taskapp.data.database.userdata.UserDataBaseDao
-import com.softyorch.taskapp.data.repository.DatastoreRepository
 import com.softyorch.taskapp.data.repository.task.TaskRepository
-import com.softyorch.taskapp.data.repository.UserDataRepository
-import com.softyorch.taskapp.domain.datastoreUseCase.DatastoreUseCases
-import com.softyorch.taskapp.domain.datastoreUseCase.DeleteData
-import com.softyorch.taskapp.domain.datastoreUseCase.GetData
-import com.softyorch.taskapp.domain.datastoreUseCase.SaveData
+import com.softyorch.taskapp.data.repository.user.UserDataRepository
 import com.softyorch.taskapp.domain.taskUsesCase.*
 import com.softyorch.taskapp.domain.userdataUseCase.*
 import dagger.Module
@@ -61,21 +55,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesDatastoreDataBase(@ApplicationContext context: Context): DatastoreDataBase =
-        DatastoreDataBase(context = context)
-
-    @Singleton
-    @Provides
-    fun providesDatastoreUseCases(datastoreRepository: DatastoreRepository): DatastoreUseCases =
-        DatastoreUseCases(
-            getData = GetData(repository = datastoreRepository),
-            saveData = SaveData(repository = datastoreRepository),
-            deleteData = DeleteData(repository = datastoreRepository)
-        )
-
-
-    @Singleton
-    @Provides
     fun providesTaskUseCases(taskRepository: TaskRepository): TaskUseCases =
         TaskUseCases(
             getAllTask = GetAllTask(repository = taskRepository),
@@ -85,16 +64,22 @@ object AppModule {
             addNewTask = AddNewTask(repository = taskRepository),
             updateTask = UpdateTask(repository = taskRepository),
             deleteTask = DeleteTask(repository = taskRepository),
-            deleteAllTask = DeleteAllTask(repository = taskRepository)
+            deleteAllTask = DeleteAllTask(repository = taskRepository),
+            fakeData = FakeData(repository = taskRepository)
         )
 
     @Singleton
     @Provides
     fun providesUserDataUseCases(userDataRepository: UserDataRepository): UserDataUseCases =
         UserDataUseCases(
+            getSettings = GetSettings(repository = userDataRepository),
+            getUser = GetUser(repository = userDataRepository),
             getUserEmailExist = GetUserEmailExist(repository = userDataRepository),
             loginUser = LoginUser(repository = userDataRepository),
+            logoutUser = LogoutUser(repository = userDataRepository),
             newAccountUser = NewAccountUser(repository = userDataRepository),
+            saveSettings = SaveSettings(repository = userDataRepository),
+            saveUser = SaveUser(repository = userDataRepository),
             updateUser = UpdateUser(repository = userDataRepository)
         )
 }

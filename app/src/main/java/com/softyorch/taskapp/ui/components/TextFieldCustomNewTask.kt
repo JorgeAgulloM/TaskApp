@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.softyorch.taskapp.utils.ANIMATED_ENTER_TEXT_FIELDS
@@ -56,7 +57,7 @@ fun textFieldCustomNewTask(
         enter = ANIMATED_ENTER_TEXT_FIELDS,
         exit = ANIMATED_EXIT_TEXT_FIELDS
     ) {
-        TextField(
+        OutlinedTextField(
             value = text,
             onValueChange = { onTextFieldChanged(it) },
             modifier = Modifier
@@ -70,9 +71,6 @@ fun textFieldCustomNewTask(
                 .height(
                     height =
                     if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
-                )
-                .shadow(
-                    elevation = ELEVATION_DP, shape = personalizedShape
                 ),
             textStyle = MaterialTheme.typography.bodyLarge,
             label = { Text(text = label) },
@@ -83,18 +81,11 @@ fun textFieldCustomNewTask(
             singleLine = singleLine,
             maxLines = 5,
             shape = personalizedShape,
-            /*colors = TextFieldDefaults.textFieldColors(
-                textColor = LightMode90t,
-                placeholderColor = LightMode90t.copy(alpha = 0.4f),
-                focusedLabelColor = unfocusedColor,
-                unfocusedLabelColor = unfocusedColor,
-                unfocusedLeadingIconColor = unfocusedColor,
-                focusedLeadingIconColor = focusedColor,
-                containerColor = MaterialTheme.colorScheme.primary,
-                focusedIndicatorColor = focusedColor,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = focusedColor
-            )*/
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
+            )
         )
     }
 

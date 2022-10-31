@@ -1,6 +1,7 @@
 package com.softyorch.taskapp.domain.taskUsesCase
 
 import com.softyorch.taskapp.data.repository.task.TaskModel
+import com.softyorch.taskapp.ui.models.NewTaskModel
 import com.softyorch.taskapp.utils.emptyString
 import java.time.Instant
 import java.util.*
@@ -34,3 +35,11 @@ fun TaskModelUseCase.mapToTaskModel()  = TaskModel(
     finishDate = this.finishDate,
     checkState = this.checkState
 )
+
+fun NewTaskModel.mapToModelUseCases(): TaskModelUseCase =
+    TaskModelUseCase(
+        title = this.title,
+        description = this.description,
+        author = this.author,
+        entryDate = this.entryDate
+    )

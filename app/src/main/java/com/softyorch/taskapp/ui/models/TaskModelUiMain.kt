@@ -8,6 +8,7 @@ import java.util.*
 data class TaskModelUiMain(
     var id: UUID? = null,
     var title: String = emptyString,
+    var description: String = emptyString,
     var entryDate: Date = Date.from(Instant.now()),
     var finishDate: Date? = null,
     var checkState: Boolean = false
@@ -16,6 +17,7 @@ data class TaskModelUiMain(
 fun TaskModelUseCase.mapToTaskModelUiMain() = TaskModelUiMain(
     id = this.id!!,
     title = this.title,
+    description = this.description,
     entryDate = this.entryDate,
     finishDate = this.finishDate,
     checkState = this.checkState
@@ -24,6 +26,7 @@ fun TaskModelUseCase.mapToTaskModelUiMain() = TaskModelUiMain(
 fun TaskModelUiMain.mapToTaskModelUseCase() = TaskModelUseCase(
     id = this.id!!,
     title = this.title,
+    description = this.description,
     entryDate = this.entryDate,
     finishDate = this.finishDate,
     checkState = this.checkState
