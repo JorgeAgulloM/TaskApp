@@ -2,10 +2,10 @@ package com.softyorch.taskapp.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -44,18 +45,16 @@ fun textFieldCustomInputData(
     keyboardOptions: KeyboardOptions = KEYBOARD_OPTIONS_CUSTOM,
     keyboardActions: KeyboardActions = KeyboardActions(),
     singleLine: Boolean = false,
-    newTask: Boolean = false,
     readOnly: Boolean = false,
     isError: Boolean = false,
     isVisible: Boolean = true,
     password: Boolean = false,
+    onDialog: Boolean = false,
     onTextFieldChanged: (String) -> Unit = {}
 ): String {
     val personalizedShape: Shape = MaterialTheme.shapes.large.copy(
-        //topStart = CornerSize(corner),
-        //bottomStart = CornerSize(corner),
-        topEnd = if (newTask) MaterialTheme.shapes.large.topEnd else ZeroCornerSize,
-        bottomEnd = if (newTask) MaterialTheme.shapes.large.bottomEnd else ZeroCornerSize
+        topStart = CornerSize(10.dp),
+        bottomEnd = CornerSize(10.dp)
     )
     val textChange = rememberSaveable { mutableStateOf(text) }
     var passVisible by rememberSaveable { mutableStateOf(password) }
@@ -74,19 +73,16 @@ fun textFieldCustomInputData(
             value = text,
             onValueChange = { onTextFieldChanged(it) },
             modifier = Modifier
-                .padding(
-                    start = if (newTask) 8.dp else 32.dp,
-                    top = 4.dp,
-                    bottom = 4.dp,
-                    end = if (newTask) 8.dp else 0.dp
-                )
-                .width(width = if (newTask) 370.dp else 350.dp)
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = if (onDialog) 0.dp else 16.dp)
                 .height(
                     height =
-                    if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 2
+                    if (singleLine) TextFieldDefaults.MinHeight else TextFieldDefaults.MinHeight * 3
                 )
                 .shadow(
-                    elevation = ELEVATION_DP, shape = personalizedShape
+                    elevation = ELEVATION_DP / 3,
+                    shape = personalizedShape,
+                    spotColor = MaterialTheme.colorScheme.primary
                 ),
             readOnly = readOnly,
             textStyle = MaterialTheme.typography.bodyLarge,
@@ -94,30 +90,7 @@ fun textFieldCustomInputData(
             placeholder = { Text(text = placeholder) },
             leadingIcon = { Icon(imageVector = icon, contentDescription = contentDescription) },
             trailingIcon = {
-                if (password) {
-                    val image = if (passVisible)
-                        Icons.Rounded.Visibility
-                    else
-                        Icons.Rounded.VisibilityOff
-
-                    val description = if (passVisible)
-                        stringResource(hide_password)
-                    else
-                        stringResource(show_password)
-
-                    IconButton(
-                        onClick = {
-                            passVisible = !passVisible
-                        },
-                        content = {
-                            Icon(
-                                imageVector = image,
-                                contentDescription = description,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    )
-                }
+                passVisible = isPassword(password, passVisible)
             },
             isError = isError,
             visualTransformation = if (!passVisible) VisualTransformation.None
@@ -126,21 +99,41 @@ fun textFieldCustomInputData(
             keyboardActions = keyboardActions,
             singleLine = singleLine,
             maxLines = 5,
-            shape = personalizedShape,
-            /*colors = TextFieldDefaults.textFieldColors(
-                textColor = LightMode90t,
-                placeholderColor = LightMode90t.copy(alpha = 0.4f),
-                focusedLabelColor = unfocusedColor,
-                unfocusedLabelColor = unfocusedColor,
-                unfocusedLeadingIconColor = unfocusedColor,
-                focusedLeadingIconColor = focusedColor,
-                containerColor = MaterialTheme.colorScheme.primary,
-                focusedIndicatorColor = focusedColor,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = focusedColor
-            )*/
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent,
+            )
         )
     }
 
     return textChange.value
+}
+
+@Composable
+private fun isPassword(password: Boolean, passVisible: Boolean): Boolean {
+    var visible by remember { mutableStateOf(value = passVisible) }
+    if (password) {
+        val image = if (visible)
+            Icons.Rounded.Visibility
+        else
+            Icons.Rounded.VisibilityOff
+
+        val description = if (visible)
+            stringResource(hide_password)
+        else
+            stringResource(show_password)
+
+        IconButton(
+            onClick = {
+                visible = !visible
+            },
+            content = {
+                Icon(
+                    imageVector = image,
+                    contentDescription = description,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        )
+    }
+    return visible
 }

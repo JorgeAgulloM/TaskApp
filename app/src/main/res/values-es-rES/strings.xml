@@ -5,7 +5,7 @@
     <string name="io_exception_create_media_store_entry">No se ha podido crear la entrada de MediaStore</string>
     <string name="add_task">Añadir tarea</string>
     <string name="go_to_home">Ir a Inicio</string>
-    <string name="go_home">A Inicio</string>
+    <string name="go_home">Volver a Inicio</string>
     <string name="history">Historial</string>
     <string name="settings">Ajustes</string>
     <string name="image_of_user">Imagen de usuario</string>
@@ -123,5 +123,8 @@
     <string name="click_to_view">Click para ver la imagen</string>
     <string name="text_create_at">"\Creado en "\</string>
     <string name="have_you_account">"\¿Ya tienes cuenta? "\</string>
+    <string name="confirm">Confirmar</string>
+    <string name="text_confim_data">Confirma tus datos</string>
+    <string name="content_confirm_data">Confirma tus datos</string>
 
 </resources>

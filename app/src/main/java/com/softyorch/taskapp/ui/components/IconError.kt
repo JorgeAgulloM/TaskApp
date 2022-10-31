@@ -26,7 +26,11 @@ fun IconError(
             tint = MaterialTheme.colorScheme.error
         )
         Spacer(modifier = Modifier.padding(2.dp))
-        Text(text = errorText, style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = errorText,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
     Spacer(modifier = Modifier.padding(2.dp))
 }

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import java.util.regex.Pattern.*
 
-private const val ELEVATION: Int = 2
+private const val ELEVATION: Int = 4
 val ELEVATION_DP: Dp = ELEVATION.dp
 const val ELEVATION_FLOAT: Float = (ELEVATION).toFloat()
 
@@ -34,6 +34,7 @@ val REGEX_PASSWORD: String = compile(
 const val emptyString = ""
 const val ID = "id"
 const val GALLERY_IMAGES = "image/*"
+const val SMALL_TOP_BAR_HEIGHT = 35
 
 /** Tables -> Names of values -> tasks */
 const val TITLE = "task_title"
@@ -100,7 +101,7 @@ val SHEET_TRANSITION_ENTER: EnterTransition =
 val SHEET_TRANSITION_EXIT: ExitTransition =
     shrinkVertically(
         animationSpec = tween(500, 0, easing = FastOutSlowInEasing),
-        shrinkTowards = Alignment.Top
+        shrinkTowards = Alignment.Bottom
     )
 
 val CARD_RIGHT_ENTER: EnterTransition =

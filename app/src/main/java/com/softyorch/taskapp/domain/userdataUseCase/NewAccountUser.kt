@@ -1,15 +1,15 @@
 package com.softyorch.taskapp.domain.userdataUseCase
 
-import com.softyorch.taskapp.data.database.userdata.UserDataEntity
-import com.softyorch.taskapp.data.repository.UserDataRepository
+import com.softyorch.taskapp.data.repository.user.UserDataRepository
+import com.softyorch.taskapp.data.repository.user.mapToUserModel
 import java.io.IOException
 import java.io.InvalidClassException
 
 class NewAccountUser(private val repository: UserDataRepository) {
-    suspend operator fun invoke(userDataEntity: UserDataEntity): Boolean = try {
+    suspend operator fun invoke(userDataEntity: UserModelDomain): Boolean = try {
         repository.getUserDataEmail(userDataEntity.userEmail).let {
             if (it == null){
-                repository.addUserData(userDataEntity = userDataEntity)
+                repository.addUserData(userDataEntity.mapToUserModel())
                 true
             } else false
         }
