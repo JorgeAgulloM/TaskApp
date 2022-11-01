@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -73,26 +72,8 @@ fun ElevatedCardCustom(
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
     val anchors = mapOf(0f to 0, -sizePx to 1, sizePx to 2)
 
-    var openDeleteDialog by remember { mutableStateOf(value = false) }
-
-
-
-
-
-    //Revisar que esto funciona correctamente...
-    if (swipeableState.offset.value < -340) {
-        if (!openDeleteDialog) openDeleteDialog = true
-    } else if (swipeableState.offset.value > 340) {
-        Log.d("Swipe", "Edit") /**Falta aplicar la edición*/
-    }
-    //Revisar que esto funciona correctamente...
-
-
-
-
-
-    if (openDeleteDialog) DialogDeleteTask {
-        openDeleteDialog = false
+    ElevatedSwipeableCard(swipeableState, anchors, {
+        isOpen = false
         scope.launch {
             swipeableState.animateTo(
                 targetValue = 0,
@@ -100,9 +81,7 @@ fun ElevatedCardCustom(
             )
             if (it) deleteTask(task)
         }
-    }
-
-    ElevatedSwipebleCard(swipeableState, anchors) {
+    }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,7 +92,7 @@ fun ElevatedCardCustom(
             horizontalAlignment = Alignment.Start,
             content = {
                 AnimatedShowTaskDetails(isOpen, task)
-                CheckBoxCard(isChecked, scope, swipeableState, task) {
+                CheckBoxCard(isChecked, task) {
                     isChecked = it
                     scope.launch {
                         if (swipeableState.offset.value > 0) {
@@ -141,11 +120,19 @@ fun ElevatedCardCustom(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ElevatedSwipebleCard(
+private fun ElevatedSwipeableCard(
     swipeableState: SwipeableState<Int>,
     anchors: Map<Float, Int>,
+    deleteTask: (Boolean) -> Unit,
     scopeCard: @Composable () -> Unit
 ) {
+
+    var openDeleteDialog by remember { mutableStateOf(value = false) }
+
+    if (openDeleteDialog) DialogDeleteTask {
+        openDeleteDialog = false
+        deleteTask(it)
+    }
 
     val topColor = animateColorAsState(
         targetValue =
@@ -157,6 +144,14 @@ private fun ElevatedSwipebleCard(
             MaterialTheme.colorScheme.surfaceVariant
         },
         animationSpec = spring(dampingRatio = 3f),
+        finishedListener = {
+            if (swipeableState.offset.value < -340) {
+                if (!openDeleteDialog) openDeleteDialog = true
+            } else if (swipeableState.offset.value > 340) {
+                Log.d("Swipe", "Edit")
+                /**Falta aplicar la edición*/
+            }
+        }
     )
 
     val bottomColor = animateColorAsState(
@@ -177,7 +172,6 @@ private fun ElevatedSwipebleCard(
         )
     )
 
-
     Box(
         modifier = Modifier
             .padding(
@@ -186,7 +180,7 @@ private fun ElevatedSwipebleCard(
                 top = 4.dp,
                 bottom = 16.dp
             )
-            .fillMaxWidth()
+            //.fillMaxWidth()
             .background(
                 brush = bgBrush,
                 shape = MaterialTheme.shapes.large.copy(
@@ -243,12 +237,9 @@ private fun ColumnScope.AnimatedShowTaskDetails(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CheckBoxCard(
     isChecked: Boolean,
-    scope: CoroutineScope,
-    swipeableState: SwipeableState<Int>,
     task: TaskModelUi,
     onCheckedChange: (Boolean) -> Unit
 ) {
