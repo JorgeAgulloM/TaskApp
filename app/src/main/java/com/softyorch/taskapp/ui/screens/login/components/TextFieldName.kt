@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -33,7 +33,7 @@ fun TextFieldName(
                 text = name,
                 label = stringResource(R.string.name),
                 placeholder = stringResource(R.string.type_your_name),
-                icon = Icons.Rounded.Email,
+                icon = Icons.Rounded.Person,
                 contentDescription = stringResource(R.string.type_your_name),
                 keyboardOptions = KEYBOARD_OPTIONS_CUSTOM.copy(
                     capitalization = KeyboardCapitalization.Words
