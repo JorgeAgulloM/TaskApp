@@ -77,9 +77,12 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun updateOrRequestPermissions() {
-        val hasReadPermission = checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
-        val hasWritePermission = checkSelfPermission(this, WRITE_EXTERNAL_STORAGE ) == PERMISSION_GRANTED
-        val hasPostNotification = checkSelfPermission(this, POST_NOTIFICATIONS) == PERMISSION_GRANTED
+        val hasReadPermission =
+            checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+        val hasWritePermission =
+            checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+        val hasPostNotification =
+            checkSelfPermission(this, POST_NOTIFICATIONS) == PERMISSION_GRANTED
         val hasReadCalendar = checkSelfPermission(this, READ_CALENDAR) == PERMISSION_GRANTED
         val hasWriteCalendar = checkSelfPermission(this, WRITE_CALENDAR) == PERMISSION_GRANTED
 
