@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softyorch.taskapp.core.ejmploAlarma.PushNotifications
 import com.softyorch.taskapp.domain.taskUsesCase.TaskUseCases
 import com.softyorch.taskapp.domain.taskUsesCase.mapToModelUseCases
 import com.softyorch.taskapp.domain.userdataUseCase.UserDataUseCases
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FABCustomViewModel @Inject constructor(
     private val useCases: UserDataUseCases,
-    private val taskUseCase: TaskUseCases
+    private val taskUseCase: TaskUseCases,
+    private val pushNotifications: PushNotifications
 ) : ViewModel(), WithOutErrorsNewTask {
 
     private val _userName = MutableLiveData(emptyString)
@@ -74,6 +76,12 @@ class FABCustomViewModel @Inject constructor(
             if (!error.error) viewModelScope.launch(Dispatchers.IO) {
                 addNewTask(newTaskModel)
                 resetDataInput()
+
+                /** esto soslo es una prueba para lanzar una notify*/
+                pushNotifications.notifyNotification(
+                    textCompact = newTaskModel.title,
+                    bigText = newTaskModel.description
+                )
             }
             _isLoading.value = false
             return error.error
