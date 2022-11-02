@@ -7,7 +7,6 @@ package com.softyorch.taskapp.ui.screens.main.components.fabCustom
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.DatePicker
-import android.widget.TimePicker
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
@@ -17,11 +16,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,7 +48,6 @@ import com.softyorch.taskapp.utils.emptyString
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import java.time.Instant
 import java.util.*
-
 
 @ExperimentalMaterial3Api
 @Composable
@@ -133,203 +129,25 @@ fun FABCustom(
                 verticalArrangement = Arrangement.Top
             ) {
                 //Head
-                ShowTaskNewTask(
-                    userName = userName, dateFormatted = dateFormatted
-                )
+                ShowTaskNewTask(userName = userName, dateFormatted = dateFormatted)
                 //Body
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    TextFieldCustomNewTaskName( //añadir focus a este field
-                        text = newTask.title,
-                        error = errorsNewTask.title,
-                        titleDeedCounter = titleDeepCounter,
-                        limitCharTittle = viewModel.limitCharTittle
-                    ) {
-                        viewModel.onInputChanged(
-                            newTask.copy(
-                                title = it.replaceFirstChar { char ->
-                                    char.uppercase()
-                                }
-                            )
-                        )
-                    }
-                    TextFieldCustomNewTaskDescription(
-                        text = newTask.description,
-                        keyboardActions = KeyboardActions(onGo = {
-                            viewModel.onDataSend(
-                                newTask.copy(
-                                    title = newTask.title.trim(),
-                                    description = newTask.description.trim(),
-                                    author = userName,
-                                    entryDate = date
-                                )
-                            ).let { error ->
-                                if (!error) {
-                                    openDialog = false
-                                    show(true)
-                                }
-                            }
-                        }),
-                        error = errorsNewTask.description
-                    ) {
-                        viewModel.onInputChanged(
-                            newTask.copy(
-                                description = it.replaceFirstChar { char ->
-                                    char.uppercase()
-                                }
-                            )
-                        )
-                    }
+                openDialog = body(
+                    newTask,
+                    errorsNewTask,
+                    titleDeepCounter,
+                    viewModel,
+                    userName,
+                    date,
+                    openDialog
+                ) { show(it) }
 
-                    val context = LocalContext.current
-                    val calendar = Calendar.getInstance()
-                    val year = calendar.get(Calendar.YEAR)
-                    val month = calendar.get(Calendar.MONTH)
-                    val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-                    val minute = calendar.get(Calendar.MINUTE)
-
-                    calendar.time = Date()
-
-                    var date by remember { mutableStateOf(value = emptyString) }
-                    var time by remember { mutableStateOf(value = emptyString) }
-
-                    val timePickerDialog = TimePickerDialog(
-                        context,
-                        { _, mHour: Int, mMinute: Int ->
-                            time = "$mHour:$mMinute"
-                        }, hour, minute, true
-                    )
-
-                    val datePickerDialog = DatePickerDialog(
-                        context, { _: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
-                            date = "$mDay/$mMonth/$mYear"
-                        }, year, month, day
-                    )
-
-                    Text(
-                        text = "Fecha de finalización:",
-                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                    Text(
-                        text = if (date == emptyString || time == emptyString) "Selecciona fecha y hora"
-                        else "Fecha seleccionada: $date a las $time",
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .clickable {
-                                /** estoy hay que revisarlo*/
-                                timePickerDialog.show()
-                                datePickerDialog.show()
-                            },
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                    SpacerCustom(4.dp)
-                    Text(
-                        text = "Prioridad:",
-                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .background(color = Color.Red, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            var check by remember { mutableStateOf(value = false) }
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        check = !check
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .background(color = Color.Yellow, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            var check by remember { mutableStateOf(value = false) }
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        check = !check
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .background(color = Color.Green, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            var check by remember { mutableStateOf(value = false) }
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        check = !check
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
-                            }
-                        }
-                    }
-
-                }
                 SpacerCustom()
                 //Footer
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                Footer(
+                    errorsNewTask, isLoading, viewModel, newTask, userName, date
                 ) {
-                    ButtonCustom(
-                        text = stringResource(save),
-                        primary = true,
-                        enable = errorsNewTask.isActivatedButton && !isLoading,
-                        error = errorsNewTask.error
-                    ) {
-                        viewModel.onDataSend(
-                            newTask.copy(
-                                title = newTask.title.trim(),
-                                description = newTask.description.trim(),
-                                author = userName,
-                                entryDate = date
-                            )
-                        ).let { error ->
-                            if (!error) {
-                                openDialog = false
-                                show(true)
-                            }
-                        }
-                    }
-                    ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
-                        openDialog = false
-                        show(true)
-                    }
+                    show(it)
+                    openDialog = false
                 }
             }
 
@@ -369,4 +187,220 @@ fun FABCustom(
         }
     }
 
+}
+
+@Composable
+private fun Footer(
+    errorsNewTask: ErrorsNewTaskModel,
+    isLoading: Boolean,
+    viewModel: FABCustomViewModel,
+    newTask: NewTaskModel,
+    userName: String,
+    date: Date,
+    show: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        ButtonCustom(
+            text = stringResource(save),
+            primary = true,
+            enable = errorsNewTask.isActivatedButton && !isLoading,
+            error = errorsNewTask.error
+        ) {
+            viewModel.onDataSend(
+                newTask.copy(
+                    title = newTask.title.trim(),
+                    description = newTask.description.trim(),
+                    author = userName,
+                    entryDate = date
+                )
+            ).let { error ->
+                if (!error) {
+                    show(true)
+                }
+            }
+        }
+        ButtonCustom(text = stringResource(cancel), enable = !isLoading) {
+            show(true)
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun body(
+    newTask: NewTaskModel,
+    errorsNewTask: ErrorsNewTaskModel,
+    titleDeepCounter: Int,
+    viewModel: FABCustomViewModel,
+    userName: String,
+    date: Date,
+    openDialog: Boolean,
+    show: (Boolean) -> Unit
+): Boolean {
+    var open by remember { mutableStateOf(value = false) }
+    open = openDialog
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        TextFieldCustomNewTaskName( //añadir focus a este field
+            text = newTask.title,
+            error = errorsNewTask.title,
+            titleDeedCounter = titleDeepCounter,
+            limitCharTittle = viewModel.limitCharTittle
+        ) {
+            viewModel.onInputChanged(
+                newTask.copy(
+                    title = it.replaceFirstChar { char ->
+                        char.uppercase()
+                    }
+                )
+            )
+        }
+        TextFieldCustomNewTaskDescription(
+            text = newTask.description,
+            keyboardActions = KeyboardActions(onGo = {
+                viewModel.onDataSend(
+                    newTask.copy(
+                        title = newTask.title.trim(),
+                        description = newTask.description.trim(),
+                        author = userName,
+                        entryDate = date
+                    )
+                ).let { error ->
+                    if (!error) {
+                        open = false
+                        show(true)
+                    }
+                }
+            }),
+            error = errorsNewTask.description
+        ) {
+            viewModel.onInputChanged(
+                newTask.copy(
+                    description = it.replaceFirstChar { char ->
+                        char.uppercase()
+                    }
+                )
+            )
+        }
+
+        SelectDate()
+
+        SpacerCustom(4.dp)
+
+        var priority by remember { mutableStateOf(value = 0) }
+        Priority(priority) { priority = it }
+
+    }
+    return open
+}
+
+@Composable
+private fun Priority(selected: Int, onSelected: (Int) -> Unit) {
+    Text(
+        text = "Prioridad:",
+        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+        style = MaterialTheme.typography.labelSmall.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Selectable(Color.White, 0, selected, "None") { onSelected(it) }
+        Selectable(Color.Blue, 1, selected, "Low") { onSelected(it) }
+        Selectable(Color.Yellow, 2, selected, "Mid") { onSelected(it) }
+        Selectable(Color.Red, 3, selected, "High") { onSelected(it) }
+    }
+}
+
+@Composable
+private fun Selectable(
+    color: Color,
+    priority: Int,
+    selected: Int,
+    text: String,
+    onSelected: (Int) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        RadioButton(
+            selected = priority == selected,
+            onClick = { onSelected(priority) },
+            colors = RadioButtonDefaults.colors(
+                selectedColor = color,
+                unselectedColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        )
+        Text(
+            text = text,
+            modifier = Modifier.offset((-10).dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        )
+    }
+}
+
+@Composable
+private fun SelectDate() {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+
+    calendar.time = Date()
+
+    var date by remember { mutableStateOf(value = emptyString) }
+    var time by remember { mutableStateOf(value = emptyString) }
+
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, mHour: Int, mMinute: Int ->
+            time = "$mHour:$mMinute"
+        }, hour, minute, true
+    )
+
+    val datePickerDialog = DatePickerDialog(
+        context, { _: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
+            date = "$mDay/$mMonth/$mYear"
+        }, year, month, day
+    )
+
+    Text(
+        text = "Fecha de finalización:",
+        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+        style = MaterialTheme.typography.labelSmall.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    )
+    Text(
+        text = if (date == emptyString || time == emptyString) "Selecciona fecha y hora"
+        else "Fecha seleccionada: $date a las $time",
+        modifier = Modifier
+            .padding(start = 16.dp, bottom = 8.dp)
+            .clickable {
+                /** estoy hay que revisarlo*/
+                timePickerDialog.show()
+                datePickerDialog.show()
+            },
+        style = MaterialTheme.typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline
+        )
+    )
 }
