@@ -4,6 +4,10 @@
 
 package com.softyorch.taskapp.ui.screens.main.components.fabCustom
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
@@ -11,10 +15,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,19 +30,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.R.string.*
 import com.softyorch.taskapp.ui.components.ButtonCustom
+import com.softyorch.taskapp.ui.components.SpacerCustom
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.errors.ErrorsNewTaskModel
 import com.softyorch.taskapp.ui.models.NewTaskModel
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.TextFieldCustomNewTaskDescription
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.TextFieldCustomNewTaskName
 import com.softyorch.taskapp.ui.screens.main.components.fabCustom.components.ShowTaskNewTask
 import com.softyorch.taskapp.utils.ELEVATION_DP
+import com.softyorch.taskapp.utils.emptyString
 import com.softyorch.taskapp.utils.extensions.toStringFormatDate
 import java.time.Instant
 import java.util.*
@@ -88,7 +100,7 @@ fun FABCustom(
         visible = !hide,
         enter = fadeIn(animationSpec = tween(durationMillis = 300)),
         exit = fadeOut(animationSpec = tween(durationMillis = 300))
-    ){
+    ) {
         Box(
             modifier = Modifier
                 .height(height.dp)
@@ -171,7 +183,123 @@ fun FABCustom(
                             )
                         )
                     }
+
+                    val context = LocalContext.current
+                    val calendar = Calendar.getInstance()
+                    val year = calendar.get(Calendar.YEAR)
+                    val month = calendar.get(Calendar.MONTH)
+                    val day = calendar.get(Calendar.DAY_OF_MONTH)
+                    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                    val minute = calendar.get(Calendar.MINUTE)
+
+                    calendar.time = Date()
+
+                    var date by remember { mutableStateOf(value = emptyString) }
+                    var time by remember { mutableStateOf(value = emptyString) }
+
+                    val timePickerDialog = TimePickerDialog(
+                        context,
+                        { _, mHour: Int, mMinute: Int ->
+                            time = "$mHour:$mMinute"
+                        }, hour, minute, true
+                    )
+
+                    val datePickerDialog = DatePickerDialog(
+                        context, { _: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
+                            date = "$mDay/$mMonth/$mYear"
+                        }, year, month, day
+                    )
+
+                    Text(
+                        text = "Fecha de finalización:",
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                    Text(
+                        text = if (date == emptyString || time == emptyString) "Selecciona fecha y hora"
+                        else "Fecha seleccionada: $date a las $time",
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                /** estoy hay que revisarlo*/
+                                timePickerDialog.show()
+                                datePickerDialog.show()
+                            },
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    )
+                    SpacerCustom(4.dp)
+                    Text(
+                        text = "Prioridad:",
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(color = Color.Red, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            var check by remember { mutableStateOf(value = false) }
+                            Box(
+                                modifier = Modifier
+                                    .clickable {
+                                        check = !check
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(color = Color.Yellow, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            var check by remember { mutableStateOf(value = false) }
+                            Box(
+                                modifier = Modifier
+                                    .clickable {
+                                        check = !check
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(color = Color.Green, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            var check by remember { mutableStateOf(value = false) }
+                            Box(
+                                modifier = Modifier
+                                    .clickable {
+                                        check = !check
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (check) Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
+                            }
+                        }
+                    }
+
                 }
+                SpacerCustom()
                 //Footer
                 Row(
                     modifier = Modifier.fillMaxWidth(),
