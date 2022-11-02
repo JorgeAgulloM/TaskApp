@@ -1,7 +1,6 @@
 package com.softyorch.taskapp.ui.activities
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.Manifest.permission.*
 import android.content.pm.PackageManager.*
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,13 +18,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.*
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.taskapp.BuildConfig
 import com.softyorch.taskapp.ui.navigation.TaskAppNavigation
 import com.softyorch.taskapp.ui.theme.TaskAppTheme
 import com.softyorch.taskapp.utils.sdk29AndUp
+import com.softyorch.taskapp.utils.sdk33AndUp
 import dagger.hilt.android.AndroidEntryPoint
 
 const val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
@@ -33,18 +34,26 @@ const val KEY_API_PEXELS: String = BuildConfig.API_PEXELS
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var readPermissionGranted = false
-    private var writePermissionGranted = false
+    private var readExternalGranted = false
+    private var writeExternalGranted = false
+    private var postNotificationGranted = false
+    private var readCalendarGranted = false
+    private var writeCalendarGranted = false
     private lateinit var permissionsLauncher: ActivityResultLauncher<Array<String>>
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         permissionsLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                readPermissionGranted = permissions[READ_EXTERNAL_STORAGE] ?: readPermissionGranted
-                writePermissionGranted =
-                    permissions[WRITE_EXTERNAL_STORAGE] ?: writePermissionGranted
+                readExternalGranted = permissions[READ_EXTERNAL_STORAGE] ?: readExternalGranted
+                writeExternalGranted =
+                    permissions[WRITE_EXTERNAL_STORAGE] ?: writeExternalGranted
+                sdk33AndUp {
+                    postNotificationGranted =
+                        permissions[POST_NOTIFICATIONS] ?: postNotificationGranted
+                }
             }
 
         updateOrRequestPermissions()
@@ -58,7 +67,6 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-
             val viewModel = hiltViewModel<MainActivityViewModel>()
 
             TaskApp(
@@ -67,24 +75,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun updateOrRequestPermissions() {
-        val hasReadPermission = ContextCompat.checkSelfPermission(
-            this,
-            READ_EXTERNAL_STORAGE
-        ) == PERMISSION_GRANTED
-        val hasWritePermission = ContextCompat.checkSelfPermission(
-            this,
-            WRITE_EXTERNAL_STORAGE
-        ) == PERMISSION_GRANTED
-        val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        val hasReadPermission = checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+        val hasWritePermission = checkSelfPermission(this, WRITE_EXTERNAL_STORAGE ) == PERMISSION_GRANTED
+        val hasPostNotification = checkSelfPermission(this, POST_NOTIFICATIONS) == PERMISSION_GRANTED
+        val hasReadCalendar = checkSelfPermission(this, READ_CALENDAR) == PERMISSION_GRANTED
+        val hasWriteCalendar = checkSelfPermission(this, WRITE_CALENDAR) == PERMISSION_GRANTED
 
-        readPermissionGranted = hasReadPermission
-        writePermissionGranted = hasWritePermission || minSdk29
+        readExternalGranted = hasReadPermission
+        writeExternalGranted = hasWritePermission || sdk29AndUp
+        postNotificationGranted = hasPostNotification || sdk33AndUp
+        readCalendarGranted = hasReadCalendar
+        writeCalendarGranted = hasWriteCalendar
 
         val permissionsToRequest = mutableListOf<String>()
 
-        if (!writePermissionGranted) permissionsToRequest.add(WRITE_EXTERNAL_STORAGE)
-        if (!readPermissionGranted) permissionsToRequest.add(READ_EXTERNAL_STORAGE)
+        if (!writeExternalGranted) permissionsToRequest.add(WRITE_EXTERNAL_STORAGE)
+        if (!readExternalGranted) permissionsToRequest.add(READ_EXTERNAL_STORAGE)
+        if (!postNotificationGranted) permissionsToRequest.add(POST_NOTIFICATIONS)
+        if (!readCalendarGranted) permissionsToRequest.add(READ_CALENDAR)
+        if (!writeCalendarGranted) permissionsToRequest.add(WRITE_CALENDAR)
 
         if (permissionsToRequest.isNotEmpty())
             permissionsLauncher.launch(permissionsToRequest.toTypedArray())
