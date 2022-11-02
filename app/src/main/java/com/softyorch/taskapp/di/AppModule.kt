@@ -2,6 +2,7 @@ package com.softyorch.taskapp.di
 
 import android.content.Context
 import androidx.room.Room
+import com.softyorch.taskapp.core.ejmploAlarma.PushNotifications
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase
 import com.softyorch.taskapp.data.database.tasks.TaskDatabase.Companion.TASK_DB_NAME
 import com.softyorch.taskapp.data.database.tasks.TaskDatabaseDao
@@ -82,6 +83,13 @@ object AppModule {
             saveUser = SaveUser(repository = userDataRepository),
             updateUser = UpdateUser(repository = userDataRepository)
         )
+
+    @Singleton
+    @Provides
+    fun providesAlarmReceiver(
+        @ApplicationContext context: Context
+    ): PushNotifications = PushNotifications(context)
+
 }
 
 
