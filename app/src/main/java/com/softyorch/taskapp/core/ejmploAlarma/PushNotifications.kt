@@ -7,25 +7,27 @@ package com.softyorch.taskapp.core.ejmploAlarma
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.softyorch.taskapp.R
 import com.softyorch.taskapp.ui.activities.MainActivity
+import com.softyorch.taskapp.utils.sdk28AndUp
 import com.softyorch.taskapp.utils.sdk31AndUp
 
 class PushNotifications(
     private val context: Context
-) : BroadcastReceiver() {
+) {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        createNotificationChannel()
-        notifyNotification()
+    init {
+        sdk28AndUp {
+            createNotificationChannel()
+        }
     }
 
-    fun createNotificationChannel() {
+    private fun createNotificationChannel() {
         val notificationChannel = NotificationChannel(
             MY_CHANNEL_ID,
             MY_CHANNEL_NAME,
@@ -44,7 +46,7 @@ class PushNotifications(
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, flag)
 
         val builder = NotificationCompat.Builder(context, MY_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_delete)
+            .setSmallIcon(R.drawable.notes_512x512)
             .setContentTitle("TaskApp")
             .setContentText(textCompact)
             .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
